@@ -1,0 +1,37 @@
+{
+  "name": "@svitejs/vite-plugin-svelte",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "dominikg",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsc -p . -w --incremental",
+    "build": "rimraf dist && run-s build-bundle build-types",
+    "build-bundle": "esbuild src/index.ts --bundle --platform=node --target=node12 --outfile=dist/index.js",
+    "build-types": "tsc -p . --emitDeclarationOnly --outDir temp && api-extractor run && rimraf temp",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . --lerna-package vite-plugin-svelte"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/svitejs/svite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/svitejs/svite/issues"
+  },
+  "homepage": "https://github.com/svitejs/svite/tree/main/packages/vite-plugin-svelte#readme",
+  "dependencies": {
+    "rollup-plugin-svelte": "github:rixo/rollup-plugin-svelte-hot#svelte-hmr"
+  },
+  "devDependencies": {
+    "rollup": "^2.38.0",
+    "svelte": "^3.31.2",
+    "vite": "^2.0.0-beta.46"
+  }
+}
