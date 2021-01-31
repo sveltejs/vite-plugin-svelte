@@ -27,11 +27,20 @@
   },
   "homepage": "https://github.com/svitejs/svite/tree/main/packages/vite-plugin-svelte#readme",
   "dependencies": {
-    "rollup-plugin-svelte": "github:rixo/rollup-plugin-svelte-hot#svelte-hmr"
+    "@rollup/pluginutils": "^4.1.0",
+    "require-relative": "^0.8.7",
+    "svelte-hmr": "^0.12.5"
+  },
+  "peerDependencies": {
+    "svelte": "^3.32.1",
+    "vite": "^2.0.0-beta.60"
   },
   "devDependencies": {
-    "rollup": "^2.38.0",
+    "@types/es-module-lexer": "^0.3.0",
+    "debug": "^4.3.1",
+    "locate-character": "^2.0.5",
+    "rollup": "^2.38.2",
     "svelte": "^3.31.2",
-    "vite": "^2.0.0-beta.46"
+    "vite": "^2.0.0-beta.60"
   }
 }

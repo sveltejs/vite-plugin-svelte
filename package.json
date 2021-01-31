@@ -1,5 +1,5 @@
 {
-  "name": "vite-monorepo",
+  "name": "svite-monorepo",
   "private": true,
   "workspaces": [
     "packages/*",
@@ -12,12 +12,7 @@
     "debug-serve": "cross-env VITE_DEBUG_SERVE=1 node --inspect-brk ./node_modules/.bin/jest",
     "test-build": "cross-env VITE_TEST_BUILD=1 jest",
     "debug-build": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 node --inspect-brk ./node_modules/.bin/jest",
-    "docs": "vitepress dev docs",
-    "build-docs": "vitepress build docs",
-    "serve-docs": "vitepress serve docs",
-    "build-vite": "cd packages/vite && yarn build",
-    "build-plugin-vue": "cd packages/plugin-vue && yarn build",
-    "ci-docs": "run-s build-vite build-plugin-vue build-docs"
+    "build-vite-plugin-svelte": "cd packages/vite-plugin-svelte && yarn build"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
@@ -67,8 +62,5 @@
     "*.html": [
       "prettier --write"
     ]
-  },
-  "dependencies": {
-    "vite": "^2.0.0-beta.46"
   }
 }
