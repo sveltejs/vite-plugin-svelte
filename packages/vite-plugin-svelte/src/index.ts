@@ -1,13 +1,15 @@
 import * as path from 'path'
+import * as fs from 'fs'
 import { HmrContext, ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { createFilter } from '@rollup/pluginutils'
 // @ts-ignore
 import * as relative from 'require-relative'
-import { compile, preprocess, walk } from 'svelte/compiler'
-// @ts-ignore
-import { createMakeHot } from 'svelte-hmr'
 
-const PREFIX = '[rollup-plugin-svelte]'
+import { parseSvelteRequest } from './utils/query'
+import { getDescriptor } from './utils/descriptorCache'
+import { handleHotUpdate } from './handleHotUpdate'
+
+const PREFIX = '[vite-plugin-svelte]'
 const pkg_export_errors = new Set()
 
 const plugin_options = new Set([
@@ -21,20 +23,81 @@ const plugin_options = new Set([
 ])
 
 export interface Options {
-  // TODO extend rollup plugin svelte options
+  /** One or more minimatch patterns */
+  include: Arrayable<string>
+
+  /** One or more minimatch patterns */
+  exclude: Arrayable<string>
+
+  /**
+   * By default, all ".svelte" files are compiled
+   * @default ['.svelte']
+   */
+  extensions: string[]
+
+  /**
+   * Optionally, preprocess components with svelte.preprocess:
+   * \@see https://svelte.dev/docs#svelte_preprocess
+   */
+  preprocess: Arrayable<PreprocessorGroup>
+
+  /** Emit Svelte styles as virtual CSS files for other plugins to process. */
   emitCss: boolean
-  compilerOptions: any
-  preprocess: any
-  extensions: any
-  include: any
-  exclude: any
-  onwarn: any
-  hot: any
+
+  /** Options passed to `svelte.compile` method. */
+  compilerOptions: CompileOptions
+
+  onwarn?: undefined | false | ((warning: any, defaultHandler?: any) => void)
+
+  /** Enable/configure HMR */
+  hot?:
+    | undefined
+    | false
+    | {
+        /**
+         * Enable state preservation when a component is updated by HMR for every
+         * components.
+         * @default false
+         */
+        preserveState: boolean
+
+        /**
+         * If this string appears anywhere in your component's code, then local
+         * state won't be preserved, even when noPreserveState is false.
+         * @default '\@hmr:reset'
+         */
+        noPreserveStateKey: string
+
+        /**
+         * If this string appears next to a `let` variable, the value of this
+         * variable will be preserved accross HMR updates.
+         * @default '\@hmr:keep'
+         */
+        preserveStateKey: string
+
+        /**
+         * Prevent doing a full reload on next HMR update after fatal error.
+         * @default false
+         */
+        noReload: boolean
+
+        /**
+         * Try to recover after runtime errors in component init.
+         * @default true
+         */
+        optimistic: boolean
+
+        noDisableCss: boolean
+        injectCss?: boolean
+        cssEjectDelay: number
+      }
 }
 
 export interface ResolvedOptions extends Options {
   root: string
   isProduction: boolean
+  isBuild?: boolean
+  isServe?: boolean
   devServer?: ViteDevServer
 }
 
@@ -52,10 +115,6 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     )
   }
 
-  // [filename]:[chunk]
-  const cache_emit = new Map()
-  const { onwarn, emitCss = true } = rest
-
   if (emitCss) {
     if (compilerOptions.css) {
       console.warn(
@@ -69,8 +128,6 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     console.info(`${PREFIX} Disabling HMR because "dev" option is disabled.`)
     rest.hot = false
   }
-
-  const makeHot = rest.hot && createMakeHot({ walk })
 
   let options: ResolvedOptions = {
     isProduction: process.env.NODE_ENV === 'production',
@@ -94,7 +151,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       options = {
         ...options,
         root: config.root,
-        isProduction: config.isProduction
+        isProduction: config.isProduction,
+        isBuild: config.command === 'build',
+        isServe: config.command === 'serve'
       }
     },
 
@@ -103,24 +162,46 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     load(id, ssr) {
-      // we should properbly handle stripping the query params here, see vite vue plugin
-      // not sure if we also need to do sth different during ssr?
-
-      // @ts-ignore
-      const result = cache_emit.get(id) || null
-      console.log('load', { id, result })
-      return result
+      const { filename, query } = parseSvelteRequest(id)
+      // select corresponding block for subpart virtual modules
+      if (query.svelte) {
+        if (query.src) {
+          return fs.readFileSync(filename, 'utf-8')
+        }
+        const descriptor = getDescriptor(filename)!
+        let block: SFCBlock | null | undefined
+        if (query.type === 'script') {
+          // handle <scrip> + <script setup> merge via compileScript()
+          block = getResolvedScript(descriptor, ssr)
+        } else if (query.type === 'template') {
+          block = descriptor.template!
+        } else if (query.type === 'style') {
+          block = descriptor.styles[query.index!]
+        } else if (query.index != null) {
+          block = descriptor.customBlocks[query.index]
+        }
+        if (block) {
+          return {
+            code: block.content,
+            map: block.map as any
+          }
+        }
+      }
     },
 
     async resolveId(importee, importer, options, ssr) {
-      if (cache_emit.has(importee)) return importee
+      if (parseSvelteRequest(importee).query.svelte) {
+        return importee
+      }
+
       if (
         !importer ||
         importee[0] === '.' ||
         importee[0] === '\0' ||
         path.isAbsolute(importee)
-      )
+      ) {
         return null
+      }
 
       // if this is a bare import, see if there's a valid pkg.svelte
       const parts = importee.split('/')
@@ -153,14 +234,40 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     async transform(code, id, ssr) {
-      if (!filter(id)) return null
+      const { filename, query } = parseSvelteRequest(id)
+      if (
+        !query.svelte &&
+        (!filter(filename) || !extensions.some((ext) => filename.endsWith(ext)))
+      ) {
+        return
+      }
 
-      const extension = path.extname(id)
-      if (!~extensions.indexOf(extension)) return null
+      if (!query.svelte) {
+        // main request
+        return transformMain(code, filename, options, this, ssr)
+      } else {
+        // sub block request
+        const descriptor = getDescriptor(filename)!
+        if (query.type === 'template') {
+          return transformTemplateAsModule(code, descriptor, options, this, ssr)
+        } else if (query.type === 'style') {
+          return transformStyle(
+            code,
+            descriptor,
+            Number(query.index),
+            options,
+            this
+          )
+        }
+      }
 
       const dependencies = []
-      const filename = path.relative(process.cwd(), id)
-      const svelte_options = { ...compilerOptions, filename }
+
+      const svelte_options = {
+        ssr,
+        ...compilerOptions,
+        filename
+      }
 
       if (rest.preprocess) {
         const processed = await preprocess(code, rest.preprocess, { filename })
@@ -178,9 +285,8 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       })
 
       if (emitCss && compiled.css.code) {
-        const fname = id.replace(new RegExp(`\\${extension}$`), '.css')
-        compiled.js.code += `\nimport ${JSON.stringify(fname)};\n`
-        cache_emit.set(fname, compiled.css)
+        const cssImport = `${filename}?svelte&type=style`
+        compiled.js.code += `\nimport ${JSON.stringify(cssImport)};\n`
       }
 
       if (makeHot) {
@@ -197,11 +303,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         })
       }
 
-      if (this.addWatchFile) {
-        dependencies.forEach(this.addWatchFile)
-      } else {
-        compiled.js.dependencies = dependencies
-      }
+      compiled.js.dependencies = dependencies
 
       const result = compiled.js
 
@@ -212,7 +314,13 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     handleHotUpdate(
       ctx: HmrContext
     ): Array<ModuleNode> | void | Promise<Array<ModuleNode> | void> {
-      console.log('handleHotUpdate', ctx)
+      if (
+        !filter(ctx.file) ||
+        !extensions.some((ext) => ctx.file.endsWith(ext))
+      ) {
+        return
+      }
+      return handleHotUpdate(ctx)
     }
 
     /*
@@ -283,3 +391,55 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
 // overwrite for cjs require('...')() usage
 module.exports = vitePluginSvelte
 vitePluginSvelte['default'] = vitePluginSvelte
+
+// TODO import from appropriate places
+export declare type ModuleFormat = 'esm' | 'cjs'
+
+export interface CompileOptions {
+  format?: ModuleFormat
+  name?: string
+  filename?: string
+  generate?: 'dom' | 'ssr' | false
+  sourcemap?: object | string
+  outputFilename?: string
+  cssOutputFilename?: string
+  sveltePath?: string
+  dev?: boolean
+  accessors?: boolean
+  immutable?: boolean
+  hydratable?: boolean
+  legacy?: boolean
+  customElement?: boolean
+  tag?: string
+  css?: boolean
+  loopGuardTimeout?: number
+  namespace?: string
+  preserveComments?: boolean
+  preserveWhitespace?: boolean
+}
+
+export interface Processed {
+  code: string
+  map?: string | object
+  dependencies?: string[]
+  toString?: () => string
+}
+
+export declare type MarkupPreprocessor = (options: {
+  content: string
+  filename: string
+}) => Processed | Promise<Processed>
+
+export declare type Preprocessor = (options: {
+  content: string
+  attributes: Record<string, string | boolean>
+  filename?: string
+}) => Processed | Promise<Processed>
+
+export interface PreprocessorGroup {
+  markup?: MarkupPreprocessor
+  style?: Preprocessor
+  script?: Preprocessor
+}
+
+export type Arrayable<T> = T | T[]
