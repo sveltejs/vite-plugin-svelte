@@ -6,7 +6,11 @@ import { createFilter } from '@rollup/pluginutils'
 import * as relative from 'require-relative'
 
 import { parseSvelteRequest } from './utils/query'
-import { getDescriptor } from './utils/descriptorCache'
+import {
+  createDescriptor,
+  getDescriptor,
+  SvelteComponentDescriptor
+} from './utils/descriptorCache'
 import { handleHotUpdate } from './handleHotUpdate'
 
 const PREFIX = '[vite-plugin-svelte]'
@@ -45,7 +49,7 @@ export interface Options {
   emitCss: boolean
 
   /** Options passed to `svelte.compile` method. */
-  compilerOptions: CompileOptions
+  compilerOptions: Partial<CompileOptions>
 
   onwarn?: undefined | false | ((warning: any, defaultHandler?: any) => void)
 
@@ -90,6 +94,7 @@ export interface Options {
         noDisableCss: boolean
         injectCss?: boolean
         cssEjectDelay: number
+        absoluteImports: boolean
       }
 }
 
@@ -115,7 +120,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     )
   }
 
-  if (emitCss) {
+  if (rest.emitCss) {
     if (compilerOptions.css) {
       console.warn(
         `${PREFIX} Forcing \`"compilerOptions.css": false\` because "emitCss" was truthy.`
@@ -168,23 +173,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         if (query.src) {
           return fs.readFileSync(filename, 'utf-8')
         }
-        const descriptor = getDescriptor(filename)!
-        let block: SFCBlock | null | undefined
-        if (query.type === 'script') {
-          // handle <scrip> + <script setup> merge via compileScript()
-          block = getResolvedScript(descriptor, ssr)
-        } else if (query.type === 'template') {
-          block = descriptor.template!
-        } else if (query.type === 'style') {
-          block = descriptor.styles[query.index!]
-        } else if (query.index != null) {
-          block = descriptor.customBlocks[query.index]
-        }
-        if (block) {
-          return {
-            code: block.content,
-            map: block.map as any
-          }
+        const descriptor = getDescriptor(filename, options.root)!
+        if (query.type === 'style' && descriptor) {
+          return descriptor.css
         }
       }
     },
@@ -193,7 +184,8 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       if (parseSvelteRequest(importee).query.svelte) {
         return importee
       }
-
+      // TODO below is code from rollup-plugin-svelte
+      // what needs to be kept or can be deleted? (pkg.svelte handling?)
       if (
         !importer ||
         importee[0] === '.' ||
@@ -235,6 +227,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
 
     async transform(code, id, ssr) {
       const { filename, query } = parseSvelteRequest(id)
+
       if (
         !query.svelte &&
         (!filter(filename) || !extensions.some((ext) => filename.endsWith(ext)))
@@ -244,71 +237,26 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
 
       if (!query.svelte) {
         // main request
-        return transformMain(code, filename, options, this, ssr)
+        const descriptor: SvelteComponentDescriptor = await createDescriptor(
+          filename,
+          code,
+          options.root,
+          options.isProduction,
+          compilerOptions,
+          rest,
+          ssr
+        )
+        return descriptor.js
       } else {
-        // sub block request
-        const descriptor = getDescriptor(filename)!
-        if (query.type === 'template') {
-          return transformTemplateAsModule(code, descriptor, options, this, ssr)
-        } else if (query.type === 'style') {
-          return transformStyle(
-            code,
-            descriptor,
-            Number(query.index),
-            options,
-            this
-          )
+        const descriptor = getDescriptor(filename, options.root)!
+        if (query.type === 'style' && descriptor) {
+          // previously compiled css from handleHotUpdate?
+          return descriptor.css
+        } else {
+          // TODO handle this (should not happen but be more friendly)
+          throw new Error('ooops')
         }
       }
-
-      const dependencies = []
-
-      const svelte_options = {
-        ssr,
-        ...compilerOptions,
-        filename
-      }
-
-      if (rest.preprocess) {
-        const processed = await preprocess(code, rest.preprocess, { filename })
-        if (processed.dependencies) dependencies.push(...processed.dependencies)
-        if (processed.map) svelte_options.sourcemap = processed.map
-        code = processed.code
-      }
-
-      const compiled = compile(code, svelte_options)
-
-      ;(compiled.warnings || []).forEach((warning) => {
-        if (!emitCss && warning.code === 'css-unused-selector') return
-        if (onwarn) onwarn(warning, this.warn)
-        else this.warn(warning)
-      })
-
-      if (emitCss && compiled.css.code) {
-        const cssImport = `${filename}?svelte&type=style`
-        compiled.js.code += `\nimport ${JSON.stringify(cssImport)};\n`
-      }
-
-      if (makeHot) {
-        compiled.js.code = makeHot({
-          id,
-          compiledCode: compiled.js.code,
-          hotOptions: {
-            injectCss: !rest.emitCss,
-            ...rest.hot
-          },
-          compiled,
-          originalCode: code,
-          compileOptions: compilerOptions
-        })
-      }
-
-      compiled.js.dependencies = dependencies
-
-      const result = compiled.js
-
-      console.log('transform', { id, result })
-      return result
     },
 
     handleHotUpdate(
@@ -322,69 +270,6 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       }
       return handleHotUpdate(ctx)
     }
-
-    /*
-    async resolveId(id, importer) {
-      // serve subpart requests (*?vue) as virtual modules
-      if (parseVueRequest(id).query.vue) {
-        return id
-      }
-    },
-
-    load(id, ssr = !!options.ssr) {
-      const { filename, query } = parseVueRequest(id)
-      // select corresponding block for subpart virtual modules
-      if (query.vue) {
-        if (query.src) {
-          return fs.readFileSync(filename, 'utf-8')
-        }
-        const descriptor = getDescriptor(filename)!
-        let block: SFCBlock | null | undefined
-        if (query.type === 'script') {
-          // handle <scrip> + <script setup> merge via compileScript()
-          block = getResolvedScript(descriptor, ssr)
-        } else if (query.type === 'template') {
-          block = descriptor.template!
-        } else if (query.type === 'style') {
-          block = descriptor.styles[query.index!]
-        } else if (query.index != null) {
-          block = descriptor.customBlocks[query.index]
-        }
-        if (block) {
-          return {
-            code: block.content,
-            map: block.map as any
-          }
-        }
-      }
-    },
-
-    transform(code, id, ssr = !!options.ssr) {
-      const { filename, query } = parseVueRequest(id)
-      if (!query.vue && !filter(filename)) {
-        return
-      }
-
-      if (!query.vue) {
-        // main request
-        return transformMain(code, filename, options, this, ssr)
-      } else {
-        // sub block request
-        const descriptor = getDescriptor(filename)!
-        if (query.type === 'template') {
-          return transformTemplateAsModule(code, descriptor, options, this, ssr)
-        } else if (query.type === 'style') {
-          return transformStyle(
-            code,
-            descriptor,
-            Number(query.index),
-            options,
-            this
-          )
-        }
-      }
-    }
-    */
   }
 }
 

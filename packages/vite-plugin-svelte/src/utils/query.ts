@@ -9,13 +9,16 @@ export interface SvelteQuery {
 }
 
 export function parseSvelteRequest(id: string) {
-  const [filename, rawQuery] = id.split(`?`, 2)
+  let [filename, rawQuery] = id.split(`?`, 2)
   const query = qs.parse(rawQuery) as SvelteQuery
   if (query.svelte != null) {
     query.svelte = true
   }
   if (query.src != null) {
     query.src = true
+  }
+  if (query.svelte && query.type === 'style' && filename.endsWith('.css')) {
+    filename = filename.slice(0, -4)
   }
   if (query.index != null) {
     query.index = Number(query.index)

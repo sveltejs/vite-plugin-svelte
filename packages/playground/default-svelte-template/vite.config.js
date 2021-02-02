@@ -6,14 +6,20 @@ const production = process.env.NODE_ENV === 'production'
  * type {import('vite').UserConfig}
  */
 export default {
+  optimizeDeps: {
+    // TODO move to plugin, exclude all and dedupe all
+    exclude: ['svelte', 'svelte/internal']
+  },
   plugins: [
     svelte({
-      emitCss: !!production,
+      emitCss: true,
       hot: {
-        absoluteImports: false
+        absoluteImports: false,
+        injectCss: false
       },
       compilerOptions: {
-        dev: !production
+        dev: !production,
+        css: false
       }
     })
   ]

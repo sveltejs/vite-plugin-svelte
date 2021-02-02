@@ -9,13 +9,14 @@ export async function compileSvelte(
   code: string,
   compilerOptions: CompileOptions,
   rest: Partial<Options>,
-  ssr: boolean
+  ssr: boolean | undefined
 ) {
   const { onwarn, emitCss = true } = rest
   const dependencies = []
 
   const svelte_options: CompileOptions = {
     ...compilerOptions,
+    css: false,
     filename,
     generate: ssr ? 'ssr' : 'dom'
   }
@@ -37,17 +38,18 @@ export async function compileSvelte(
   })
 
   if (emitCss && compiled.css.code) {
-    const cssImport = `${filename}?svelte&type=style`
+    // TODO what do we need to use as import here so css is passed through handleHotUpdate correctly
+    const cssImport = `${filename}.css?import&svelte&type=style&lang=css`
     compiled.js.code += `\nimport ${JSON.stringify(cssImport)};\n`
   }
 
   if (rest.hot) {
     compiled.js.code = makeHot({
-      filename,
+      id: filename,
       compiledCode: compiled.js.code,
       hotOptions: {
-        injectCss: !rest.emitCss,
-        ...rest.hot
+        ...rest.hot,
+        injectCss: false
       },
       compiled,
       originalCode: code,
