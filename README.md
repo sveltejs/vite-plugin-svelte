@@ -12,3 +12,8 @@ nothing is finished, right now this is a testbed to make vite-plugin-svelte work
 * run `yarn dev` in `packages/playground/default-svelte-template` to start vite
 
 changes in plugin need restart of dev server
+
+## some notes
+
+* For typescript, svelte components must use `<script lang="ts">`, not `<script lang="typescript">` otherwise vite dep scan fails. see https://discord.com/channels/804011606160703521/804062134051930222/806300072349270033
+* exclusions in optimizeDeps also cover children (x or startswith x+/)

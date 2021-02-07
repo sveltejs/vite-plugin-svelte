@@ -1,15 +1,9 @@
-import _debug from 'debug'
-
-import {
-  createDescriptor,
-  getDescriptor,
-  setPrevDescriptor,
-  SvelteComponentDescriptor
-} from './utils/descriptorCache'
+import { getCompileData } from './utils/compile'
 
 import { ModuleNode, HmrContext } from 'vite'
-
-const debug = _debug('vite-plugin-svelte:hmr')
+import { CompileData, compileSvelte } from './utils/compile'
+import { normalizePath } from './utils/id'
+import { log } from './utils/log'
 
 /**
  * Vite-specific HMR handling
@@ -20,22 +14,22 @@ export async function handleHotUpdate({
   read,
   server
 }: HmrContext): Promise<ModuleNode[] | void> {
-  const prevDescriptor = getDescriptor(file, server.config.root, false)
-  if (!prevDescriptor) {
+  const cachedCompileData = getCompileData(
+    normalizePath(file, server.config.root),
+    false
+  )
+  if (!cachedCompileData) {
     // file hasn't been requested yet (e.g. async component)
+    log.debug(`handleHotUpdate first call ${file}`)
     return
   }
-  setPrevDescriptor(file, server.config.root, prevDescriptor)
 
   const content = await read()
-  const descriptor: SvelteComponentDescriptor = await createDescriptor(
+  const compileData: CompileData = await compileSvelte(
     file,
     content,
-    server.config.root,
-    false,
-    prevDescriptor.compilerOptions,
-    prevDescriptor.rest,
-    prevDescriptor.ssr
+    cachedCompileData.options,
+    cachedCompileData.ssr
   )
 
   const affectedModules = new Set<ModuleNode | undefined>()
@@ -43,17 +37,17 @@ export async function handleHotUpdate({
     (m) => !/type=/.test(m.url) || /type=script/.test(m.url)
   )
 
-  if (!isCodeEqual(descriptor.js, prevDescriptor.js)) {
+  if (!isCodeEqual(compileData.compiled.js, cachedCompileData.compiled.js)) {
     affectedModules.add(mainModule)
   }
 
-  if (!isCodeEqual(descriptor.css, prevDescriptor.css)) {
+  if (!isCodeEqual(compileData.compiled.css, cachedCompileData.compiled.css)) {
     const styleModule = modules.find((m) => m.url.includes(`type=style`))
     affectedModules.add(styleModule)
-    debug(`[svelte:update(style)] ${file}`)
   }
-
-  return [...affectedModules].filter(Boolean) as ModuleNode[]
+  const result = [...affectedModules].filter(Boolean) as ModuleNode[]
+  log.debug(`handleHotUpdate result for ${file}`, result)
+  return result
 }
 
 function isCodeEqual(
@@ -69,6 +63,8 @@ function isCodeEqual(
   if (a == null || b == null) {
     return false
   }
-  // TODO we can do better here
-  return a.code === b.code
+  // TODO we have to do better here, js code differs at least with generated style hash
+  const equal = a.code === b.code
+
+  return equal
 }
