@@ -57,6 +57,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       }
       // extra vite config
       return {
+        enforce: 'pre',
         dedupe: ['svelte']
       }
     },

@@ -1,7 +1,6 @@
 import qs from 'querystring'
 import { createFilter } from '@rollup/pluginutils'
 import { Arrayable, ResolvedOptions } from './options'
-import path from 'path'
 
 export type SvelteQueryTypes = 'style' | 'script'
 
@@ -58,21 +57,18 @@ function stripVirtualImportId(filename: string, type?: SvelteQueryTypes) {
 }
 
 function createVirtualImportId(
-  filename: string,
+  id: string,
   type: SvelteQueryTypes,
   timestamp: number
 ) {
   if (type === 'style') {
-    filename = `${filename}.css`
+    id = `${id}.css`
   }
-  // TODO add vite specific import/t queryparams here or not?
-  return `${viteVirtualIdPrefix}${filename}?svelte&type=${type}`
+  return `${id}?svelte&type=${type}`
 }
 
-function normalizePath(filename: string, root = process.cwd()) {
-  return filename.startsWith(root + '/')
-    ? path.posix.relative(root, filename)
-    : filename
+function normalizePath(filename: string, root: string) {
+  return filename.startsWith(root + '/') ? filename.replace(root, '') : filename
 }
 
 function buildFilter(

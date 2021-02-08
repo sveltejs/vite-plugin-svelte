@@ -66,12 +66,9 @@ function jsChanged(prev: CompileData, next: CompileData) {
     }
     const jsChanged = !isCodeEqual(prev.compiled.js, patchedNext)
     if (!jsChanged) {
-      // TODO evil hack, reuse previous css hash in new css code so it is applied to existing dom
+      // TODO evil hack, reuse previous css hash in new code so it is applied to existing dom
       // not the right place
-      next.compiled.css.code = next.compiled.css.code.replace(
-        new RegExp(next.svelteCssClass!, 'g'),
-        prev.svelteCssClass!
-      )
+      patchSvelteCssClass(next, prev.svelteCssClass!)
     }
     return jsChanged
   } else {
@@ -93,4 +90,16 @@ function isCodeEqual(
     return false
   }
   return a.code === b.code
+}
+
+function patchSvelteCssClass(compileData: CompileData, newValue: string) {
+  const currentValue = compileData.svelteCssClass!
+  if (currentValue === newValue) {
+    return
+  }
+  const currentValueRE = new RegExp(currentValue, 'g')
+  const { js, css } = compileData.compiled
+  js.code = js.code.replace(currentValueRE, newValue)
+  css.code = css.code.replace(currentValueRE, newValue)
+  compileData.svelteCssClass = newValue
 }
