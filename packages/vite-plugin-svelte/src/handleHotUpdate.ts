@@ -55,20 +55,18 @@ function cssChanged(prev: CompileData, next: CompileData) {
 
 function jsChanged(prev: CompileData, next: CompileData) {
   if (prev.options.emitCss) {
-    const jsCode: string = next.compiled.js.code
-    const patchedCode = jsCode.replace(
-      new RegExp(next.svelteCssClass!, 'g'),
-      prev.svelteCssClass!
-    )
-    const patchedNext = {
+    const nextJsWithPrevSvelteClass = {
       ...next.compiled.js,
-      code: patchedCode
+      code: next.compiled.js.code.replace(
+        new RegExp(next.svelteCssClass!, 'g'),
+        prev.svelteCssClass!
+      )
     }
-    const jsChanged = !isCodeEqual(prev.compiled.js, patchedNext)
+    const jsChanged = !isCodeEqual(prev.compiled.js, nextJsWithPrevSvelteClass)
     if (!jsChanged) {
       // TODO evil hack, reuse previous css hash in new code so it is applied to existing dom
       // not the right place
-      patchSvelteCssClass(next, prev.svelteCssClass!)
+      restorePreviousSvelteClass(next, prev.svelteCssClass!)
     }
     return jsChanged
   } else {
@@ -92,14 +90,17 @@ function isCodeEqual(
   return a.code === b.code
 }
 
-function patchSvelteCssClass(compileData: CompileData, newValue: string) {
+function restorePreviousSvelteClass(
+  compileData: CompileData,
+  previousValue: string
+) {
   const currentValue = compileData.svelteCssClass!
-  if (currentValue === newValue) {
+  if (currentValue === previousValue) {
     return
   }
   const currentValueRE = new RegExp(currentValue, 'g')
   const { js, css } = compileData.compiled
-  js.code = js.code.replace(currentValueRE, newValue)
-  css.code = css.code.replace(currentValueRE, newValue)
-  compileData.svelteCssClass = newValue
+  js.code = js.code.replace(currentValueRE, previousValue)
+  css.code = css.code.replace(currentValueRE, previousValue)
+  compileData.svelteCssClass = previousValue
 }
