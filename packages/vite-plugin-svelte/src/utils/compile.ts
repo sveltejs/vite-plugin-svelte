@@ -1,20 +1,20 @@
-import { CompileOptions, Options, Processed, ResolvedOptions } from './options'
+import { CompileOptions, Processed, ResolvedOptions } from './options'
 import { compile, preprocess, walk } from 'svelte/compiler'
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr'
-import { createVirtualImportId, normalizePath } from './id'
+import { SvelteRequest } from './id'
 
 const makeHot = createMakeHot({ walk })
 
 export async function compileSvelte(
-  filename: string,
+  svelteRequest: SvelteRequest,
   code: string,
   options: Partial<ResolvedOptions>,
   ssr: boolean | undefined
 ): Promise<CompileData> {
+  const { filename, normalizedFilename, cssId } = svelteRequest
   const { onwarn, emitCss = true } = options
   const dependencies = []
-  filename = normalizePath(filename, options.root)
   const finalCompilerOptions: CompileOptions = {
     ...options.compilerOptions,
     filename,
@@ -40,15 +40,17 @@ export async function compileSvelte(
     if (onwarn) onwarn(warning /*, this.warn*/)
     //else this.warn(warning)
   })
-  let cssImportId
+  let svelteCssClass
   if (emitCss && compiled.css.code) {
-    cssImportId = createVirtualImportId(filename, 'style')
-
     // TODO properly update sourcemap?
-    compiled.js.code += `\nimport ${JSON.stringify(cssImportId)};\n`
+    compiled.js.code += `\nimport ${JSON.stringify(svelteRequest.cssId)};\n`
+
+    // TODO is there a better way to get this?
+    svelteCssClass = compiled.css.code.match(/\.svelte-[^\{]*/)![0].substring(1)
   }
 
-  if (options.hot) {
+  // only apply hmr when not in ssr context and hot options are set
+  if (!ssr && options.hot) {
     compiled.js.code = makeHot({
       id: filename,
       compiledCode: compiled.js.code,
@@ -64,13 +66,15 @@ export async function compileSvelte(
   // return everything that was created during preprocess/compile
   const result = {
     filename,
+    normalizedFilename,
+    cssId,
     code,
     preprocessed,
     compiled,
     compilerOptions: finalCompilerOptions,
-    cssImportId,
     options,
-    ssr
+    ssr,
+    svelteCssClass
   }
   if (!options.isBuild) {
     // no cache on build
@@ -79,13 +83,15 @@ export async function compileSvelte(
   return result
 }
 
+// TODO separate cache for ssr true/false to support hybrid scenarios
 const cache = new Map<string, CompileData>()
 const prevCache = new Map<string, CompileData | undefined>()
 
 export function getCompileData(
-  id: string,
+  svelteRequest: SvelteRequest,
   errorOnMissing = true
 ): CompileData | undefined {
+  const id = svelteRequest.normalizedFilename
   if (cache.has(id)) {
     return cache.get(id)!
   }
@@ -98,14 +104,17 @@ export function getCompileData(
 }
 
 // TODO do we need this?
-export function getPrevCompileData(id: string): CompileData | undefined {
+export function getPrevCompileData(
+  svelteRequest: SvelteRequest
+): CompileData | undefined {
+  const id = svelteRequest.normalizedFilename
   if (prevCache.has(id)) {
     return prevCache.get(id)
   }
 }
 
 function cacheCompileData(compileData: CompileData) {
-  const id = compileData.filename
+  const id = compileData.normalizedFilename
   if (cache.has(id)) {
     prevCache.set(id, cache.get(id))
   }
@@ -137,11 +146,13 @@ export interface Compiled {
 
 export interface CompileData {
   filename: string
+  normalizedFilename: string
+  cssId: string
   code: string
   preprocessed?: Processed
   compiled: Compiled
   compilerOptions: CompileOptions
-  cssImportId?: string
-  options: Partial<Options>
+  options: Partial<ResolvedOptions>
   ssr: boolean | undefined
+  svelteCssClass?: string
 }

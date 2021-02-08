@@ -1,4 +1,4 @@
-import { ResolvedConfig, ViteDevServer } from 'vite'
+import { ResolvedConfig } from 'vite'
 import { log } from './log'
 
 const defaultOptions: Partial<Options> = {
@@ -13,7 +13,8 @@ const knownOptions = new Set([
   'emitCss',
   'compilerOptions',
   'preprocess',
-  'hot'
+  'hot',
+  'ssr'
 ])
 
 export function buildInitialOptions(rawOptions: Options): Options {
@@ -149,7 +150,6 @@ export interface ResolvedOptions extends Options {
   isProduction: boolean
   isBuild?: boolean
   isServe?: boolean
-  devServer?: ViteDevServer
 }
 
 // TODO import from appropriate places

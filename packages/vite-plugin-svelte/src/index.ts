@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { HmrContext, ModuleNode, Plugin } from 'vite'
+import { HmrContext, ModuleNode, Plugin, ViteDevServer } from 'vite'
 
 // @ts-ignore
 import * as relative from 'require-relative'
@@ -7,7 +7,7 @@ import * as relative from 'require-relative'
 import { handleHotUpdate } from './handleHotUpdate'
 import { log } from './utils/log'
 import { CompileData, compileSvelte, getCompileData } from './utils/compile'
-import { buildFilter, parseToSvelteRequest } from './utils/id'
+import { buildIdParser, IdParser } from './utils/id'
 import {
   buildInitialOptions,
   Options,
@@ -33,17 +33,17 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
 
   const initialOptions = buildInitialOptions(rawOptions)
 
-  const svelteRequestFilter = buildFilter(
-    initialOptions.include,
-    initialOptions.exclude,
-    initialOptions.extensions
-  )
-
+  // updated in configResolved hook
+  let requestParser: IdParser
   let options: ResolvedOptions = {
     isProduction: process.env.NODE_ENV === 'production',
     ...initialOptions,
     root: process.cwd()
   }
+
+  // updated in configureServer hook
+  // @ts-ignore
+  let server: ViteDevServer
 
   return {
     name: 'vite-plugin-svelte',
@@ -63,24 +63,26 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
 
     configResolved(config) {
       options = resolveOptions(options, config)
+      requestParser = buildIdParser(options)
     },
 
-    configureServer(server) {
-      options.devServer = server
+    configureServer(_server) {
+      server = _server
     },
 
     load(id, ssr) {
-      const svelteRequest = parseToSvelteRequest(id)
-      if (!svelteRequestFilter(svelteRequest)) {
+      const svelteRequest = requestParser(id)
+      if (!svelteRequest) {
         return
       }
+
       log.debug('load', svelteRequest)
       const { filename, query } = svelteRequest
 
       //
       if (query.svelte) {
         if (query.type === 'style') {
-          const compileData = getCompileData(filename, false)
+          const compileData = getCompileData(svelteRequest, false)
           if (compileData?.compiled?.css) {
             log.debug(`load returns css for ${filename}`)
             return compileData.compiled.css
@@ -90,9 +92,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     async resolveId(importee, importer, options, ssr) {
-      const svelteRequest = parseToSvelteRequest(importee)
+      const svelteRequest = requestParser(importee)
       log.debug('resolveId', svelteRequest)
-      if (svelteRequest.query.svelte) {
+      if (svelteRequest?.query.svelte) {
         log.debug(`resolveId resolved ${importee}`)
         return importee // query with svelte tag, an id we generated, no need for further analysis
       }
@@ -140,8 +142,8 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     async transform(code, id, ssr) {
-      const svelteRequest = parseToSvelteRequest(id)
-      if (!svelteRequestFilter(svelteRequest)) {
+      const svelteRequest = requestParser(id)
+      if (!svelteRequest) {
         return
       }
       log.debug('transform', svelteRequest)
@@ -149,8 +151,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
 
       if (!query.svelte) {
         // main request
+        // TODO when this is a hot update, handleHotUpdate already compiled and cached. take it from there
         const compileData: CompileData = await compileSvelte(
-          filename,
+          svelteRequest,
           code,
           options,
           ssr
@@ -159,7 +162,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         return compileData.compiled.js
       } else {
         log.debug('transfrom svelte subquery')
-        const compileData = getCompileData(filename)
+        const compileData = getCompileData(svelteRequest)
         if (query.type === 'style' && compileData?.compiled?.css) {
           // previously compiled css from handleHotUpdate?
           log.debug(`transform returns css for ${filename}`)
@@ -172,12 +175,12 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     handleHotUpdate(ctx: HmrContext): void | Promise<Array<ModuleNode> | void> {
-      const svelteRequest = parseToSvelteRequest(ctx.file)
-      if (!svelteRequestFilter(svelteRequest)) {
+      const svelteRequest = requestParser(ctx.file, ctx.timestamp)
+      if (!svelteRequest) {
         return
       }
       log.debug('handleHotUpdate', svelteRequest)
-      return handleHotUpdate(ctx)
+      return handleHotUpdate(ctx, svelteRequest)
     }
   }
 }
