@@ -3,6 +3,8 @@ import { compile, preprocess, walk } from 'svelte/compiler'
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr'
 import { SvelteRequest } from './id'
+import { safeBase64Hash } from './hash'
+import { log } from './log'
 
 const makeHot = createMakeHot({ walk })
 
@@ -40,13 +42,15 @@ export async function compileSvelte(
     if (onwarn) onwarn(warning /*, this.warn*/)
     //else this.warn(warning)
   })
-  let svelteCssClass
+
   if (emitCss && compiled.css.code) {
     // TODO properly update sourcemap?
     compiled.js.code += `\nimport ${JSON.stringify(svelteRequest.cssId)};\n`
 
-    // TODO is there a better way to get this?
-    svelteCssClass = compiled.css.code.match(/\.svelte-[^\{]*/)![0].substring(1)
+    if (!ssr && options.hot) {
+      // for hmr with emitCss we need to use a stable hash, patch compiler output
+      useStableCssClass(compiled.js, compiled.css, svelteRequest.cssId)
+    }
   }
 
   // only apply hmr when not in ssr context and hot options are set
@@ -73,14 +77,28 @@ export async function compileSvelte(
     compiled,
     compilerOptions: finalCompilerOptions,
     options,
-    ssr,
-    svelteCssClass
+    ssr
   }
-  if (!options.isBuild) {
-    // no cache on build
-    cacheCompileData(result)
-  }
+
+  cacheCompileData(result)
+
   return result
+}
+
+function useStableCssClass(js: Code, css: Code, cssId: string) {
+  // TODO is there a better way to get this?
+  const current = css.code.match(/\.svelte-[^\{]*/)![0].substring(1)
+  const stable = `s-${safeBase64Hash(cssId, 12)}`
+  if (current.length !== stable.length) {
+    // TODO do something about it. should we update sourcemaps or find a way to tell the compiler we want a specific hash
+    // see https://github.com/sveltejs/svelte/pull/4377
+    log.warn(
+      `replaced css hash ${current} with different length ${stable} for ${cssId}`
+    )
+  }
+  const currentValueRE = new RegExp(current, 'g')
+  js.code = js.code.replace(currentValueRE, stable)
+  css.code = css.code.replace(currentValueRE, stable)
 }
 
 // TODO separate cache for ssr true/false to support hybrid scenarios
@@ -121,9 +139,14 @@ function cacheCompileData(compileData: CompileData) {
   cache.set(id, compileData)
 }
 
+export interface Code {
+  code: string
+  map?: any
+  dependencies?: any[]
+}
 export interface Compiled {
-  js: any
-  css: any
+  js: Code
+  css: Code
   ast: any // TODO type
   warnings: any[] // TODO type
   vars: {
@@ -154,5 +177,4 @@ export interface CompileData {
   compilerOptions: CompileOptions
   options: Partial<ResolvedOptions>
   ssr: boolean | undefined
-  svelteCssClass?: string
 }

@@ -1,5 +1,11 @@
 import * as path from 'path'
-import { HmrContext, ModuleNode, Plugin, ViteDevServer } from 'vite'
+import {
+  HmrContext,
+  IndexHtmlTransformContext,
+  ModuleNode,
+  Plugin,
+  ViteDevServer
+} from 'vite'
 
 // @ts-ignore
 import * as relative from 'require-relative'
@@ -47,7 +53,8 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
 
   return {
     name: 'vite-plugin-svelte',
-
+    // make sure our resolver runs before vite internal resolver to resolve svelte field correctly
+    enforce: 'pre',
     config(config) {
       // setup logger
       if (process.env.DEBUG) {
@@ -57,7 +64,6 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       }
       // extra vite config
       return {
-        enforce: 'pre',
         dedupe: ['svelte']
       }
     },
@@ -182,6 +188,23 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       }
       log.debug('handleHotUpdate', svelteRequest)
       return handleHotUpdate(ctx, svelteRequest)
+    },
+
+    transformIndexHtml(html: string, ctx: IndexHtmlTransformContext) {
+      // TODO useful for ssr? and maybe svelte:head stuff
+      log.debug('transformIndexHtml', html)
+    },
+    /**
+     * All resolutions done; display warnings wrt `package.json` access.
+     */
+    // TODO generateBundle isn't called by vite, is buildEnd enough or should it be logged once per violation in resolve
+    buildEnd() {
+      if (pkg_export_errors.size > 0) {
+        log.warn(
+          `The following packages did not export their \`package.json\` file so we could not check the "svelte" field.If you had difficulties importing svelte components from a package, then please contact the author and ask them to export the package.json file.`,
+          Array.from(pkg_export_errors, (s) => `- ${s}`).join('\n')
+        )
+      }
     }
   }
 }

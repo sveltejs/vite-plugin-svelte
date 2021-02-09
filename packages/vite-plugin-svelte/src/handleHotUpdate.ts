@@ -43,9 +43,6 @@ export async function handleHotUpdate(
 
   const result = [...affectedModules].filter(Boolean) as ModuleNode[]
   log.debug(`handleHotUpdate result for ${svelteRequest.id}`, result)
-  // TODO
-  // for a css only change this does return only the css module
-  // but a load/transfrom for App.svelte is triggered anyways, find out why
   return result
 }
 
@@ -54,24 +51,7 @@ function cssChanged(prev: CompileData, next: CompileData) {
 }
 
 function jsChanged(prev: CompileData, next: CompileData) {
-  if (prev.options.emitCss) {
-    const nextJsWithPrevSvelteClass = {
-      ...next.compiled.js,
-      code: next.compiled.js.code.replace(
-        new RegExp(next.svelteCssClass!, 'g'),
-        prev.svelteCssClass!
-      )
-    }
-    const jsChanged = !isCodeEqual(prev.compiled.js, nextJsWithPrevSvelteClass)
-    if (!jsChanged) {
-      // TODO evil hack, reuse previous css hash in new code so it is applied to existing dom
-      // not the right place
-      restorePreviousSvelteClass(next, prev.svelteCssClass!)
-    }
-    return jsChanged
-  } else {
-    return !isCodeEqual(prev.compiled.js, next.compiled.js)
-  }
+  return !isCodeEqual(prev.compiled.js, next.compiled.js)
 }
 
 function isCodeEqual(
@@ -88,19 +68,4 @@ function isCodeEqual(
     return false
   }
   return a.code === b.code
-}
-
-function restorePreviousSvelteClass(
-  compileData: CompileData,
-  previousValue: string
-) {
-  const currentValue = compileData.svelteCssClass!
-  if (currentValue === previousValue) {
-    return
-  }
-  const currentValueRE = new RegExp(currentValue, 'g')
-  const { js, css } = compileData.compiled
-  js.code = js.code.replace(currentValueRE, previousValue)
-  css.code = css.code.replace(currentValueRE, previousValue)
-  compileData.svelteCssClass = previousValue
 }

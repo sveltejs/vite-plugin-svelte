@@ -66,9 +66,14 @@ function _log(logger: any, message: string, payload?: any) {
   }
 }
 
-function createLogger(level: string): Function {
+export interface LogFn {
+  (message: string, payload?: any): void
+  enabled: boolean
+}
+
+function createLogger(level: string): LogFn {
   const logger = loggers[level]
-  const logFn = _log.bind(null, logger)
+  const logFn: LogFn = _log.bind(null, logger) as LogFn
   Object.defineProperty(logFn, 'enabled', {
     get() {
       return logger.enabled
@@ -83,5 +88,7 @@ export const log = {
   warn: createLogger('warn'),
   error: createLogger('error'),
   setLevel,
+
+  // TODO still needed?
   setViteLogOverwriteProtection
 }
