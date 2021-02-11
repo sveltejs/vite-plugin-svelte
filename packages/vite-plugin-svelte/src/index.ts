@@ -4,6 +4,7 @@ import {
   IndexHtmlTransformContext,
   ModuleNode,
   Plugin,
+  UserConfig,
   ViteDevServer
 } from 'vite'
 
@@ -30,6 +31,16 @@ export {
   ModuleFormat,
   Processed
 } from './utils/options'
+
+const svelte_packages = [
+  'svelte/animate',
+  'svelte/easing',
+  'svelte/internal',
+  'svelte/motion',
+  'svelte/store',
+  'svelte/transition',
+  'svelte'
+]
 const pkg_export_errors = new Set()
 
 export default function vitePluginSvelte(rawOptions: Options): Plugin {
@@ -55,7 +66,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     name: 'vite-plugin-svelte',
     // make sure our resolver runs before vite internal resolver to resolve svelte field correctly
     enforce: 'pre',
-    config(config) {
+    config(config): Partial<UserConfig> {
       // setup logger
       if (process.env.DEBUG) {
         log.setLevel('debug')
@@ -64,7 +75,14 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       }
       // extra vite config
       return {
-        dedupe: ['svelte']
+        optimizeDeps: {
+          // TODO exclude svelte is needed here otherwise using libraries like routify leads to two sveltes at runtime
+          exclude: ['svelte', 'svelte-hmr']
+        },
+        resolve: {
+          mainFields: ['svelte'],
+          dedupe: [...svelte_packages]
+        }
       }
     },
 

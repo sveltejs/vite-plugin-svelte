@@ -1,4 +1,5 @@
 import svelte from '@svitejs/vite-plugin-svelte'
+import { postcss } from 'svelte-preprocess'
 
 const production = process.env.NODE_ENV === 'production'
 
@@ -9,7 +10,8 @@ export default {
   plugins: [
     svelte({
       hot: !production,
-      emitCss: true
+      emitCss: true,
+      preprocess: [postcss()]
     })
   ]
 }

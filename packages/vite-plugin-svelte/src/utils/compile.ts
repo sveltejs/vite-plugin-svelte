@@ -18,6 +18,7 @@ export async function compileSvelte(
   const { onwarn, emitCss = true } = options
   const dependencies = []
   const finalCompilerOptions: CompileOptions = {
+    hydratable: ssr,
     ...options.compilerOptions,
     filename,
     generate: ssr ? 'ssr' : 'dom'
@@ -97,6 +98,7 @@ function useStableCssClass(js: Code, css: Code, cssId: string) {
     )
   }
   const currentValueRE = new RegExp(current, 'g')
+  // TODO use safer replace regex or other means. (ast?)
   js.code = js.code.replace(currentValueRE, stable)
   css.code = css.code.replace(currentValueRE, stable)
 }
