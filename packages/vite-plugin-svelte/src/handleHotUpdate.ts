@@ -24,8 +24,7 @@ export async function handleHotUpdate(
   const compileData: CompileData = await compileSvelte(
     svelteRequest,
     content,
-    cachedCompileData.options,
-    cachedCompileData.ssr
+    cachedCompileData.options
   )
   const affectedModules = new Set<ModuleNode | undefined>()
 

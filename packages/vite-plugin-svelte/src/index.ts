@@ -100,6 +100,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       if (!svelteRequest) {
         return
       }
+      if (ssr) {
+        svelteRequest.ssr = true
+      }
 
       log.debug('load', svelteRequest)
       const { filename, query } = svelteRequest
@@ -118,6 +121,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
 
     async resolveId(importee, importer, options, ssr) {
       const svelteRequest = requestParser(importee)
+      if (svelteRequest && ssr) {
+        svelteRequest.ssr = true
+      }
       log.debug('resolveId', svelteRequest)
       if (svelteRequest?.query.svelte) {
         log.debug(`resolveId resolved ${importee}`)
@@ -171,6 +177,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       if (!svelteRequest) {
         return
       }
+      if (ssr) {
+        svelteRequest.ssr = true
+      }
       log.debug('transform', svelteRequest)
       const { filename, query } = svelteRequest
 
@@ -180,8 +189,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         const compileData: CompileData = await compileSvelte(
           svelteRequest,
           code,
-          options,
-          ssr
+          options
         )
         log.debug(`transform returns js for ${filename}`)
         return compileData.compiled.js

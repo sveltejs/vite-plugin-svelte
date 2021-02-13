@@ -11,17 +11,17 @@ const makeHot = createMakeHot({ walk })
 export async function compileSvelte(
   svelteRequest: SvelteRequest,
   code: string,
-  options: Partial<ResolvedOptions>,
-  ssr: boolean | undefined
+  options: Partial<ResolvedOptions>
 ): Promise<CompileData> {
-  const { filename, normalizedFilename, cssId } = svelteRequest
+  const { filename, normalizedFilename, cssId, ssr } = svelteRequest
   const { onwarn, emitCss = true } = options
   const dependencies = []
   const finalCompilerOptions: CompileOptions = {
-    hydratable: ssr,
     ...options.compilerOptions,
     filename,
-    generate: ssr ? 'ssr' : 'dom'
+    generate: ssr ? 'ssr' : 'dom',
+    css: !emitCss,
+    hydratable: true
   }
 
   let preprocessed
@@ -103,41 +103,35 @@ function useStableCssClass(js: Code, css: Code, cssId: string) {
   css.code = css.code.replace(currentValueRE, stable)
 }
 
-// TODO separate cache for ssr true/false to support hybrid scenarios
-const cache = new Map<string, CompileData>()
-const prevCache = new Map<string, CompileData | undefined>()
+const _cache = new Map<string, CompileData>()
+const _ssrCache = new Map<string, CompileData>()
+
+function getCache(ssr: boolean): Map<string, CompileData> {
+  return ssr ? _ssrCache : _cache
+}
 
 export function getCompileData(
   svelteRequest: SvelteRequest,
   errorOnMissing = true
 ): CompileData | undefined {
+  const cache = getCache(svelteRequest.ssr)
   const id = svelteRequest.normalizedFilename
   if (cache.has(id)) {
     return cache.get(id)!
   }
   if (errorOnMissing) {
     throw new Error(
-      `${id} has no corresponding entry in the cache. ` +
+      `${id} has no corresponding entry in the ${
+        svelteRequest.ssr ? 'ssr' : ''
+      }cache. ` +
         `This is a @svitejs/vite-plugin-svelte internal error, please open an issue.`
     )
   }
 }
 
-// TODO do we need this?
-export function getPrevCompileData(
-  svelteRequest: SvelteRequest
-): CompileData | undefined {
-  const id = svelteRequest.normalizedFilename
-  if (prevCache.has(id)) {
-    return prevCache.get(id)
-  }
-}
-
 function cacheCompileData(compileData: CompileData) {
+  const cache = getCache(!!compileData.ssr)
   const id = compileData.normalizedFilename
-  if (cache.has(id)) {
-    prevCache.set(id, cache.get(id))
-  }
   cache.set(id, compileData)
 }
 

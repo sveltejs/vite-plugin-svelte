@@ -18,12 +18,14 @@ export interface SvelteRequest {
   normalizedFilename: string
   query: SvelteQuery
   timestamp: number
+  ssr?: boolean
 }
 
 function parseToSvelteRequest(
   id: string,
   root: string,
-  timestamp: number
+  timestamp: number,
+  ssr = false
 ): SvelteRequest {
   let [filename, rawQuery] = id.split(`?`, 2)
   const query = qs.parse(rawQuery) as SvelteQuery
@@ -42,7 +44,8 @@ function parseToSvelteRequest(
     filename,
     normalizedFilename,
     query,
-    timestamp
+    timestamp,
+    ssr
   }
 }
 
