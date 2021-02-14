@@ -1,17 +1,19 @@
 import svelte from '@svitejs/vite-plugin-svelte'
 import sveltePreprocess from 'svelte-preprocess'
+import { defineConfig } from 'vite'
 
-const production = process.env.NODE_ENV === 'production'
-
-/**
- * type {import('vite').UserConfig}
- */
-export default {
-  plugins: [
-    svelte({
-      hot: !production,
-      emitCss: true,
-      preprocess: sveltePreprocess()
-    })
-  ]
-}
+export default defineConfig(({ command, mode }) => {
+  const isProduction = mode === 'production'
+  return {
+    plugins: [
+      svelte({
+        hot: !isProduction,
+        emitCss: true,
+        preprocess: sveltePreprocess()
+      })
+    ],
+    build: {
+      minify: isProduction
+    }
+  }
+})
