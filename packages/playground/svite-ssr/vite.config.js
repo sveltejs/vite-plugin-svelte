@@ -1,39 +1,17 @@
-const svelte = require('@svitejs/vite-plugin-svelte')
+import svelte from '@svitejs/vite-plugin-svelte'
+import { defineConfig } from 'vite'
 
-const production = process.env.NODE_ENV === 'production'
-
-/**
- * type {import('vite').UserConfig}
- */
-export default {
-  plugins: [
-    svelte({
-      hot: !production,
-      emitCss: true
-    })
-  ]
-}
-/**
- * @type {import('vite').UserConfig}
- */
-module.exports = {
-  plugins: [
-    svelte(),
-    {
-      name: 'virtual',
-      resolveId(id) {
-        if (id === '@foo') {
-          return id
-        }
-      },
-      load(id) {
-        if (id === '@foo') {
-          return `export default { msg: 'hi' }`
-        }
-      }
+export default defineConfig(({ command, mode }) => {
+  const isProduction = mode === 'production'
+  return {
+    plugins: [
+      svelte({
+        hot: !isProduction,
+        emitCss: true
+      })
+    ],
+    build: {
+      minify: isProduction
     }
-  ],
-  build: {
-    minify: false
   }
-}
+})

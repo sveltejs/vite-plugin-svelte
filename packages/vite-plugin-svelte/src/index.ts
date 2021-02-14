@@ -96,12 +96,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     load(id, ssr) {
-      const svelteRequest = requestParser(id)
+      const svelteRequest = requestParser(id, !!ssr)
       if (!svelteRequest) {
         return
-      }
-      if (ssr) {
-        svelteRequest.ssr = true
       }
 
       log.debug('load', svelteRequest)
@@ -120,11 +117,8 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     async resolveId(importee, importer, options, ssr) {
-      const svelteRequest = requestParser(importee)
-      if (svelteRequest && ssr) {
-        svelteRequest.ssr = true
-      }
-      log.debug('resolveId', svelteRequest)
+      const svelteRequest = requestParser(importee, !!ssr)
+      log.debug('resolveId', svelteRequest || importee)
       if (svelteRequest?.query.svelte) {
         log.debug(`resolveId resolved ${importee}`)
         return importee // query with svelte tag, an id we generated, no need for further analysis
@@ -173,12 +167,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     async transform(code, id, ssr) {
-      const svelteRequest = requestParser(id)
+      const svelteRequest = requestParser(id, !!ssr)
       if (!svelteRequest) {
         return
-      }
-      if (ssr) {
-        svelteRequest.ssr = true
       }
       log.debug('transform', svelteRequest)
       const { filename, query } = svelteRequest
@@ -208,7 +199,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     handleHotUpdate(ctx: HmrContext): void | Promise<Array<ModuleNode> | void> {
-      const svelteRequest = requestParser(ctx.file, ctx.timestamp)
+      const svelteRequest = requestParser(ctx.file, false, ctx.timestamp)
       if (!svelteRequest) {
         return
       }

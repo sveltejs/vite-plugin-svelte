@@ -3,7 +3,10 @@ import { log } from './log'
 
 const defaultOptions: Partial<Options> = {
   extensions: ['.svelte'],
-  compilerOptions: {}
+  emitCss: true,
+  compilerOptions: {
+    css: false
+  }
 }
 
 const knownOptions = new Set([

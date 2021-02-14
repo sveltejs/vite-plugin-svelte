@@ -18,14 +18,14 @@ export interface SvelteRequest {
   normalizedFilename: string
   query: SvelteQuery
   timestamp: number
-  ssr?: boolean
+  ssr: boolean
 }
 
 function parseToSvelteRequest(
   id: string,
   root: string,
   timestamp: number,
-  ssr = false
+  ssr: boolean
 ): SvelteRequest {
   let [filename, rawQuery] = id.split(`?`, 2)
   const query = qs.parse(rawQuery) as SvelteQuery
@@ -91,13 +91,14 @@ function buildFilter(
 
 export type IdParser = (
   id: string,
+  ssr: boolean,
   timestamp?: number
 ) => SvelteRequest | undefined
 export function buildIdParser(options: ResolvedOptions): IdParser {
   const { include, exclude, extensions, root } = options
   const filter = buildFilter(include, exclude, extensions)
-  return (id, timestamp = Date.now()) => {
-    const svelteRequest = parseToSvelteRequest(id, root, timestamp)
+  return (id, ssr, timestamp = Date.now()) => {
+    const svelteRequest = parseToSvelteRequest(id, root, timestamp, ssr)
     if (filter(svelteRequest)) {
       return svelteRequest
     }

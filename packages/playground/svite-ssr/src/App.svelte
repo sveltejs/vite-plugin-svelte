@@ -5,7 +5,7 @@
 
 <style>
   h1 {
-    color: magenta; /* change color an save to see hmr update */
+    color: blue; /* change color an save to see hmr update */
   }
 </style>
 
