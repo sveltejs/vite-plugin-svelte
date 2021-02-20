@@ -1,8 +1,8 @@
-import svelte from '@svitejs/vite-plugin-svelte'
-import sveltePreprocess from 'svelte-preprocess'
-import { defineConfig } from 'vite'
+const svelte = require('@svitejs/vite-plugin-svelte')
+const { defineConfig } = require('vite')
+const sveltePreprocess = require('svelte-preprocess')
 
-export default defineConfig(({ command, mode }) => {
+module.exports = defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production'
   return {
     plugins: [

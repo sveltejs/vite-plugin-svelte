@@ -1,5 +1,6 @@
 import { ResolvedConfig } from 'vite'
 import { log } from './log'
+import { loadSvelteConfig } from './loadSvelteConfig'
 
 const defaultOptions: Partial<Options> = {
   extensions: ['.svelte'],
@@ -16,8 +17,7 @@ const knownOptions = new Set([
   'emitCss',
   'compilerOptions',
   'preprocess',
-  'hot',
-  'ssr'
+  'hot'
 ])
 
 export function buildInitialOptions(rawOptions: Options): Options {
@@ -46,7 +46,9 @@ export function resolveOptions(
   options: Options,
   config: ResolvedConfig
 ): ResolvedOptions {
+  const svelteConfig = loadSvelteConfig(config.root)
   const resolvedOptions = {
+    ...svelteConfig,
     ...options,
     root: config.root,
     isProduction: config.isProduction,

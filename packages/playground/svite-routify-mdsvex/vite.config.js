@@ -1,9 +1,9 @@
-import path from 'path'
-import { mdsvex } from 'mdsvex'
-import svelte from '@svitejs/vite-plugin-svelte'
-import { defineConfig } from 'vite'
+const path = require('path')
+const { mdsvex } = require('mdsvex')
+const svelte = require('@svitejs/vite-plugin-svelte')
+const { defineConfig } = require('vite')
 
-export default defineConfig(({ command, mode }) => {
+module.exports = defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production'
   return {
     optimizeDeps: {
