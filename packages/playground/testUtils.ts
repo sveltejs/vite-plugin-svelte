@@ -65,6 +65,7 @@ export function editFile(filename: string, replacer: (str: string) => string) {
   const content = fs.readFileSync(filename, 'utf-8')
   const modified = replacer(content)
   fs.writeFileSync(filename, modified)
+  return modified
 }
 
 export function addFile(filename: string, content: string) {
@@ -101,5 +102,54 @@ export async function untilUpdated(
     } else {
       await timeout(50)
     }
+  }
+}
+
+export async function sleep(n: number) {
+  return timeout(n)
+}
+
+export async function getEl(selector: string) {
+  return toEl(selector)
+}
+
+export async function getText(el: string | ElementHandle) {
+  el = await toEl(el)
+  return el ? await el.evaluate((el) => el.textContent) : null
+}
+
+export async function hmrUpdateComplete(file, timeout) {
+  return new Promise(function (resolve, reject) {
+    var timer
+
+    function listener(data) {
+      const text = data.text()
+      if (text.indexOf(file) > -1) {
+        clearTimeout(timer)
+        page.off('console', listener)
+        resolve(file)
+      }
+    }
+
+    page.on('console', listener)
+    timer = setTimeout(function () {
+      page.off('console', listener)
+      reject(
+        new Error(
+          `timeout after ${timeout}ms waiting for hmr update of ${file} to complete`
+        )
+      )
+    }, timeout)
+  })
+}
+
+export async function editFileAndWaitForHmrComplete(file, replacer) {
+  const newContent = await editFile(file, replacer)
+  try {
+    await hmrUpdateComplete(file, 10000)
+  } catch (e) {
+    console.log(`retrying hmr update for ${file}`)
+    await editFile(file, () => newContent)
+    await hmrUpdateComplete(file, 5000)
   }
 }
