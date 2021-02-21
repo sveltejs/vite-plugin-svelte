@@ -7,12 +7,16 @@
   ],
   "scripts": {
     "lint": "eslint --ext .js,.ts packages/*/src/**",
-    "test": "run-s test-serve test-build",
-    "test-serve": "jest",
-    "debug-serve": "cross-env VITE_DEBUG_SERVE=1 node --inspect-brk ./node_modules/.bin/jest",
-    "test-build": "cross-env VITE_TEST_BUILD=1 jest",
-    "debug-build": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 node --inspect-brk ./node_modules/.bin/jest",
-    "build-vite-plugin-svelte": "cd packages/vite-plugin-svelte && yarn build"
+    "test": "run-s test:serve test:build",
+    "test:serve": "jest",
+    "test:serve:debug": "cross-env VITE_DEBUG_SERVE=1 node --inspect-brk ./node_modules/.bin/jest",
+    "test:build": "cross-env VITE_TEST_BUILD=1 jest",
+    "test:build:devug": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 node --inspect-brk ./node_modules/.bin/jest",
+    "test:ci": "run-s test:ci:serve test:ci:build",
+    "test:ci:serve": "cross-env VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/serve/jest-results.json\" ",
+    "test:ci:build": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/build/jest-results.json\"",
+    "build": "run-s build:vite-plugin-svelte",
+    "build:vite-plugin-svelte": "cd packages/vite-plugin-svelte && yarn build"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
@@ -33,6 +37,7 @@
     "fs-extra": "^9.1.0",
     "husky": "^4.3.8",
     "jest": "^26.6.3",
+    "jest-junit": "^12.0.0",
     "lint-staged": "^10.5.4",
     "minimist": "^1.2.5",
     "npm-check-updates": "^11.1.4",

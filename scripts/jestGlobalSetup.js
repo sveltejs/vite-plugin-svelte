@@ -4,6 +4,8 @@ const path = require('path')
 const { chromium } = require('playwright-chromium')
 const execa = require('execa')
 
+const isBuildTest = !!process.env.VITE_TEST_BUILD
+
 const DIR = path.join(os.tmpdir(), 'jest_playwright_global_setup')
 
 const packagesToBuild = ['vite-plugin-svelte']
@@ -43,5 +45,11 @@ module.exports = async () => {
 
   await fs.mkdirp(DIR)
   await fs.writeFile(path.join(DIR, 'wsEndpoint'), browserServer.wsEndpoint())
-  await fs.remove(path.resolve(__dirname, '../temp'))
+  if (!process.env.VITE_PRESERVE_BUILD_ARTIFACTS) {
+    await fs.remove(path.resolve(__dirname, '../temp'))
+  } else {
+    await fs.remove(
+      path.resolve(__dirname, '../temp', isBuildTest ? 'build' : 'serve')
+    )
+  }
 }

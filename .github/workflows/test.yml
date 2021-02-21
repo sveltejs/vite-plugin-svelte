@@ -1,0 +1,188 @@
+# build and test on linux, windows, mac with node 12,14
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup:
+    env:
+      CI: true
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [14]
+
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: cache node_modules
+        id: node_modules_cache_id
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+
+      - name: install
+        run: yarn --check-files --frozen-lockfile --non-interactive
+
+      - name: cache workspace
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+
+  lint:
+    needs: setup
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        node: [ 14 ]
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: restore workspace cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+
+      - name: lint
+        run: yarn lint
+
+  audit:
+    needs: setup
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        node: [ 14 ]
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: restore workspace cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+
+      - name: lint
+        run: yarn audit
+
+  test:
+    needs: setup
+    env:
+      CI: true
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [14]
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: checkout
+        uses: actions/checkout@master
+
+      - name: restore workspace cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            distributions/*/node_modules
+            packages/*/dist
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+
+      - name: run tests
+        run: yarn test:ci
+
+      - name: archive tests temp directory
+        if: failure()
+        shell: bash
+        run: tar -cvf test-temp.tar --exclude="node_modules" --exclude=".yarn" --exclude="dist" --exclude=".pnp.js" temp/
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node-version }}
+          path: |
+            test-temp.tar
+            temp/serve/jest-results.json
+            temp/serve/junit.xml
+            temp/build/jest-results.json
+            temp/build/junit.xml
+      - uses: actions/upload-artifact@v2
+        if: success()
+        with:
+          name: test-success-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node-version }}
+          path: |
+            temp/serve/jest-results.json
+            temp/serve/junit.xml
+            temp/build/jest-results.json
+            temp/build/junit.xml
+
+  build:
+    needs: setup
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        node: [ 14 ]
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: restore workspace cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+
+      - name: lint
+        run: yarn build

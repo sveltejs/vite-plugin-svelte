@@ -1,3 +1,4 @@
+const isBuildTest = !!process.env.VITE_TEST_BUILD
 module.exports = {
   preset: 'ts-jest',
   testMatch: process.env.VITE_TEST_BUILD
@@ -9,6 +10,7 @@ module.exports = {
   testEnvironment: './scripts/jestEnv.js',
   setupFilesAfterEnv: ['./scripts/jestPerTestSetup.ts'],
   watchPathIgnorePatterns: ['<rootDir>/temp'],
+  modulePathIgnorePatterns: ['<rootDir>/temp'],
   moduleNameMapper: {
     testUtils: '<rootDir>/packages/playground/testUtils.ts'
   },
@@ -16,5 +18,12 @@ module.exports = {
     'ts-jest': {
       tsconfig: './packages/playground/tsconfig.json'
     }
-  }
+  },
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      { outputDirectory: `<rootDir>/temp/${isBuildTest ? 'build' : 'serve'}` }
+    ]
+  ]
 }
