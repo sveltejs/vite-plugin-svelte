@@ -18,8 +18,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14.x ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        node: [ 12.x, 14.x ]
 
     steps:
       - uses: actions/setup-node@v2
@@ -116,8 +116,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14.x ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        node: [ 12.x, 14.x ]
     steps:
       - uses: actions/setup-node@v2
         with:
