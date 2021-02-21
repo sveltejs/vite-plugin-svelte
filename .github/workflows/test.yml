@@ -18,8 +18,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        node: [14.x]
+        os: [ ubuntu-latest ]
+        node: [ 14.x ]
 
     steps:
       - uses: actions/setup-node@v2
@@ -52,6 +52,8 @@ jobs:
 
   lint:
     needs: setup
+    env:
+      CI: true
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -79,6 +81,8 @@ jobs:
 
   audit:
     needs: setup
+    env:
+      CI: true
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -101,7 +105,7 @@ jobs:
             packages/*/dist
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
 
-      - name: lint
+      - name: audit
         run: yarn audit
 
   test:
@@ -109,19 +113,18 @@ jobs:
     env:
       CI: true
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        node: [14.x]
+        os: [ ubuntu-latest ]
+        node: [ 14.x ]
     steps:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
 
       - name: checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
 
       - name: restore workspace cache
         uses: actions/cache@v2
@@ -129,7 +132,6 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-            distributions/*/node_modules
             packages/*/dist
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
 
