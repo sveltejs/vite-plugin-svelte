@@ -136,7 +136,7 @@ jobs:
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
 
       - name: run tests
-        run: yarn test:ci
+        run: yarn run --scripts-prepend-node-path test:ci
 
       - name: archive tests temp directory
         if: failure()
