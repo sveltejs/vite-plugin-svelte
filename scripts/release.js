@@ -61,7 +61,7 @@ const run = (bin, args, opts = {}) =>
 const dryRun = (bin, args, opts = {}) =>
   console.log(chalk.blue(`[dryrun] ${bin} ${args.join(' ')}`), opts)
 
-const runIfNotDry = isDryRun ? dryRun : () => {}
+const runIfNotDry = isDryRun ? dryRun : run
 
 /**
  * @param {string} msg

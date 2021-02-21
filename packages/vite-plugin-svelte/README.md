@@ -1,12 +1,26 @@
 # @svitejs/vite-plugin-svelte
 
+## usage
+
 ```js
 // vite.config.js
-import svelte from '@svitejs/vite-plugin-svelte'
+const svelte = require('@svitejs/vite-plugin-svelte')
+const { defineConfig } = require('vite')
 
-export default {
-  plugins: [svelte()]
-}
+module.exports = defineConfig(({ command, mode }) => {
+  const isProduction = mode === 'production'
+  return {
+    plugins: [
+      svelte({
+        hot: !isProduction,
+        emitCss: true
+      })
+    ],
+    build: {
+      minify: isProduction
+    }
+  }
+})
 ```
 
 ## Options

@@ -1,6 +1,6 @@
 <script>
   import Foo from './components/Foo.svelte'
-  import logo from './assets/logo.png'
+  import logo from './assets/logo.svg'
   export let world = 'world'; // edit world and save to see hmr update
 </script>
 

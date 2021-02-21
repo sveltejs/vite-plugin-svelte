@@ -33,7 +33,7 @@ test('asset', async () => {
   })
   const img = await page.$('img')
   expect(await img.getAttribute('src')).toMatch(
-    isBuild ? /\/assets\/logo\.\w{8}\.png/ : '/src/assets/logo.png'
+    isBuild ? /\/assets\/logo\.\w{8}\.svg/ : '/src/assets/logo.svg'
   )
 })
 
