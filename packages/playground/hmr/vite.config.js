@@ -10,7 +10,7 @@ try {
   try {
     path = require.resolve('@svitejs/vite-plugin-svelte')
     exists = fs.existsSync(path)
-    console.log("require  resolve '@svitejs/vite-plugin-svelte'", {
+    console.error("require  resolve '@svitejs/vite-plugin-svelte'", {
       path,
       exists
     })
@@ -19,7 +19,6 @@ try {
   }
 
   console.error('failed ro require', e)
-  throw e
 }
 
 module.exports = defineConfig(({ command, mode }) => {
