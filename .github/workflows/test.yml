@@ -41,6 +41,9 @@ jobs:
       - name: install
         run: yarn --check-files --frozen-lockfile --non-interactive
 
+      - name: build vite-plugin-svelte
+        run: yarn --cwd packages/vite-plugin-svelte run build-bundle
+
       - name: cache workspace
         uses: actions/cache@v2
         with:

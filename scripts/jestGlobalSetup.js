@@ -23,7 +23,7 @@ const buildPackagesUnderTest = async () => {
 }
 
 const buildPackage = async (pkg) => {
-  const pkgDir = path.resolve(__dirname, '../packages', pkg)
+  const pkgDir = path.resolve(__dirname, '..', 'packages', pkg)
   if (!fs.existsSync(pkgDir)) {
     throw new Error(`invalid pkg ${pkg}, dir ${pkgDir} not found`)
   }
@@ -90,10 +90,10 @@ module.exports = async () => {
   await fs.mkdirp(DIR)
   await fs.writeFile(path.join(DIR, 'wsEndpoint'), browserServer.wsEndpoint())
   if (!process.env.VITE_PRESERVE_BUILD_ARTIFACTS) {
-    await fs.remove(path.resolve(__dirname, '../temp'))
+    await fs.remove(path.resolve(__dirname, '..', 'temp'))
   } else {
     await fs.remove(
-      path.resolve(__dirname, '../temp', isBuildTest ? 'build' : 'serve')
+      path.resolve(__dirname, '..', 'temp', isBuildTest ? 'build' : 'serve')
     )
   }
 }
