@@ -13,7 +13,7 @@ import * as relative from 'require-relative'
 
 import { handleHotUpdate } from './handleHotUpdate'
 import { log } from './utils/log'
-import { CompileData, compileSvelte, getCompileData } from './utils/compile'
+import { compileSvelte, getCompileData } from './utils/compile'
 import { buildIdParser, IdParser } from './utils/id'
 import {
   buildInitialOptions,
@@ -21,6 +21,7 @@ import {
   ResolvedOptions,
   resolveOptions
 } from './utils/options'
+
 export {
   Options,
   Preprocessor,
@@ -173,29 +174,29 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       }
       log.debug('transform', svelteRequest)
       const { filename, query } = svelteRequest
+      const cachedCompileData = getCompileData(svelteRequest, false)
 
-      if (!query.svelte) {
-        // main request
-        // TODO when this is a hot update, handleHotUpdate already compiled and cached. take it from there
-        const compileData: CompileData = await compileSvelte(
-          svelteRequest,
-          code,
-          options
-        )
-        log.debug(`transform returns js for ${filename}`)
-        return compileData.compiled.js
-      } else {
-        log.debug('transfrom svelte subquery')
-        const compileData = getCompileData(svelteRequest)
-        if (query.type === 'style' && compileData?.compiled?.css) {
-          // previously compiled css from handleHotUpdate?
+      if (query.svelte) {
+        // tagged svelte request, use cache
+        if (query.type === 'style' && cachedCompileData?.compiled?.css) {
           log.debug(`transform returns css for ${filename}`)
-          return compileData.compiled.css
-        } else {
-          // TODO handle this (should not happen but be more friendly)
-          throw new Error('ooops')
+          return cachedCompileData.compiled.css
         }
+        log.error('failed to transform tagged svelte request', svelteRequest)
+        throw new Error(
+          `failed to transform tagged svelte request for id ${id}`
+        )
       }
+
+      if (cachedCompileData) {
+        log.debug(`transform returns cached js for ${filename}`)
+        return cachedCompileData.compiled.js
+      }
+
+      // first request, compile here
+      const compileData = await compileSvelte(svelteRequest, code, options)
+      log.debug(`transform returns compiled js for ${filename}`)
+      return compileData.compiled.js
     },
 
     handleHotUpdate(ctx: HmrContext): void | Promise<Array<ModuleNode> | void> {
