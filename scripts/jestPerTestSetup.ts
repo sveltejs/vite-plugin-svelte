@@ -4,7 +4,7 @@ import { resolve, dirname } from 'path'
 import slash from 'slash'
 import sirv from 'sirv'
 import { createServer, build, ViteDevServer, UserConfig } from 'vite'
-import { Page } from 'playwright-chromium'
+import { Page } from 'playwright-core'
 
 const isBuildTest = !!process.env.VITE_TEST_BUILD
 

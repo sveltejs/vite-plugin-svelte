@@ -2,7 +2,7 @@ const os = require('os')
 const fs = require('fs')
 const path = require('path')
 const NodeEnvironment = require('jest-environment-node')
-const { chromium } = require('playwright-chromium')
+const { chromium } = require('playwright-core')
 
 const DIR = path.join(os.tmpdir(), 'jest_playwright_global_setup')
 

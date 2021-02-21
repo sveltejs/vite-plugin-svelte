@@ -6,7 +6,7 @@ import fs from 'fs'
 import path from 'path'
 import slash from 'slash'
 import colors from 'css-color-names'
-import { ElementHandle } from 'playwright-chromium'
+import { ElementHandle } from 'playwright-core'
 
 export const isBuild = !!process.env.VITE_TEST_BUILD
 
