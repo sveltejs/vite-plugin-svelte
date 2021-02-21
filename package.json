@@ -11,10 +11,12 @@
     "test:serve": "jest",
     "test:serve:debug": "cross-env VITE_DEBUG_SERVE=1 node --inspect-brk ./node_modules/.bin/jest",
     "test:build": "cross-env VITE_TEST_BUILD=1 jest",
-    "test:build:devug": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 node --inspect-brk ./node_modules/.bin/jest",
+    "test:build:debug": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 node --inspect-brk ./node_modules/.bin/jest",
     "test:ci": "run-s test:ci:serve test:ci:build",
     "test:ci:serve": "cross-env VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/serve/jest-results.json\" ",
     "test:ci:build": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/build/jest-results.json\"",
+    "build:ci": "run-s build:ci:vite-plugin-svelte",
+    "build:ci:vite-plugin-svelte": "yarn --cwd packages/vite-plugin-svelte build-bundle",
     "build": "run-s build:vite-plugin-svelte",
     "build:vite-plugin-svelte": "yarn --cwd packages/vite-plugin-svelte build"
   },

@@ -1,13 +1,5 @@
 const { defineConfig } = require('vite')
-
-let svelte
-
-try {
-  svelte = require('@svitejs/vite-plugin-svelte')
-} catch (e) {
-  console.error('failed ro require', e)
-  throw e
-}
+const svelte = require('@svitejs/vite-plugin-svelte')
 
 module.exports = defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production'
