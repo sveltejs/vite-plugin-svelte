@@ -88,7 +88,7 @@ export async function compileSvelte(
 
 function useStableCssClass(js: Code, css: Code, cssId: string) {
   // TODO is there a better way to get this?
-  const current = css.code.match(/\.svelte-[^\{]*/)![0].substring(1)
+  const current = css.code.match(/[\w\]]+\.(svelte-[\w]+)/)![1];
   const stable = `s-${safeBase64Hash(cssId, 12)}`
   if (current.length !== stable.length) {
     // TODO do something about it. should we update sourcemaps or find a way to tell the compiler we want a specific hash
