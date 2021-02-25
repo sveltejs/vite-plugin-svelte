@@ -1,4 +1,11 @@
-import { editFile, getColor, isBuild, untilUpdated } from '../../testUtils'
+import {
+  editFileAndWaitForHmrComplete,
+  getColor,
+  getEl,
+  getText,
+  isBuild,
+  untilUpdated
+} from '../../testUtils'
 import { port } from './serve'
 import fetch from 'node-fetch'
 
@@ -37,27 +44,27 @@ test('asset', async () => {
   )
 })
 
-/*
-test('virtual module', async () => {
-  expect(await page.textContent('.virtual')).toMatch('hi')
-})
-
-test('hydration', async () => {
-  expect(await page.textContent('button')).toMatch('0')
-  await page.click('button')
-  expect(await page.textContent('button')).toMatch('1')
-})
-
-test('hmr', async () => {
-  editFile('src/pages/Home.vue', (code) => code.replace('Home', 'changed'))
-  await untilUpdated(() => page.textContent('h1'), 'changed')
-})
-
-test('client navigation', async () => {
-  await page.click('a[href="/about"]')
-  await page.waitForTimeout(10)
-  expect(await page.textContent('h1')).toMatch('About')
-  editFile('src/pages/About.vue', (code) => code.replace('About', 'changed'))
-  await untilUpdated(() => page.textContent('h1'), 'changed')
-})
-*/
+if (!isBuild) {
+  describe('hmr', () => {
+    const updateApp = editFileAndWaitForHmrComplete.bind(null, 'src/App.svelte')
+    test('should render additional html', async () => {
+      expect(await getEl('#hmr-test')).toBe(null)
+      await updateApp((content) => `${content}\n<div id="hmr-test">foo</div>`)
+      await expect(await getText(`#hmr-test`)).toBe('foo')
+    })
+    test('should apply style update', async () => {
+      expect(await getColor(`h1`)).toBe('green')
+      await updateApp((content) =>
+        content.replace('color: green', 'color: red')
+      )
+      expect(await getColor(`h1`)).toBe('red')
+    })
+    test('should not preserve state of updated props', async () => {
+      await expect(await getText(`#foo`)).toBe('foo')
+      await updateApp((content) =>
+        content.replace("foo = 'foo'", "foo = 'bar'")
+      )
+      await expect(await getText(`#foo`)).toBe('bar')
+    })
+  })
+}

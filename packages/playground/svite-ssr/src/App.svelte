@@ -2,6 +2,7 @@
   import Foo from './components/Foo.svelte'
   import logo from './assets/logo.svg'
   export let world = 'world'; // edit world and save to see hmr update
+  export let foo = 'foo';
 </script>
 
 <style>
@@ -17,3 +18,4 @@
 <svelte:head>
     <style>body{background: lightblue;}</style>
 </svelte:head>
+<div id="foo">{foo}</div>
