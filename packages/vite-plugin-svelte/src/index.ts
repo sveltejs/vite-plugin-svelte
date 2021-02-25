@@ -157,6 +157,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
           pkg_export_errors.add(name)
           return null
         }
+        // TODO is throw correct here?
         throw err
       }
 
