@@ -23,6 +23,14 @@ export async function compileSvelte(
     css: !emitCss,
     hydratable: true
   }
+  if (options.hot) {
+    log.info('setting cssHash')
+    finalCompilerOptions.cssHash = () => {
+      const hash = `s-${safeBase64Hash(cssId, 12)}`
+      log.info(`using ${hash} for ${cssId}`)
+      return hash
+    }
+  }
 
   let preprocessed
   if (options.preprocess) {
@@ -47,11 +55,6 @@ export async function compileSvelte(
   if (emitCss && compiled.css.code) {
     // TODO properly update sourcemap?
     compiled.js.code += `\nimport ${JSON.stringify(svelteRequest.cssId)};\n`
-
-    if (options.hot) {
-      // for hmr with emitCss we need to use a stable hash, patch compiler output
-      useStableCssClass(compiled.js, compiled.css, svelteRequest.cssId)
-    }
   }
 
   // only apply hmr when not in ssr context and hot options are set
@@ -85,7 +88,7 @@ export async function compileSvelte(
 
   return result
 }
-
+/*
 function useStableCssClass(js: Code, css: Code, cssId: string) {
   // TODO is there a better way to get this?
   const current = css.code.match(/[\w\]]+\.(svelte-[\w]+)/)![1]
@@ -102,7 +105,7 @@ function useStableCssClass(js: Code, css: Code, cssId: string) {
   js.code = js.code.replace(currentValueRE, stable)
   css.code = css.code.replace(currentValueRE, stable)
 }
-
+*/
 const _cache = new Map<string, CompileData>()
 const _ssrCache = new Map<string, CompileData>()
 

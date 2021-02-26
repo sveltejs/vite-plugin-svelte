@@ -27,6 +27,7 @@ export {
   Preprocessor,
   PreprocessorGroup,
   CompileOptions,
+  CssHashGetter,
   Arrayable,
   MarkupPreprocessor,
   ModuleFormat,

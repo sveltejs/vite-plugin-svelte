@@ -181,6 +181,7 @@ export interface CompileOptions {
   namespace?: string
   preserveComments?: boolean
   preserveWhitespace?: boolean
+  cssHash?: CssHashGetter
 }
 
 export interface Processed {
@@ -189,6 +190,13 @@ export interface Processed {
   dependencies?: string[]
   toString?: () => string
 }
+
+export declare type CssHashGetter = (args: {
+  name: string
+  filename: string | undefined
+  css: string
+  hash: (input: string) => string
+}) => string
 
 export declare type MarkupPreprocessor = (options: {
   content: string
