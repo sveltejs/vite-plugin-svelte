@@ -8,12 +8,6 @@
   }
 </script>
 
-<style>
-  h1 {
-    color: #111111;
-  }
-</style>
-
 <h1 id="app-header">Test-App</h1>
 <StaticImport />
 <Dependency />
@@ -24,3 +18,9 @@
 {/if}
 <HmrTest id="hmr-test-1" />
 <HmrTest id="hmr-test-2" />
+
+<style>
+  h1 {
+    color: #111111;
+  }
+</style>
