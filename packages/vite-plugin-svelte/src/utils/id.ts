@@ -4,6 +4,7 @@ import { Arrayable, ResolvedOptions } from './options'
 
 export type SvelteQueryTypes = 'style' | 'script'
 
+// TODO get the value from vite config
 const viteVirtualIdPrefix = '/@id/'
 
 export interface SvelteQuery {
@@ -67,6 +68,7 @@ function createVirtualImportId(
   if (type === 'style') {
     id = `${id}.css`
   }
+  // TODO rixo suggested adding another timestamp cachebuster here, test it
   return `${id}?svelte&type=${type}`
 }
 

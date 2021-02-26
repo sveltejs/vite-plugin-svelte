@@ -190,7 +190,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         )
       }
 
-      if (cachedCompileData) {
+      if (cachedCompileData && (!ssr || options.useTransformCacheForSSR)) {
         log.debug(`transform returns cached js for ${filename}`)
         return cachedCompileData.compiled.js
       }
@@ -202,6 +202,9 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     handleHotUpdate(ctx: HmrContext): void | Promise<Array<ModuleNode> | void> {
+      if (!options.emitCss || options.disableCssHmr) {
+        return
+      }
       const svelteRequest = requestParser(ctx.file, false, ctx.timestamp)
       if (!svelteRequest) {
         return

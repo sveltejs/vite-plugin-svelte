@@ -148,6 +148,16 @@ export interface Options {
         cssEjectDelay: number
         absoluteImports: boolean
       }
+  /**
+   * disable separate hmr update for css files via vite
+   */
+  disableCssHmr?: boolean
+
+  /**
+   * use transform cache even for ssr request (might cause stale modules)
+   *
+   */
+  useTransformCacheForSSR?: boolean
 }
 
 export interface ResolvedOptions extends Options {

@@ -24,12 +24,9 @@ export async function compileSvelte(
     hydratable: true
   }
   if (options.hot) {
-    log.info('setting cssHash')
-    finalCompilerOptions.cssHash = () => {
-      const hash = `s-${safeBase64Hash(cssId, 12)}`
-      log.info(`using ${hash} for ${cssId}`)
-      return hash
-    }
+    const hash = `s-${safeBase64Hash(cssId, 12)}`
+    log.debug(`setting cssHash ${hash} for ${cssId}`)
+    finalCompilerOptions.cssHash = () => hash
   }
 
   let preprocessed
@@ -88,24 +85,7 @@ export async function compileSvelte(
 
   return result
 }
-/*
-function useStableCssClass(js: Code, css: Code, cssId: string) {
-  // TODO is there a better way to get this?
-  const current = css.code.match(/[\w\]]+\.(svelte-[\w]+)/)![1]
-  const stable = `s-${safeBase64Hash(cssId, 12)}`
-  if (current.length !== stable.length) {
-    // TODO do something about it. should we update sourcemaps or find a way to tell the compiler we want a specific hash
-    // see https://github.com/sveltejs/svelte/pull/4377
-    log.warn(
-      `replaced css hash ${current} with different length ${stable} for ${cssId}`
-    )
-  }
-  const currentValueRE = new RegExp(current, 'g')
-  // TODO use safer replace regex or other means. (ast?)
-  js.code = js.code.replace(currentValueRE, stable)
-  css.code = css.code.replace(currentValueRE, stable)
-}
-*/
+
 const _cache = new Map<string, CompileData>()
 const _ssrCache = new Map<string, CompileData>()
 

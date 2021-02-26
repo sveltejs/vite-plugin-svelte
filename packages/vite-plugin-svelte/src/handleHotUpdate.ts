@@ -42,6 +42,20 @@ export async function handleHotUpdate(
 
   const result = [...affectedModules].filter(Boolean) as ModuleNode[]
   log.debug(`handleHotUpdate result for ${svelteRequest.id}`, result)
+
+  // TODO is this enough? see also: https://github.com/vitejs/vite/issues/2274
+  const ssrModulesToInvalidate = result.filter((m) => !!m.ssrTransformResult)
+  if (ssrModulesToInvalidate.length > 0) {
+    log.debug(
+      `invalidating modules ${ssrModulesToInvalidate
+        .map((m) => m.id)
+        .join(', ')}`
+    )
+    ssrModulesToInvalidate.forEach((moduleNode) =>
+      server.moduleGraph.invalidateModule(moduleNode)
+    )
+  }
+
   return result
 }
 
