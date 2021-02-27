@@ -7,7 +7,7 @@ const windiOpts = {
   verbose: true,
   silent: false,
   debug: true,
-  config: 'tailwind.config.js', // tailwind config file path (optional)
+  //config: 'tailwind.config.js', // tailwind config file path (optional)
   compile: false, // false: interpretation mode; true: compilation mode
   prefix: 'windi-', // set compilation mode style prefix
   globalPreflight: true, // set preflight style is global or scoped
@@ -20,10 +20,17 @@ module.exports = defineConfig(({ command, mode }) => {
     plugins: [
       svelte({
         hot: !isProduction,
-        emitCss: true,
-        preprocess: [svelteWindicssPreprocess.preprocess(windiOpts)]
+        emitCss: true
+        /*preprocess: [svelteWindicssPreprocess.preprocess({
+          ...windiOpts,
+          globalUtility: false
+        })]*/
       }),
-      vitePluginWindicss(windiOpts)
+      vitePluginWindicss({
+        //config: windiOpts,
+        scan: { fileExtensions: ['html', 'svelte'] },
+        transformCSS: 'pre'
+      })
     ],
     build: {
       minify: isProduction

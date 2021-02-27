@@ -9,11 +9,11 @@
 
 <style>
     h1 {
-        @apply text-green-500;
+        @apply text-svelte-500 p-2 bg-green-200;
     }
     @screen sm {
         h1 {
-            @apply text-svite-500;
+            background-color: rebeccapurple;
         }
     }
 </style>
