@@ -1,6 +1,7 @@
 const svelte = require('@svitejs/vite-plugin-svelte')
 const { defineConfig } = require('vite')
-import windicss from 'vite-plugin-windicss'
+const vitePluginWindicss = require('vite-plugin-windicss').default
+const svelteWindicssPreprocess = require('svelte-windicss-preprocess')
 
 const windiOpts = {
   verbose: true,
@@ -20,11 +21,9 @@ module.exports = defineConfig(({ command, mode }) => {
       svelte({
         hot: !isProduction,
         emitCss: true,
-        preprocess: [
-          require('svelte-windicss-preprocess').preprocess(windiOpts)
-        ]
+        preprocess: [svelteWindicssPreprocess.preprocess(windiOpts)]
       }),
-      windicss(windiOpts)
+      vitePluginWindicss(windiOpts)
     ],
     build: {
       minify: isProduction
