@@ -1,3 +1,12 @@
+## [0.9.1](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.0...vite-plugin-svelte@0.9.1) (2021-02-28)
+
+
+### Bug Fixes
+
+* **vite-plugin-svelte:** declare debug as dependency ([9312edd](https://github.com/svitejs/svite/commit/9312eddd158a2ed5cf098fd331b2c92df26a6b09))
+
+
+
 # [0.9.0](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.0-2...vite-plugin-svelte@0.9.0) (2021-02-28)
 
 
