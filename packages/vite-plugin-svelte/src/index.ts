@@ -41,8 +41,12 @@ const svelte_packages = [
   'svelte/motion',
   'svelte/store',
   'svelte/transition',
-  'svelte'
+  'svelte',
+  'svelte-hmr/runtime/hot-api-esm.js',
+  'svelte-hmr/runtime/proxy-adapter-dom.js',
+  'svelte-hmr'
 ]
+
 const pkg_export_errors = new Set()
 
 export default function vitePluginSvelte(rawOptions: Options): Plugin {
@@ -78,8 +82,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       // extra vite config
       return {
         optimizeDeps: {
-          // TODO exclude svelte is needed here otherwise using libraries like routify leads to two sveltes at runtime
-          exclude: ['svelte', 'svelte-hmr']
+          include: [...svelte_packages]
         },
         resolve: {
           mainFields: ['svelte'],
