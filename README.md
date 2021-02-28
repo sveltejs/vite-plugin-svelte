@@ -19,3 +19,4 @@ changes in plugin need restart of dev server
 
 * For typescript, svelte components must use `<script lang="ts">`, not `<script lang="typescript">` otherwise vite dep scan fails. see https://discord.com/channels/804011606160703521/804062134051930222/806300072349270033
 * exclusions in optimizeDeps also cover children (x or startswith x+/)
+* svelte components should be sorted with style nodes last as js code may contain markup node positions
