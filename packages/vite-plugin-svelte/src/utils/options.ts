@@ -17,7 +17,9 @@ const knownOptions = new Set([
   'emitCss',
   'compilerOptions',
   'preprocess',
-  'hot'
+  'hot',
+  'disableTransformCache',
+  'disableCssHmr'
 ])
 
 export function buildInitialOptions(rawOptions: Options): Options {
@@ -154,10 +156,9 @@ export interface Options {
   disableCssHmr?: boolean
 
   /**
-   * use transform cache even for ssr request (might cause stale modules)
-   *
+   * do not return cached transform data
    */
-  useTransformCacheForSSR?: boolean
+  disableTransformCache?: boolean
 }
 
 export interface ResolvedOptions extends Options {

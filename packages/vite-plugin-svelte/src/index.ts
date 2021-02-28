@@ -13,7 +13,7 @@ import * as relative from 'require-relative'
 
 import { handleHotUpdate } from './handleHotUpdate'
 import { log } from './utils/log'
-import { compileSvelte, getCompileData } from './utils/compile'
+import { compileSvelte } from './utils/compile'
 import { buildIdParser, IdParser } from './utils/id'
 import {
   buildInitialOptions,
@@ -21,6 +21,7 @@ import {
   ResolvedOptions,
   resolveOptions
 } from './utils/options'
+import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache'
 
 export {
   Options,
@@ -53,7 +54,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
   if (process.env.DEBUG != null) {
     log.setLevel('debug')
   }
-
+  const cache = new VitePluginSvelteCache()
   const initialOptions = buildInitialOptions(rawOptions)
 
   // updated in configResolved hook
@@ -112,7 +113,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       //
       if (query.svelte) {
         if (query.type === 'style') {
-          const compileData = getCompileData(svelteRequest, false)
+          const compileData = cache.getCompileData(svelteRequest, false)
           if (compileData?.compiled?.css) {
             log.debug(`load returns css for ${filename}`)
             return compileData.compiled.css
@@ -179,7 +180,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       }
       log.debug('transform', svelteRequest)
       const { filename, query } = svelteRequest
-      const cachedCompileData = getCompileData(svelteRequest, false)
+      const cachedCompileData = cache.getCompileData(svelteRequest, false)
 
       if (query.svelte) {
         // tagged svelte request, use cache
@@ -193,13 +194,14 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         )
       }
 
-      if (cachedCompileData && (!ssr || options.useTransformCacheForSSR)) {
+      if (cachedCompileData && !options.disableTransformCache) {
         log.debug(`transform returns cached js for ${filename}`)
         return cachedCompileData.compiled.js
       }
 
       // first request, compile here
       const compileData = await compileSvelte(svelteRequest, code, options)
+      cache.setCompileData(compileData)
       log.debug(`transform returns compiled js for ${filename}`)
       return compileData.compiled.js
     },
@@ -213,7 +215,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         return
       }
       log.debug('handleHotUpdate', svelteRequest)
-      return handleHotUpdate(ctx, svelteRequest)
+      return handleHotUpdate(ctx, svelteRequest, cache)
     },
 
     transformIndexHtml(html: string, ctx: IndexHtmlTransformContext) {

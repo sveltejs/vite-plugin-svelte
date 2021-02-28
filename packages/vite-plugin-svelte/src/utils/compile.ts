@@ -24,7 +24,7 @@ export async function compileSvelte(
     hydratable: true
   }
   if (options.hot) {
-    const hash = `s-${safeBase64Hash(cssId, 12)}`
+    const hash = `s-${safeBase64Hash(cssId)}`
     log.debug(`setting cssHash ${hash} for ${cssId}`)
     finalCompilerOptions.cssHash = () => hash
   }
@@ -81,41 +81,7 @@ export async function compileSvelte(
     ssr
   }
 
-  cacheCompileData(result)
-
   return result
-}
-
-const _cache = new Map<string, CompileData>()
-const _ssrCache = new Map<string, CompileData>()
-
-function getCache(ssr: boolean): Map<string, CompileData> {
-  return ssr ? _ssrCache : _cache
-}
-
-export function getCompileData(
-  svelteRequest: SvelteRequest,
-  errorOnMissing = true
-): CompileData | undefined {
-  const cache = getCache(svelteRequest.ssr)
-  const id = svelteRequest.normalizedFilename
-  if (cache.has(id)) {
-    return cache.get(id)!
-  }
-  if (errorOnMissing) {
-    throw new Error(
-      `${id} has no corresponding entry in the ${
-        svelteRequest.ssr ? 'ssr' : ''
-      }cache. ` +
-        `This is a @svitejs/vite-plugin-svelte internal error, please open an issue.`
-    )
-  }
-}
-
-function cacheCompileData(compileData: CompileData) {
-  const cache = getCache(!!compileData.ssr)
-  const id = compileData.normalizedFilename
-  cache.set(id, compileData)
 }
 
 export interface Code {

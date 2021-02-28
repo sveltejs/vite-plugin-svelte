@@ -1,19 +1,19 @@
-import { getCompileData } from './utils/compile'
-
 import { ModuleNode, HmrContext } from 'vite'
 import { CompileData, compileSvelte } from './utils/compile'
 import { log } from './utils/log'
 import { SvelteRequest } from './utils/id'
+import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache'
 
 /**
  * Vite-specific HMR handling
  */
 export async function handleHotUpdate(
   ctx: HmrContext,
-  svelteRequest: SvelteRequest
+  svelteRequest: SvelteRequest,
+  cache: VitePluginSvelteCache
 ): Promise<ModuleNode[] | void> {
   const { read, server } = ctx
-  const cachedCompileData = getCompileData(svelteRequest, false)
+  const cachedCompileData = cache.getCompileData(svelteRequest, false)
   if (!cachedCompileData) {
     // file hasn't been requested yet (e.g. async component)
     log.debug(`handleHotUpdate first call ${svelteRequest.id}`)
@@ -26,6 +26,8 @@ export async function handleHotUpdate(
     content,
     cachedCompileData.options
   )
+  cache.setCompileData(compileData)
+
   const affectedModules = new Set<ModuleNode | undefined>()
 
   const cssModule = server.moduleGraph.getModuleById(svelteRequest.cssId)
