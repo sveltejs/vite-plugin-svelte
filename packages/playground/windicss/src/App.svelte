@@ -11,9 +11,28 @@
     h1 {
         @apply text-svelte-500 p-2 bg-green-200;
     }
+
+    /* works */
     @screen sm {
         h1 {
             background-color: rebeccapurple;
         }
     }
+
+    /* does not work */
+    /*
+    @screen sm {
+        h1 {
+            @apply text-blue-500;
+        }
+    }
+    */
+    /* does not work either */
+    /*
+    @media (min-width: 640px) {
+        h1 {
+            @apply text-blue-500;
+        }
+    }
+    */
 </style>
