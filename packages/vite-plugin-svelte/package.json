@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "tsc -p . -w --incremental",
     "build": "rimraf dist && run-s build-bundle build-types",
-    "build-bundle": "esbuild src/index.ts --bundle --platform=node --target=node12 --outfile=dist/index.js",
+    "build-bundle": "node scripts/build-bundle.js",
     "build-types": "tsc -p . --emitDeclarationOnly --outDir temp && api-extractor run && rimraf temp",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . --lerna-package vite-plugin-svelte",
     "release": "node ../../scripts/release.js"
@@ -56,6 +56,7 @@
     "@types/estree": "^0.0.46",
     "@types/hash-sum": "^1.0.0",
     "debug": "^4.3.1",
+    "esbuild": "^0.8.53",
     "locate-character": "^2.0.5",
     "magic-string": "^0.25.7",
     "rollup": "^2.40.0",
