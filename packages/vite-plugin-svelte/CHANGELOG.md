@@ -1,3 +1,12 @@
+## [0.9.2](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.1...vite-plugin-svelte@0.9.2) (2021-03-01)
+
+
+### Bug Fixes
+
+* **vite-plugin-svelte:** add missing return to set csshash on first apply ([d5efc42](https://github.com/svitejs/svite/commit/d5efc4212e2e3437d061069ec8764460f4a2ce81))
+
+
+
 ## [0.9.1](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.0...vite-plugin-svelte@0.9.1) (2021-02-28)
 
 
