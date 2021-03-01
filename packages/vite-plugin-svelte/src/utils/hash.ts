@@ -11,10 +11,12 @@ export function safeBase64Hash(input: string) {
   }
   //TODO if performance really matters, use a faster one like xx-hash etc.
   // should be evenly distributed because short input length and similarities in paths could cause collisions otherwise
+  // OR DON'T USE A HASH AT ALL, what about a simple counter?
   const md5 = crypto.createHash('md5')
   md5.update(input)
   const hash = toSafe(md5.digest('base64')).substr(0, hash_length)
   hashes[input] = hash
+  return hash
 }
 
 const replacements: { [key: string]: string } = {
