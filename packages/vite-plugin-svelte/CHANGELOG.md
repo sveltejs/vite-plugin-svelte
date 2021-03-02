@@ -1,3 +1,12 @@
+## [0.9.3](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.2...vite-plugin-svelte@0.9.3) (2021-03-02)
+
+
+### Features
+
+* **vite-plugin-svelte:** exclude svelte from optimizeDeps again to prevent 2 svelte instances issue ([8f137f1](https://github.com/svitejs/svite/commit/8f137f1919ae39592ac6ebfe7f6c93c6e83c988a))
+
+
+
 ## [0.9.2](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.1...vite-plugin-svelte@0.9.2) (2021-03-01)
 
 
