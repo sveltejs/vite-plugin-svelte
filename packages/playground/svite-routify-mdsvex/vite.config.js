@@ -7,7 +7,7 @@ module.exports = defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production'
   return {
     optimizeDeps: {
-      include: ['@roxi/routify']
+      exclude: ['@roxi/routify']
     },
     plugins: [
       svelte({

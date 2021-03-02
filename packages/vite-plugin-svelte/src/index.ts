@@ -83,7 +83,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       // extra vite config
       return {
         optimizeDeps: {
-          include: [...svelte_packages]
+          exclude: [...svelte_packages]
         },
         resolve: {
           mainFields: ['svelte'],
