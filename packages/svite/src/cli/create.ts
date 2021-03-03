@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import { repository } from '../../package.json'
 // @ts-ignore
 import { version as vitePluginSvelteVersion } from '../../../vite-plugin-svelte/package.json'
-const templatesPath = 'packages/temlates'
+const templatesPath = 'packages/templates'
 const log = console
 
 async function updatePkg(dir: string) {

@@ -12,11 +12,11 @@ cli
   )
 
   .option(
-    '-t, --template <string>',
+    '--t, --template <string>',
     `template for new project. ${JSON.stringify(templates)}`,
     { default: templates[0] }
   )
-  .option('-ts, --typescript', 'enable typescript support for svelte', {
+  .option('--ts, --typescript', 'enable typescript support for svelte', {
     default: false
   })
   .option(
