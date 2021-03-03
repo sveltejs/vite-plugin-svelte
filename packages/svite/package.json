@@ -1,0 +1,50 @@
+{
+  "name": "svite",
+  "version": "0.9.0",
+  "license": "MIT",
+  "author": "dominikg",
+  "bin": {
+    "svite": "bin/svite.js"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "bin",
+    "dist",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "dev": "tsc -p . -w --incremental",
+    "build": "rimraf dist && run-s build-bundle build-types",
+    "build-bundle": "node scripts/build-bundle.js",
+    "build-types": "tsc -p . --emitDeclarationOnly --outDir temp && api-extractor run && rimraf temp",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . --lerna-package svite",
+    "release": "node ../../scripts/release.js"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/svitejs/svite.git"
+  },
+  "keywords": [
+    "svelte",
+    "svite",
+    "vite"
+  ],
+  "bugs": {
+    "url": "https://github.com/svitejs/svite/issues"
+  },
+  "homepage": "https://github.com/svitejs/svite/tree/main/packages/svite#readme",
+  "dependencies": {
+    "cac": "^6.7.2",
+    "chalk": "^4.1.0",
+    "degit": "^2.8.0",
+    "execa": "^5.0.0"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@types/node": "^14.14.31",
+    "esbuild": "^0.8.54"
+  }
+}
