@@ -29,7 +29,6 @@ module.exports = defineConfig(({ command, mode }) => {
 // TODO
 ```
 
-
 ## License
 
 MIT

@@ -1,11 +1,11 @@
 <script>
-    let bar = 'bar';
+  let bar = 'bar'
 </script>
 
 <div class="blue">Foo bar={bar}</div>
 
 <style>
-    .blue {
-        color: blue;
-    }
+  .blue {
+    color: blue;
+  }
 </style>

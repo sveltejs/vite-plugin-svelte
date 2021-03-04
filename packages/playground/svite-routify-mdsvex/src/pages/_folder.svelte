@@ -1,6 +1,16 @@
 <script>
-  import { url } from '@roxi/routify';
+  import { url } from '@roxi/routify'
 </script>
+
+<div id="app">
+  <nav>
+    <a href="/mdsvex" use:$url>mdsvex</a>
+  </nav>
+  <main>
+    <slot />
+  </main>
+  <footer>footer</footer>
+</div>
 
 <style>
   #app {
@@ -28,13 +38,3 @@
     border-top: 1px solid gray;
   }
 </style>
-
-<div id="app">
-  <nav>
-    <a href="/mdsvex" use:$url>mdsvex</a>
-  </nav>
-  <main>
-    <slot />
-  </main>
-  <footer>footer</footer>
-</div>

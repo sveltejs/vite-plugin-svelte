@@ -25,10 +25,10 @@
     "lint:script": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
     "lint:style": "stylelint --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}'",
     "lint:fix": "run-s lint:fix:script lint:fix:style",
-    "lint:fix:script": "npm run lint:script -- --fix",
-    "lint:fix:style": "npm run lint:style -- --fix",
+    "lint:fix:script": "yarn lint:script --fix",
+    "lint:fix:style": "yarn lint:style --fix",
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
-    "format:fix": "npm run format -- --write",
+    "format:fix": "yarn format --write",
     "fixup": "run-s lint:fix format:fix"
   },
   "devDependencies": {
@@ -84,8 +84,9 @@
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --fix",
-    "*.{css,scss,svelte,html,js,ts,md,svx}": [
-      "stylelint --fix"
+    "*.{css,scss,svelte,html,js,ts,svx,md}": [
+      "stylelint --fix",
+      "prettier --write"
     ]
   }
 }

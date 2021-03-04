@@ -125,7 +125,6 @@ export async function getText(el: string | ElementHandle) {
 
 export async function hmrUpdateComplete(file, timeout) {
   return new Promise(function (resolve, reject) {
-
     function listener(data) {
       const text = data.text()
       if (text.indexOf(file) > -1) {

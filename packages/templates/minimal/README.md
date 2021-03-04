@@ -1,3 +1,1 @@
 # svite-template-minimal
-
-

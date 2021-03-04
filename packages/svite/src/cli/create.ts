@@ -17,7 +17,7 @@ async function updatePkg(dir: string) {
     ] = `^${vitePluginSvelteVersion}`
     fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2))
   } catch (e) {
-    log.error('failed to update package.json',e)
+    log.error('failed to update package.json', e)
     throw e
   }
 }

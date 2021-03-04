@@ -1,10 +1,12 @@
 <script>
-  import StaticImport from './components/StaticImport.svelte';
-  import Dependency from '@dependency/dependency';
-  import HmrTest from './components/HmrTest.svelte';
-  let dynamicImportComponent;
+  import StaticImport from './components/StaticImport.svelte'
+  import Dependency from '@dependency/dependency'
+  import HmrTest from './components/HmrTest.svelte'
+  let dynamicImportComponent
   function importDynamic() {
-    import('./components/DynamicImport.svelte').then((m) => (dynamicImportComponent = m.default));
+    import('./components/DynamicImport.svelte').then(
+      (m) => (dynamicImportComponent = m.default)
+    )
   }
 </script>
 
@@ -12,7 +14,9 @@
 <StaticImport />
 <Dependency />
 {#if !dynamicImportComponent}
-  <button id="button-import-dynamic" on:click={importDynamic}>import dynamic component</button>
+  <button id="button-import-dynamic" on:click={importDynamic}
+    >import dynamic component</button
+  >
 {:else}
   <svelte:component this={dynamicImportComponent} />
 {/if}

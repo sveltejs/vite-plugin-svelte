@@ -1,14 +1,45 @@
 <script>
   // import './app.css'
-  import * as pages from './pages.js';
+  import * as pages from './pages.js'
 
-  let currentCmp;
+  let currentCmp
 
   const go = (cmp) => () => {
-    currentCmp = cmp;
-    console.log(currentCmp.name);
-  };
+    currentCmp = cmp
+    console.log(currentCmp.name)
+  }
 </script>
+
+<nav>
+  <h2>This is a huge app</h2>
+  {#each Object.entries(pages) as [name, cmp] (cmp)}
+    <a class="App-link" href on:click|preventDefault={go(cmp)}
+      >{name.replace('_', ' ')}</a
+    >
+  {/each}
+</nav>
+
+{#if currentCmp}
+  <main>
+    <svelte:component this={currentCmp} />
+  </main>
+{:else}
+  <div class="App">
+    <header class="App-header">
+      <p>
+        Edit
+        <code>src/App.svelte</code>
+        and save to reload (prepare tissues).
+      </p>
+      <a
+        class="App-link"
+        href="https://svelte.dev"
+        target="_blank"
+        rel="noopener noreferrer">Learn Svelte</a
+      >
+    </header>
+  </div>
+{/if}
 
 <style>
   :global(body) {
@@ -47,27 +78,3 @@
     color: #ff3e00;
   }
 </style>
-
-<nav>
-  <h2>This is a huge app</h2>
-  {#each Object.entries(pages) as [name, cmp] (cmp)}
-    <a class="App-link" href on:click|preventDefault={go(cmp)}>{name.replace('_', ' ')}</a>
-  {/each}
-</nav>
-
-{#if currentCmp}
-  <main>
-    <svelte:component this={currentCmp} />
-  </main>
-{:else}
-  <div class="App">
-    <header class="App-header">
-      <p>
-        Edit
-        <code>src/App.svelte</code>
-        and save to reload (prepare tissues).
-      </p>
-      <a class="App-link" href="https://svelte.dev" target="_blank" rel="noopener noreferrer">Learn Svelte</a>
-    </header>
-  </div>
-{/if}
