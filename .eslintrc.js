@@ -91,16 +91,13 @@ module.exports = {
       }
     },
     {
-      files: ['packages/templates/**/vite.config.js'],
+      files: [
+        'packages/templates/**/vite.config.js',
+        'packages/playground/**/vite.config.js'
+      ],
       rules: {
-        'no-unused-vars': 'off'
-      }
-    },
-    {
-      files: ['./*.js', 'tools/**/*.js', '**/*.config.js', 'bin/**/*.js'],
-      env: {
-        node: true,
-        browser: false
+        'no-unused-vars': 'off',
+        'node/no-missing-require': 'off'
       }
     },
     {
