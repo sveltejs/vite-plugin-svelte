@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { ResolvedConfig } from 'vite'
 import { log } from './log'
 import { loadSvelteConfig } from './loadSvelteConfig'
@@ -81,6 +82,7 @@ export function resolveOptions(
 }
 
 export interface Options {
+  // eslint-disable no-unused-vars
   /** One or more minimatch patterns */
   include: Arrayable<string>
 

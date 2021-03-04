@@ -1,4 +1,5 @@
 <script>
+    // eslint-disable-next-line node/no-missing-import
   import asset from '/src/assets/dynamic.svg';
   const importedAsset = asset;
   const label = 'dynamic-import';

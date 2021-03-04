@@ -1,4 +1,5 @@
 <script lang="ts">
+  // eslint-disable-next-line no-unused-vars
   import Nested from './Nested.svelte'
   export let name = ''
 </script>

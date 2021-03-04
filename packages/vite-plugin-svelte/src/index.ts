@@ -98,6 +98,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     configureServer(_server) {
+      // eslint-disable-next-line no-unused-vars
       server = _server
     },
 
@@ -218,6 +219,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
       return handleHotUpdate(ctx, svelteRequest, cache)
     },
 
+    // eslint-disable-next-line no-unused-vars
     transformIndexHtml(html: string, ctx: IndexHtmlTransformContext) {
       // TODO useful for ssr? and maybe svelte:head stuff
       log.debug('transformIndexHtml', html)

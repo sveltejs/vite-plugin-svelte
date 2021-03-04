@@ -25,7 +25,7 @@ Object.keys(colors).forEach((color) => {
 })
 
 function componentToHex(c: number): string {
-  var hex = c.toString(16)
+  const hex = c.toString(16)
   return hex.length == 1 ? '0' + hex : hex
 }
 
@@ -125,7 +125,6 @@ export async function getText(el: string | ElementHandle) {
 
 export async function hmrUpdateComplete(file, timeout) {
   return new Promise(function (resolve, reject) {
-    var timer
 
     function listener(data) {
       const text = data.text()
@@ -137,7 +136,7 @@ export async function hmrUpdateComplete(file, timeout) {
     }
 
     page.on('console', listener)
-    timer = setTimeout(function () {
+    const timer = setTimeout(function () {
       page.off('console', listener)
       reject(
         new Error(

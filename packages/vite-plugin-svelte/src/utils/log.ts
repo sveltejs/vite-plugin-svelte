@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import chalk from 'chalk'
 import debug from 'debug'
 const levels: string[] = ['debug', 'info', 'warn', 'error', 'silent']

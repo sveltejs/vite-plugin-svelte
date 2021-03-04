@@ -1,9 +1,9 @@
-<script type="text/javascript">
+<script>
   import Nested from './Nested.svelte';
   export let name = '';
 </script>
 
-<style type="text/stylus">
+<style lang="stylus">
   /* prettier-ignore */
   .note
     color #ff3e00

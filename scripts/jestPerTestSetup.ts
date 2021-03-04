@@ -1,6 +1,7 @@
-import fs from 'fs-extra'
+import * as fs from 'fs-extra'
 import * as http from 'http'
 import { resolve, dirname } from 'path'
+// @ts-ignore
 import slash from 'slash'
 import sirv from 'sirv'
 import { createServer, build, ViteDevServer, UserConfig } from 'vite'
@@ -10,7 +11,9 @@ const isBuildTest = !!process.env.VITE_TEST_BUILD
 
 // injected by the test env
 declare global {
+  // eslint-disable-next-line no-unused-vars
   namespace NodeJS {
+    // eslint-disable-next-line no-unused-vars
     interface Global {
       page?: Page
       viteTestUrl?: string
@@ -124,6 +127,7 @@ function startStaticServer(): Promise<string> {
   let config: UserConfig
   try {
     config = require(configFile)
+    // eslint-disable-next-line no-empty
   } catch (e) {}
   const base = (config?.base || '/') === '/' ? '' : config.base
 

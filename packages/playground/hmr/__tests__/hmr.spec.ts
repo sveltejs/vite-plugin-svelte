@@ -22,7 +22,7 @@ test('should render dependency import', async () => {
 
 test('should render dynamic import', async () => {
   expect(await getEl('#dynamic-import')).toBe(null)
-  let dynamicImportButton = await getEl('#button-import-dynamic')
+  const dynamicImportButton = await getEl('#button-import-dynamic')
   expect(dynamicImportButton).toBeDefined()
   await dynamicImportButton.click()
   await untilUpdated(() => getText('#dynamic-import .label'), 'dynamic-import')

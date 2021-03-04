@@ -17,6 +17,7 @@ async function createServer(
 
   const manifest = isProd
     ? // @ts-ignore
+      // eslint-disable-next-line node/no-missing-require
       require('./dist/client/ssr-manifest.json')
     : {}
 
@@ -57,6 +58,8 @@ async function createServer(
         render = (await vite.ssrLoadModule('/src/entry-server.js')).render
       } else {
         template = indexProd
+        // @ts-ignore
+        // eslint-disable-next-line node/no-missing-require
         render = require('./dist/server/entry-server.js').render
       }
       const rendered = await render(req.originalUrl, manifest)

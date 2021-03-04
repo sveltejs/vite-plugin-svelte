@@ -1,6 +1,7 @@
 const os = require('os')
 const fs = require('fs')
 const path = require('path')
+// eslint-disable-next-line node/no-extraneous-require
 const NodeEnvironment = require('jest-environment-node')
 const { chromium } = require('playwright-core')
 

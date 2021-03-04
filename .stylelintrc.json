@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "stylelint-config-recommended",
+    "stylelint-config-prettier"
+  ],
+  "rules": {
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": ["global"]
+      }
+    ]
+  },
+  "ignoreFiles": [
+    "**/*preprocess-auto*/**/*.svelte",
+    "**/windicss*/**/*.svelte"
+  ]
+}
