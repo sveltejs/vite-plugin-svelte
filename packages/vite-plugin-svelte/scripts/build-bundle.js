@@ -15,7 +15,7 @@ const buildOptions = {
   platform: 'node',
   target: 'node12',
   entryPoints: ['src/index.ts'],
-  outfile: 'dist/index.ts',
+  outfile: 'dist/index.js',
   bundle: true,
   external,
   logLevel: 'warning',
