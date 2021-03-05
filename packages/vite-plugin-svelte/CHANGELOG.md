@@ -1,3 +1,12 @@
+## [0.9.4](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.3...vite-plugin-svelte@0.9.4) (2021-03-05)
+
+
+### Bug Fixes
+
+* **vite-plugin-svelte:** relative-resolve for svelte-hmr runtime ([4a04456](https://github.com/svitejs/svite/commit/4a044568d23aae0fbb5eb1834bf61a33d986093f))
+
+
+
 ## [0.9.3](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.2...vite-plugin-svelte@0.9.3) (2021-03-02)
 
 
