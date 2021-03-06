@@ -13,7 +13,7 @@ import * as relative from 'require-relative'
 
 import { handleHotUpdate } from './handleHotUpdate'
 import { log } from './utils/log'
-import { compileSvelte } from './utils/compile'
+import { createCompileSvelte } from './utils/compile'
 import { buildIdParser, IdParser } from './utils/id'
 import {
   buildInitialOptions,
@@ -69,17 +69,31 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
   // @ts-ignore
   let server: ViteDevServer
 
+  let compileSvelte: Function
+
   return {
     name: 'vite-plugin-svelte',
     // make sure our resolver runs before vite internal resolver to resolve svelte field correctly
     enforce: 'pre',
-    config(config): Partial<UserConfig> {
+    config(config, { mode, command }): Partial<UserConfig> {
       // setup logger
       if (process.env.DEBUG) {
         log.setLevel('debug')
       } else if (config.logLevel) {
         log.setLevel(config.logLevel)
       }
+      // init compiler
+      compileSvelte = createCompileSvelte({
+        hot:
+          options.hot !== false &&
+          mode === 'development' &&
+          command === 'serve',
+        // TODO fix TS (sorry)
+        // @ts-ignore
+        hotApi: options?.hot?.hotApi,
+        // @ts-ignore
+        adapter: options?.hot?.adapter
+      })
       // extra vite config
       return {
         optimizeDeps: {
@@ -216,7 +230,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         return
       }
       log.debug('handleHotUpdate', svelteRequest)
-      return handleHotUpdate(ctx, svelteRequest, cache)
+      return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache)
     },
 
     // eslint-disable-next-line no-unused-vars

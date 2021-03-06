@@ -1,3 +1,12 @@
+# [0.10.0-0](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.4...vite-plugin-svelte@0.10.0-0) (2021-03-06)
+
+
+### Features
+
+* **vite-plugin-svelte:** add pnpm compatibility and implement auto hot on dev serve ([#3](https://github.com/svitejs/svite/issues/3)) ([ab7f463](https://github.com/svitejs/svite/commit/ab7f463c83abf68e8ca88497549e30a721296c7b))
+
+
+
 ## [0.9.4](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.3...vite-plugin-svelte@0.9.4) (2021-03-05)
 
 

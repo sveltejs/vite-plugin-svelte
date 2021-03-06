@@ -1,5 +1,5 @@
 import { ModuleNode, HmrContext } from 'vite'
-import { CompileData, compileSvelte } from './utils/compile'
+import { CompileData } from './utils/compile'
 import { log } from './utils/log'
 import { SvelteRequest } from './utils/id'
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache'
@@ -8,6 +8,7 @@ import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache'
  * Vite-specific HMR handling
  */
 export async function handleHotUpdate(
+  compileSvelte: Function,
   ctx: HmrContext,
   svelteRequest: SvelteRequest,
   cache: VitePluginSvelteCache
