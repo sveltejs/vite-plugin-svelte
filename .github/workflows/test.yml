@@ -37,7 +37,8 @@ jobs:
         run: echo "pnpm_cache_path=~/.pnpm-store/v3" >> $GITHUB_ENV
       - name: install pnpm
         run: npm i -g pnpm@5
-      - uses: actions/cache@v2
+      - name: pnpm-cache
+        uses: actions/cache@v2
         id: pnpm-cache
         with:
           path: ${{ env.pnpm_cache_path }}
@@ -45,14 +46,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
-      - name: cache node_modules
-        id: node_modules-cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/pnpm-lock.yaml')) }}
+#      - name: cache node_modules
+#        id: node_modules-cache
+#        uses: actions/cache@v2
+#        with:
+#          path: |
+#            node_modules
+#            packages/*/node_modules
+#          key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/pnpm-lock.yaml')) }}
 
       - name: install
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
@@ -61,14 +62,14 @@ jobs:
       - name: build:ci
         run: pnpm build:ci
 
-      - name: cache workspace
-        uses: actions/cache@v2
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/*/dist
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+#      - name: cache workspace
+#        uses: actions/cache@v2
+#        with:
+#          path: |
+#            node_modules
+#            packages/*/node_modules
+#            packages/*/dist
+#          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
 
   lint:
     needs: setup
@@ -87,16 +88,26 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: restore workspace cache
+#      - name: restore workspace cache
+#        uses: actions/cache@v2
+#        with:
+#          path: |
+#            node_modules
+#            packages/*/node_modules
+#            packages/*/dist
+#          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+      - name: pnpm-cache
         uses: actions/cache@v2
+        id: pnpm-cache
         with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/*/dist
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+          path: ${{ env.pnpm_cache_path }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
+      - name: install
+        run: pnpm install --frozen-lockfile --offline --ignore-scripts
       - name: lint
         run: pnpm lint
 
@@ -117,16 +128,26 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: restore workspace cache
+#      - name: restore workspace cache
+#        uses: actions/cache@v2
+#        with:
+#          path: |
+#            node_modules
+#            packages/*/node_modules
+#            packages/*/dist
+#          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+      - name: pnpm-cache
         uses: actions/cache@v2
+        id: pnpm-cache
         with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/*/dist
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+          path: ${{ env.pnpm_cache_path }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
+      - name: install
+        run: pnpm install --frozen-lockfile --offline --ignore-scripts
       - name: audit
         run: pnpm audit
 
@@ -148,16 +169,26 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: restore workspace cache
+#      - name: restore workspace cache
+#        uses: actions/cache@v2
+#        with:
+#          path: |
+#            node_modules
+#            packages/*/node_modules
+#            packages/*/dist
+#          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+      - name: pnpm-cache
         uses: actions/cache@v2
+        id: pnpm-cache
         with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/*/dist
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+          path: ${{ env.pnpm_cache_path }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
+      - name: install
+        run: pnpm install --frozen-lockfile --offline --ignore-scripts
       - name: install esbuild
         run: node node_modules/esbuild/install.js
       - name: run tests
@@ -166,7 +197,7 @@ jobs:
       - name: archive tests temp directory
         if: failure()
         shell: bash
-        run: tar -cvf test-temp.tar --exclude="node_modules" --exclude=".yarn" --exclude="dist" --exclude=".pnp.js" temp/
+        run: tar -cvf test-temp.tar  --exclude="node_modules" --exclude=".yarn" --exclude="dist" --exclude=".pnp.js" temp/
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -203,15 +234,25 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: restore workspace cache
+#      - name: restore workspace cache
+#        uses: actions/cache@v2
+#        with:
+#          path: |
+#            node_modules
+#            packages/*/node_modules
+#            packages/*/dist
+#          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+      - name: pnpm-cache
         uses: actions/cache@v2
+        id: pnpm-cache
         with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/*/dist
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-svitejs-${{ github.sha }}
+          path: ${{ env.pnpm_cache_path }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
+      - name: install
+        run: pnpm install --frozen-lockfile --offline --ignore-scripts
       - name: build
         run: pnpm build
