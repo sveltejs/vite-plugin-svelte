@@ -125,7 +125,8 @@ module.exports = {
         'padded-blocks': 'off',
         'node/no-missing-import': 'off',
         'node/no-extraneous-require': 'off',
-        'import/no-unresolved': 'off'
+        'import/no-unresolved': 'off',
+        'node/no-missing-require': 'off'
       }
     },
     {
@@ -137,7 +138,8 @@ module.exports = {
         'padded-blocks': 'off',
         'node/no-missing-import': 'off',
         'node/no-extraneous-require': 'off',
-        'import/no-unresolved': 'off'
+        'import/no-unresolved': 'off',
+        'node/no-missing-require': 'off'
       }
     },
     {
