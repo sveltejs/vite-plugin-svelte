@@ -6,7 +6,8 @@ import slash from 'slash'
 import sirv from 'sirv'
 import { createServer, build, ViteDevServer, UserConfig } from 'vite'
 import { Page } from 'playwright-core'
-
+// @ts-ignore
+import execa from 'execa'
 const isBuildTest = !!process.env.VITE_TEST_BUILD
 
 // injected by the test env
@@ -63,6 +64,17 @@ beforeAll(async () => {
           )
         }
       })
+      await execa(
+        'pnpm',
+        [
+          'install',
+          '--prefer-frozen-lockfile',
+          '--prefer-offline',
+          '--no-lockfile',
+          '--silent'
+        ],
+        { stdio: 'inherit' }
+      )
 
       const testCustomServe = resolve(dirname(testPath), 'serve.js')
       if (fs.existsSync(testCustomServe)) {

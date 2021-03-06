@@ -12,7 +12,7 @@ const DIR = path.join(os.tmpdir(), 'jest_playwright_global_setup')
 const buildPackagesUnderTest = async () => {
   console.log('')
   console.log('building packages')
-  await execa('yarn', ['build:ci'], { stdio: 'inherit' })
+  await execa('pnpm', ['build:ci'], { stdio: 'inherit' })
   console.log('building packages done')
   console.log('')
 }
