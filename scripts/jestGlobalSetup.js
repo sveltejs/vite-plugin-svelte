@@ -10,11 +10,26 @@ const isCI = !!process.env.CI
 const DIR = path.join(os.tmpdir(), 'jest_playwright_global_setup')
 
 const buildPackagesUnderTest = async () => {
-  console.log('')
   console.log('building packages')
   await execa('pnpm', ['build:ci'], { stdio: 'inherit' })
   console.log('building packages done')
-  console.log('')
+}
+
+const syncNodeModules = async () => {
+  // tests use symbolic linked node_modules directories. make sure the workspace is up for it
+  console.log('syncing node_modules')
+  await execa(
+    'pnpm',
+    [
+      'install',
+      '--prefer-frozen-lockfile',
+      '--prefer-offline',
+      '--no-lockfile',
+      '--silent'
+    ],
+    { stdio: 'inherit' }
+  )
+  console.log('syncing node_modules done')
 }
 
 const guessChromePath = async () => {
@@ -69,7 +84,11 @@ const startPlaywrightServer = async () => {
 module.exports = async () => {
   if (!isCI) {
     // TODO currently this builds twice when running yarn test
+    console.log('')
+    console.log('preparing non ci env...')
+    await syncNodeModules()
     await buildPackagesUnderTest()
+    console.log('preparations done')
   }
 
   const browserServer = await startPlaywrightServer()

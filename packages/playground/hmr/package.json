@@ -6,10 +6,10 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@dependency/dependency": "file:dependency"
+    "@svitejs/hmr-test-dependency": "workspace:*"
   },
   "devDependencies": {
-    "@svitejs/vite-plugin-svelte": "workspace:../../../packages/vite-plugin-svelte",
+    "@svitejs/vite-plugin-svelte": "workspace:*",
     "svelte": "^3.35.0",
     "svelte-hmr": "^0.12.9",
     "vite": "^2.0.5",

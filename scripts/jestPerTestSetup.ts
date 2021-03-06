@@ -1,13 +1,11 @@
 import * as fs from 'fs-extra'
 import * as http from 'http'
-import { resolve, dirname } from 'path'
+import { resolve, dirname, join } from 'path'
 // @ts-ignore
 import slash from 'slash'
 import sirv from 'sirv'
 import { createServer, build, ViteDevServer, UserConfig } from 'vite'
 import { Page } from 'playwright-core'
-// @ts-ignore
-import execa from 'execa'
 const isBuildTest = !!process.env.VITE_TEST_BUILD
 
 // injected by the test env
@@ -64,18 +62,19 @@ beforeAll(async () => {
           )
         }
       })
-      await execa(
-        'pnpm',
-        [
-          'install',
-          '--prefer-frozen-lockfile',
-          '--prefer-offline',
-          '--no-lockfile',
-          '--silent'
-        ],
-        { stdio: 'inherit' }
-      )
 
+      const playground_node_modules = join(srcDir, 'node_modules')
+      const temp_node_modules = join(tempDir, 'node_modules')
+      if (fs.existsSync(temp_node_modules)) {
+        console.error('temp node_modules already exist', temp_node_modules)
+      }
+      await fs.symlink(playground_node_modules, temp_node_modules, 'dir')
+      const stat = fs.lstatSync(temp_node_modules)
+      if (!stat.isSymbolicLink()) {
+        console.error(
+          `failed to symlink ${playground_node_modules} to ${temp_node_modules}`
+        )
+      }
       const testCustomServe = resolve(dirname(testPath), 'serve.js')
       if (fs.existsSync(testCustomServe)) {
         // test has custom server configuration.
@@ -125,9 +124,18 @@ beforeAll(async () => {
 
 afterAll(async () => {
   global.page && global.page.off('console', onConsole)
+
   if (server) {
     await server.close()
   }
+  // unlink node modules to prevent removal of linked modules on cleanup
+  const temp_node_modules = join(tempDir, 'node_modules')
+  try {
+    await fs.unlink(temp_node_modules)
+  } catch (e) {
+    console.error(`failed to unlink ${temp_node_modules}`)
+  }
+
   if (err) {
     throw err
   }
