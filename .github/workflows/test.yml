@@ -58,8 +58,10 @@ jobs:
             ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-fallback-
 
       - name: install
-        if: steps.pnpm-store.outputs.cache-hit != 'true'
+        # if: steps.pnpm-store.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+      - name: check store
+        run: pnpm store status
 
   lint:
     needs: pnpmstore
