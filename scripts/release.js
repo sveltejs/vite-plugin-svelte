@@ -183,7 +183,7 @@ async function publishPackage(version, runIfNotDry) {
   }
   try {
     await runIfNotDry('pnpm', publishArgs, {
-      stdio: 'pipe'
+      stdio: 'inherit'
     })
     console.log(chalk.green(`Successfully published ${pkgName}@${version}`))
   } catch (e) {
