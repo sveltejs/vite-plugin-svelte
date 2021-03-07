@@ -1,6 +1,9 @@
 # build and test on linux, windows, mac with node 12,14
 name: Test
 
+env:
+  pnpm_store_path: ${{github.workspace}}/.pnpm-store
+
 on:
   push:
     branches:
@@ -11,8 +14,6 @@ on:
 
 jobs:
   pnpmstore:
-    env:
-      CI: true
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -29,9 +30,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: set env.pnpm_store_path
-        run: echo "pnpm_store_path=${{github.workspace}}${{ matrix.os == 'windows'  && '\' || '/' }}.pnpm-store" >> $GITHUB_ENV
-        shell: bash
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: set pnpm store-dir
@@ -61,8 +59,7 @@ jobs:
 
   lint:
     needs: pnpmstore
-    env:
-      CI: true
+
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -75,9 +72,7 @@ jobs:
 
       - name: checkout
         uses: actions/checkout@v2
-      - name: set env.pnpm_store_path
-        run: echo "pnpm_store_path=${{github.workspace}}${{ matrix.os == 'windows'  && '\' || '/' }}.pnpm-store" >> $GITHUB_ENV
-        shell: bash
+
       - name: pnpm-store
         uses: actions/cache@v2
         id: pnpm-store
@@ -99,8 +94,7 @@ jobs:
 
   audit:
     needs: pnpmstore
-    env:
-      CI: true
+
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -113,9 +107,7 @@ jobs:
 
       - name: checkout
         uses: actions/checkout@v2
-      - name: set env.pnpm_store_path
-        run: echo "pnpm_store_path=${{github.workspace}}${{ matrix.os == 'windows'  && '\' || '/' }}.pnpm-store" >> $GITHUB_ENV
-        shell: bash
+
       - name: pnpm-store
         uses: actions/cache@v2
         id: pnpm-store
@@ -133,8 +125,7 @@ jobs:
 
   test:
     needs: pnpmstore
-    env:
-      CI: true
+
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -148,9 +139,7 @@ jobs:
 
       - name: checkout
         uses: actions/checkout@v2
-      - name: set env.pnpm_store_path
-        run: echo "pnpm_store_path=${{github.workspace}}${{ matrix.os == 'windows'  && '\' || '/' }}.pnpm-store" >> $GITHUB_ENV
-        shell: bash
+
       - name: pnpm-store
         uses: actions/cache@v2
         id: pnpm-store
@@ -162,7 +151,7 @@ jobs:
         run: npm i -g pnpm@5
       - name: set pnpm store-dir
         run: pnpm config set store-dir ${{ env.pnpm_store_path }}
-      - name: install-offline
+      - name: install
         run: pnpm install --frozen-lockfile --offline --ignore-scripts
       - name: install esbuild
         run: node node_modules/esbuild/install.js
@@ -210,9 +199,7 @@ jobs:
 
       - name: checkout
         uses: actions/checkout@v2
-      - name: set env.pnpm_store_path
-        run: echo "pnpm_store_path=${{github.workspace}}${{ matrix.os == 'windows'  && '\' || '/' }}.pnpm-store" >> $GITHUB_ENV
-        shell: bash
+
       - name: pnpm-store
         uses: actions/cache@v2
         id: pnpm-store
