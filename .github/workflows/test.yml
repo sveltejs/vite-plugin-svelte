@@ -154,7 +154,7 @@ jobs:
         uses: actions/cache@v2
         id: pnpm-store-fallback
         with:
-          path: ${{ env.pnpm_store_path }}
+          path: ${{ needs.pnpmstore.outputs.pnpm_store_path }}
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-fallback-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-fallback-
