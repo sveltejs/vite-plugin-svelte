@@ -32,12 +32,13 @@ jobs:
 
       - name: Get windows pnpm cache path
         if: runner.os == 'windows'
-        run: echo "pnpm_store_path=$GITHUB_WORKSPACE\.pnpm-store" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        run: echo "pnpm_store_path=${{github.workspace}}\.pnpm-store" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Get non-windows pnpm cache path
         if: runner.os != 'windows'
-        run: echo "pnpm_store_path=$GITHUB_WORKSPACE/.pnpm-store" >> $GITHUB_ENV
+        run: echo "pnpm_store_path=${{github.workspace}}/.pnpm-store" >> $GITHUB_ENV
       - id: pnpm_store_path_output
         run: echo "::set-output name=pnpm_store_path::$pnpm_store_path"
+        shell: bash
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: set pnpm store-dir
