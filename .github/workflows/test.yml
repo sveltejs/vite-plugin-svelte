@@ -112,6 +112,8 @@ jobs:
         run: npm i -g pnpm@5
       - name: install
         run: pnpm install --frozen-lockfile --offline --ignore-scripts
+      - name: build
+        run: pnpm run build:ci
       - name: lint
         run: pnpm lint
 
@@ -195,6 +197,8 @@ jobs:
         run: pnpm install --frozen-lockfile --offline --ignore-scripts
       - name: install esbuild
         run: node node_modules/esbuild/install.js
+      - name: build
+        run: pnpm run build:ci
       - name: run tests
         run: pnpm test:ci
 
@@ -258,5 +262,7 @@ jobs:
         run: npm i -g pnpm@5
       - name: install
         run: pnpm install --frozen-lockfile --offline --ignore-scripts
+      - name: install esbuild
+        run: node node_modules/esbuild/install.js
       - name: build
-        run: pnpm build
+        run: pnpm run build
