@@ -53,7 +53,7 @@ jobs:
         id: pnpm-cache-fallback
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-fallback-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
 
