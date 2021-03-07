@@ -50,6 +50,7 @@ jobs:
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-fallback-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-fallback-
+            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-
 
       - name: install
         if: steps.pnpm-store.outputs.cache-hit != 'true'
