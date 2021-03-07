@@ -46,9 +46,16 @@ jobs:
         with:
           path: ${{ env.pnpm_store_path }}
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: pnpm-cache-fallback
+        if: steps.pnpm-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v2
+        id: pnpm-cache-fallback
+        with:
+          path: ${{ env.pnpm_store_path }}
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
-
 
 #      - name: cache node_modules
 #        id: node_modules-cache
@@ -60,6 +67,7 @@ jobs:
 #          key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/pnpm-lock.yaml')) }}
 
       - name: install
+        if: steps.pnpm-cache.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
 #      - name: install esbuild
 #        run: node node_modules/esbuild/install.js
@@ -106,8 +114,6 @@ jobs:
         with:
           path: ${{ needs.setup.outputs.pnpm_store_path }}
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: install
@@ -150,8 +156,6 @@ jobs:
         with:
           path: ${{ needs.setup.outputs.pnpm_store_path }}
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: install
@@ -191,8 +195,6 @@ jobs:
         with:
           path: ${{ needs.setup.outputs.pnpm_store_path }}
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: install
@@ -258,8 +260,6 @@ jobs:
         with:
           path: ${{ needs.setup.outputs.pnpm_store_path }}
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: install
