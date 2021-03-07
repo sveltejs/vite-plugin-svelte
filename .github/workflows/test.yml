@@ -1,4 +1,4 @@
-# build and test on linux, windows, mac with node 12,14.x
+# build and test on linux, windows, mac with node 12,14
 name: Test
 
 on:
@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        node: [ 12.x, 14.x ]
+        node: [ 12, 14 ]
 
     steps:
       - uses: actions/setup-node@v2
@@ -45,9 +45,9 @@ jobs:
         id: pnpm-cache
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
 
 
 #      - name: cache node_modules
@@ -83,7 +83,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        node: [ 14.x ]
+        node: [ 14 ]
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -105,9 +105,9 @@ jobs:
         id: pnpm-cache
         with:
           path: ${{ needs.setup.outputs.pnpm_store_path }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: install
@@ -123,7 +123,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        node: [ 14.x ]
+        node: [ 14 ]
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -145,9 +145,9 @@ jobs:
         id: pnpm-cache
         with:
           path: ${{ needs.setup.outputs.pnpm_store_path }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: install
@@ -164,7 +164,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        node: [ 12.x, 14.x ]
+        node: [ 12, 14 ]
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -186,9 +186,9 @@ jobs:
         id: pnpm-cache
         with:
           path: ${{ needs.setup.outputs.pnpm_store_path }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: install
@@ -229,7 +229,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        node: [ 14.x ]
+        node: [ 14 ]
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -251,9 +251,9 @@ jobs:
         id: pnpm-cache
         with:
           path: ${{ needs.setup.outputs.pnpm_store_path }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-
       - name: install pnpm
         run: npm i -g pnpm@5
       - name: install
