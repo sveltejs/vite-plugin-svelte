@@ -10,9 +10,9 @@ A fresh start for svite based on vite2 repo structure and setup
 
 ### dev
 
-- run `yarn`to install
-- run `yarn dev` in `packages/vite-plugin-svelte` to autobuild plugin
-- run `yarn dev` in `packages/playground/xxx` to start vite
+- run `pnpm i`to install
+- run `pnpm dev` in `packages/vite-plugin-svelte` to autobuild plugin
+- run `pnpm dev` in `packages/playground/xxx` to start vite
 
 changes in plugin need restart of dev server
 

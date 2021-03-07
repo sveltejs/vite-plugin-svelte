@@ -5,7 +5,7 @@ module.exports = defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production'
   return {
     optimizeDeps: {
-      include: ['@dependency/dependency']
+      exclude: ['@svitejs/hmr-test-dependency']
     },
     plugins: [
       svelte({

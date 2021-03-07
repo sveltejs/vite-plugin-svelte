@@ -105,8 +105,7 @@ async function main() {
     throw new Error(`invalid target version: ${targetVersion}`)
   }
 
-  const tag =
-    pkgName === 'vite' ? `v${targetVersion}` : `${pkgName}@${targetVersion}`
+  const tag = `${pkgName}@${targetVersion}`
 
   /**
    * @type {{ yes: boolean }}
@@ -126,13 +125,13 @@ async function main() {
 
   step('\nBuilding package...')
   if (!skipBuild && !isDryRun) {
-    await run('yarn', ['build'])
+    await run('pnpm', ['build'])
   } else {
     console.log(`(skipped)`)
   }
 
   step('\nGenerating changelog...')
-  await run('yarn', ['changelog'])
+  await run('pnpm', ['changelog'])
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' })
   if (stdout) {
@@ -172,20 +171,19 @@ function updateVersion(version) {
  * @param {Function} runIfNotDry
  */
 async function publishPackage(version, runIfNotDry) {
-  const publicArgs = [
+  const publishArgs = [
     'publish',
-    '--no-git-tag-version',
-    '--new-version',
-    version,
+    '--publish-branch',
+    'main',
     '--access',
     'public'
   ]
   if (args.tag) {
-    publicArgs.push(`--tag`, args.tag)
+    publishArgs.push(`--tag`, args.tag)
   }
   try {
-    await runIfNotDry('yarn', publicArgs, {
-      stdio: 'pipe'
+    await runIfNotDry('pnpm', publishArgs, {
+      stdio: 'inherit'
     })
     console.log(chalk.green(`Successfully published ${pkgName}@${version}`))
   } catch (e) {

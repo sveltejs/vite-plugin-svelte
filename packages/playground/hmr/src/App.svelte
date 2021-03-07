@@ -1,6 +1,6 @@
 <script>
   import StaticImport from './components/StaticImport.svelte'
-  import Dependency from '@dependency/dependency'
+  import Dependency from '@svitejs/hmr-test-dependency'
   import HmrTest from './components/HmrTest.svelte'
   let dynamicImportComponent
   function importDynamic() {
