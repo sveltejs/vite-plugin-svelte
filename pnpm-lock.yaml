@@ -6,7 +6,7 @@ importers:
       '@microsoft/api-extractor': 7.13.2
       '@types/fs-extra': 9.0.8
       '@types/jest': 26.0.20
-      '@types/node': 14.14.31
+      '@types/node': 14.14.32
       '@types/semver': 7.3.4
       '@typescript-eslint/eslint-plugin': 4.16.1_db289a69270a1846aefbe377c7369d6d
       '@typescript-eslint/parser': 4.16.1_eslint@7.21.0+typescript@4.2.3
@@ -18,7 +18,7 @@ importers:
       eslint: 7.21.0
       eslint-config-prettier: 8.1.0_eslint@7.21.0
       eslint-plugin-html: 6.1.1
-      eslint-plugin-jest: 24.1.5_eslint@7.21.0+typescript@4.2.3
+      eslint-plugin-jest: 24.1.7_eslint@7.21.0+typescript@4.2.3
       eslint-plugin-markdown: 2.0.0_eslint@7.21.0
       eslint-plugin-node: 11.1.0_eslint@7.21.0
       eslint-plugin-prettier: 3.3.1_328fff7ca4342e26ba070884b05a404a
@@ -42,9 +42,9 @@ importers:
       semver: 7.3.4
       sirv: 1.0.11
       slash: 3.0.0
-      stylelint: 13.11.0
-      stylelint-config-prettier: 8.0.2_stylelint@13.11.0
-      stylelint-config-recommended: 3.0.0_stylelint@13.11.0
+      stylelint: 13.12.0
+      stylelint-config-prettier: 8.0.2_stylelint@13.12.0
+      stylelint-config-recommended: 4.0.0_stylelint@13.12.0
       svelte: 3.35.0
       ts-jest: 26.5.3_jest@26.6.3+typescript@4.2.3
       typescript: 4.2.3
@@ -55,7 +55,7 @@ importers:
       '@microsoft/api-extractor': ^7.13.2
       '@types/fs-extra': ^9.0.8
       '@types/jest': ^26.0.20
-      '@types/node': ^14.14.31
+      '@types/node': ^14.14.32
       '@types/semver': ^7.3.4
       '@typescript-eslint/eslint-plugin': ^4.16.1
       '@typescript-eslint/parser': ^4.16.1
@@ -67,7 +67,7 @@ importers:
       eslint: ^7.21.0
       eslint-config-prettier: ^8.1.0
       eslint-plugin-html: ^6.1.1
-      eslint-plugin-jest: ^24.1.5
+      eslint-plugin-jest: ^24.1.7
       eslint-plugin-markdown: ^2.0.0
       eslint-plugin-node: ^11.1.0
       eslint-plugin-prettier: ^3.3.1
@@ -91,9 +91,9 @@ importers:
       semver: ^7.3.4
       sirv: ^1.0.11
       slash: ^3.0.0
-      stylelint: ^13.11.0
+      stylelint: ^13.12.0
       stylelint-config-prettier: ^8.0.2
-      stylelint-config-recommended: ^3.0.0
+      stylelint-config-recommended: ^4.0.0
       svelte: ^3.35.0
       ts-jest: ^26.5.3
       typescript: ^4.2.3
@@ -256,20 +256,20 @@ importers:
       vite: ^2.0.5
   packages/playground/windicss:
     dependencies:
-      windicss: 2.2.7
+      windicss: 2.2.8
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.35.0
       svelte-hmr: 0.12.9_svelte@3.35.0
       vite: 2.0.5
-      vite-plugin-windicss: 0.6.10_vite@2.0.5
+      vite-plugin-windicss: 0.6.11_vite@2.0.5
     specifiers:
       '@svitejs/vite-plugin-svelte': workspace:*
       svelte: ^3.35.0
       svelte-hmr: ^0.12.9
       vite: ^2.0.5
-      vite-plugin-windicss: ^0.6.10
-      windicss: ^2.2.7
+      vite-plugin-windicss: ^0.6.11
+      windicss: ^2.2.8
   packages/svite:
     dependencies:
       cac: 6.7.2
@@ -277,10 +277,10 @@ importers:
       degit: 2.8.0
       execa: 5.0.0
     devDependencies:
-      '@types/node': 14.14.31
+      '@types/node': 14.14.32
       esbuild: 0.8.56
     specifiers:
-      '@types/node': ^14.14.31
+      '@types/node': ^14.14.32
       cac: ^6.7.2
       chalk: ^4.1.0
       degit: ^2.8.0
@@ -406,23 +406,23 @@ importers:
       vite: ^2.0.5
   packages/templates/windicss:
     dependencies:
-      windicss: 2.2.7
+      windicss: 2.2.8
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.35.0
       svelte-hmr: 0.12.9_svelte@3.35.0
       vite: 2.0.5
-      vite-plugin-windicss: 0.6.10_vite@2.0.5
+      vite-plugin-windicss: 0.6.11_vite@2.0.5
     specifiers:
       '@svitejs/vite-plugin-svelte': workspace:*
       svelte: ^3.35.0
       svelte-hmr: ^0.12.9
       vite: ^2.0.5
-      vite-plugin-windicss: ^0.6.10
-      windicss: ^2.2.7
+      vite-plugin-windicss: ^0.6.11
+      windicss: ^2.2.8
   packages/templates/windicss-ts:
     dependencies:
-      windicss: 2.2.7
+      windicss: 2.2.8
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       '@tsconfig/svelte': 1.0.10
@@ -433,7 +433,7 @@ importers:
       tslib: 2.1.0
       typescript: 4.2.3
       vite: 2.0.5
-      vite-plugin-windicss: 0.6.10_vite@2.0.5
+      vite-plugin-windicss: 0.6.11_vite@2.0.5
     specifiers:
       '@svitejs/vite-plugin-svelte': workspace:*
       '@tsconfig/svelte': ^1.0.10
@@ -444,8 +444,8 @@ importers:
       tslib: ^2.1.0
       typescript: ^4.2.3
       vite: ^2.0.5
-      vite-plugin-windicss: ^0.6.10
-      windicss: ^2.2.7
+      vite-plugin-windicss: ^0.6.11
+      windicss: ^2.2.8
   packages/vite-plugin-svelte:
     dependencies:
       '@rollup/pluginutils': 4.1.0_rollup@2.40.0
@@ -1535,6 +1535,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g==
+  /@types/node/14.14.32:
+    dev: true
+    resolution:
+      integrity: sha512-/Ctrftx/zp4m8JOujM5ZhwzlWLx22nbQJiVqz8/zE15gOeEW+uly3FSX4fGFpcfEvFzXcMCJwq9lGVWgyARXhg==
   /@types/normalize-package-data/2.4.0:
     dev: true
     resolution:
@@ -1691,16 +1695,16 @@ packages:
       node: ^8.10.0 || ^10.13.0 || >=11.10.1
     resolution:
       integrity: sha512-s/aIP1XcMkEqCNcPQtl60ogUYjSM8FU2mq1O7y5cFf3Xcob1z1iXWNB6cC43Op+NGRTFgGolri6s8z/efA9i1w==
-  /@windicss/plugin-utils/0.6.10:
+  /@windicss/plugin-utils/0.6.11:
     dependencies:
       esbuild: 0.8.56
       esbuild-register: 2.2.0_esbuild@0.8.56
       fast-glob: 3.2.5
       micromatch: 4.0.2
-      windicss: 2.2.6
+      windicss: 2.2.8
     dev: true
     resolution:
-      integrity: sha512-dMPHtUHmOktnikLah8tmMQjU2gb5AGxuXO8wen3lMo/G8YZI1H9Ua9qnMUIbaJ11mlGhpv89iYEsyfRHThbi/w==
+      integrity: sha512-UBPe1yb4ZzGjISjbHV+e9/sj3+bvK2Bb+Mcn18qSW4mUfPnTY+tXBV7yvoaYILgZat9BOppHrRk9dwrI2DJD3w==
   /JSONStream/1.3.5:
     dependencies:
       jsonparse: 1.3.1
@@ -3598,7 +3602,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-JSe3ZDb7feKMnQM27XWGeoIjvP4oWQMJD9GZ6wW67J7/plVL87NK72RBwlvfc3tTZiYUchHhxAwtgEd1GdofDA==
-  /eslint-plugin-jest/24.1.5_eslint@7.21.0+typescript@4.2.3:
+  /eslint-plugin-jest/24.1.7_eslint@7.21.0+typescript@4.2.3:
     dependencies:
       '@typescript-eslint/experimental-utils': 4.16.1_eslint@7.21.0+typescript@4.2.3
       eslint: 7.21.0
@@ -3609,7 +3613,7 @@ packages:
       eslint: '>=5'
       typescript: '*'
     resolution:
-      integrity: sha512-FIP3lwC8EzEG+rOs1y96cOJmMVpdFNreoDJv29B5vIupVssRi8zrSY3QadogT0K3h1Y8TMxJ6ZSAzYUmFCp2hg==
+      integrity: sha512-p5Dk/Rgiv+ThxguYl96dj7Hqkow09dwSH1G5ALKdREM4pHO1V1xP0N6/myzoquD3z4h+1YPYHzM+g7Fd0xyaXg==
   /eslint-plugin-markdown/2.0.0_eslint@7.21.0:
     dependencies:
       eslint: 7.21.0
@@ -9423,9 +9427,9 @@ packages:
     dev: true
     resolution:
       integrity: sha1-eVjHk+R+MuB9K1yv5cC/jhLneQI=
-  /stylelint-config-prettier/8.0.2_stylelint@13.11.0:
+  /stylelint-config-prettier/8.0.2_stylelint@13.12.0:
     dependencies:
-      stylelint: 13.11.0
+      stylelint: 13.12.0
     dev: true
     engines:
       node: '>= 10'
@@ -9435,15 +9439,15 @@ packages:
       stylelint: '>=11.0.0'
     resolution:
       integrity: sha512-TN1l93iVTXpF9NJstlvP7nOu9zY2k+mN0NSFQ/VEGz15ZIP9ohdDZTtCWHs5LjctAhSAzaILULGbgiM0ItId3A==
-  /stylelint-config-recommended/3.0.0_stylelint@13.11.0:
+  /stylelint-config-recommended/4.0.0_stylelint@13.12.0:
     dependencies:
-      stylelint: 13.11.0
+      stylelint: 13.12.0
     dev: true
     peerDependencies:
-      stylelint: '>=10.1.0'
+      stylelint: ^13.12.0
     resolution:
-      integrity: sha512-F6yTRuc06xr1h5Qw/ykb2LuFynJ2IxkKfCMf+1xqPffkxh0S09Zc902XCffcsw/XMFq/OzQ1w54fLIDtmRNHnQ==
-  /stylelint/13.11.0:
+      integrity: sha512-sgna89Ng+25Hr9kmmaIxpGWt2LStVm1xf1807PdcWasiPDaOTkOHRL61sINw0twky7QMzafCGToGDnHT/kTHtQ==
+  /stylelint/13.12.0:
     dependencies:
       '@stylelint/postcss-css-in-js': 0.37.2_4fe96148bf77e6cee792ae366c9083f9
       '@stylelint/postcss-markdown': 0.36.2_4fe96148bf77e6cee792ae366c9083f9
@@ -9498,7 +9502,7 @@ packages:
       node: '>=10.13.0'
     hasBin: true
     resolution:
-      integrity: sha512-DhrKSWDWGZkCiQMtU+VroXM6LWJVC8hSK24nrUngTSQvXGK75yZUq4yNpynqrxD3a/fzKMED09V+XxO4z4lTbw==
+      integrity: sha512-P8O1xDy41B7O7iXaSlW+UuFbE5+ZWQDb61ndGDxKIt36fMH50DtlQTbwLpFLf8DikceTAb3r6nPrRv30wBlzXw==
   /stylus/0.54.8:
     dependencies:
       css-parse: 2.0.0
@@ -10435,16 +10439,16 @@ packages:
     dev: true
     resolution:
       integrity: sha512-O6AE4OskCG5S1emQ/4gl8zK586RqA3srz3nfK/Viy0UPToBc5Trp9BVFb1u0CjsKrAWwnpr4ifM/KBXPWwJbCA==
-  /vite-plugin-windicss/0.6.10_vite@2.0.5:
+  /vite-plugin-windicss/0.6.11_vite@2.0.5:
     dependencies:
-      '@windicss/plugin-utils': 0.6.10
+      '@windicss/plugin-utils': 0.6.11
       vite: 2.0.5
-      windicss: 2.2.6
+      windicss: 2.2.8
     dev: true
     peerDependencies:
       vite: ^2.0.1
     resolution:
-      integrity: sha512-ofeJGvHu/Tz+HIP9Ap0uQHBt5YNi2uv/4yoJH30I3zFE5gAdsKN3GgzrcySQEPaQIgWmcDNbpWqAFejLHFLpzw==
+      integrity: sha512-cFHyEVyCHGZ5Bu7L3EmiMKVsYtsI23+YBEd/bggEbdhdbv93bBk0M3j8ZVwZxwvKgJhLVG9Fthl3jAE+FVl0EA==
   /vite/2.0.5:
     dependencies:
       esbuild: 0.8.56
@@ -10557,20 +10561,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-NsmoXalsWVDMGupxZ5R08ka9flZjjiLvHVAWYOKtiKM8ujtZWr9cRffak+uSE48+Ob8ObalXpwyeUiyDD6QFgg==
-  /windicss/2.2.6:
-    dev: true
+  /windicss/2.2.8:
     engines:
       node: '>= 12'
     hasBin: true
     resolution:
-      integrity: sha512-RK502Xwsw0ptjVueJum0TEr286YJgtqK6kXpa60R6a1z2gGkVpEcaIfr6okQ5EYUk8WMRLrXoK6B2E6dSRg/sw==
-  /windicss/2.2.7:
-    dev: false
-    engines:
-      node: '>= 12'
-    hasBin: true
-    resolution:
-      integrity: sha512-a9kaJjdp015mRIIF+W4xO2QFWkLgHd5/P09NbPdD5kDifbRqY0Av2prOhX+ZAqWmrAoUup6t9TIHGCqiKH/q4g==
+      integrity: sha512-zNh65NiuGDChJvCjkEEMpA5NpykouYOc5vGeT3ynC5XydbENJYCEP7Jt9cfVD9BAG+OQxsNYtsYOabtzQeq4Iw==
   /with/7.0.2:
     dependencies:
       '@babel/parser': 7.13.9
