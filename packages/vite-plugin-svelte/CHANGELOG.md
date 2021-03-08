@@ -1,3 +1,12 @@
+# [0.10.0](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.10.0-0...vite-plugin-svelte@0.10.0) (2021-03-08)
+
+
+### Bug Fixes
+
+* **vite-plugin-svelte:** vite resolve.mainFields is not merged, so we need to return the whole list ([c22f28a](https://github.com/svitejs/svite/commit/c22f28ad38016810e1a4d7ccf165e81d977eed3c))
+
+
+
 # [0.10.0-0](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.9.4...vite-plugin-svelte@0.10.0-0) (2021-03-06)
 
 
