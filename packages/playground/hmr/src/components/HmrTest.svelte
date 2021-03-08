@@ -13,6 +13,7 @@
   <span class="counter increment" on:click={increment}>{$count}</span>
 </div>
 
+<!-- HMR-TEMPLATE-INJECT -->
 <style>
   .label {
     color: red;

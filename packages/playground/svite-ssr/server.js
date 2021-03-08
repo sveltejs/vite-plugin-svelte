@@ -7,7 +7,8 @@ const isTest = process.env.NODE_ENV === 'test' || !!process.env.VITE_TEST_BUILD
 
 async function createServer(
   root = process.cwd(),
-  isProd = process.env.NODE_ENV === 'production'
+  isProd = process.env.NODE_ENV === 'production',
+  _isTest = isTest
 ) {
   const resolve = (p) => path.resolve(__dirname, p)
 
@@ -28,13 +29,21 @@ async function createServer(
    */
   let vite
   if (!isProd) {
-    vite = await require('vite').createServer({
+    const inlineCfg = {
       root,
-      logLevel: isTest ? 'error' : 'info',
+      logLevel: _isTest ? 'error' : 'info',
       server: {
         middlewareMode: true
       }
-    })
+    }
+    if (_isTest) {
+      inlineCfg.server.watch = {
+        usePolling: true,
+        interval: 100
+      }
+    }
+    // @ts-ignore
+    vite = await require('vite').createServer(inlineCfg)
     // use vite's connect instance as middleware
     app.use(vite.middlewares)
   } else {

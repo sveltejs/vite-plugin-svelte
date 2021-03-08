@@ -124,25 +124,27 @@ export async function getText(el: string | ElementHandle) {
 }
 
 export async function hmrUpdateComplete(file, timeout) {
-  return new Promise(function (resolve, reject) {
-    function listener(data) {
+  let id
+  let pageConsoleListener
+  const timerPromise = new Promise(
+    (_, reject) =>
+      (id = setTimeout(() => {
+        reject(`timeout for ${file} after ${timeout}`)
+      }, timeout))
+  )
+  const pagePromise = new Promise((resolve) => {
+    pageConsoleListener = (data) => {
       const text = data.text()
       if (text.indexOf(file) > -1) {
-        clearTimeout(timer)
-        page.off('console', listener)
         resolve(file)
       }
     }
+    page.on('console', pageConsoleListener)
+  })
 
-    page.on('console', listener)
-    const timer = setTimeout(function () {
-      page.off('console', listener)
-      reject(
-        new Error(
-          `timeout after ${timeout}ms waiting for hmr update of ${file} to complete`
-        )
-      )
-    }, timeout)
+  return Promise.race([timerPromise, pagePromise]).finally(() => {
+    page.off('console', pageConsoleListener)
+    clearTimeout(id)
   })
 }
 

@@ -38,7 +38,7 @@ exports.serve = async function serve(root, isProd) {
   }
 
   const { createServer } = require(path.resolve(root, 'server.js'))
-  const { app, vite } = await createServer(root, isProd)
+  const { app, vite } = await createServer(root, isProd, true)
 
   return new Promise((resolve, reject) => {
     try {

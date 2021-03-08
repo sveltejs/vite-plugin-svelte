@@ -49,7 +49,12 @@ if (!isBuild) {
     const updateApp = editFileAndWaitForHmrComplete.bind(null, 'src/App.svelte')
     test('should render additional html', async () => {
       expect(await getEl('#hmr-test')).toBe(null)
-      await updateApp((content) => `${content}\n<div id="hmr-test">foo</div>`)
+      await updateApp((content) =>
+        content.replace(
+          '<!-- HMR-TEMPLATE-INJECT -->',
+          '<div id="hmr-test">foo</div>\n<!-- HMR-TEMPLATE-INJECT -->'
+        )
+      )
       await expect(await getText(`#hmr-test`)).toBe('foo')
     })
     test('should apply style update', async () => {

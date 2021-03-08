@@ -23,6 +23,7 @@
 <HmrTest id="hmr-test-1" />
 <HmrTest id="hmr-test-2" />
 
+<!-- HMR-TEMPLATE-INJECT -->
 <style>
   h1 {
     color: #111111;

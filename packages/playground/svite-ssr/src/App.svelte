@@ -8,7 +8,10 @@
 <h1>Hello {world}</h1>
 <p>Open App.svelte in your editor and change something to see HMR in action</p>
 <Foo />
-<img src={logo} alt="logo" />
+<img src={logo} alt="logo" width="24" />
+<div id="foo">{foo}</div>
+<!-- HMR-TEMPLATE-INJECT -->
+
 <svelte:head>
   <style>
     body {
@@ -16,7 +19,6 @@
     }
   </style>
 </svelte:head>
-<div id="foo">{foo}</div>
 
 <style>
   h1 {

@@ -9,6 +9,7 @@
   <span class="label">{label}</span> <img alt="imported" src={importedAsset} />
 </div>
 
+<!-- HMR-TEMPLATE-INJECT -->
 <style>
   .label {
     padding-left: 2rem;

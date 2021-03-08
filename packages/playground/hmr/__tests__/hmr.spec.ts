@@ -94,14 +94,24 @@ if (!isBuild) {
 
     test('should keep state of external store intact on change of HmrTest.svelte', async () => {
       // counter state should remain
-      await updateHmrTest((content) => `${content}\n<span/>\n`)
+      await updateHmrTest((content) =>
+        content.replace(
+          '<!-- HMR-TEMPLATE-INJECT -->',
+          '<span/>\n<!-- HMR-TEMPLATE-INJECT -->'
+        )
+      )
       await expect(await getText(`#hmr-test-1 .counter`)).toBe('1')
       await expect(await getText(`#hmr-test-2 .counter`)).toBe('0')
     })
 
     test('should preserve state of external store used by HmrTest.svelte when editing App.svelte', async () => {
       // update App, add a new instance of HmrTest
-      await updateApp((content) => `${content}\n<HmrTest id="hmr-test-3"/>`)
+      await updateApp((content) =>
+        content.replace(
+          '<!-- HMR-TEMPLATE-INJECT -->',
+          '<HmrTest id="hmr-test-3"/>\n<!-- HMR-TEMPLATE-INJECT -->'
+        )
+      )
       // counter state is preserved
       await expect(await getText(`#hmr-test-1 .counter`)).toBe('1')
       await expect(await getText(`#hmr-test-2 .counter`)).toBe('0')

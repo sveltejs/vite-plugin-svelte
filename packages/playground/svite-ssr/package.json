@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "node server",
-    "build": "yarn build:client && yarn build:server",
+    "build": "pnpm build:client && pnpm build:server",
     "build:client": "vite build --ssrManifest --outDir dist/client",
     "build:server": "vite build --ssr src/entry-server.js --outDir dist/server",
     "serve": "cross-env NODE_ENV=production node server",
