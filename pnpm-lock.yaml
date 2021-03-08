@@ -14,7 +14,7 @@ importers:
       conventional-changelog-cli: 2.1.1
       cross-env: 7.0.3
       enquirer: 2.3.6
-      esbuild: 0.8.56
+      esbuild: 0.8.57
       eslint: 7.21.0
       eslint-config-prettier: 8.1.0_eslint@7.21.0
       eslint-plugin-html: 6.1.1
@@ -32,7 +32,7 @@ importers:
       lint-staged: 10.5.4
       minimist: 1.2.5
       node-fetch: 2.6.1
-      npm-check-updates: 11.1.11
+      npm-check-updates: 11.2.0
       npm-run-all: 4.1.5
       playwright-core: 1.9.1
       pnpm: 5.18.3
@@ -63,7 +63,7 @@ importers:
       conventional-changelog-cli: ^2.1.1
       cross-env: ^7.0.3
       enquirer: ^2.3.6
-      esbuild: ^0.8.56
+      esbuild: ^0.8.57
       eslint: ^7.21.0
       eslint-config-prettier: ^8.1.0
       eslint-plugin-html: ^6.1.1
@@ -81,7 +81,7 @@ importers:
       lint-staged: ^10.5.4
       minimist: ^1.2.5
       node-fetch: ^2.6.1
-      npm-check-updates: ^11.1.11
+      npm-check-updates: ^11.2.0
       npm-run-all: ^4.1.5
       playwright-core: ^1.9.1
       pnpm: ^5.18.3
@@ -256,7 +256,7 @@ importers:
       vite: ^2.0.5
   packages/playground/windicss:
     dependencies:
-      windicss: 2.2.8
+      windicss: 2.3.0
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.35.0
@@ -269,7 +269,7 @@ importers:
       svelte-hmr: ^0.12.9
       vite: ^2.0.5
       vite-plugin-windicss: ^0.6.11
-      windicss: ^2.2.8
+      windicss: ^2.3.0
   packages/svite:
     dependencies:
       cac: 6.7.2
@@ -278,13 +278,13 @@ importers:
       execa: 5.0.0
     devDependencies:
       '@types/node': 14.14.32
-      esbuild: 0.8.56
+      esbuild: 0.8.57
     specifiers:
       '@types/node': ^14.14.32
       cac: ^6.7.2
       chalk: ^4.1.0
       degit: ^2.8.0
-      esbuild: ^0.8.56
+      esbuild: ^0.8.57
       execa: ^5.0.0
   packages/templates:
     specifiers: {}
@@ -406,7 +406,7 @@ importers:
       vite: ^2.0.5
   packages/templates/windicss:
     dependencies:
-      windicss: 2.2.8
+      windicss: 2.3.0
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.35.0
@@ -419,10 +419,10 @@ importers:
       svelte-hmr: ^0.12.9
       vite: ^2.0.5
       vite-plugin-windicss: ^0.6.11
-      windicss: ^2.2.8
+      windicss: ^2.3.0
   packages/templates/windicss-ts:
     dependencies:
-      windicss: 2.2.8
+      windicss: 2.3.0
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       '@tsconfig/svelte': 1.0.10
@@ -445,7 +445,7 @@ importers:
       typescript: ^4.2.3
       vite: ^2.0.5
       vite-plugin-windicss: ^0.6.11
-      windicss: ^2.2.8
+      windicss: ^2.3.0
   packages/vite-plugin-svelte:
     dependencies:
       '@rollup/pluginutils': 4.1.0_rollup@2.40.0
@@ -461,7 +461,7 @@ importers:
       '@types/es-module-lexer': 0.3.0
       '@types/estree': 0.0.46
       '@types/hash-sum': 1.0.0
-      esbuild: 0.8.56
+      esbuild: 0.8.57
       locate-character: 2.0.5
       magic-string: 0.25.7
       rollup: 2.40.0
@@ -475,7 +475,7 @@ importers:
       '@types/hash-sum': ^1.0.0
       chalk: ^4.1.0
       debug: ^4.3.1
-      esbuild: ^0.8.56
+      esbuild: ^0.8.57
       hash-sum: ^2.0.0
       locate-character: ^2.0.5
       magic-string: ^0.25.7
@@ -3535,6 +3535,12 @@ packages:
     requiresBuild: true
     resolution:
       integrity: sha512-PTMdAWK3JI2MNW811znGssGP5GR44tQPr++VQ1rPP0n8Z1cTKbCPD3S/kXPLr3ZZDIwAaVm08fuFym6Rp8l/0A==
+  /esbuild/0.8.57:
+    dev: true
+    hasBin: true
+    requiresBuild: true
+    resolution:
+      integrity: sha512-j02SFrUwFTRUqiY0Kjplwjm1psuzO1d6AjaXKuOR9hrY0HuPsT6sV42B6myW34h1q4CRy+Y3g4RU/cGJeI/nNA==
   /escalade/3.1.1:
     dev: true
     engines:
@@ -6910,7 +6916,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-gqkfgGePhTpAEgUsGEgcq1rqPXA+tv/aVBlgEzfXwA1yiUJF7xtEt3CtVwOjNYQOVknDk0F20w58Fnm3EtG0fA==
-  /npm-check-updates/11.1.11:
+  /npm-check-updates/11.2.0:
     dependencies:
       chalk: 4.1.0
       cint: 8.2.1
@@ -6926,6 +6932,7 @@ packages:
       libnpmconfig: 1.2.1
       lodash: 4.17.21
       mem: 8.0.0
+      minimatch: 3.0.4
       p-map: 4.0.0
       pacote: 11.2.7
       parse-github-url: 1.0.2
@@ -6943,7 +6950,7 @@ packages:
       node: '>=10.17'
     hasBin: true
     resolution:
-      integrity: sha512-aNYIErVtPk8tOuNEJcb8lfybeFvxmTvzOJmBliobUhvuk5m0IuUtVqIZkftUGzjJ9zYGLOhlU7qfO1wHwC5blg==
+      integrity: sha512-JCQHyn3/kxaWHbxefb8JKNZTZgFySnGcPZQbhx33rZEW55VoCjS3/GRNCN5ITIIR/aHNobDtwM1MX7MF31jC2A==
   /npm-install-checks/4.0.0:
     dependencies:
       semver: 7.3.4
@@ -10562,11 +10569,19 @@ packages:
     resolution:
       integrity: sha512-NsmoXalsWVDMGupxZ5R08ka9flZjjiLvHVAWYOKtiKM8ujtZWr9cRffak+uSE48+Ob8ObalXpwyeUiyDD6QFgg==
   /windicss/2.2.8:
+    dev: true
     engines:
       node: '>= 12'
     hasBin: true
     resolution:
       integrity: sha512-zNh65NiuGDChJvCjkEEMpA5NpykouYOc5vGeT3ynC5XydbENJYCEP7Jt9cfVD9BAG+OQxsNYtsYOabtzQeq4Iw==
+  /windicss/2.3.0:
+    dev: false
+    engines:
+      node: '>= 12'
+    hasBin: true
+    resolution:
+      integrity: sha512-OR/ULZmcVhtEJDIFnkz4S4v4efpZ8DuvDtzBwXNgbtiPQIxN0Zhpo59q0rfF0i3tfwjKw2KCQXNxL5E98bMuVA==
   /with/7.0.2:
     dependencies:
       '@babel/parser': 7.13.9
