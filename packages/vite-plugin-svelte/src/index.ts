@@ -23,6 +23,8 @@ import {
 } from './utils/options'
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache'
 
+import { SVELTE_IMPORTS, SVITE_RESOLVE_MAIN_FIELDS } from './utils/contants'
+
 export {
   Options,
   Preprocessor,
@@ -34,19 +36,6 @@ export {
   ModuleFormat,
   Processed
 } from './utils/options'
-
-const svelte_packages = [
-  'svelte/animate',
-  'svelte/easing',
-  'svelte/internal',
-  'svelte/motion',
-  'svelte/store',
-  'svelte/transition',
-  'svelte',
-  'svelte-hmr/runtime/hot-api-esm.js',
-  'svelte-hmr/runtime/proxy-adapter-dom.js',
-  'svelte-hmr'
-]
 
 const pkg_export_errors = new Set()
 
@@ -95,15 +84,17 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         adapter: options?.hot?.adapter
       })
       // extra vite config
-      return {
+      const extraViteConfig = {
         optimizeDeps: {
-          exclude: [...svelte_packages]
+          exclude: [...SVELTE_IMPORTS]
         },
         resolve: {
-          mainFields: ['svelte'],
-          dedupe: [...svelte_packages]
+          mainFields: [...SVITE_RESOLVE_MAIN_FIELDS],
+          dedupe: [...SVELTE_IMPORTS]
         }
       }
+      log.debug('additional vite config', extraViteConfig)
+      return extraViteConfig
     },
 
     configResolved(config) {
