@@ -164,6 +164,21 @@ importers:
       vite: ^2.0.5
   packages/playground/hmr-test-dependency:
     specifiers: {}
+  packages/playground/preprocess-with-vite:
+    devDependencies:
+      '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      sass: 1.32.8
+      stylus: 0.54.8
+      svelte: 3.35.0
+      svelte-hmr: 0.12.9_svelte@3.35.0
+      vite: 2.0.5
+    specifiers:
+      '@svitejs/vite-plugin-svelte': workspace:*
+      sass: ^1.32.8
+      stylus: ^0.54.8
+      svelte: ^3.35.0
+      svelte-hmr: ^0.12.9
+      vite: ^2.0.5
   packages/playground/svite-minimal:
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -262,13 +277,13 @@ importers:
       svelte: 3.35.0
       svelte-hmr: 0.12.9_svelte@3.35.0
       vite: 2.0.5
-      vite-plugin-windicss: 0.6.11_vite@2.0.5
+      vite-plugin-windicss: 0.7.1_vite@2.0.5
     specifiers:
       '@svitejs/vite-plugin-svelte': workspace:*
       svelte: ^3.35.0
       svelte-hmr: ^0.12.9
       vite: ^2.0.5
-      vite-plugin-windicss: ^0.6.11
+      vite-plugin-windicss: ^0.7.1
       windicss: ^2.3.0
   packages/svite:
     dependencies:
@@ -461,6 +476,7 @@ importers:
       '@types/es-module-lexer': 0.3.0
       '@types/estree': 0.0.46
       '@types/hash-sum': 1.0.0
+      '@windicss/plugin-utils': 0.7.1
       esbuild: 0.8.57
       locate-character: 2.0.5
       magic-string: 0.25.7
@@ -473,6 +489,7 @@ importers:
       '@types/es-module-lexer': ^0.3.0
       '@types/estree': ^0.0.46
       '@types/hash-sum': ^1.0.0
+      '@windicss/plugin-utils': ^0.7.1
       chalk: ^4.1.0
       debug: ^4.3.1
       esbuild: ^0.8.57
@@ -1701,6 +1718,16 @@ packages:
     dev: true
     resolution:
       integrity: sha512-UBPe1yb4ZzGjISjbHV+e9/sj3+bvK2Bb+Mcn18qSW4mUfPnTY+tXBV7yvoaYILgZat9BOppHrRk9dwrI2DJD3w==
+  /@windicss/plugin-utils/0.7.1:
+    dependencies:
+      esbuild: 0.8.57
+      esbuild-register: 2.2.0_esbuild@0.8.57
+      fast-glob: 3.2.5
+      micromatch: 4.0.2
+      windicss: 2.3.0
+    dev: true
+    resolution:
+      integrity: sha512-ZloIRRKCnArFyDNuhZiFRA15XqhlWaeTcOf3soP9VxWJ+i6/IkH6cnaYgBefDATA/zJodOPsXBnbX333zKVk1Q==
   /JSONStream/1.3.5:
     dependencies:
       jsonparse: 1.3.1
@@ -8831,6 +8858,15 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-hhbzAgTIX8O7SHfp2c8/kREfEn4qO/9q8C9beyY6+tvZ87EpoZ3i1RIEvp27YBswnNbY9mWd6paKVmKbAgLfZA==
+  /sass/1.32.8:
+    dependencies:
+      chokidar: 3.5.1
+    dev: true
+    engines:
+      node: '>=8.9.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-Sl6mIeGpzjIUZqvKnKETfMf0iDAswD9TNlv13A7aAF3XZlRPMq4VvJWBC2N2DXbp94MQVdNSFG6LfF/iOXrPHQ==
   /sax/1.2.4:
     dev: true
     resolution:
@@ -10446,6 +10482,16 @@ packages:
       vite: ^2.0.1
     resolution:
       integrity: sha512-cFHyEVyCHGZ5Bu7L3EmiMKVsYtsI23+YBEd/bggEbdhdbv93bBk0M3j8ZVwZxwvKgJhLVG9Fthl3jAE+FVl0EA==
+  /vite-plugin-windicss/0.7.1_vite@2.0.5:
+    dependencies:
+      '@windicss/plugin-utils': 0.7.1
+      vite: 2.0.5
+      windicss: 2.3.0
+    dev: true
+    peerDependencies:
+      vite: ^2.0.1
+    resolution:
+      integrity: sha512-0NNrTBgjx11KOwqS/4szfVIt3LURFor4cEEVVJjB8p7JDTnC4K8Cu11bcAvY+QMOfflxv4s2ONo2SU4xkq68kA==
   /vite/2.0.5:
     dependencies:
       esbuild: 0.8.57

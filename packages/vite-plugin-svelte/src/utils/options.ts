@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { ResolvedConfig } from 'vite'
+import { ResolvedConfig, ViteDevServer } from 'vite'
 import { log } from './log'
 import { loadSvelteConfig } from './loadSvelteConfig'
 
@@ -163,6 +163,11 @@ export interface Options {
    * do not return cached transform data
    */
   disableTransformCache?: boolean
+
+  /**
+   * use vite as extra css preprocessor EXPERIMENTAL!
+   */
+  useVitePreprocess?: boolean
 }
 
 export interface ResolvedOptions extends Options {
@@ -170,6 +175,7 @@ export interface ResolvedOptions extends Options {
   isProduction: boolean
   isBuild?: boolean
   isServe?: boolean
+  server?: ViteDevServer
 }
 
 // TODO import from appropriate places

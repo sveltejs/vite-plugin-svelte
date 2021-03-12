@@ -1,19 +1,17 @@
 {
-  "name": "svite-windicss",
+  "name": "svite-preprocess-with-vite",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"
   },
-  "dependencies": {
-    "windicss": "^2.3.0"
-  },
   "devDependencies": {
     "@svitejs/vite-plugin-svelte": "workspace:*",
+    "sass": "^1.32.8",
+    "stylus": "^0.54.8",
     "svelte": "^3.35.0",
     "svelte-hmr": "^0.12.9",
-    "vite": "^2.0.5",
-    "vite-plugin-windicss": "^0.7.1"
+    "vite": "^2.0.5"
   }
 }

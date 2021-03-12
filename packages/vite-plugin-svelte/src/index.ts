@@ -4,8 +4,7 @@ import {
   IndexHtmlTransformContext,
   ModuleNode,
   Plugin,
-  UserConfig,
-  ViteDevServer
+  UserConfig
 } from 'vite'
 
 // @ts-ignore
@@ -54,37 +53,29 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     root: process.cwd()
   }
 
-  // updated in configureServer hook
-  // @ts-ignore
-  let server: ViteDevServer
-
   let compileSvelte: Function
 
   return {
     name: 'vite-plugin-svelte',
     // make sure our resolver runs before vite internal resolver to resolve svelte field correctly
     enforce: 'pre',
-    config(config, { mode, command }): Partial<UserConfig> {
+    config(config): Partial<UserConfig> {
       // setup logger
       if (process.env.DEBUG) {
         log.setLevel('debug')
       } else if (config.logLevel) {
         log.setLevel(config.logLevel)
       }
-      // init compiler
-      compileSvelte = createCompileSvelte({
-        hot:
-          options.hot !== false &&
-          mode === 'development' &&
-          command === 'serve',
-        // TODO fix TS (sorry)
-        // @ts-ignore
-        hotApi: options?.hot?.hotApi,
-        // @ts-ignore
-        adapter: options?.hot?.adapter
-      })
+
       // extra vite config
       const extraViteConfig = {
+        esbuild: {
+          tsconfigRaw: {
+            compilerOptions: {
+              importsNotUsedAsValues: 'preserve'
+            }
+          }
+        },
         optimizeDeps: {
           exclude: [...SVELTE_IMPORTS]
         },
@@ -94,17 +85,19 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
         }
       }
       log.debug('additional vite config', extraViteConfig)
-      return extraViteConfig
+      return extraViteConfig as Partial<UserConfig>
     },
 
     configResolved(config) {
       options = resolveOptions(options, config)
       requestParser = buildIdParser(options)
+      // init compiler
+      compileSvelte = createCompileSvelte(options, config)
     },
 
-    configureServer(_server) {
+    configureServer(server) {
       // eslint-disable-next-line no-unused-vars
-      server = _server
+      options.server = server
     },
 
     load(id, ssr) {

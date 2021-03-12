@@ -1,12 +1,22 @@
-import { CompileOptions, Processed, ResolvedOptions } from './options'
+import {
+  CompileOptions,
+  PreprocessorGroup,
+  Processed,
+  ResolvedOptions
+} from './options'
 import { compile, preprocess, walk } from 'svelte/compiler'
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr'
 import { SvelteRequest } from './id'
 import { safeBase64Hash } from './hash'
 import { log } from './log'
+import { ResolvedConfig } from 'vite'
+import { buildExtraPreprocessors } from './preprocess'
 
-const _createCompileSvelte = (makeHot: Function) =>
+const _createCompileSvelte = (
+  makeHot: Function,
+  extraPreprocessors: PreprocessorGroup[]
+) =>
   async function compileSvelte(
     svelteRequest: SvelteRequest,
     code: string,
@@ -29,8 +39,17 @@ const _createCompileSvelte = (makeHot: Function) =>
     }
 
     let preprocessed
+    const preprocessors = []
     if (options.preprocess) {
-      preprocessed = await preprocess(code, options.preprocess, { filename })
+      if (Array.isArray(options.preprocess)) {
+        preprocessors.push(...options.preprocess)
+      } else {
+        preprocessors.push(options.preprocess)
+      }
+    }
+    preprocessors.push(...(extraPreprocessors || []))
+    if (preprocessors.length > 0) {
+      preprocessed = await preprocess(code, preprocessors, { filename })
       if (preprocessed.dependencies)
         dependencies.push(...preprocessed.dependencies)
       if (preprocessed.map) finalCompilerOptions.sourcemap = preprocessed.map
@@ -83,13 +102,25 @@ const _createCompileSvelte = (makeHot: Function) =>
     return result
   }
 
-export function createCompileSvelte({
-  hot = false,
-  hotApi = '',
-  adapter = ''
-}) {
-  const makeHot = hot && createMakeHot({ walk, hotApi, adapter })
-  return _createCompileSvelte(makeHot)
+function buildMakeHot(options: ResolvedOptions) {
+  const needsMakeHot =
+    options.hot !== false && options.isServe && !options.isProduction
+  if (needsMakeHot) {
+    // @ts-ignore
+    const hotApi = options?.hot?.hotApi
+    // @ts-ignore
+    const adapter = options?.hot?.adapter
+    return createMakeHot({ walk, hotApi, adapter, hotOptions: options.hot })
+  }
+}
+
+export function createCompileSvelte(
+  options: ResolvedOptions,
+  config: ResolvedConfig
+) {
+  const makeHot = buildMakeHot(options)
+  const extraPreprocessors = buildExtraPreprocessors(options, config)
+  return _createCompileSvelte(makeHot, extraPreprocessors)
 }
 
 export interface Code {
@@ -97,6 +128,7 @@ export interface Code {
   map?: any
   dependencies?: any[]
 }
+
 export interface Compiled {
   js: Code
   css: Code
