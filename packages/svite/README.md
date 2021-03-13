@@ -40,13 +40,13 @@ Options:
 
 # Migration from 0.8
 
-- install vite@2 and @svitejs/vite-plugin-svelte
-- Update vite.config.js
-  - use the pattern described in the [readme](packages/vite-plugin-svelte/README.md) of the new vite-plugin-svelte
+- install `vite@2` and `@svitejs/vite-plugin-svelte`
+- Update or add `vite.config.js`
+  - use the pattern described in the [readme](../vite-plugin-svelte/README.md) of the new vite-plugin-svelte
   - remove old svite options
   - read vite2 documentation on https://vitejs.dev
-  - add any svelte library you use to `optimizeDeps.exclude=[]` in vite.config
-- remove svite from dependencies
+  - add any svelte library you use to `optimizeDeps.exclude=[]` in `vite.config.js`
+- remove `svite` from dependencies
 - update package.json scripts to use `vite dev` and `vite build` instead of `svite dev` and `svite build`
 
 # TODO more docs
