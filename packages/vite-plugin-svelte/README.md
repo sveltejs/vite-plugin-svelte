@@ -36,7 +36,7 @@ Options are applied in the following order:
 
 It supports all options from rollup-plugin-svelte and some additional options to tailor the plugin to your needs.
 
-For more Information check [options.ts](packages/vite-plugin-svelte/src/utils/options.ts)
+For more Information check [options.ts](src/utils/options.ts)
 
 ## License
 
