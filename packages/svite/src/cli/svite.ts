@@ -37,7 +37,10 @@ async function main() {
   if (cli.matchedCommand) {
     await cli.runMatchedCommand()
   } else {
-    cli.outputHelp()
+    const args = process.argv.slice(2)
+    if (!args.find((arg) => ['-h', '--help'].includes(arg))) {
+      cli.outputHelp()
+    }
   }
 }
 main().catch((e) => {
