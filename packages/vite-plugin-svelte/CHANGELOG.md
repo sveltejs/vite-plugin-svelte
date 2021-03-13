@@ -1,3 +1,14 @@
+# [0.11.0](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.10.0...vite-plugin-svelte@0.11.0) (2021-03-13)
+
+
+### Features
+
+* **vite-plugin-svelte:** automatic default options ([#10](https://github.com/svitejs/svite/issues/10)) ([dbc0a98](https://github.com/svitejs/svite/commit/dbc0a98bbfcac79320f8da68f395acb74c3bed44))
+* **vite-plugin-svelte:** experimental option to use vite transforms as svelte preprocessor ([#9](https://github.com/svitejs/svite/issues/9)) ([01dad3f](https://github.com/svitejs/svite/commit/01dad3f4a9148cd65bbac306219b560d5f2860be))
+* **vite-plugin-svelte:** improve css hmr by ignoring js updates that do not change runtime result ([4aeff87](https://github.com/svitejs/svite/commit/4aeff879b0f0dcb9e143ff019bee7cb66f67fe24))
+
+
+
 # [0.10.0](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.10.0-0...vite-plugin-svelte@0.10.0) (2021-03-08)
 
 
