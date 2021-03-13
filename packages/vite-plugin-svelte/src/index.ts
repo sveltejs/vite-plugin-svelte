@@ -15,7 +15,7 @@ import { log } from './utils/log'
 import { createCompileSvelte } from './utils/compile'
 import { buildIdParser, IdParser } from './utils/id'
 import {
-  buildInitialOptions,
+  validateInlineOptions,
   Options,
   ResolvedOptions,
   resolveOptions
@@ -38,20 +38,18 @@ export {
 
 const pkg_export_errors = new Set()
 
-export default function vitePluginSvelte(rawOptions: Options): Plugin {
+export default function vitePluginSvelte(
+  inlineOptions?: Partial<Options>
+): Plugin {
   if (process.env.DEBUG != null) {
     log.setLevel('debug')
   }
+  validateInlineOptions(inlineOptions)
   const cache = new VitePluginSvelteCache()
-  const initialOptions = buildInitialOptions(rawOptions)
 
   // updated in configResolved hook
   let requestParser: IdParser
-  let options: ResolvedOptions = {
-    isProduction: process.env.NODE_ENV === 'production',
-    ...initialOptions,
-    root: process.cwd()
-  }
+  let options: ResolvedOptions
 
   let compileSvelte: Function
 
@@ -89,7 +87,7 @@ export default function vitePluginSvelte(rawOptions: Options): Plugin {
     },
 
     configResolved(config) {
-      options = resolveOptions(options, config)
+      options = resolveOptions(inlineOptions, config)
       requestParser = buildIdParser(options)
       // init compiler
       compileSvelte = createCompileSvelte(options, config)

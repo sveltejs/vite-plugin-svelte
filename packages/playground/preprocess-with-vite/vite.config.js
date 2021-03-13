@@ -6,8 +6,6 @@ module.exports = defineConfig(({ command, mode }) => {
   return {
     plugins: [
       svelte({
-        hot: !isProduction,
-        emitCss: true,
         useVitePreprocess: true
       })
     ],

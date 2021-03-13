@@ -7,12 +7,7 @@ module.exports = defineConfig(({ command, mode }) => {
     optimizeDeps: {
       exclude: ['@svitejs/hmr-test-dependency']
     },
-    plugins: [
-      svelte({
-        hot: !isProduction,
-        emitCss: true
-      })
-    ],
+    plugins: [svelte()],
     build: {
       minify: isProduction
     }

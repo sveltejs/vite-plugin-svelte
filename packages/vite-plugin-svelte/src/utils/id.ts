@@ -81,8 +81,8 @@ function normalizePath(filename: string, root: string) {
 }
 
 function buildFilter(
-  include: Arrayable<string>,
-  exclude: Arrayable<string>,
+  include: Arrayable<string> | undefined,
+  exclude: Arrayable<string> | undefined,
   extensions: string[]
 ): (svelteRequest: SvelteRequest) => boolean {
   const rollupFilter = createFilter(include, exclude)
@@ -102,7 +102,7 @@ export type IdParser = (
 ) => SvelteRequest | undefined
 export function buildIdParser(options: ResolvedOptions): IdParser {
   const { include, exclude, extensions, root } = options
-  const filter = buildFilter(include, exclude, extensions)
+  const filter = buildFilter(include, exclude, extensions!)
   return (id, ssr, timestamp = Date.now()) => {
     const svelteRequest = parseToSvelteRequest(id, root, timestamp, ssr)
     if (filter(svelteRequest)) {

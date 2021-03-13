@@ -7,10 +7,7 @@ module.exports = defineConfig(({ command, mode }) => {
   return {
     plugins: [
       // uses enforce: pre
-      svelte({
-        hot: !isProduction,
-        emitCss: true
-      }),
+      svelte(),
       vitePluginWindicss({
         transformCSS: 'pre'
       })

@@ -5,13 +5,7 @@ const { postcss } = require('svelte-preprocess')
 module.exports = defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production'
   return {
-    plugins: [
-      svelte({
-        hot: !isProduction,
-        emitCss: true,
-        preprocess: [postcss()]
-      })
-    ],
+    plugins: [svelte()],
     build: {
       minify: isProduction
     }
