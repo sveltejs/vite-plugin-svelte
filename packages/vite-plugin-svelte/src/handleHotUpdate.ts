@@ -62,26 +62,49 @@ export async function handleHotUpdate(
   return result
 }
 
-function cssChanged(prev: CompileData, next: CompileData) {
-  return !isCodeEqual(prev.compiled.css, next.compiled.css)
+function cssChanged(prev: CompileData, next: CompileData): boolean {
+  return !isCodeEqual(prev.compiled.css?.code, next.compiled.css?.code)
 }
 
-function jsChanged(prev: CompileData, next: CompileData) {
-  return !isCodeEqual(prev.compiled.js, next.compiled.js)
-}
-
-function isCodeEqual(
-  a: { code: string; map?: any; dependencies?: any[] },
-  b: { code: string; map?: any; dependencies?: any[] }
-): boolean {
-  if (a === b) {
-    return true
-  }
-  if (a == null && b == null) {
-    return true
-  }
-  if (a == null || b == null) {
+function jsChanged(prev: CompileData, next: CompileData): boolean {
+  const prevJs = prev.compiled.js.code
+  const nextJs = next.compiled.js.code
+  const isStrictEqual = isCodeEqual(prevJs, nextJs)
+  if (isStrictEqual) {
     return false
   }
-  return a.code === b.code
+  const isLooseEqual = isCodeEqual(
+    normalizeJsCode(prevJs),
+    normalizeJsCode(nextJs)
+  )
+  if (!isStrictEqual && isLooseEqual) {
+    log.warn(
+      `ignoring compiler output js change for ${next.filename} as it is equal to previous output after normalization`
+    )
+  }
+  return !isLooseEqual
+}
+
+function isCodeEqual(prev: string, next: string): boolean {
+  if (!prev && !next) {
+    return true
+  }
+  if ((!prev && next) || (prev && !next)) {
+    return false
+  }
+  return prev === next
+}
+
+/**
+ * remove code that only changes metadata and does not require a js update for the component to keep working
+ *
+ * 1) add_location() calls. These add location metadata to elements, only useful for tooling like sapper studio
+ * 2) ... maybe more (or less) in the future
+ * @param code
+ */
+function normalizeJsCode(code: string): string {
+  if (!code) {
+    return code
+  }
+  return code.replace(/\s*\badd_location\s*\([^)]*\)\s*;?/g, '')
 }
