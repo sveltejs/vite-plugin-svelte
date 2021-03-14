@@ -18,7 +18,7 @@ importers:
       eslint: 7.22.0
       eslint-config-prettier: 8.1.0_eslint@7.22.0
       eslint-plugin-html: 6.1.2
-      eslint-plugin-jest: 24.2.1_eslint@7.22.0+typescript@4.2.3
+      eslint-plugin-jest: 24.3.1_a9dadc128f4373c1604aa4e12640269a
       eslint-plugin-markdown: 2.0.0_eslint@7.22.0
       eslint-plugin-node: 11.1.0_eslint@7.22.0
       eslint-plugin-prettier: 3.3.1_44b94358ac15c7c093df3d5421ccc811
@@ -35,7 +35,7 @@ importers:
       npm-check-updates: 11.3.0
       npm-run-all: 4.1.5
       playwright-core: 1.9.2
-      pnpm: 5.18.6
+      pnpm: 5.18.7
       prettier: 2.2.1
       prettier-plugin-svelte: 2.2.0_prettier@2.2.1+svelte@3.35.0
       rimraf: 3.0.2
@@ -67,7 +67,7 @@ importers:
       eslint: ^7.22.0
       eslint-config-prettier: ^8.1.0
       eslint-plugin-html: ^6.1.2
-      eslint-plugin-jest: ^24.2.1
+      eslint-plugin-jest: ^24.3.1
       eslint-plugin-markdown: ^2.0.0
       eslint-plugin-node: ^11.1.0
       eslint-plugin-prettier: ^3.3.1
@@ -84,7 +84,7 @@ importers:
       npm-check-updates: ^11.3.0
       npm-run-all: ^4.1.5
       playwright-core: ^1.9.2
-      pnpm: ^5.18.6
+      pnpm: ^5.18.7
       prettier: ^2.2.1
       prettier-plugin-svelte: ^2.2.0
       rimraf: ^3.0.2
@@ -271,7 +271,7 @@ importers:
       vite: ^2.0.5
   packages/playground/windicss:
     dependencies:
-      windicss: 2.4.3
+      windicss: 2.4.4
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.35.0
@@ -284,7 +284,7 @@ importers:
       svelte-hmr: ^0.12.9
       vite: ^2.0.5
       vite-plugin-windicss: ^0.8.2
-      windicss: ^2.4.3
+      windicss: ^2.4.4
   packages/svite:
     dependencies:
       cac: 6.7.2
@@ -421,7 +421,7 @@ importers:
       vite: ^2.0.5
   packages/templates/windicss:
     dependencies:
-      windicss: 2.4.3
+      windicss: 2.4.4
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.35.0
@@ -434,10 +434,10 @@ importers:
       svelte-hmr: ^0.12.9
       vite: ^2.0.5
       vite-plugin-windicss: ^0.8.2
-      windicss: ^2.4.3
+      windicss: ^2.4.4
   packages/templates/windicss-ts:
     dependencies:
-      windicss: 2.4.3
+      windicss: 2.4.4
     devDependencies:
       '@svitejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       '@tsconfig/svelte': 1.0.10
@@ -460,7 +460,7 @@ importers:
       typescript: ^4.2.3
       vite: ^2.0.5
       vite-plugin-windicss: ^0.8.2
-      windicss: ^2.4.3
+      windicss: ^2.4.4
   packages/vite-plugin-svelte:
     dependencies:
       '@rollup/pluginutils': 4.1.0_rollup@2.41.2
@@ -1632,23 +1632,6 @@ packages:
         optional: true
     resolution:
       integrity: sha512-/fKFDcoHg8oNan39IKFOb5WmV7oWhQe1K6CDaAVfJaNWEhmfqlA24g+u1lqU5bMH7zuNasfMId4LaYWC5ijRLw==
-  /@typescript-eslint/experimental-utils/4.16.1_eslint@7.22.0+typescript@4.2.3:
-    dependencies:
-      '@types/json-schema': 7.0.7
-      '@typescript-eslint/scope-manager': 4.16.1
-      '@typescript-eslint/types': 4.16.1
-      '@typescript-eslint/typescript-estree': 4.16.1_typescript@4.2.3
-      eslint: 7.22.0
-      eslint-scope: 5.1.1
-      eslint-utils: 2.1.0
-    dev: true
-    engines:
-      node: ^10.12.0 || >=12.0.0
-    peerDependencies:
-      eslint: '*'
-      typescript: '*'
-    resolution:
-      integrity: sha512-0Hm3LSlMYFK17jO4iY3un1Ve9x1zLNn4EM50Lia+0EV99NdbK+cn0er7HC7IvBA23mBg3P+8dUkMXy4leL33UQ==
   /@typescript-eslint/experimental-utils/4.17.0_eslint@7.22.0+typescript@4.2.3:
     dependencies:
       '@types/json-schema': 7.0.7
@@ -1685,15 +1668,6 @@ packages:
         optional: true
     resolution:
       integrity: sha512-KYdksiZQ0N1t+6qpnl6JeK9ycCFprS9xBAiIrw4gSphqONt8wydBw4BXJi3C11ywZmyHulvMaLjWsxDjUSDwAw==
-  /@typescript-eslint/scope-manager/4.16.1:
-    dependencies:
-      '@typescript-eslint/types': 4.16.1
-      '@typescript-eslint/visitor-keys': 4.16.1
-    dev: true
-    engines:
-      node: ^8.10.0 || ^10.13.0 || >=11.10.1
-    resolution:
-      integrity: sha512-6IlZv9JaurqV0jkEg923cV49aAn8V6+1H1DRfhRcvZUrptQ+UtSKHb5kwTayzOYTJJ/RsYZdcvhOEKiBLyc0Cw==
   /@typescript-eslint/scope-manager/4.17.0:
     dependencies:
       '@typescript-eslint/types': 4.17.0
@@ -1703,38 +1677,12 @@ packages:
       node: ^8.10.0 || ^10.13.0 || >=11.10.1
     resolution:
       integrity: sha512-OJ+CeTliuW+UZ9qgULrnGpPQ1bhrZNFpfT/Bc0pzNeyZwMik7/ykJ0JHnQ7krHanFN9wcnPK89pwn84cRUmYjw==
-  /@typescript-eslint/types/4.16.1:
-    dev: true
-    engines:
-      node: ^8.10.0 || ^10.13.0 || >=11.10.1
-    resolution:
-      integrity: sha512-nnKqBwMgRlhzmJQF8tnFDZWfunXmJyuXj55xc8Kbfup4PbkzdoDXZvzN8//EiKR27J6vUSU8j4t37yUuYPiLqA==
   /@typescript-eslint/types/4.17.0:
     dev: true
     engines:
       node: ^8.10.0 || ^10.13.0 || >=11.10.1
     resolution:
       integrity: sha512-RN5z8qYpJ+kXwnLlyzZkiJwfW2AY458Bf8WqllkondQIcN2ZxQowAToGSd9BlAUZDB5Ea8I6mqL2quGYCLT+2g==
-  /@typescript-eslint/typescript-estree/4.16.1_typescript@4.2.3:
-    dependencies:
-      '@typescript-eslint/types': 4.16.1
-      '@typescript-eslint/visitor-keys': 4.16.1
-      debug: 4.3.1
-      globby: 11.0.2
-      is-glob: 4.0.1
-      semver: 7.3.4
-      tsutils: 3.21.0_typescript@4.2.3
-      typescript: 4.2.3
-    dev: true
-    engines:
-      node: ^10.12.0 || >=12.0.0
-    peerDependencies:
-      typescript: '*'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    resolution:
-      integrity: sha512-m8I/DKHa8YbeHt31T+UGd/l8Kwr0XCTCZL3H4HMvvLCT7HU9V7yYdinTOv1gf/zfqNeDcCgaFH2BMsS8x6NvJg==
   /@typescript-eslint/typescript-estree/4.17.0_typescript@4.2.3:
     dependencies:
       '@typescript-eslint/types': 4.17.0
@@ -1755,15 +1703,6 @@ packages:
         optional: true
     resolution:
       integrity: sha512-lRhSFIZKUEPPWpWfwuZBH9trYIEJSI0vYsrxbvVvNyIUDoKWaklOAelsSkeh3E2VBSZiNe9BZ4E5tYBZbUczVQ==
-  /@typescript-eslint/visitor-keys/4.16.1:
-    dependencies:
-      '@typescript-eslint/types': 4.16.1
-      eslint-visitor-keys: 2.0.0
-    dev: true
-    engines:
-      node: ^8.10.0 || ^10.13.0 || >=11.10.1
-    resolution:
-      integrity: sha512-s/aIP1XcMkEqCNcPQtl60ogUYjSM8FU2mq1O7y5cFf3Xcob1z1iXWNB6cC43Op+NGRTFgGolri6s8z/efA9i1w==
   /@typescript-eslint/visitor-keys/4.17.0:
     dependencies:
       '@typescript-eslint/types': 4.17.0
@@ -3678,18 +3617,23 @@ packages:
     dev: true
     resolution:
       integrity: sha512-bhBIRyZFqI4EoF12lGDHAmgfff8eLXx6R52/K3ESQhsxzCzIE6hdebS7Py651f7U3RBotqroUnC3L29bR7qJWQ==
-  /eslint-plugin-jest/24.2.1_eslint@7.22.0+typescript@4.2.3:
+  /eslint-plugin-jest/24.3.1_a9dadc128f4373c1604aa4e12640269a:
     dependencies:
-      '@typescript-eslint/experimental-utils': 4.16.1_eslint@7.22.0+typescript@4.2.3
+      '@typescript-eslint/eslint-plugin': 4.17.0_1761b76df9b5dd3adf5d03ef124e1b23
+      '@typescript-eslint/experimental-utils': 4.17.0_eslint@7.22.0+typescript@4.2.3
       eslint: 7.22.0
     dev: true
     engines:
       node: '>=10'
     peerDependencies:
+      '@typescript-eslint/eslint-plugin': '>= 4'
       eslint: '>=5'
       typescript: '*'
+    peerDependenciesMeta:
+      '@typescript-eslint/eslint-plugin':
+        optional: true
     resolution:
-      integrity: sha512-s24ve8WUu3DLVidvlSzaqlOpTZre9lTkZTAO+a7X0WMtj8HraWTiTEkW3pbDT1xVxqEHMWSv+Kx7MyqR50nhBw==
+      integrity: sha512-RQt59rfMSHyvedImT72iaf8JcvCcR4P7Uq499dALtjY8mrCjbwWrFi1UceG4sid2wVIeDi+0tjxXZ8CZEVO7Zw==
   /eslint-plugin-markdown/2.0.0_eslint@7.22.0:
     dependencies:
       eslint: 7.22.0
@@ -7660,13 +7604,13 @@ packages:
       node: '>=10.13.0'
     resolution:
       integrity: sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==
-  /pnpm/5.18.6:
+  /pnpm/5.18.7:
     dev: true
     engines:
       node: '>=10.16'
     hasBin: true
     resolution:
-      integrity: sha512-ONlW1I5CdnyNs2XIMl53h9E8TcOms6QqmKzzIaehagCvrWbz/lqD5UF6DqF14I6JD13MZplB+P5gTkY18BmkUw==
+      integrity: sha512-7LSLQSeskkDtzAuq8DxEcVNWlqFd0ppWPT6Z4+TiS8SjxGCRSpnCeDVzwliAPd0hedl6HuUiSnDPgmg/kHUVXw==
   /posix-character-classes/0.1.1:
     dev: true
     engines:
@@ -10713,11 +10657,19 @@ packages:
     resolution:
       integrity: sha512-NsmoXalsWVDMGupxZ5R08ka9flZjjiLvHVAWYOKtiKM8ujtZWr9cRffak+uSE48+Ob8ObalXpwyeUiyDD6QFgg==
   /windicss/2.4.3:
+    dev: true
     engines:
       node: '>= 12'
     hasBin: true
     resolution:
       integrity: sha512-97Uro3vUPt9ZRgEIOVh7jpO9o+FVHSjjUBh1m4fjwG1YqoS32CepOvXXECguBJiypSElgBa1eDnHrh9RzgKhZA==
+  /windicss/2.4.4:
+    dev: false
+    engines:
+      node: '>= 12'
+    hasBin: true
+    resolution:
+      integrity: sha512-189lfHuRK2c/qf/Kgv1Brr3iUEwwzNwJFhTTZ6v54xUdxwEIxEhy8WUObTVzFTt6jGB3XD2elSlRdIJAnVo3ew==
   /with/7.0.2:
     dependencies:
       '@babel/parser': 7.13.9
