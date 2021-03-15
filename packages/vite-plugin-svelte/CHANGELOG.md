@@ -1,3 +1,12 @@
+## [0.11.1](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.11.0...vite-plugin-svelte@0.11.1) (2021-03-15)
+
+
+### Bug Fixes
+
+* update svelte-hmr options interface and add warning to leave it at defaults ([c0f0a17](https://github.com/svitejs/svite/commit/c0f0a1704275c776e6f40fdcdeb35c76f9c11d43))
+
+
+
 # [0.11.0](https://github.com/svitejs/svite/compare/vite-plugin-svelte@0.10.0...vite-plugin-svelte@0.11.0) (2021-03-13)
 
 
