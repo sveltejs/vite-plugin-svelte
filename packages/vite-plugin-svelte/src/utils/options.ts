@@ -208,14 +208,14 @@ export interface Options {
          * escape hatchs from preservation of local state
          * disable preservation of state for this component
          *
-         * @default ['@hmr:reset', '@!hmr']
+         * @default ['\@hmr:reset', '\@!hmr']
          */
         noPreserveStateKey?: string[]
 
         /**
          * enable preservation of state for all variables in this component
          *
-         * @default '@hmr:keep-all'
+         * @default '\@hmr:keep-all'
          */
         preserveAllLocalStateKey?: string
 
@@ -223,7 +223,7 @@ export interface Options {
          * enable preservation of state for a given variable (must be inline or
          * above the target variable or variables; can be repeated)
          *
-         * @default '@hmr:keep'
+         * @default '\@hmr:keep'
          */
         preserveLocalStateKey?: string
 
@@ -250,7 +250,7 @@ export interface Options {
 
         /**
          * auto accept modules of components have accessors (either accessors compile
-         * option, or <svelte:option accessors={true} />) -- this means that if you
+         * option, or \<svelte:option accessors=\{true\} /\>) -- this means that if you
          * set accessors compile option globally, you must also set this option to
          * true, or no component will be hot reloaded (but there are a lot of edge
          * cases that HMR can't support correctly with accessors)
