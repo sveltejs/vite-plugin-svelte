@@ -23,10 +23,10 @@
     "lint:script": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
     "lint:style": "stylelint --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}'",
     "lint:fix": "run-s lint:fix:script lint:fix:style",
-    "lint:fix:script": "pnpm lint:script --fix",
-    "lint:fix:style": "pnpm lint:style --fix",
+    "lint:fix:script": "pnpm lint:script -- --fix",
+    "lint:fix:style": "pnpm lint:style -- --fix",
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
-    "format:fix": "pnpm format --write",
+    "format:fix": "pnpm format -- --write",
     "fixup": "run-s lint:fix format:fix",
     "update-deps": "ncu -u"
   },
