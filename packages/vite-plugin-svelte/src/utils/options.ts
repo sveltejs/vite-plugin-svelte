@@ -182,50 +182,134 @@ export interface Options {
 
   onwarn?: undefined | false | ((warning: any, defaultHandler?: any) => void)
 
-  /** Enable/configure HMR */
+  /**
+   * enable/disable hmr. You want this enabled.
+   *
+   * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   * DO NOT CUSTOMIZE SVELTE-HMR OPTIONS UNLESS YOU KNOW EXACTLY WHAT YOU ARE DOING
+   *
+   *                             YOU HAVE BEEN WARNED
+   * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   *
+   * @default true for development, always false for production
+   */
   hot?:
     | undefined
     | boolean
     | {
+        // svelte-hmr options
         /**
-         * Enable state preservation when a component is updated by HMR for every
-         * components.
+         * preserve all local state
          * @default false
          */
-        preserveState?: boolean
+        preserveLocalState?: boolean
 
         /**
-         * If this string appears anywhere in your component's code, then local
-         * state won't be preserved, even when noPreserveState is false.
-         * @default '\@hmr:reset'
+         * escape hatchs from preservation of local state
+         * disable preservation of state for this component
+         *
+         * @default ['@hmr:reset', '@!hmr']
          */
-        noPreserveStateKey?: string
+        noPreserveStateKey?: string[]
 
         /**
-         * If this string appears next to a `let` variable, the value of this
-         * variable will be preserved accross HMR updates.
-         * @default '\@hmr:keep'
+         * enable preservation of state for all variables in this component
+         *
+         * @default '@hmr:keep-all'
          */
-        preserveStateKey?: string
+        preserveAllLocalStateKey?: string
 
         /**
-         * Prevent doing a full reload on next HMR update after fatal error.
+         * enable preservation of state for a given variable (must be inline or
+         * above the target variable or variables; can be repeated)
+         *
+         * @default '@hmr:keep'
+         */
+        preserveLocalStateKey?: string
+
+        /**
+         * don't reload on fatal error
+         *
          * @default false
          */
         noReload?: boolean
 
         /**
-         * Try to recover after runtime errors in component init.
+         * try to recover after runtime errors during component init
+         *
          * @default true
          */
         optimistic?: boolean
+        /**
+         * auto accept modules of components that have named exports (i.e. exports
+         * from context="module")
+         *
+         * @default true
+         */
+        acceptNamedExports?: boolean
 
-        noDisableCss?: boolean
+        /**
+         * auto accept modules of components have accessors (either accessors compile
+         * option, or <svelte:option accessors={true} />) -- this means that if you
+         * set accessors compile option globally, you must also set this option to
+         * true, or no component will be hot reloaded (but there are a lot of edge
+         * cases that HMR can't support correctly with accessors)
+         *
+         * @default true
+         */
+        acceptAccessors?: boolean
+
+        /**
+         * only inject CSS instead of recreating components when only CSS changes
+         *
+         * @default true, but vite-plugin-svelte configures this automatically according to emitCss requirements
+         */
         injectCss?: boolean
+
+        /**
+         * to mitigate FOUC between dispose (remove stylesheet) and accept
+         *
+         * note: has no effect when emitCss is true (vite-plugin-svelte default)
+         * @default 100
+         */
         cssEjectDelay?: number
+
+        //
+        /**
+         * Svelte Native mode
+         *
+         * @default false
+         */
+        native?: boolean
+
+        /**
+         * name of the adapter import binding
+         *
+         * @default '___SVELTE_HMR_HOT_API_PROXY_ADAPTER'
+         */
+        importAdapterName?: string
+        /**
+         * use absolute file paths to import runtime deps of svelte-hmr
+         * (see https://github.com/rixo/svelte-hmr/issues/11)
+         *
+         * @default true
+         */
         absoluteImports?: boolean
 
+        /**
+         * disable runtime error overlay
+         *
+         * @default false
+         */
+        noOverlay?: boolean
+
+        /**
+         * custom import path for hotApi
+         */
         hotApi?: string
+        /**
+         * custom path for adapter
+         */
         adapter?: string
       }
   /**
