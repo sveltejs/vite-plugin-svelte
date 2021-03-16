@@ -1,2 +1,2 @@
-import Dependency from './components/Dependency.svelte'
-export default Dependency
+import Dependency from './components/Dependency.svelte';
+export default Dependency;

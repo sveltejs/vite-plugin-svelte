@@ -1,4 +1,4 @@
 module.exports = {
-  packageFile: ['package.json', 'packages/**/package.json'],
-  reject: ['husky']
-}
+	packageFile: ['package.json', 'packages/**/package.json'],
+	reject: ['husky']
+};

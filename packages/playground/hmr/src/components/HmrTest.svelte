@@ -1,21 +1,21 @@
 <script>
-  import { getStore } from '../stores/hmr-stores'
-  export let id
-  const count = getStore(id, 0)
-  const label = 'hmr-test'
-  function increment() {
-    $count++
-  }
+	import { getStore } from '../stores/hmr-stores';
+	export let id;
+	const count = getStore(id, 0);
+	const label = 'hmr-test';
+	function increment() {
+		$count++;
+	}
 </script>
 
 <div class="hmr-test" {id}>
-  <span class="label">{label}</span>
-  <span class="counter increment" on:click={increment}>{$count}</span>
+	<span class="label">{label}</span>
+	<span class="counter increment" on:click={increment}>{$count}</span>
 </div>
 
 <!-- HMR-TEMPLATE-INJECT -->
 <style>
-  .label {
-    color: red;
-  }
+	.label {
+		color: red;
+	}
 </style>

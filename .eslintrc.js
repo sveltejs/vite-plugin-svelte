@@ -70,7 +70,7 @@ module.exports = {
 			}
 		},
 		{
-			files: ['packages/templates/**/vite.config.js', 'packages/playground/**/vite.config.js'],
+			files: ['packages/playground/**/vite.config.js'],
 			rules: {
 				'no-unused-vars': 'off',
 				'node/no-missing-require': 'off'

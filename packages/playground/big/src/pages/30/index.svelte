@@ -1,6 +1,6 @@
 <script>
-  import Child from './Child.svelte'
-  import OtherChild from './OtherChild.svelte'
+	import Child from './Child.svelte';
+	import OtherChild from './OtherChild.svelte';
 </script>
 
 <h1>Page 30</h1>
@@ -10,20 +10,20 @@
 <p>I have some children:</p>
 
 <div>
-  <Child />
-  <OtherChild />
+	<Child />
+	<OtherChild />
 </div>
 
 <style>
-  * {
-    color: skyblue;
-  }
-  div {
-    display: flex;
-    max-width: 600px;
-    margin: auto;
-  }
-  div :global(> *) {
-    flex: 1;
-  }
+	* {
+		color: skyblue;
+	}
+	div {
+		display: flex;
+		max-width: 600px;
+		margin: auto;
+	}
+	div :global(> *) {
+		flex: 1;
+	}
 </style>

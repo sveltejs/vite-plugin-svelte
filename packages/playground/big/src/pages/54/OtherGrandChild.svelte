@@ -3,7 +3,7 @@
 <p>I am the child of Child.</p>
 
 <style>
-  * {
-    color: violet;
-  }
+	* {
+		color: violet;
+	}
 </style>
