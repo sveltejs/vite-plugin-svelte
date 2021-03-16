@@ -5,7 +5,7 @@ module.exports = defineConfig(({ command, mode }) => {
 	const isProduction = mode === 'production';
 	return {
 		optimizeDeps: {
-			exclude: ['@sveltejs/hmr-test-dependency']
+			exclude: ['playground-hmr-test-dependency']
 		},
 		plugins: [svelte()],
 		build: {

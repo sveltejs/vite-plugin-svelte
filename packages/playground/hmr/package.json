@@ -1,12 +1,13 @@
 {
   "name": "playground-hmr",
+	"private": true,
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build"
   },
   "dependencies": {
-    "@sveltejs/hmr-test-dependency": "workspace:*"
+    "playground-hmr-test-dependency": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "workspace:*",

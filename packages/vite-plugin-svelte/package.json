@@ -13,9 +13,8 @@
     "build": "rimraf dist && run-s build-bundle build-types",
     "build-bundle": "node scripts/build-bundle.js",
     "build-types": "tsc -p . --emitDeclarationOnly --outDir temp && api-extractor run && rimraf temp",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . --lerna-package vite-plugin-svelte",
-    "release": "node ../../scripts/release.js"
-  },
+		"prepublishOnly": "npm run build"
+	},
   "engines": {
     "node": ">=12.0.0"
   },
