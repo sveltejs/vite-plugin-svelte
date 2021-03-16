@@ -15,7 +15,7 @@ assignees: ''
 Keep it brief. No need for (pseudo-)code.
 
 **A Usecase**
-How would this feature be useful to you and/or users of svite
+How would this feature be useful to you and/or users of vite-plugin-svelte
 
 **Alternatives**
 What could be alternative ways to make it happen

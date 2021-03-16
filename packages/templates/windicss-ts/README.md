@@ -1,1 +1,0 @@
-# svite-template-windicss-ts

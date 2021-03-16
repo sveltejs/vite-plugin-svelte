@@ -1,15 +1,18 @@
-<h1><img width=24 alt="svite-logo" src="resources/svite-logo.svg" style="vertical-align: middle">&nbsp;svite&nbsp;<img width=24 alt="svite-logo" src="resources/svite-logo.svg" style="vertical-align: middle"></h1>
+# vite-plugin-svelte
 
-A fresh start for svite based on vite2 repo structure and setup
+This is the official [svelte](https://svelte.dev) plugin for [vite](https://vitejs.dev)
 
 ## Packages
 
-| Package                                                    | Version (click for changelogs)                                                                                                            |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| [svite](packages/svite)                                    | [![vite version](https://img.shields.io/npm/v/svite.svg?label=%20)](packages/svite/CHANGELOG.md)                                          |
-| [@svitejs/vite-plugin-svelte](packages/vite-plugin-svelte) | [![plugin-vue version](https://img.shields.io/npm/v/@svitejs/vite-plugin-svelte.svg?label=%20)](packages/vite-plugin-svelte/CHANGELOG.md) |
+| Package                                                     | changelog                                             |
+| ----------------------------------------------------------- | ----------------------------------------------------- |
+| [@sveltejs/vite-plugin-svelte](packages/vite-plugin-svelte) | [changelog](packages/vite-plugin-svelte/CHANGELOG.md) |
 
-## Development
+# Got a question? / Need help?
+
+Join [svelte discord](https://svelte.dev/chat)
+
+## Development of vite-plugin-svelte
 
 ### dev
 
@@ -24,10 +27,6 @@ changes in plugin need restart of dev server
 - For typescript, svelte components must use `<script lang="ts">`, not `<script lang="typescript">` otherwise vite dep scan fails. see https://discord.com/channels/804011606160703521/804062134051930222/806300072349270033
 - exclusions in optimizeDeps also cover children (x or startswith x+/)
 - svelte components should be sorted with style nodes last as js code may contain markup node positions
-
-# Got a question? / Need help?
-
-Join [svite discord](https://discord.gg/nzgMZJD)
 
 # Credits
 

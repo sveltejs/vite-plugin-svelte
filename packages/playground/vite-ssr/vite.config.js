@@ -1,16 +1,13 @@
-const svelte = require('@sveltejs/vite-plugin-svelte');
 const { defineConfig } = require('vite');
+const svelte = require('@sveltejs/vite-plugin-svelte');
 
 module.exports = defineConfig(({ command, mode }) => {
 	const isProduction = mode === 'production';
 	return {
-		plugins: [
-			svelte({
-				useVitePreprocess: true
-			})
-		],
+		plugins: [svelte()],
 		build: {
-			minify: isProduction
+			minify: isProduction,
+			assetsInlineLimit: 0
 		}
 	};
 });

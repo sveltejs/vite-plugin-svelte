@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a bug in svite
+about: Report a bug in vite-plugin-svelte
 title: ''
 labels: 'pending triage'
 assignees: ''
@@ -24,9 +24,8 @@ A link to a repo or a script/code to reproduce the issue
 - operating system
 - versions for
   - node
-  - npm
-  - svite
+  - npm/pnpm/yarn
   - vite
   - svelte
 - logs with debug enabled
-  - start svite with `svite --debug` flag
+  - use vite --debug flag or DEBUG=vite-plugin-svelte

@@ -1,1 +1,0 @@
-# svite-template-preprocess-auto
