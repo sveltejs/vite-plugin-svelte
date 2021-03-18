@@ -4,9 +4,9 @@ This is the official [svelte](https://svelte.dev) plugin for [vite](https://vite
 
 ## Packages
 
-| Package                                                     | changelog                                                |
-| ----------------------------------------------------------- | -------------------------------------------------------- |
-| [@sveltejs/vite-plugin-svelte](packages/vite-plugin-svelte) | [changelog](packages/vite-plugin-svelte/CHANGELOG_0x.md) |
+| Package                                                     | changelog                                             |
+| ----------------------------------------------------------- | ----------------------------------------------------- |
+| [@sveltejs/vite-plugin-svelte](packages/vite-plugin-svelte) | [changelog](packages/vite-plugin-svelte/CHANGELOG.md) |
 
 # Got a question? / Need help?
 
