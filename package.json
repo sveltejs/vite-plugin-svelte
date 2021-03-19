@@ -2,7 +2,10 @@
   "name": "vite-plugin-svelte-monorepo",
   "private": true,
   "scripts": {
-    "lint": "run-p lint:script lint:style",
+    "dev": "pnpm --dir packages/vite-plugin-svelte dev",
+    "build:ci": "pnpm -r build-bundle --filter=./packages/vite-plugin-svelte",
+    "build": "pnpm -r build --filter=\\!./packages/playground",
+    "build:vite-plugin-svelte": "pnpm --dir packages/vite-plugin-svelte build",
     "test": "run-s test:serve test:build",
     "test:serve": "jest",
     "test:serve:debug": "cross-env VITE_DEBUG_SERVE=1 node --inspect-brk ./node_modules/.bin/jest",
@@ -11,9 +14,7 @@
     "test:ci": "run-s test:ci:serve test:ci:build",
     "test:ci:serve": "cross-env VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/serve/jest-results.json\" ",
     "test:ci:build": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/build/jest-results.json\"",
-    "build:ci": "pnpm -r build-bundle --filter=./packages/vite-plugin-svelte",
-    "build": "pnpm -r build --filter=\\!./packages/playground",
-    "build:vite-plugin-svelte": "pnpm --dir packages/vite-plugin-svelte build",
+    "lint": "run-p lint:script lint:style",
     "lint:script": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
     "lint:style": "stylelint --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}'",
     "lint:fix": "run-s lint:fix:script lint:fix:style",
@@ -23,7 +24,7 @@
     "format:fix": "pnpm format -- --write",
     "fixup": "run-s lint:fix format:fix",
     "update-deps": "ncu -u",
-    "release": "pnpm publish --tag=next --filter=\"@sveltejs/*\" --filter=\"create-svelte\""
+    "release": "pnpm publish --tag=next --filter=\"@sveltejs/*\""
   },
   "devDependencies": {
     "@changesets/cli": "^2.14.1",
