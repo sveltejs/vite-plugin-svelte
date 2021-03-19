@@ -1,3 +1,7 @@
+# archived changelog
+
+This is the archived changelog of @svitejs/vite-plugin-svelte before it was renamed to @sveltejs/vite-plugin-svelte
+
 ## [0.11.1](https://github.com/sveltejs/vite-plugin-svelte/compare/vite-plugin-svelte@0.11.0...vite-plugin-svelte@0.11.1) (2021-03-15)
 
 ### Bug Fixes
