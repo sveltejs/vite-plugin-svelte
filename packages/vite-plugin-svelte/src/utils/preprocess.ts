@@ -1,4 +1,5 @@
 import { ResolvedConfig, TransformResult } from 'vite';
+import { parse } from 'svelte/compiler';
 import { Preprocessor, PreprocessorGroup, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
 // import type { WindiPluginUtils } from '@windicss/plugin-utils'
@@ -110,8 +111,17 @@ export function buildExtraPreprocessors(options: ResolvedOptions, config: Resolv
 		extraPreprocessors.push(createVitePreprocessorGroup(config, options));
 	}
 	if (options.hot && !options.disableCssHmr) {
+		// NOTE using only style preprocessor feels cleaner, but it fails when the <style>
+		// 		  tag is added or removed from a component
 		const scopeEverythingPreprocessor: PreprocessorGroup = {
-			style: ({ content }) => ({ code: content + ' *{}' })
+			markup: ({ content }) => {
+				const { css } = parse(content);
+				const code =
+					!css || !css.content
+						? content + '<style>*{}</style>'
+						: content.slice(0, css.content.end) + ' *{}' + content.slice(css.content.end);
+				return { code };
+			}
 		};
 		extraPreprocessors.push(scopeEverythingPreprocessor);
 	}
