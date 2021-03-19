@@ -7,12 +7,12 @@ assignees: ''
 ---
 
 <!--
-!!! Thank you for participating
-!!! Please provide the information below or your request may be closed
+We're excited to hear how we can make vite-plugin-svelte better.
+Please follow the template below.
 -->
 
 **Describe the feature**
-Keep it brief. No need for (pseudo-)code.
+Keep it brief.
 
 **A Usecase**
 How would this feature be useful to you and/or users of vite-plugin-svelte

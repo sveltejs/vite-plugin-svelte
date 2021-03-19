@@ -7,8 +7,14 @@ assignees: ''
 ---
 
 <!--
-!!! Please fill out the relevant information below.
-!!! Failure to do so will lead to immediate close
+If there's an existing issue, please add a :+1: reaction to the description of
+the issue. One way we prioritize issues is by the number of :+1: reactions on
+their descriptions.
+Add additional information to the existing issue but DO NOT add `+1` or :+1: comments.
+
+If there is no report already, please file one now using the template below.
+
+Thank you for participating in vite-plugin-svelte!
 -->
 
 ## Description
@@ -17,15 +23,10 @@ Describe the bug. Keep it short and precise.
 
 ## Reproduction
 
-A link to a repo or a script/code to reproduce the issue
+- We recommend creating a small repo that illustrates the problem.
+- Reproductions should be small, self-contained, correct examples – http://sscce.org.
 
 ## Additional Information
 
-- operating system
-- versions for
-  - node
-  - npm/pnpm/yarn
-  - vite
-  - svelte
-- logs with debug enabled
-  - use vite --debug flag or DEBUG=vite-plugin-svelte
+- The output of `npx envinfo --system --npmPackages vite,svelte,svelte-hmr,@sveltejs/vite-plugin-svelte --binaries --browsers`
+- debug logs produced with `vite dev --debug vite-plugin-svelte` or `DEBUG=vite-plugin-svelte <your start command here>`
