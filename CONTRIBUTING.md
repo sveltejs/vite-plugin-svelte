@@ -1,6 +1,9 @@
 # Contributing to vite-plugin-svelte
 
-Svelte is a new way to build web applications. It's a compiler that takes your declarative components and converts them into efficient JavaScript that surgically updates the DOM.
+vite-plugin-svelte connects two awesome frontend technologies to help us provide great things.
+
+- [Svelte](https://svelte.dev/) is a new way to build web applications. It's a compiler that takes your declarative components and converts them into efficient JavaScript that surgically updates the DOM.
+- [Vite](https://vitejs.dev/) is a new breed of frontend build tool that significantly improves the frontend development experience.
 
 The [Open Source Guides](https://opensource.guide/) website has a collection of resources for individuals, communities, and companies. These resources help people who want to learn how to run and contribute to open source projects. Contributors and people new to open source alike will find the following guides especially useful:
 
