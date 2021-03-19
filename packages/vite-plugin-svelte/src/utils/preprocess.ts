@@ -109,6 +109,12 @@ export function buildExtraPreprocessors(options: ResolvedOptions, config: Resolv
 	if (options.useVitePreprocess) {
 		extraPreprocessors.push(createVitePreprocessorGroup(config, options));
 	}
+	if (options.hot && !options.disableCssHmr) {
+		const scopeEverythingPreprocessor: PreprocessorGroup = {
+			style: ({ content }) => ({ code: content + ' *{}' })
+		};
+		extraPreprocessors.push(scopeEverythingPreprocessor);
+	}
 	// TODO
 	/*
   const windiCssPlugin = config.plugins.find(p => p.name === 'vite-plugin-windicss:css');
