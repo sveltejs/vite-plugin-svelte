@@ -1,5 +1,5 @@
 import { CompileOptions, PreprocessorGroup, Processed, ResolvedOptions } from './options';
-import { compile, preprocess, walk } from 'svelte/compiler';
+import { compile, preprocess, walk, parse } from 'svelte/compiler';
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr';
 import { SvelteRequest } from './id';
@@ -46,7 +46,12 @@ const _createCompileSvelte = (makeHot: Function, extraPreprocessors: Preprocesso
 			if (preprocessed.map) finalCompilerOptions.sourcemap = preprocessed.map;
 		}
 
-		const compiled = compile(preprocessed ? preprocessed.code : code, finalCompilerOptions);
+		let codeToCompile = preprocessed ? preprocessed.code : code;
+		if (!options.disableCssHmr) {
+			codeToCompile = injectScopeEverythingCssRule(codeToCompile);
+		}
+
+		const compiled = compile(codeToCompile, finalCompilerOptions);
 
 		(compiled.warnings || []).forEach((warning) => {
 			if (!emitCss && warning.code === 'css-unused-selector') return;
@@ -99,6 +104,12 @@ function buildMakeHot(options: ResolvedOptions) {
 		const adapter = options?.hot?.adapter;
 		return createMakeHot({ walk, hotApi, adapter, hotOptions: options.hot });
 	}
+}
+
+function injectScopeEverythingCssRule(code: string) {
+	const { css } = parse(code);
+	if (!css || !css.content) return code;
+	return code.slice(0, css.content.end) + '*{}' + code.slice(css.content.end);
 }
 
 export function createCompileSvelte(options: ResolvedOptions, config: ResolvedConfig) {
