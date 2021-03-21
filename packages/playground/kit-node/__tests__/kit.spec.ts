@@ -115,6 +115,14 @@ describe('kit-node', () => {
 					expect(await getColor(`h1`)).toBe('green');
 				});
 
+				it('should serve changes even after page reload', async () => {
+					expect(await getColor(`h1`)).toBe('green');
+					expect(await getText(`#hmr-test2`)).toBe('bar');
+					await page.reload({ waitUntil: 'networkidle' });
+					expect(await getColor(`h1`)).toBe('green');
+					await expect(await getText(`#hmr-test2`)).toBe('bar');
+				});
+
 				describe('Counter.svelte', () => {
 					const updateCounter = editFileAndWaitForHmrComplete.bind(null, 'src/lib/Counter.svelte');
 					it('should render additional html', async () => {
