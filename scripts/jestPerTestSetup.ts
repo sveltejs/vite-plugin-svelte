@@ -80,6 +80,7 @@ beforeAll(async () => {
 				// test has custom server configuration.
 				const { serve } = require(testCustomServe);
 				const customServer: CustomServer = await serve(tempDir, isBuildTest);
+				server = customServer;
 				// use resolved port/base from server
 				const port = customServer.port;
 				const base = customServer.base && customServer.base !== '/' ? `/${customServer.base}` : '';
@@ -129,9 +130,12 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	global.page && global.page.off('console', onConsole);
-
 	if (server) {
-		await server.close();
+		try {
+			await server.close();
+		} catch (e) {
+			console.error('failed to close test server', e);
+		}
 	}
 	// unlink node modules to prevent removal of linked modules on cleanup
 	const temp_node_modules = join(tempDir, 'node_modules');

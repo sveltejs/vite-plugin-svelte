@@ -10,6 +10,7 @@
 	Clicks: {count}
 </button>
 
+<!-- HMR-TEMPLATE-INJECT -->
 <style>
 	button {
 		font-family: inherit;
