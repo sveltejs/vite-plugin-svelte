@@ -20,7 +20,13 @@ declare global {
 	}
 }
 
-let server: ViteDevServer | http.Server;
+interface CustomServer {
+	port: number;
+	base?: string;
+	close: () => {};
+}
+
+let server: ViteDevServer | http.Server | CustomServer;
 let tempDir: string;
 let err: Error;
 
@@ -72,7 +78,12 @@ beforeAll(async () => {
 			if (fs.existsSync(testCustomServe)) {
 				// test has custom server configuration.
 				const { serve } = require(testCustomServe);
-				server = await serve(tempDir, isBuildTest);
+				const customServer: CustomServer = await serve(tempDir, isBuildTest);
+				// use resolved port/base from server
+				const port = customServer.port;
+				const base = customServer.base && customServer.base !== '/' ? `/${customServer.base}` : '';
+				const url = (global.viteTestUrl = `http://localhost:${port}${base}`);
+				await page.goto(url);
 				return;
 			}
 

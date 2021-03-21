@@ -6,50 +6,42 @@ import {
 	isBuild,
 	untilUpdated
 } from '../../testUtils';
-import { port } from './serve';
+
 import fetch from 'node-fetch';
 
-const url = `http://localhost:${port}`;
-
 test('/', async () => {
-	await page.goto(url);
+	expect(await page.textContent('h1')).toMatch('Hello world!'); // after hydration
 
-	expect(await page.textContent('h1')).toMatch('Hello svelte world'); // after hydration
-
-	const html = await (await fetch(url)).text();
-	expect(html).toMatch('Hello world'); // before hydration
+	const html = await (await fetch(page.url())).text();
+	expect(html).toMatch('Hello world!'); // before hydration
 	if (isBuild) {
 		// TODO expect preload links
 	}
 });
 
-test('css', async () => {
+test('style', async () => {
 	if (isBuild) {
-		expect(await getColor('h1')).toBe('green');
+		expect(await getColor('h1')).toBe('rgb(255, 62, 0)');
 	} else {
 		// During dev, the CSS is loaded from async chunk and we may have to wait
 		// when the test runs concurrently.
-		await untilUpdated(() => getColor('h1'), 'green');
+		await untilUpdated(() => getColor('h1'), 'rgb(255, 62, 0)');
 	}
 });
 
-test('asset', async () => {
+test('404', async () => {
 	// should have no 404s
 	browserLogs.forEach((msg) => {
 		expect(msg).not.toMatch('404');
 	});
-	const img = await page.$('img');
-	expect(await img.getAttribute('src')).toMatch(
-		isBuild ? /\/assets\/logo\.\w{8}\.png/ : '/src/assets/logo.png'
-	);
 });
 
 if (!isBuild) {
 	describe('hmr', () => {
-		const updateApp = editFileAndWaitForHmrComplete.bind(null, 'src/App.svelte');
+		const updateIndexSvelte = editFileAndWaitForHmrComplete.bind(null, 'src/routes/index.svelte');
 		test('should render additional html', async () => {
 			expect(await getEl('#hmr-test')).toBe(null);
-			await updateApp((content) =>
+			await updateIndexSvelte((content) =>
 				content.replace(
 					'<!-- HMR-TEMPLATE-INJECT -->',
 					'<div id="hmr-test">foo</div>\n<!-- HMR-TEMPLATE-INJECT -->'
@@ -58,14 +50,17 @@ if (!isBuild) {
 			await expect(await getText(`#hmr-test`)).toBe('foo');
 		});
 		test('should apply style update', async () => {
-			expect(await getColor(`h1`)).toBe('green');
-			await updateApp((content) => content.replace('color: green', 'color: red'));
+			expect(await getColor(`h1`)).toBe('rgb(255, 62, 0)');
+			await updateIndexSvelte((content) => content.replace('color: #ff3e00', 'color: red'));
 			expect(await getColor(`h1`)).toBe('red');
 		});
+		/*
 		test('should not preserve state of updated props', async () => {
 			await expect(await getText(`#foo`)).toBe('foo');
-			await updateApp((content) => content.replace("foo = 'foo'", "foo = 'bar'"));
+			await updateIndexSvelte((content) => content.replace("foo = 'foo'", "foo = 'bar'"));
 			await expect(await getText(`#foo`)).toBe('bar');
 		});
+
+		 */
 	});
 }

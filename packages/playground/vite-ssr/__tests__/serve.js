@@ -4,7 +4,8 @@
 
 const path = require('path');
 
-const port = (exports.port = 9527);
+// must be unique across all playgrounds!
+const port = 9527;
 
 /**
  * @param {string} root
@@ -45,9 +46,10 @@ exports.serve = async function serve(root, isProd) {
 			const server = app.listen(port, () => {
 				resolve({
 					// for test teardown
-					close() {
+					port: port,
+					async close() {
 						server.close();
-						return vite && vite.close();
+						return vite && (await vite.close());
 					}
 				});
 			});
