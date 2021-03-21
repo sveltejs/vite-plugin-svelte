@@ -20,11 +20,13 @@ exports.serve = async function serve(root, isProd) {
 				cwd: root,
 				cleanup: true
 			});
+			serverProcess.stdout.pipe(process.stdout);
+			serverProcess.stderr.pipe(process.stderr);
 
 			const resolveWhenStarted = (data) => {
 				const str = data.toString();
 				// hack, console output may contain color code gibberish
-				// skip gibberish between localhost: and port number statting with 3
+				// skip gibberish between localhost: and port number starting with 3
 				const match = str.match(/(http:\/\/localhost:)(?:[^3]*)(\d+)/);
 				if (match) {
 					serverProcess.stdout.off('data', resolveWhenStarted);

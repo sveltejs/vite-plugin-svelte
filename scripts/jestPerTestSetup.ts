@@ -52,15 +52,16 @@ beforeAll(async () => {
 			const playgroundRoot = resolve(__dirname, '../packages/playground');
 			const srcDir = resolve(playgroundRoot, testName);
 			tempDir = resolve(__dirname, '../temp', isBuildTest ? 'build' : 'serve', testName);
+			const directoriesToIgnore = ['node_modules', '__tests__', 'dist', 'build', '.svelte'];
+			const isIgnored = (file) => {
+				const segments = file.split('/');
+				return segments.find((segment) => directoriesToIgnore.includes(segment));
+			};
 			await fs.copy(srcDir, tempDir, {
 				dereference: true,
 				filter(file) {
 					file = slash(file);
-					return (
-						!file.includes('__tests__') &&
-						!file.includes('node_modules') &&
-						!file.match(/dist(\/|$)/)
-					);
+					return !isIgnored(file);
 				}
 			});
 
