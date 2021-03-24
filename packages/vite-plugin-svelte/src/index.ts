@@ -8,7 +8,7 @@ import { handleHotUpdate } from './handleHotUpdate';
 import { log } from './utils/log';
 import { createCompileSvelte } from './utils/compile';
 import { buildIdParser, IdParser } from './utils/id';
-import { validateInlineOptions, Options, ResolvedOptions, resolveOptions } from './utils/options';
+import { validateInlineOptions, Options, ResolvedOptions, resolveOptions, PreprocessorGroup } from './utils/options';
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 
 import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/contants';
@@ -24,6 +24,14 @@ export {
 	ModuleFormat,
 	Processed
 } from './utils/options';
+
+// extend the Vite plugin interface to be able to have `sveltePreprocess` injection
+declare module 'vite' {
+	// eslint-disable-next-line no-unused-vars
+	interface Plugin {
+		sveltePreprocess?: PreprocessorGroup
+	}
+}
 
 const pkg_export_errors = new Set();
 

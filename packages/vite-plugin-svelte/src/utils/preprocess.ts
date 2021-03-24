@@ -109,12 +109,9 @@ export function buildExtraPreprocessors(options: ResolvedOptions, config: Resolv
 	if (options.useVitePreprocess) {
 		extraPreprocessors.push(createVitePreprocessorGroup(config, options));
 	}
-	// TODO
-	/*
-  const windiCssPlugin = config.plugins.find(p => p.name === 'vite-plugin-windicss:css');
-  if (windiCssPlugin) {
-    extraPreprocessors.unshift(createWindicssStylePreprocessorFromVite(windiCssPlugin))
-  }
-   */
+
+	const preprocessors = config.plugins.map(p => p && p.sveltePreprocess).filter(Boolean) as PreprocessorGroup[]
+	extraPreprocessors.push(...preprocessors)
+
 	return extraPreprocessors;
 }

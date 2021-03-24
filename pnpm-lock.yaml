@@ -196,20 +196,20 @@ importers:
       vite: ^2.1.2
   packages/playground/windicss:
     dependencies:
-      windicss: 2.5.2
+      windicss: 2.5.4
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.35.0
-      svelte-hmr: 0.13.0_svelte@3.35.0
+      svelte-hmr: 0.14.0_svelte@3.35.0
       vite: 2.1.2
-      vite-plugin-windicss: 0.9.4_vite@2.1.2
+      vite-plugin-windicss: 0.9.9_vite@2.1.2
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       svelte: ^3.35.0
-      svelte-hmr: ^0.13.0
+      svelte-hmr: ^0.14.0
       vite: ^2.1.2
-      vite-plugin-windicss: ^0.9.4
-      windicss: ^2.5.2
+      vite-plugin-windicss: ^0.9.9
+      windicss: ^2.5.4
   packages/vite-plugin-svelte:
     dependencies:
       '@rollup/pluginutils': 4.1.0_rollup@2.42.0
@@ -1482,6 +1482,16 @@ packages:
     dev: true
     resolution:
       integrity: sha512-udA6kvgj1/zUrDvKw8To0BqG3PsaDwJkOHgT0GnEzyXg3b37TUEJ/8H1sW98ai12K5jL+ovd6/8hmve0wkvvoA==
+  /@windicss/plugin-utils/0.9.9:
+    dependencies:
+      debug: 4.3.2
+      fast-glob: 3.2.5
+      micromatch: 4.0.2
+      sucrase: 3.17.1
+      windicss: 2.5.4
+    dev: true
+    resolution:
+      integrity: sha512-d9XilcOg2m2VQYv7CVE5iyZB/JLUuke0h0mPLuBuqwbLu/Bbssbkr7Ep1T1qC6qykJaylVdV4FTl0MNF5VcRUA==
   /abab/2.0.5:
     dev: true
     resolution:
@@ -8334,6 +8344,14 @@ packages:
       svelte: '>=3.19.0'
     resolution:
       integrity: sha512-gagW62pLQ2lULmvNA3pIZu9pBCYOaGu3rQikUOv6Nokz5VxUgT9/mQLfMxj9phDEKHCg/lgr3i6PkqZDbO9P2Q==
+  /svelte-hmr/0.14.0_svelte@3.35.0:
+    dependencies:
+      svelte: 3.35.0
+    dev: true
+    peerDependencies:
+      svelte: '>=3.19.0'
+    resolution:
+      integrity: sha512-Rc4w11U+U30m/cHqOJ/xioFSEAY5fd5muiQC7FL6XJuJAuB2OIJoEZl3KEJR2uO1/f4Bw0PdrugtbxcngSsOtQ==
   /svelte-preprocess/4.6.9_svelte@3.35.0+typescript@4.2.3:
     dependencies:
       '@types/pug': 2.0.4
@@ -9052,17 +9070,17 @@ packages:
     dev: true
     resolution:
       integrity: sha512-O6AE4OskCG5S1emQ/4gl8zK586RqA3srz3nfK/Viy0UPToBc5Trp9BVFb1u0CjsKrAWwnpr4ifM/KBXPWwJbCA==
-  /vite-plugin-windicss/0.9.4_vite@2.1.2:
+  /vite-plugin-windicss/0.9.9_vite@2.1.2:
     dependencies:
-      '@windicss/plugin-utils': 0.9.4
+      '@windicss/plugin-utils': 0.9.9
       debug: 4.3.2
       vite: 2.1.2
-      windicss: 2.5.2
+      windicss: 2.5.4
     dev: true
     peerDependencies:
       vite: ^2.0.1
     resolution:
-      integrity: sha512-hLrPV+9KF260iIRVK4XirG3zb7T9qJyZ5xfUGrF560cA7I8IsTMI91ePk8F0H70cWzME+h/wSQiUejRvcvaSnA==
+      integrity: sha512-HMBFrpangFzYBVGnKKaAYeLFUs+ku/XHQ7HHLLSMytiVS9//zVUj5YaWLFWd8nehknbly6sDXufIc9ZJpIiIKQ==
   /vite/2.1.2:
     dependencies:
       esbuild: 0.9.5
@@ -9201,11 +9219,18 @@ packages:
     resolution:
       integrity: sha512-NsmoXalsWVDMGupxZ5R08ka9flZjjiLvHVAWYOKtiKM8ujtZWr9cRffak+uSE48+Ob8ObalXpwyeUiyDD6QFgg==
   /windicss/2.5.2:
+    dev: true
     engines:
       node: '>= 12'
     hasBin: true
     resolution:
       integrity: sha512-WzynOx1rQGzgUq62wqyWjUzOEPArwP8oeWyLqymiF54LSFC7f0oIYXR01bxY/y6OK2wODyK/OuwahPNAsseqqg==
+  /windicss/2.5.4:
+    engines:
+      node: '>= 12'
+    hasBin: true
+    resolution:
+      integrity: sha512-K+w/TOxbY38bIjRyJVgQ29ndZ0xZsbpf4a7wClqyFDQdCTbuCnzChBMpO13BqLmksIaHRzL46TeBRpFyV6n5/A==
   /word-wrap/1.2.3:
     dev: true
     engines:
