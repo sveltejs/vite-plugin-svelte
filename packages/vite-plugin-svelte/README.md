@@ -49,7 +49,7 @@ If you are building a plugin for vite that transforms css and want it to work ou
 const vitePluginCoolCss = {
 	name: 'vite-plugin-coolcss',
 	sveltePreprocess: {
-		/* your ProprocessorGroup here */
+		/* your PreprocessorGroup here */
 	}
 	/*... your cool css plugin implementation here .. */
 };
