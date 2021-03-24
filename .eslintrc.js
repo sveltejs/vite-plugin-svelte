@@ -143,6 +143,13 @@ module.exports = {
 				node: true,
 				browser: false
 			}
+		},
+		{
+			/* required because App.svelte contains windicss rule that breaks the parser */
+			files: ['packages/playground/windicss/src/App.svelte'],
+			settings: {
+				'svelte3/ignore-styles': () => true
+			}
 		}
 	]
 };

@@ -6,11 +6,8 @@ module.exports = defineConfig(({ command, mode }) => {
 	const isProduction = mode === 'production';
 	return {
 		plugins: [
-			// uses enforce: pre
 			svelte(),
-			vitePluginWindicss({
-				transformCSS: 'pre'
-			})
+			vitePluginWindicss()
 		],
 		build: {
 			minify: isProduction
