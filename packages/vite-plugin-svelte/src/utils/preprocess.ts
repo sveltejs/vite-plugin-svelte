@@ -1,7 +1,7 @@
 import { ResolvedConfig, TransformResult } from 'vite';
 import { Preprocessor, PreprocessorGroup, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
-// import type { WindiPluginUtils } from '@windicss/plugin-utils'
+import { log } from './log';
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss'];
 
 const supportedScriptLangs = ['ts'];
@@ -58,60 +58,24 @@ export function createVitePreprocessorGroup(
 	} as PreprocessorGroup;
 }
 
-/*
-function createWindicssStylePreprocessorFromVite(
-  windiPlugin: Plugin
-): PreprocessorGroup {
-  const cssTransform = windiPlugin.transform!.bind(
-    (null as unknown) as TransformPluginContext
-  )
-  return {
-    style: async ({attributes,content, filename }) => {
-      const lang = attributes.lang as string || 'css'
-      const transformResult: string = (await cssTransform(
-        content,
-        `${filename}.${lang}`
-      )) as unknown as string
-
-
-      return {
-        code: transformResult
-      }
-    }
-  } as PreprocessorGroup
-}
-
-
-
-function createWindicssApiStylePreprocessorFromVite(
-  windiPlugin: Plugin
-): PreprocessorGroup {
-  const windiAPI = windiPlugin.api as WindiPluginUtils
-
-  return {
-    style: async ({  content, filename }) => {
-      windiAPI.extractFile(content,filename,false);
-      const transformResult = await windiAPI.transformGroupsWithSourcemap(content)
-      if(transformResult) {
-        return {
-          code: transformResult.code,
-          map: transformResult.map as object
-        }
-      }
-    }
-  } as PreprocessorGroup
-}
-
- */
-
 export function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
 	const extraPreprocessors = [];
 	if (options.useVitePreprocess) {
+		log.debug('adding vite preprocessor');
 		extraPreprocessors.push(createVitePreprocessorGroup(config, options));
 	}
 
-	const preprocessors = config.plugins.map(p => p?.sveltePreprocess).filter(Boolean) as PreprocessorGroup[]
-	extraPreprocessors.push(...preprocessors)
+	const pluginsWithPreprocessors = config.plugins.filter((p) => p?.sveltePreprocess);
+	if (pluginsWithPreprocessors.length > 0) {
+		log.debug(
+			`adding preprocessors from other vite plugins: ${pluginsWithPreprocessors
+				.map((p) => p.name)
+				.join(', ')}`
+		);
+		extraPreprocessors.push(
+			...pluginsWithPreprocessors.map((p) => p.sveltePreprocess as PreprocessorGroup)
+		);
+	}
 
 	return extraPreprocessors;
 }
