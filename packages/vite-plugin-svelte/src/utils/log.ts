@@ -1,26 +1,27 @@
 /* eslint-disable no-unused-vars */
-import chalk from 'chalk';
-import debug from 'debug';
+import kleur from 'kleur';
+import { diary } from 'diary';
 const levels: string[] = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
+const { debug } = diary(`vite:${prefix}`);
 const loggers: { [key: string]: any } = {
 	debug: {
-		log: debug(`vite:${prefix}`),
+		log: debug,
 		enabled: false,
 		isDebug: true
 	},
 	info: {
-		color: chalk.cyan,
+		color: kleur.cyan,
 		log: console.log,
 		enabled: true
 	},
 	warn: {
-		color: chalk.yellow,
+		color: kleur.yellow,
 		log: console.warn,
 		enabled: true
 	},
 	error: {
-		color: chalk.red,
+		color: kleur.red,
 		log: console.error,
 		enabled: true
 	},
