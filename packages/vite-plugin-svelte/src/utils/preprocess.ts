@@ -110,7 +110,7 @@ export function buildExtraPreprocessors(options: ResolvedOptions, config: Resolv
 		extraPreprocessors.push(createVitePreprocessorGroup(config, options));
 	}
 
-	const preprocessors = config.plugins.map(p => p && p.sveltePreprocess).filter(Boolean) as PreprocessorGroup[]
+	const preprocessors = config.plugins.map(p => p?.sveltePreprocess).filter(Boolean) as PreprocessorGroup[]
 	extraPreprocessors.push(...preprocessors)
 
 	return extraPreprocessors;
