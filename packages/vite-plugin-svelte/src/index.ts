@@ -11,7 +11,7 @@ import { buildIdParser, IdParser } from './utils/id';
 import { validateInlineOptions, Options, ResolvedOptions, resolveOptions, PreprocessorGroup } from './utils/options';
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 
-import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/contants';
+import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
 
 export {
 	Options,
