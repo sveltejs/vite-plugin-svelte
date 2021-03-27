@@ -49,12 +49,9 @@ jobs:
             ubuntu-latest-node-v14-pnpm-store-
 
       - name: install
-        # only run install if we don't get an exact cache hit
-        if: steps.pnpm-store.outputs.cache-hit != 'true'
         # install but don't run scripts, they could be evil
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: check store
-        if: steps.pnpm-store.outputs.cache-hit != 'true'
         run: pnpm store status
       - name: install esbuild
         # manually install esbuild because we deactivated postinstall scripts above
