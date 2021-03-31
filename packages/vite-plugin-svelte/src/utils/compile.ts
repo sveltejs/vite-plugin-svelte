@@ -97,7 +97,12 @@ function buildMakeHot(options: ResolvedOptions) {
 		const hotApi = options?.hot?.hotApi;
 		// @ts-ignore
 		const adapter = options?.hot?.adapter;
-		return createMakeHot({ walk, hotApi, adapter, hotOptions: options.hot });
+		return createMakeHot({
+			walk,
+			hotApi,
+			adapter,
+			hotOptions: { noOverlay: true, ...(options.hot as object) }
+		});
 	}
 }
 
