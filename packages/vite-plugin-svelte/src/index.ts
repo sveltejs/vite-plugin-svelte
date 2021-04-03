@@ -8,7 +8,13 @@ import { handleHotUpdate } from './handleHotUpdate';
 import { log } from './utils/log';
 import { createCompileSvelte } from './utils/compile';
 import { buildIdParser, IdParser } from './utils/id';
-import { validateInlineOptions, Options, ResolvedOptions, resolveOptions, PreprocessorGroup } from './utils/options';
+import {
+	validateInlineOptions,
+	Options,
+	ResolvedOptions,
+	resolveOptions,
+	PreprocessorGroup
+} from './utils/options';
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 
 import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
@@ -29,7 +35,7 @@ export {
 declare module 'vite' {
 	// eslint-disable-next-line no-unused-vars
 	interface Plugin {
-		sveltePreprocess?: PreprocessorGroup
+		sveltePreprocess?: PreprocessorGroup;
 	}
 }
 
@@ -114,10 +120,16 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 			}
 		},
 
-		async resolveId(importee, importer, options, ssr) {
+		async resolveId(importee, importer, customOptions, ssr) {
 			const svelteRequest = requestParser(importee, !!ssr);
 			log.debug('resolveId', svelteRequest || importee);
 			if (svelteRequest?.query.svelte) {
+				if (svelteRequest.query.type === 'style') {
+					// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
+					// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
+					log.debug(`resolveId resolved virtual css module ${svelteRequest.cssId}`);
+					return svelteRequest.cssId;
+				}
 				log.debug(`resolveId resolved ${importee}`);
 				return importee; // query with svelte tag, an id we generated, no need for further analysis
 			}
