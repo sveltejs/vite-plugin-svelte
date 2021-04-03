@@ -27,22 +27,22 @@
     "release": "pnpm publish --tag=next --filter=\"@sveltejs/*\""
   },
   "devDependencies": {
-    "@changesets/cli": "^2.14.1",
+    "@changesets/cli": "^2.15.0",
     "@microsoft/api-extractor": "^7.13.2",
-    "@types/fs-extra": "^9.0.8",
-    "@types/jest": "^26.0.21",
-    "@types/node": "^14.14.35",
+    "@types/fs-extra": "^9.0.10",
+    "@types/jest": "^26.0.22",
+    "@types/node": "^14.14.37",
     "@types/semver": "^7.3.4",
-    "@typescript-eslint/eslint-plugin": "^4.18.0",
-    "@typescript-eslint/parser": "^4.18.0",
+    "@typescript-eslint/eslint-plugin": "^4.20.0",
+    "@typescript-eslint/parser": "^4.20.0",
     "chalk": "^4.1.0",
     "cross-env": "^7.0.3",
     "enquirer": "^2.3.6",
-    "esbuild": "^0.9.5",
-    "eslint": "^7.22.0",
+    "esbuild": "~0.9.7",
+    "eslint": "^7.23.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-html": "^6.1.2",
-    "eslint-plugin-jest": "^24.3.2",
+    "eslint-plugin-jest": "^24.3.3",
     "eslint-plugin-markdown": "^2.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.3.1",
@@ -58,21 +58,21 @@
     "node-fetch": "^2.6.1",
     "npm-check-updates": "^11.3.0",
     "npm-run-all": "^4.1.5",
-    "playwright-core": "^1.9.2",
-    "pnpm": "^5.18.7",
+    "playwright-core": "^1.10.0",
+    "pnpm": "^5.18.9",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
     "rimraf": "^3.0.2",
-    "semver": "^7.3.4",
+    "semver": "^7.3.5",
     "sirv": "^1.0.11",
     "slash": "^3.0.0",
     "stylelint": "^13.12.0",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-recommended": "^4.0.0",
-    "svelte": "^3.35.0",
+    "svelte": "^3.37.0",
     "ts-jest": "^26.5.4",
     "typescript": "^4.2.3",
-    "vite": "^2.1.2"
+    "vite": "^2.1.5"
   },
   "husky": {
     "hooks": {
@@ -90,5 +90,11 @@
     "pnpm": ">=5",
     "yarn": "forbidden, use pnpm",
     "npm": "forbidden, use pnpm"
-  }
+  },
+
+	"pnpm": {
+		"overrides": {
+			"vite": "../../vite/packages/vite"
+		}
+	}
 }
