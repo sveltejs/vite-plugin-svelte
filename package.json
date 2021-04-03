@@ -24,7 +24,7 @@
     "format:fix": "pnpm format -- --write",
     "fixup": "run-s lint:fix format:fix",
     "update-deps": "ncu -u",
-    "release": "pnpm publish --tag=next --filter=\"@sveltejs/*\""
+    "release": "pnpm run build && pnpx changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.14.1",
