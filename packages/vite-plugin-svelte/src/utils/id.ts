@@ -6,6 +6,7 @@ import { normalizePath } from 'vite';
 import * as fs from 'fs';
 
 const VITE_FS_PREFIX = '/@fs/';
+const IS_WINDOWS = process.platform === 'win32';
 export type SvelteQueryTypes = 'style' | 'script';
 
 export interface SvelteQuery {
@@ -65,7 +66,9 @@ function createVirtualImportId(filename: string, root: string, type: SvelteQuery
 	if (existsInRoot(filename, root)) {
 		filename = root + filename;
 	} else if (filename.startsWith(VITE_FS_PREFIX)) {
-		filename = filename.slice(VITE_FS_PREFIX.length - 1);
+		filename = IS_WINDOWS
+			? filename.slice(VITE_FS_PREFIX.length) // remove /@fs/ from /@fs/C:/...
+			: filename.slice(VITE_FS_PREFIX.length - 1); // remove /@fs from /@fs/home/user
 	}
 	// return same virtual id format as vite-plugin-vue eg ...App.svelte?svelte&type=style&lang.css
 	return `${filename}?${parts.join('&')}`;
