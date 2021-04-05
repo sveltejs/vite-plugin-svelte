@@ -124,10 +124,16 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 			}
 		},
 
-		async resolveId(importee, importer, options, ssr) {
+		async resolveId(importee, importer, customOptions, ssr) {
 			const svelteRequest = requestParser(importee, !!ssr);
 			log.debug('resolveId', svelteRequest || importee);
 			if (svelteRequest?.query.svelte) {
+				if (svelteRequest.query.type === 'style') {
+					// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
+					// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
+					log.debug(`resolveId resolved virtual css module ${svelteRequest.cssId}`);
+					return svelteRequest.cssId;
+				}
 				log.debug(`resolveId resolved ${importee}`);
 				return importee; // query with svelte tag, an id we generated, no need for further analysis
 			}
