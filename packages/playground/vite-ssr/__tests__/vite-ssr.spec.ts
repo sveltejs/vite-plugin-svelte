@@ -6,17 +6,13 @@ import {
 	isBuild,
 	untilUpdated
 } from '../../testUtils';
-import { port } from './serve';
+
 import fetch from 'node-fetch';
 
-const url = `http://localhost:${port}`;
-
 test('/', async () => {
-	await page.goto(url);
-
 	expect(await page.textContent('h1')).toMatch('Hello svelte world'); // after hydration
 
-	const html = await (await fetch(url)).text();
+	const html = await (await fetch(page.url())).text();
 	expect(html).toMatch('Hello world'); // before hydration
 	if (isBuild) {
 		// TODO expect preload links

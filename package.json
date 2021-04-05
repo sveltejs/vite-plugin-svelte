@@ -12,7 +12,7 @@
     "test:build": "cross-env VITE_TEST_BUILD=1 jest",
     "test:build:debug": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 node --inspect-brk ./node_modules/.bin/jest",
     "test:ci": "run-s test:ci:serve test:ci:build",
-    "test:ci:serve": "cross-env VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/serve/jest-results.json\" ",
+    "test:ci:serve": "cross-env VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/serve/jest-results.json\"",
     "test:ci:build": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/build/jest-results.json\"",
     "lint": "run-p lint:script lint:style",
     "lint:script": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",

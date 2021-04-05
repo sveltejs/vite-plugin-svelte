@@ -6,6 +6,7 @@ const execa = require('execa');
 
 const isBuildTest = !!process.env.VITE_TEST_BUILD;
 const isCI = !!process.env.CI;
+const showTestBrowser = !!process.env.TEST_SHOW_BROWSER;
 
 const DIR = path.join(os.tmpdir(), 'jest_playwright_global_setup');
 
@@ -47,20 +48,23 @@ const guessChromePath = async () => {
 };
 
 const startPlaywrightServer = async () => {
-	const args = ['--headless', '--disable-gpu', '--single-process', '--no-zygote', '--no-sandbox'];
-	if (isCI) {
-		args.push('--disable-setuid-sandbox', '--disable-dev-shm-usage');
-	}
 	const executablePath = process.env.CHROME_BIN || (await guessChromePath());
 	if (!executablePath) {
 		throw new Error('failed to identify chrome executable path. set CHROME_BIN env variable');
 	}
-	const browserServer = await chromium.launchServer({
-		headless: true,
+	const headless = !showTestBrowser;
+	const args = ['--disable-gpu', '--single-process', '--no-zygote', '--no-sandbox'];
+	if (isCI) {
+		args.push('--disable-setuid-sandbox', '--disable-dev-shm-usage');
+	}
+	if (headless) {
+		args.push('--headless');
+	}
+	return chromium.launchServer({
+		headless,
 		executablePath,
 		args
 	});
-	return browserServer;
 };
 
 module.exports = async () => {

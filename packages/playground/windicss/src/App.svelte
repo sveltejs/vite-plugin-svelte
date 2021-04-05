@@ -17,13 +17,13 @@
 		}
 	}
 	@screen sm {
-			h1 {
-					@apply text-blue-500;
-			}
+		h1 {
+			@apply text-blue-500;
+		}
 	}
 	@media (min-width: 640px) {
-			h1 {
-					@apply text-blue-500;
-			}
+		h1 {
+			@apply text-blue-500;
+		}
 	}
 </style>

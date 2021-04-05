@@ -5,10 +5,7 @@ const vitePluginWindicss = require('vite-plugin-windicss').default;
 module.exports = defineConfig(({ command, mode }) => {
 	const isProduction = mode === 'production';
 	return {
-		plugins: [
-			svelte(),
-			vitePluginWindicss()
-		],
+		plugins: [svelte(), vitePluginWindicss()],
 		build: {
 			minify: isProduction
 		}

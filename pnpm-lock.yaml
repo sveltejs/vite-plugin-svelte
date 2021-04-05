@@ -97,8 +97,10 @@ importers:
   packages/playground:
     devDependencies:
       css-color-names: 1.0.1
+      tree-kill: 1.2.2
     specifiers:
       css-color-names: ^1.0.1
+      tree-kill: ^1.2.2
   packages/playground/autoprefixer-browerslist:
     dependencies:
       playground-hmr-test-dependency: link:../hmr-test-dependency
@@ -182,6 +184,17 @@ importers:
       vite: ^2.1.5
   packages/playground/hmr-test-dependency:
     specifiers: {}
+  packages/playground/kit-node:
+    devDependencies:
+      '@sveltejs/adapter-node': 1.0.0-next.12
+      '@sveltejs/kit': 1.0.0-next.71_svelte@3.37.0+vite@2.1.5
+      svelte: 3.37.0
+      vite: 2.1.5
+    specifiers:
+      '@sveltejs/adapter-node': ^1.0.0-next.12
+      '@sveltejs/kit': ^1.0.0-next.71
+      svelte: ^3.29.0
+      vite: ^2.1.0
   packages/playground/preprocess-with-vite:
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -1210,6 +1223,26 @@ packages:
       postcss-syntax: '>=0.36.2'
     resolution:
       integrity: sha512-2kGbqUVJUGE8dM+bMzXG/PYUWKkjLIkRLWNh39OaADkiabDRdw8ATFCgbMz5xdIcvwspPAluSL7uY+ZiTWdWmQ==
+  /@sveltejs/adapter-node/1.0.0-next.12:
+    dev: true
+    resolution:
+      integrity: sha512-DGP3dT5ijsTV0zmLDmZP8wI4RjZlifGGzA0y4HLoWNEKhZJLDjFDJnNcA+O5S9QBxQOVaYUlAY2z19r+skBVjA==
+  /@sveltejs/kit/1.0.0-next.71_svelte@3.37.0+vite@2.1.5:
+    dependencies:
+      '@sveltejs/vite-plugin-svelte': link:packages/vite-plugin-svelte
+      cheap-watch: 1.0.3
+      sade: 1.7.4
+      svelte: 3.37.0
+      vite: 2.1.5
+    dev: true
+    engines:
+      node: '>= 12.17.0'
+    hasBin: true
+    peerDependencies:
+      svelte: ^3.32.1
+      vite: ^2.1.0
+    resolution:
+      integrity: sha512-9oZEKtuFpmJanL0u7oJPWIoC4kWMtNSuN1SN7xKo+g54xI6JcsoH2J15OkTU89Hsd9Ctp4/OTh9j6/vgq9J7gw==
   /@szmarczak/http-timer/1.1.2:
     dependencies:
       defer-to-connect: 1.1.3
@@ -2319,6 +2352,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
+  /cheap-watch/1.0.3:
+    dev: true
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-xC5CruMhLzjPwJ5ecUxGu1uGmwJQykUhqd2QrCrYbwvsFYdRyviu6jG9+pccwDXJR/OpmOTOJ9yLFunVgQu9wg==
   /chokidar/3.5.1:
     dependencies:
       anymatch: 3.1.1
@@ -6162,6 +6201,12 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+  /mri/1.1.6:
+    dev: true
+    engines:
+      node: '>=4'
+    resolution:
+      integrity: sha512-oi1b3MfbyGa7FJMP9GmLTttni5JoICpYBRlq+x5V16fZbLsnL9N3wFqqIm/nIG43FjUFkFh9Epzp/kzUGUnJxQ==
   /ms/2.0.0:
     dev: true
     resolution:
@@ -7669,6 +7714,14 @@ packages:
       npm: '>=2.0.0'
     resolution:
       integrity: sha512-/oTwee4N4iWzAMAL9xdGKjkEHmIwupR3oXbQjCKywF1BeFohswF3vZdogbmEF6pZkOsXTzWkrZszrWpQTByYVg==
+  /sade/1.7.4:
+    dependencies:
+      mri: 1.1.6
+    dev: true
+    engines:
+      node: '>= 6'
+    resolution:
+      integrity: sha512-y5yauMD93rX840MwUJr7C1ysLFBgMspsdTo4UVrDg3fXDvtwOyIqykhVAAm6fk/3au77773itJStObgK+LKaiA==
   /safe-buffer/5.1.2:
     dev: true
     resolution:
@@ -8830,6 +8883,11 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-3n1qG+/5kg+jrbTzwAykB5yRYtQCTqOGKq5U5PE3b0a1/mzo6snDhjGS0zJVJunO0NrT3Dg1MLy5TjWP/UJppg==
+  /tree-kill/1.2.2:
+    dev: true
+    hasBin: true
+    resolution:
+      integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==
   /trim-newlines/3.0.0:
     dev: true
     engines:

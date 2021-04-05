@@ -20,7 +20,13 @@ declare global {
 	}
 }
 
-let server: ViteDevServer | http.Server;
+interface CustomServer {
+	port: number;
+	base?: string;
+	close: () => {};
+}
+
+let server: ViteDevServer | http.Server | CustomServer;
 let tempDir: string;
 let err: Error;
 
@@ -46,15 +52,16 @@ beforeAll(async () => {
 			const playgroundRoot = resolve(__dirname, '../packages/playground');
 			const srcDir = resolve(playgroundRoot, testName);
 			tempDir = resolve(__dirname, '../temp', isBuildTest ? 'build' : 'serve', testName);
+			const directoriesToIgnore = ['node_modules', '__tests__', 'dist', 'build', '.svelte'];
+			const isIgnored = (file) => {
+				const segments = file.split('/');
+				return segments.find((segment) => directoriesToIgnore.includes(segment));
+			};
 			await fs.copy(srcDir, tempDir, {
 				dereference: true,
 				filter(file) {
 					file = slash(file);
-					return (
-						!file.includes('__tests__') &&
-						!file.includes('node_modules') &&
-						!file.match(/dist(\/|$)/)
-					);
+					return !isIgnored(file);
 				}
 			});
 
@@ -72,7 +79,13 @@ beforeAll(async () => {
 			if (fs.existsSync(testCustomServe)) {
 				// test has custom server configuration.
 				const { serve } = require(testCustomServe);
-				server = await serve(tempDir, isBuildTest);
+				const customServer: CustomServer = await serve(tempDir, isBuildTest);
+				server = customServer;
+				// use resolved port/base from server
+				const port = customServer.port;
+				const base = customServer.base && customServer.base !== '/' ? `/${customServer.base}` : '';
+				const url = (global.viteTestUrl = `http://localhost:${port}${base}`);
+				await page.goto(url);
 				return;
 			}
 
@@ -117,9 +130,12 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	global.page && global.page.off('console', onConsole);
-
 	if (server) {
-		await server.close();
+		try {
+			await server.close();
+		} catch (e) {
+			console.error('failed to close test server', e);
+		}
 	}
 	// unlink node modules to prevent removal of linked modules on cleanup
 	const temp_node_modules = join(tempDir, 'node_modules');
