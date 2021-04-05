@@ -58,6 +58,22 @@ export function createVitePreprocessorGroup(
 	} as PreprocessorGroup;
 }
 
+/**
+ * this appends a *{} rule to component styles to force the svelte compiler to add style classes to all nodes
+ * That means adding/removing class rules from <style> node won't trigger js updates as the scope classes are not changed
+ *
+ * only used during dev with enabled css hmr
+ */
+function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
+	return {
+		style({ content }) {
+			return {
+				code: `${content} *{}`
+			};
+		}
+	};
+}
+
 export function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
 	const extraPreprocessors = [];
 	if (options.useVitePreprocess) {
@@ -75,6 +91,10 @@ export function buildExtraPreprocessors(options: ResolvedOptions, config: Resolv
 		extraPreprocessors.push(
 			...pluginsWithPreprocessors.map((p) => p.sveltePreprocess as PreprocessorGroup)
 		);
+	}
+
+	if (options.hot && !options.disableCssHmr) {
+		extraPreprocessors.push(createInjectScopeEverythingRulePreprocessorGroup());
 	}
 
 	return extraPreprocessors;
