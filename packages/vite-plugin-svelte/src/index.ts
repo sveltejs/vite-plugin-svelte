@@ -67,14 +67,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 			}
 
 			// extra vite config
-			const extraViteConfig = {
-				esbuild: {
-					tsconfigRaw: {
-						compilerOptions: {
-							importsNotUsedAsValues: 'preserve'
-						}
-					}
-				},
+			const extraViteConfig: Partial<UserConfig> = {
 				optimizeDeps: {
 					exclude: [...SVELTE_IMPORTS]
 				},
@@ -83,6 +76,17 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 					dedupe: [...SVELTE_IMPORTS]
 				}
 			};
+			// needed to transform svelte files with component imports
+			// can cause issues with other typescript files, see https://github.com/sveltejs/vite-plugin-svelte/pull/20
+			if (inlineOptions?.useVitePreprocess) {
+				extraViteConfig.esbuild = {
+					tsconfigRaw: {
+						compilerOptions: {
+							importsNotUsedAsValues: 'preserve'
+						}
+					}
+				};
+			}
 			log.debug('additional vite config', extraViteConfig);
 			return extraViteConfig as Partial<UserConfig>;
 		},

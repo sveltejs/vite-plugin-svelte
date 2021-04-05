@@ -12,8 +12,7 @@
     "dev": "tsc -p . -w --incremental",
     "build": "rimraf dist && run-s build-bundle build-types",
     "build-bundle": "node scripts/build-bundle.js",
-    "build-types": "tsc -p . --emitDeclarationOnly --outDir temp && api-extractor run && rimraf temp",
-    "prepublishOnly": "npm run build"
+    "build-types": "tsc -p . --emitDeclarationOnly --outDir temp && api-extractor run && rimraf temp"
   },
   "engines": {
     "node": ">=12.0.0"
