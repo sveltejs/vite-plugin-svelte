@@ -1,5 +1,18 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.6
+
+### Minor Changes
+
+- 1be46f1: improved css hmr
+- a0f5a65: Allow other vite plugins to define preprocessors
+
+### Patch Changes
+
+- 8d9ef96: fix: do not preserve types unless useVitePreprocess option is true
+- 6f4a253: disable svelte-hmr overlay by default
+- 18647aa: improve virtual css module path (fixes #14)
+
 ## 1.0.0-next.5
 
 ### Patch Changes
