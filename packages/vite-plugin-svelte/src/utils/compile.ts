@@ -25,8 +25,8 @@ const _createCompileSvelte = (makeHot: Function, extraPreprocessors: Preprocesso
 			hydratable: true
 		};
 		if (options.hot) {
-			const hash = `s-${safeBase64Hash(cssId)}`;
-			log.debug(`setting cssHash ${hash} for ${cssId}`);
+			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
+			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
 			finalCompilerOptions.cssHash = () => hash;
 		}
 
@@ -57,7 +57,7 @@ const _createCompileSvelte = (makeHot: Function, extraPreprocessors: Preprocesso
 
 		if (emitCss && compiled.css.code) {
 			// TODO properly update sourcemap?
-			compiled.js.code += `\nimport ${JSON.stringify(svelteRequest.cssId)};\n`;
+			compiled.js.code += `\nimport ${JSON.stringify(cssId)};\n`;
 		}
 
 		// only apply hmr when not in ssr context and hot options are set
@@ -97,7 +97,12 @@ function buildMakeHot(options: ResolvedOptions) {
 		const hotApi = options?.hot?.hotApi;
 		// @ts-ignore
 		const adapter = options?.hot?.adapter;
-		return createMakeHot({ walk, hotApi, adapter, hotOptions: options.hot });
+		return createMakeHot({
+			walk,
+			hotApi,
+			adapter,
+			hotOptions: { noOverlay: true, ...(options.hot as object) }
+		});
 	}
 }
 

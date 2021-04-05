@@ -1,0 +1,17 @@
+import { isBuild, getText, editFileAndWaitForHmrComplete } from '../../testUtils';
+
+test('should render App', async () => {
+	expect(await getText('#hello')).toBe('Hello world');
+});
+
+if (!isBuild) {
+	describe('hmr', () => {
+		const updateApp = editFileAndWaitForHmrComplete.bind(null, 'src/App.svelte');
+
+		test('should update App', async () => {
+			expect(await getText('#hello')).toBe('Hello world');
+			await updateApp((content) => content.replace('world', 'foo'));
+			expect(await getText('#hello')).toBe('Hello foo');
+		});
+	});
+}

@@ -1,5 +1,8 @@
 name: Release
 
+env:
+  pnpm_store_path: ${{github.workspace}}/.pnpm-store
+
 on:
   push:
     branches:
@@ -7,22 +10,52 @@ on:
 
 jobs:
   release:
+    # prevents this action from running on forks
+    if: github.repository == 'sveltejs/vite-plugin-svelte'
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: checkout
+        uses: actions/checkout@v2
         with:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
 
-      - name: Setup Node.js 12.x
-        uses: actions/setup-node@master
+      # install pnpm and try to reuse cache from ci action by using same cache keys
+      - name: install pnpm
+        run: npm i -g pnpm@5
+      - name: set pnpm store-dir
+        run: pnpm config set store-dir ${{ env.pnpm_store_path }}
+      - name: pnpm-store
+        uses: actions/cache@v2
+        id: pnpm-store
         with:
-          node-version: 12.x
+          path: ${{ env.pnpm_store_path }}
+          key: ubuntu-latest-node-v14-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
 
-      - run: npm install -g pnpm
-      - run: pnpm install --frozen-lockfile
+      - name: pnpm-store-fallback
+        if: steps.pnpm-store.outputs.cache-hit != 'true'
+        uses: actions/cache@v2
+        id: pnpm-store-fallback
+        with:
+          path: ${{ env.pnpm_store_path }}
+          key: ubuntu-latest-node-v14-pnpm-store-fallback-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ubuntu-latest-node-v14-pnpm-store-fallback-
+            ubuntu-latest-node-v14-pnpm-store-
+
+      - name: install
+        # install but don't run scripts, they could be evil
+        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+      - name: check store
+        run: pnpm store status
+      - name: install esbuild
+        # manually install esbuild because we deactivated postinstall scripts above
+        run: node node_modules/esbuild/install.js
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
