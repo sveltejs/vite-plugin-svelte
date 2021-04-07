@@ -26,7 +26,7 @@ jobs:
           node-version: 14
       # install pnpm and try to reuse cache from ci action by using same cache keys
       - name: install pnpm
-        run: npm i -g pnpm@5
+        run: npm i -g pnpm@6
       - name: set pnpm store-dir
         run: pnpm config set store-dir ${{ env.pnpm_store_path }}
       - name: pnpm-store
