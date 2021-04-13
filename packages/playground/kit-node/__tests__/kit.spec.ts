@@ -84,7 +84,7 @@ describe('kit-node', () => {
 
 				it('should render additional child components', async () => {
 					let buttons = await page.$$('button');
-					expect(buttons.length).toBe(1);
+					expect(buttons).toHaveLength(1);
 					expect(await getText(buttons[0])).toBe('Clicks: 0');
 					await updateIndexSvelte((content) =>
 						content.replace(
@@ -93,7 +93,7 @@ describe('kit-node', () => {
 						)
 					);
 					buttons = await page.$$('button');
-					expect(buttons.length).toBe(2);
+					expect(buttons).toHaveLength(2);
 					expect(await getText(buttons[0])).toBe('Clicks: 0');
 					expect(await getText(buttons[1])).toBe('Clicks: 0');
 					await buttons[1].click();
@@ -103,7 +103,7 @@ describe('kit-node', () => {
 						content.replace('<Counter id="hmr-test-counter"/>\n', '')
 					);
 					buttons = await page.$$('button');
-					expect(buttons.length).toBe(1);
+					expect(buttons).toHaveLength(1);
 					expect(await getText(buttons[0])).toBe('Clicks: 0');
 				});
 
