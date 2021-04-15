@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.7
+
+### Minor Changes
+
+- [#32](https://github.com/sveltejs/vite-plugin-svelte/pull/32) [`113bb7d`](https://github.com/sveltejs/vite-plugin-svelte/commit/113bb7dc330a7517085d12d1d0758a376a12253f) Thanks [@dominikg](https://github.com/dominikg)! - Reduced cache usage, share css cache between SSR and client
+
 ## 1.0.0-next.6
 
 ### Minor Changes
