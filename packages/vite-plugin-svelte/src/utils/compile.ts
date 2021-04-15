@@ -1,4 +1,4 @@
-import { CompileOptions, PreprocessorGroup, Processed, ResolvedOptions } from './options';
+import { CompileOptions, PreprocessorGroup, ResolvedOptions } from './options';
 import { compile, preprocess, walk } from 'svelte/compiler';
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr';
@@ -74,20 +74,11 @@ const _createCompileSvelte = (makeHot: Function, extraPreprocessors: Preprocesso
 
 		compiled.js.dependencies = dependencies;
 
-		// return everything that was created during preprocess/compile
-		const result = {
-			filename,
+		return {
 			normalizedFilename,
-			cssId,
-			code,
-			preprocessed,
 			compiled,
-			compilerOptions: finalCompilerOptions,
-			options,
 			ssr
 		};
-
-		return result;
 	};
 
 function buildMakeHot(options: ResolvedOptions) {
@@ -142,13 +133,7 @@ export interface Compiled {
 }
 
 export interface CompileData {
-	filename: string;
 	normalizedFilename: string;
-	cssId: string;
-	code: string;
-	preprocessed?: Processed;
 	compiled: Compiled;
-	compilerOptions: CompileOptions;
-	options: Partial<ResolvedOptions>;
 	ssr: boolean | undefined;
 }

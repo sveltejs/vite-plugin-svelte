@@ -11,7 +11,6 @@ const knownOptions = new Set([
 	'compilerOptions',
 	'preprocess',
 	'hot',
-	'disableTransformCache',
 	'disableCssHmr',
 	'useVitePreprocess'
 ]);
@@ -299,12 +298,6 @@ export interface Options {
 	 * @default false
 	 */
 	disableCssHmr?: boolean;
-
-	/**
-	 * do not return cached transform data
-	 * @default false
-	 */
-	disableTransformCache?: boolean;
 
 	/**
 	 * use vite as extra css preprocessor EXPERIMENTAL!

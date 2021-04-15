@@ -115,10 +115,10 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 			//
 			if (query.svelte) {
 				if (query.type === 'style') {
-					const compileData = cache.getCompileData(svelteRequest, false);
-					if (compileData?.compiled?.css) {
+					const css = cache.getCSS(svelteRequest);
+					if (css) {
 						log.debug(`load returns css for ${filename}`);
-						return compileData.compiled.css;
+						return css;
 					}
 				}
 			}
@@ -183,26 +183,21 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 			}
 			log.debug('transform', svelteRequest);
 			const { filename, query } = svelteRequest;
-			const cachedCompileData = cache.getCompileData(svelteRequest, false);
 
 			if (query.svelte) {
-				// tagged svelte request, use cache
-				if (query.type === 'style' && cachedCompileData?.compiled?.css) {
-					log.debug(`transform returns css for ${filename}`);
-					return cachedCompileData.compiled.css;
+				if (query.type === 'style') {
+					const css = cache.getCSS(svelteRequest);
+					if (css) {
+						log.debug(`transform returns css for ${filename}`);
+						return css; // TODO return code arg instead? it's the code from load hook.
+					}
 				}
 				log.error('failed to transform tagged svelte request', svelteRequest);
 				throw new Error(`failed to transform tagged svelte request for id ${id}`);
 			}
-
-			if (cachedCompileData && !options.disableTransformCache) {
-				log.debug(`transform returns cached js for ${filename}`);
-				return cachedCompileData.compiled.js;
-			}
-
-			// first request, compile here
 			const compileData = await compileSvelte(svelteRequest, code, options);
-			cache.setCompileData(compileData);
+			cache.update(compileData);
+
 			log.debug(`transform returns compiled js for ${filename}`);
 			return compileData.compiled.js;
 		},
@@ -216,7 +211,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 				return;
 			}
 			log.debug('handleHotUpdate', svelteRequest);
-			return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache);
+			return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
 		},
 
 		// eslint-disable-next-line no-unused-vars
