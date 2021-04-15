@@ -1,8 +1,9 @@
 import { ModuleNode, HmrContext } from 'vite';
-import { CompileData } from './utils/compile';
+import { Code, CompileData } from './utils/compile';
 import { log } from './utils/log';
 import { SvelteRequest } from './utils/id';
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
+import { ResolvedOptions } from './utils/options';
 
 /**
  * Vite-specific HMR handling
@@ -11,34 +12,33 @@ export async function handleHotUpdate(
 	compileSvelte: Function,
 	ctx: HmrContext,
 	svelteRequest: SvelteRequest,
-	cache: VitePluginSvelteCache
+	cache: VitePluginSvelteCache,
+	options: Partial<ResolvedOptions>
 ): Promise<ModuleNode[] | void> {
 	const { read, server } = ctx;
-	const cachedCompileData = cache.getCompileData(svelteRequest, false);
-	if (!cachedCompileData) {
+
+	const cachedJS = cache.getJS(svelteRequest);
+	if (!cachedJS) {
 		// file hasn't been requested yet (e.g. async component)
 		log.debug(`handleHotUpdate first call ${svelteRequest.id}`);
 		return;
 	}
+	const cachedCss = cache.getCSS(svelteRequest);
 
 	const content = await read();
-	const compileData: CompileData = await compileSvelte(
-		svelteRequest,
-		content,
-		cachedCompileData.options
-	);
-	cache.setCompileData(compileData);
+	const compileData: CompileData = await compileSvelte(svelteRequest, content, options);
+	cache.update(compileData);
 
 	const affectedModules = new Set<ModuleNode | undefined>();
 
 	const cssModule = server.moduleGraph.getModuleById(svelteRequest.cssId);
 	const mainModule = server.moduleGraph.getModuleById(svelteRequest.id);
-	if (cssModule && cssChanged(cachedCompileData, compileData)) {
+	if (cssModule && cssChanged(cachedCss, compileData.compiled.css)) {
 		log.debug('handleHotUpdate css changed');
 		affectedModules.add(cssModule);
 	}
 
-	if (mainModule && jsChanged(cachedCompileData, compileData)) {
+	if (mainModule && jsChanged(cachedJS, compileData.compiled.js, svelteRequest.filename)) {
 		log.debug('handleHotUpdate js changed');
 		affectedModules.add(mainModule);
 	}
@@ -56,13 +56,13 @@ export async function handleHotUpdate(
 	return result;
 }
 
-function cssChanged(prev: CompileData, next: CompileData): boolean {
-	return !isCodeEqual(prev.compiled.css?.code, next.compiled.css?.code);
+function cssChanged(prev?: Code, next?: Code): boolean {
+	return !isCodeEqual(prev?.code, next?.code);
 }
 
-function jsChanged(prev: CompileData, next: CompileData): boolean {
-	const prevJs = prev.compiled.js.code;
-	const nextJs = next.compiled.js.code;
+function jsChanged(prev?: Code, next?: Code, filename?: string): boolean {
+	const prevJs = prev?.code;
+	const nextJs = next?.code;
 	const isStrictEqual = isCodeEqual(prevJs, nextJs);
 	if (isStrictEqual) {
 		return false;
@@ -70,13 +70,13 @@ function jsChanged(prev: CompileData, next: CompileData): boolean {
 	const isLooseEqual = isCodeEqual(normalizeJsCode(prevJs), normalizeJsCode(nextJs));
 	if (!isStrictEqual && isLooseEqual) {
 		log.warn(
-			`ignoring compiler output js change for ${next.filename} as it is equal to previous output after normalization`
+			`ignoring compiler output js change for ${filename} as it is equal to previous output after normalization`
 		);
 	}
 	return !isLooseEqual;
 }
 
-function isCodeEqual(prev: string, next: string): boolean {
+function isCodeEqual(prev?: string, next?: string): boolean {
 	if (!prev && !next) {
 		return true;
 	}
@@ -93,7 +93,7 @@ function isCodeEqual(prev: string, next: string): boolean {
  * 2) ... maybe more (or less) in the future
  * @param code
  */
-function normalizeJsCode(code: string): string {
+function normalizeJsCode(code?: string): string | undefined {
 	if (!code) {
 		return code;
 	}
