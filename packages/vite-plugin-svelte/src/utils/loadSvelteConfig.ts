@@ -4,7 +4,11 @@ import { log } from './log';
 
 const knownSvelteConfigNames = ['svelte.config.js', 'svelte.config.cjs'];
 
-export function loadSvelteConfig(root: string = process.cwd()) {
+// hide dynamic import from ts transform to prevent it turning into a require
+// see https://github.com/microsoft/TypeScript/issues/43329#issuecomment-811606238
+const dynamicImportDefault = new Function('path', 'return import(path).then(m => m.default)');
+
+export async function loadSvelteConfig(root: string = process.cwd()) {
 	const foundConfigs = knownSvelteConfigNames
 		.map((candidate) => path.resolve(root, candidate))
 		.filter((file) => fs.existsSync(file));
@@ -18,7 +22,7 @@ export function loadSvelteConfig(root: string = process.cwd()) {
 		);
 	}
 	try {
-		const config = require(foundConfigs[0]);
+		const config = await dynamicImportDefault(foundConfigs[0]);
 		log.debug(`loaded svelte config ${foundConfigs[0]}`, config);
 		return config;
 	} catch (e) {

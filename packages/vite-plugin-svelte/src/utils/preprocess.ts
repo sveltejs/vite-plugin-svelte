@@ -74,7 +74,7 @@ function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
 	};
 }
 
-export function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
+function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
 	const extraPreprocessors = [];
 	if (options.useVitePreprocess) {
 		log.debug('adding vite preprocessor');
@@ -98,4 +98,17 @@ export function buildExtraPreprocessors(options: ResolvedOptions, config: Resolv
 	}
 
 	return extraPreprocessors;
+}
+
+export function addExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
+	const extra = buildExtraPreprocessors(options, config);
+	if (extra?.length > 0) {
+		if (!options.preprocess) {
+			options.preprocess = extra;
+		} else if (Array.isArray(options.preprocess)) {
+			options.preprocess.push(...extra);
+		} else {
+			options.preprocess = [options.preprocess, ...extra];
+		}
+	}
 }
