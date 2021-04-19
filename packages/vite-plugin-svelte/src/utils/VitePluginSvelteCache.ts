@@ -42,21 +42,27 @@ export class VitePluginSvelteCache {
 		});
 	}
 
-	// TODO watch for deletions and clean up with this
-	public remove(svelteRequest: SvelteRequest) {
+	public remove(svelteRequest: SvelteRequest): boolean {
 		const id = svelteRequest.normalizedFilename;
-		this._js.delete(id);
-		this._css.delete(id);
+		let removed = false;
+		if (this._js.delete(id)) {
+			removed = true;
+		}
+		if (this._css.delete(id)) {
+			removed = true;
+		}
 		const dependencies = this._dependencies.get(id);
 		if (dependencies) {
+			removed = true;
 			dependencies.forEach((d) => {
 				const dependants = this._dependants.get(d);
 				if (dependants && dependants.has(svelteRequest.filename)) {
 					dependants.delete(svelteRequest.filename);
 				}
 			});
+			this._dependencies.delete(id);
 		}
-		this._dependencies.delete(id);
+		return removed;
 	}
 
 	public getCSS(svelteRequest: SvelteRequest) {

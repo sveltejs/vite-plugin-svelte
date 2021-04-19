@@ -18,7 +18,7 @@ import {
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 
 import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
-import { watchPreprocessorDependencies } from './utils/preprocess';
+import { setupWatchers } from './utils/watch';
 
 export {
 	Options,
@@ -55,9 +55,9 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 
 	// eslint-disable-next-line no-unused-vars
 	let compileSvelte: (
-		svelteRequest: SvelteRequest,
-		code: string,
-		options: Partial<ResolvedOptions>
+		s: SvelteRequest,
+		c: string,
+		o: Partial<ResolvedOptions>
 	) => Promise<CompileData>;
 
 	return {
@@ -107,7 +107,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 		configureServer(server) {
 			// eslint-disable-next-line no-unused-vars
 			options.server = server;
-			watchPreprocessorDependencies(server, cache);
+			setupWatchers(server, cache, requestParser);
 		},
 
 		load(id, ssr) {

@@ -1,9 +1,8 @@
-import { ResolvedConfig, TransformResult, ViteDevServer } from 'vite';
+import { ResolvedConfig, TransformResult } from 'vite';
 import { Preprocessor, PreprocessorGroup, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
 import { log } from './log';
-import { VitePluginSvelteCache } from './VitePluginSvelteCache';
-import * as fs from 'fs';
+
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss'];
 
 const supportedScriptLangs = ['ts'];
@@ -100,19 +99,4 @@ export function buildExtraPreprocessors(options: ResolvedOptions, config: Resolv
 	}
 
 	return extraPreprocessors;
-}
-
-export function watchPreprocessorDependencies(server: ViteDevServer, cache: VitePluginSvelteCache) {
-	const watcher = server.watcher;
-	// TODO handle unlink/delete too?
-	watcher.on('change', (filepath) => {
-		const dependants = cache.getDependants(filepath);
-		dependants.forEach((d) => {
-			if (fs.existsSync(d)) {
-				watcher.emit('change', d);
-			} else {
-				log.error(`dependant ${d} of ${filepath} does not exist`);
-			}
-		});
-	});
 }

@@ -140,13 +140,16 @@ export async function hmrUpdateComplete(file, timeout) {
 	});
 }
 
-export async function editFileAndWaitForHmrComplete(file, replacer) {
+export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateToWaitFor?) {
 	const newContent = await editFile(file, replacer);
+	if (!fileUpdateToWaitFor) {
+		fileUpdateToWaitFor = file;
+	}
 	try {
-		await hmrUpdateComplete(file, 10000);
+		await hmrUpdateComplete(fileUpdateToWaitFor, 10000);
 	} catch (e) {
 		console.log(`retrying hmr update for ${file}`);
 		await editFile(file, () => newContent);
-		await hmrUpdateComplete(file, 5000);
+		await hmrUpdateComplete(fileUpdateToWaitFor, 5000);
 	}
 }
