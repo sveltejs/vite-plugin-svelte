@@ -42,7 +42,9 @@ const _createCompileSvelte = (makeHot: Function, extraPreprocessors: Preprocesso
 		preprocessors.push(...(extraPreprocessors || []));
 		if (preprocessors.length > 0) {
 			preprocessed = await preprocess(code, preprocessors, { filename });
-			if (preprocessed.dependencies) dependencies.push(...preprocessed.dependencies);
+			if (preprocessed.dependencies?.length) {
+				dependencies.push(...preprocessed.dependencies.filter((d) => d !== filename));
+			}
 			if (preprocessed.map) finalCompilerOptions.sourcemap = preprocessed.map;
 		}
 
@@ -75,9 +77,11 @@ const _createCompileSvelte = (makeHot: Function, extraPreprocessors: Preprocesso
 		compiled.js.dependencies = dependencies;
 
 		return {
+			filename,
 			normalizedFilename,
 			compiled,
-			ssr
+			ssr,
+			dependencies
 		};
 	};
 
@@ -133,7 +137,9 @@ export interface Compiled {
 }
 
 export interface CompileData {
+	filename: string;
 	normalizedFilename: string;
 	compiled: Compiled;
 	ssr: boolean | undefined;
+	dependencies: string[];
 }

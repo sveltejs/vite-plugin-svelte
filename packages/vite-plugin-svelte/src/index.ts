@@ -6,8 +6,8 @@ import * as relative from 'require-relative';
 
 import { handleHotUpdate } from './handleHotUpdate';
 import { log } from './utils/log';
-import { createCompileSvelte } from './utils/compile';
-import { buildIdParser, IdParser } from './utils/id';
+import { CompileData, createCompileSvelte } from './utils/compile';
+import { buildIdParser, IdParser, SvelteRequest } from './utils/id';
 import {
 	validateInlineOptions,
 	Options,
@@ -18,6 +18,7 @@ import {
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 
 import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
+import { watchPreprocessorDependencies } from './utils/preprocess';
 
 export {
 	Options,
@@ -52,7 +53,12 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 	let requestParser: IdParser;
 	let options: ResolvedOptions;
 
-	let compileSvelte: Function;
+	// eslint-disable-next-line no-unused-vars
+	let compileSvelte: (
+		svelteRequest: SvelteRequest,
+		code: string,
+		options: Partial<ResolvedOptions>
+	) => Promise<CompileData>;
 
 	return {
 		name: 'vite-plugin-svelte',
@@ -101,6 +107,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 		configureServer(server) {
 			// eslint-disable-next-line no-unused-vars
 			options.server = server;
+			watchPreprocessorDependencies(server, cache);
 		},
 
 		load(id, ssr) {
@@ -196,8 +203,11 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 				throw new Error(`failed to transform tagged svelte request for id ${id}`);
 			}
 			const compileData = await compileSvelte(svelteRequest, code, options);
-			cache.update(compileData);
 
+			cache.update(compileData);
+			if (compileData.dependencies?.length && options.server) {
+				compileData.dependencies.forEach((d) => this.addWatchFile(d));
+			}
 			log.debug(`transform returns compiled js for ${filename}`);
 			return compileData.compiled.js;
 		},
