@@ -53,12 +53,13 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 	let requestParser: IdParser;
 	let options: ResolvedOptions;
 
-	// eslint-disable-next-line no-unused-vars
+	/* eslint-disable no-unused-vars */
 	let compileSvelte: (
-		s: SvelteRequest,
-		c: string,
-		o: Partial<ResolvedOptions>
+		svelteRequest: SvelteRequest,
+		code: string,
+		options: Partial<ResolvedOptions>
 	) => Promise<CompileData>;
+	/* eslint-enable no-unused-vars */
 
 	return {
 		name: 'vite-plugin-svelte',
