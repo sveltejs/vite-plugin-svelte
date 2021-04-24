@@ -126,23 +126,36 @@ beforeAll(async () => {
 		// https://github.com/facebook/jest/issues/2713
 		err = e;
 	}
-});
+},30000);
 
 afterAll(async () => {
-	global.page && global.page.off('console', onConsole);
-	if (server) {
-		try {
-			await server.close();
-		} catch (e) {
-			console.error('failed to close test server', e);
+	try {
+		global.page?.off('console', onConsole)
+		await global.page?.close()
+	} catch(e) {
+		console.error('failed to close test page',e);
+		if(!err) {
+			err = e;
 		}
 	}
+	try {
+		await server?.close()
+	} catch(e) {
+		console.error('failed to close test server',e);
+		if(!err) {
+			err = e;
+		}
+	}
+
 	// unlink node modules to prevent removal of linked modules on cleanup
 	const temp_node_modules = join(tempDir, 'node_modules');
 	try {
 		await fs.unlink(temp_node_modules);
 	} catch (e) {
 		console.error(`failed to unlink ${temp_node_modules}`);
+		if(!err) {
+			err = e;
+		}
 	}
 
 	if (err) {
