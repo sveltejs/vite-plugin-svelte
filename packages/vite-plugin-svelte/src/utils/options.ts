@@ -5,6 +5,7 @@ import { loadSvelteConfig } from './loadSvelteConfig';
 import { addExtraPreprocessors } from './preprocess';
 
 const knownOptions = new Set([
+	'configFile',
 	'include',
 	'exclude',
 	'extensions',
@@ -123,7 +124,7 @@ export async function resolveOptions(
 ): Promise<ResolvedOptions> {
 	const defaultOptions = buildDefaultOptions(viteConfig, inlineOptions);
 	// TODO always load from vite root dir or make this configurable?
-	const svelteConfig = (await loadSvelteConfig(viteConfig.root)) || {};
+	const svelteConfig = (await loadSvelteConfig(viteConfig, inlineOptions)) || {};
 	const resolvedOptions = mergeOptions(defaultOptions, svelteConfig, inlineOptions, viteConfig);
 
 	enforceOptionsForProduction(resolvedOptions);
@@ -137,6 +138,9 @@ export async function resolveOptions(
 
 export interface Options {
 	// eslint-disable no-unused-vars
+	/** path to svelte config file, either absolute or relative to vite root*/
+	configFile?: string;
+
 	/** One or more minimatch patterns */
 	include?: Arrayable<string>;
 
