@@ -4,7 +4,7 @@ import { log } from './log';
 import { Options } from './options';
 import { ResolvedConfig } from 'vite';
 
-const knownSvelteConfigNames = ['svelte.config.js', 'svelte.config.cjs'];
+const knownSvelteConfigNames = ['svelte.config.js', 'svelte.config.cjs', 'svelte.config.mjs'];
 
 // hide dynamic import from ts transform to prevent it turning into a require
 // see https://github.com/microsoft/TypeScript/issues/43329#issuecomment-811606238
@@ -17,12 +17,14 @@ export async function loadSvelteConfig(
 	const configFile = findConfigToLoad(viteConfig, inlineOptions);
 
 	if (configFile) {
+		let err;
 		// try to use dynamic import for svelte.config.js first
-		if (configFile.endsWith('.js')) {
+		if (configFile.endsWith('.js') || configFile.endsWith('.mjs')) {
 			try {
 				return await dynamicImportDefault(configFile);
 			} catch (e) {
 				log.debug(`failed to import config ${configFile}`, e);
+				err = e;
 			}
 		}
 		// cjs or error with dynamic import
@@ -30,9 +32,12 @@ export async function loadSvelteConfig(
 			return require(configFile);
 		} catch (e) {
 			log.error(`failed to require config ${configFile}`, e);
+			if (!err) {
+				err = e;
+			}
 		}
 		// failed to load existing config file
-		throw new Error(`failed to load config ${configFile}`);
+		throw err;
 	}
 }
 
