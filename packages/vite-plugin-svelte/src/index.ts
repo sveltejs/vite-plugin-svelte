@@ -91,11 +91,10 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 			return extraViteConfig as Partial<UserConfig>;
 		},
 
-		configResolved(config) {
-			options = resolveOptions(inlineOptions, config);
+		async configResolved(config) {
+			options = await resolveOptions(inlineOptions, config);
 			requestParser = buildIdParser(options);
-			// init compiler
-			compileSvelte = createCompileSvelte(options, config);
+			compileSvelte = createCompileSvelte(options);
 		},
 
 		configureServer(server) {

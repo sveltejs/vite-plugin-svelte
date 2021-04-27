@@ -17,7 +17,7 @@ exports.serve = async function serve(root, isProd) {
 		try {
 			const serverProcess = execa(
 				'svelte-kit',
-				[isProd ? 'start' : 'dev', '--port', isProd ? '3200' : '3201'],
+				[isProd ? 'preview' : 'dev', '--port', isProd ? '3200' : '3201'],
 				{
 					preferLocal: true,
 					cwd: root,
