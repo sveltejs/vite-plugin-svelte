@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.8
+
+### Minor Changes
+
+- [#35](https://github.com/sveltejs/vite-plugin-svelte/pull/35) [`4018ce6`](https://github.com/sveltejs/vite-plugin-svelte/commit/4018ce621b4df75877e0e18057c332f27158d42b) Thanks [@dominikg](https://github.com/dominikg)! - Feature: Support esm in svelte.config.js and svelte.config.mjs
+
+* [#35](https://github.com/sveltejs/vite-plugin-svelte/pull/35) [`4018ce6`](https://github.com/sveltejs/vite-plugin-svelte/commit/4018ce621b4df75877e0e18057c332f27158d42b) Thanks [@dominikg](https://github.com/dominikg)! - Feature: add configFile option
+
+### Patch Changes
+
+- [#34](https://github.com/sveltejs/vite-plugin-svelte/pull/34) [`e5d4749`](https://github.com/sveltejs/vite-plugin-svelte/commit/e5d4749c0850260a295daab9cb15866fe58ee709) Thanks [@dominikg](https://github.com/dominikg)! - fix: watch preprocessor dependencies and trigger hmr on change
+
 ## 1.0.0-next.7
 
 ### Minor Changes
