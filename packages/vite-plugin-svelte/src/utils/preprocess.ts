@@ -2,6 +2,7 @@ import { ResolvedConfig, TransformResult } from 'vite';
 import { Preprocessor, PreprocessorGroup, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
 import { log } from './log';
+
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss'];
 
 const supportedScriptLangs = ['ts'];

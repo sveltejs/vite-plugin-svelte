@@ -259,6 +259,20 @@ importers:
       svelte-hmr: 0.14.2_svelte@3.37.0
       vite: 2.2.3
 
+  packages/playground/svelte-preprocess:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      svelte: ^3.37.0
+      svelte-preprocess: ^4.7.2
+      typescript: ^4.2.4
+      vite: ^2.2.3
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      svelte: 3.37.0
+      svelte-preprocess: 4.7.2_svelte@3.37.0+typescript@4.2.4
+      typescript: 4.2.4
+      vite: 2.2.3
+
   packages/playground/ts-type-import:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*

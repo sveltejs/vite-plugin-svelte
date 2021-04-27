@@ -49,21 +49,21 @@ exports.serve = async function serve(root, isProd) {
 					port: port,
 					async close() {
 						let err;
-						if(server) {
+						if (server) {
 							err = await new Promise((resolve) => {
-								server.close(resolve)
-							})
+								server.close(resolve);
+							});
 						}
 						if (vite) {
 							try {
-								await vite.close()
+								await vite.close();
 							} catch (e) {
-								if(!err) {
+								if (!err) {
 									err = e;
 								}
 							}
 						}
-						if(err) {
+						if (err) {
 							throw err;
 						}
 					}
