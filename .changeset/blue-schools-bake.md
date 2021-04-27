@@ -1,5 +1,5 @@
 ---
-'@sveltejs/vite-plugin-svelte': patch
+'@sveltejs/vite-plugin-svelte': minor
 ---
 
-Feature: Support esm in svelte.config.js
+Feature: Support esm in svelte.config.js and svelte.config.mjs

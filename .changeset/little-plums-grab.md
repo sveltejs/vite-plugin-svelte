@@ -2,4 +2,4 @@
 '@sveltejs/vite-plugin-svelte': minor
 ---
 
-feat: add configFile option
+Feature: add configFile option
