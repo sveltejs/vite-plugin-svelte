@@ -48,8 +48,24 @@ exports.serve = async function serve(root, isProd) {
 					// for test teardown
 					port: port,
 					async close() {
-						server.close();
-						return vite && (await vite.close());
+						let err;
+						if (server) {
+							err = await new Promise((resolve) => {
+								server.close(resolve);
+							});
+						}
+						if (vite) {
+							try {
+								await vite.close();
+							} catch (e) {
+								if (!err) {
+									err = e;
+								}
+							}
+						}
+						if (err) {
+							throw err;
+						}
 					}
 				});
 			});

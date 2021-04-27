@@ -98,11 +98,10 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 			return extraViteConfig as Partial<UserConfig>;
 		},
 
-		configResolved(config) {
-			options = resolveOptions(inlineOptions, config);
+		async configResolved(config) {
+			options = await resolveOptions(inlineOptions, config);
 			requestParser = buildIdParser(options);
-			// init compiler
-			compileSvelte = createCompileSvelte(options, config);
+			compileSvelte = createCompileSvelte(options);
 		},
 
 		configureServer(server) {
@@ -237,7 +236,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 		buildEnd() {
 			if (pkg_export_errors.size > 0) {
 				log.warn(
-					`The following packages did not export their \`package.json\` file so we could not check the "svelte" field.If you had difficulties importing svelte components from a package, then please contact the author and ask them to export the package.json file.`,
+					`The following packages did not export their \`package.json\` file so we could not check the "svelte" field. If you had difficulties importing svelte components from a package, then please contact the author and ask them to export the package.json file.`,
 					Array.from(pkg_export_errors, (s) => `- ${s}`).join('\n')
 				);
 			}

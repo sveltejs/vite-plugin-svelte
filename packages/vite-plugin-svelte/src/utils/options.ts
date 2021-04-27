@@ -2,8 +2,10 @@
 import { ResolvedConfig, ViteDevServer } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './loadSvelteConfig';
+import { addExtraPreprocessors } from './preprocess';
 
 const knownOptions = new Set([
+	'configFile',
 	'include',
 	'exclude',
 	'extensions',
@@ -116,25 +118,29 @@ function mergeOptions(
 	};
 }
 
-export function resolveOptions(
+export async function resolveOptions(
 	inlineOptions: Partial<Options> = {},
 	viteConfig: ResolvedConfig
-): ResolvedOptions {
+): Promise<ResolvedOptions> {
 	const defaultOptions = buildDefaultOptions(viteConfig, inlineOptions);
 	// TODO always load from vite root dir or make this configurable?
-	const svelteConfig = loadSvelteConfig(viteConfig.root) || {};
+	const svelteConfig = (await loadSvelteConfig(viteConfig, inlineOptions)) || {};
 	const resolvedOptions = mergeOptions(defaultOptions, svelteConfig, inlineOptions, viteConfig);
 
 	enforceOptionsForProduction(resolvedOptions);
 
 	enforceOptionsForHmr(resolvedOptions);
 
+	addExtraPreprocessors(resolvedOptions, viteConfig);
 	log.debug('resolved options', resolvedOptions);
 	return resolvedOptions;
 }
 
 export interface Options {
 	// eslint-disable no-unused-vars
+	/** path to svelte config file, either absolute or relative to vite root*/
+	configFile?: string;
+
 	/** One or more minimatch patterns */
 	include?: Arrayable<string>;
 

@@ -1,14 +1,12 @@
-import { CompileOptions, PreprocessorGroup, ResolvedOptions } from './options';
+import { CompileOptions, ResolvedOptions } from './options';
 import { compile, preprocess, walk } from 'svelte/compiler';
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr';
 import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
-import { ResolvedConfig } from 'vite';
-import { buildExtraPreprocessors } from './preprocess';
 
-const _createCompileSvelte = (makeHot: Function, extraPreprocessors: PreprocessorGroup[]) =>
+const _createCompileSvelte = (makeHot: Function) =>
 	async function compileSvelte(
 		svelteRequest: SvelteRequest,
 		code: string,
@@ -31,20 +29,10 @@ const _createCompileSvelte = (makeHot: Function, extraPreprocessors: Preprocesso
 		}
 
 		let preprocessed;
-		const preprocessors = [];
+
 		if (options.preprocess) {
-			if (Array.isArray(options.preprocess)) {
-				preprocessors.push(...options.preprocess);
-			} else {
-				preprocessors.push(options.preprocess);
-			}
-		}
-		preprocessors.push(...(extraPreprocessors || []));
-		if (preprocessors.length > 0) {
-			preprocessed = await preprocess(code, preprocessors, { filename });
-			if (preprocessed.dependencies?.length) {
-				dependencies.push(...preprocessed.dependencies.filter((d) => d !== filename));
-			}
+			preprocessed = await preprocess(code, options.preprocess, { filename });
+			if (preprocessed.dependencies) dependencies.push(...preprocessed.dependencies);
 			if (preprocessed.map) finalCompilerOptions.sourcemap = preprocessed.map;
 		}
 
@@ -101,10 +89,9 @@ function buildMakeHot(options: ResolvedOptions) {
 	}
 }
 
-export function createCompileSvelte(options: ResolvedOptions, config: ResolvedConfig) {
+export function createCompileSvelte(options: ResolvedOptions) {
 	const makeHot = buildMakeHot(options);
-	const extraPreprocessors = buildExtraPreprocessors(options, config);
-	return _createCompileSvelte(makeHot, extraPreprocessors);
+	return _createCompileSvelte(makeHot);
 }
 
 export interface Code {
