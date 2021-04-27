@@ -1,10 +1,22 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.8
+
+### Minor Changes
+
+- [#35](https://github.com/sveltejs/vite-plugin-svelte/pull/35) [`4018ce6`](https://github.com/sveltejs/vite-plugin-svelte/commit/4018ce621b4df75877e0e18057c332f27158d42b) Feature: Support esm in svelte.config.js and svelte.config.mjs
+
+* [#35](https://github.com/sveltejs/vite-plugin-svelte/pull/35) [`4018ce6`](https://github.com/sveltejs/vite-plugin-svelte/commit/4018ce621b4df75877e0e18057c332f27158d42b) Feature: add configFile option
+
+### Patch Changes
+
+- [#34](https://github.com/sveltejs/vite-plugin-svelte/pull/34) [`e5d4749`](https://github.com/sveltejs/vite-plugin-svelte/commit/e5d4749c0850260a295daab9cb15866fe58ee709) fix: watch preprocessor dependencies and trigger hmr on change
+
 ## 1.0.0-next.7
 
 ### Minor Changes
 
-- [#32](https://github.com/sveltejs/vite-plugin-svelte/pull/32) [`113bb7d`](https://github.com/sveltejs/vite-plugin-svelte/commit/113bb7dc330a7517085d12d1d0758a376a12253f) Thanks [@dominikg](https://github.com/dominikg)! - Reduced cache usage, share css cache between SSR and client
+- [#32](https://github.com/sveltejs/vite-plugin-svelte/pull/32) [`113bb7d`](https://github.com/sveltejs/vite-plugin-svelte/commit/113bb7dc330a7517085d12d1d0758a376a12253f) Reduced cache usage, share css cache between SSR and client
 
 ## 1.0.0-next.6
 
