@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { pathToFileURL } from 'url';
 import { log } from './log';
 import { Options } from './options';
 import { ResolvedConfig } from 'vite';
@@ -21,7 +22,7 @@ export async function loadSvelteConfig(
 		// try to use dynamic import for svelte.config.js first
 		if (configFile.endsWith('.js') || configFile.endsWith('.mjs')) {
 			try {
-				return await dynamicImportDefault(configFile);
+				return await dynamicImportDefault(pathToFileURL(configFile).href);
 			} catch (e) {
 				log.debug(`failed to import config ${configFile}`, e);
 				err = e;
