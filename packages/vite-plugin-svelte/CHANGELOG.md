@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.9
+
+### Patch Changes
+
+- [#38](https://github.com/sveltejs/vite-plugin-svelte/pull/38) [`5aef91c`](https://github.com/sveltejs/vite-plugin-svelte/commit/5aef91c8752c8de94a1f1fcb28618606b7c44670) fix: ensure esm config loading works on windows
+
 ## 1.0.0-next.8
 
 ### Minor Changes
