@@ -121,8 +121,9 @@ if (!isBuild) {
 
 		test('should work with emitCss: false', async () => {
 			await editFile('vite.config.js', (c) => c.replace('svelte()', 'svelte({emitCss:false})'));
-			await sleep(250); // editing vite config restarts server, give it some time
-			await page.reload({ waitUntil: 'networkidle' });
+			await sleep(500); // editing vite config restarts server, give it some time
+			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
+			await sleep(50);
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
 			await (await getEl(`#hmr-test-1 .increment`)).click();
