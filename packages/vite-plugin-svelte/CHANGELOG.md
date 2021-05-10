@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.10
+
+### Minor Changes
+
+- [#41](https://github.com/sveltejs/vite-plugin-svelte/pull/41) [`cb7f03d`](https://github.com/sveltejs/vite-plugin-svelte/commit/cb7f03d61c19f0b98c6412c11bbaa4af978da9ed) Feature: Allow `emitCss: false` for production builds and customizable compilerOptions.css and hydratable - fixes #9
+
 ## 1.0.0-next.9
 
 ### Patch Changes
