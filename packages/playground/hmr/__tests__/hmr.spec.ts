@@ -5,7 +5,8 @@ import {
 	editFileAndWaitForHmrComplete,
 	untilUpdated,
 	sleep,
-	getColor
+	getColor,
+	editFile
 } from '../../testUtils';
 
 test('should render App', async () => {
@@ -86,8 +87,8 @@ if (!isBuild) {
 			await updateHmrTest((content) =>
 				content.replace('<!-- HMR-TEMPLATE-INJECT -->', '<span/>\n<!-- HMR-TEMPLATE-INJECT -->')
 			);
-			await expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
-			await expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+			expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
 		});
 
 		test('should preserve state of external store used by HmrTest.svelte when editing App.svelte', async () => {
@@ -99,10 +100,10 @@ if (!isBuild) {
 				)
 			);
 			// counter state is preserved
-			await expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
-			await expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+			expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
 			// a third instance has been added
-			await expect(await getText(`#hmr-test-3 .counter`)).toBe('0');
+			expect(await getText(`#hmr-test-3 .counter`)).toBe('0');
 		});
 
 		test('should preserve state of store when editing hmr-stores.js', async () => {
@@ -112,10 +113,23 @@ if (!isBuild) {
 			// update store
 			await updateStore((content) => `${content}\n/*trigger change*/\n`);
 			// counter state is preserved
-			await expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
-			await expect(await getText(`#hmr-test-2 .counter`)).toBe('1');
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+			expect(await getText(`#hmr-test-2 .counter`)).toBe('1');
 			// a third instance has been added
-			await expect(await getText(`#hmr-test-3 .counter`)).toBe('0');
+			expect(await getText(`#hmr-test-3 .counter`)).toBe('0');
+		});
+
+		test('should work with emitCss: false', async () => {
+			await editFile('vite.config.js', (c) => c.replace('svelte()', 'svelte({emitCss:false})'));
+			await page.reload({ waitUntil: 'networkidle' });
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
+			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
+			await (await getEl(`#hmr-test-1 .increment`)).click();
+			await sleep(50);
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+			await updateHmrTest((content) => content.replace('color: green', 'color: red'));
+			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
 		});
 	});
 }
