@@ -83,10 +83,6 @@ function enforceOptionsForProduction(options: ResolvedOptions) {
 			log.warn('options.hot is enabled but does not work on production build, forcing it to false');
 			options.hot = false;
 		}
-		if (!options.emitCss) {
-			log.warn('you are building for production but emitCss is disabled. forcing it to true');
-			options.emitCss = true;
-		}
 		if (options.compilerOptions.dev) {
 			log.warn(
 				'you are building for production but compilerOptions.dev is true, forcing it to false'
