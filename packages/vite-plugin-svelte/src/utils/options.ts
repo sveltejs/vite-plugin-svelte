@@ -23,7 +23,7 @@ function buildDefaultOptions(
 ): Partial<Options> {
 	const disableCssHmr = !!options?.disableCssHmr;
 	// emit for prod, emit in dev unless css hmr is disabled
-	const emitCss = isProduction || !disableCssHmr;
+	const emitCss = options?.emitCss != null ? options.emitCss : isProduction || !disableCssHmr;
 	// no hmr in prod, only inject css in dev if emitCss is false
 	const hot = isProduction
 		? false
@@ -37,7 +37,8 @@ function buildDefaultOptions(
 		compilerOptions: {
 			format: 'esm',
 			css: !emitCss,
-			dev: !isProduction
+			dev: !isProduction,
+			hydratable: true
 		}
 	};
 	log.debug(
@@ -73,6 +74,23 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 				);
 				options.compilerOptions.css = false;
 			}
+		} else {
+			if (options.hot === true || !options.hot.injectCss) {
+				log.warn(
+					'hmr with emitCss disabled requires option hot.injectCss to be enabled, forcing it to true'
+				);
+				if (options.hot === true) {
+					options.hot = { injectCss: true };
+				} else {
+					options.hot.injectCss = true;
+				}
+			}
+			if (!options.compilerOptions.css) {
+				log.warn(
+					'hmr with emitCss disabled requires compilerOptions.css to be enabled, forcing it to true'
+				);
+				options.compilerOptions.css = true;
+			}
 		}
 	}
 }
@@ -82,10 +100,6 @@ function enforceOptionsForProduction(options: ResolvedOptions) {
 		if (options.hot) {
 			log.warn('options.hot is enabled but does not work on production build, forcing it to false');
 			options.hot = false;
-		}
-		if (!options.emitCss) {
-			log.warn('you are building for production but emitCss is disabled. forcing it to true');
-			options.emitCss = true;
 		}
 		if (options.compilerOptions.dev) {
 			log.warn(
@@ -123,7 +137,6 @@ export async function resolveOptions(
 	viteConfig: ResolvedConfig
 ): Promise<ResolvedOptions> {
 	const defaultOptions = buildDefaultOptions(viteConfig, inlineOptions);
-	// TODO always load from vite root dir or make this configurable?
 	const svelteConfig = (await loadSvelteConfig(viteConfig, inlineOptions)) || {};
 	const resolvedOptions = mergeOptions(defaultOptions, svelteConfig, inlineOptions, viteConfig);
 
