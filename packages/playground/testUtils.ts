@@ -1,17 +1,15 @@
 // test utils used in e2e tests for playgrounds.
 // this can be directly imported in any playground tests as 'testUtils', e.g.
 // `import { getColor } from 'testUtils'`
-
 import fs from 'fs';
 import path from 'path';
-import slash from 'slash';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 
 export const isBuild = !!process.env.VITE_TEST_BUILD;
 
 const testPath = expect.getState().testPath;
-const testName = slash(testPath).match(/playground\/([\w-]+)\//)?.[1];
+const testName = testPath.match(/playground\/([\w-]+)\//)?.[1];
 export const testDir = path.resolve(__dirname, '../../temp', isBuild ? 'build' : 'serve', testName);
 
 const hexToNameMap: Record<string, string> = {};

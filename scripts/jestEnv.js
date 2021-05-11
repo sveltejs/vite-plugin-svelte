@@ -9,7 +9,7 @@ const DIR = path.join(os.tmpdir(), 'jest_playwright_global_setup');
 module.exports = class PlaywrightEnvironment extends NodeEnvironment {
 	constructor(config, context) {
 		super(config);
-		this.testPath = context.testPath;
+		this.testPath = context.testPath.split(path.sep).join(path.posix.sep);
 	}
 
 	async setup() {

@@ -1,11 +1,10 @@
 import * as fs from 'fs-extra';
 import * as http from 'http';
-import { resolve, dirname, join } from 'path';
-// @ts-ignore
-import slash from 'slash';
+import { resolve, dirname, join, sep as pathSeparator } from 'path';
 import sirv from 'sirv';
 import { createServer, build, ViteDevServer, UserConfig } from 'vite';
 import { Page } from 'playwright-core';
+
 const isBuildTest = !!process.env.VITE_TEST_BUILD;
 
 // injected by the test env
@@ -44,7 +43,7 @@ beforeAll(async () => {
 		page.on('console', onConsole);
 
 		const testPath = expect.getState().testPath;
-		const testName = slash(testPath).match(/playground\/([\w-]+)\//)?.[1];
+		const testName = testPath.match(/playground\/([\w-]+)\//)?.[1];
 
 		// if this is a test placed under playground/xxx/__tests__
 		// start a vite server in that directory.
@@ -54,13 +53,12 @@ beforeAll(async () => {
 			tempDir = resolve(__dirname, '../temp', isBuildTest ? 'build' : 'serve', testName);
 			const directoriesToIgnore = ['node_modules', '__tests__', 'dist', 'build', '.svelte'];
 			const isIgnored = (file) => {
-				const segments = file.split('/');
-				return segments.find((segment) => directoriesToIgnore.includes(segment));
+				const segments = file.split(pathSeparator);
+				return segments.some((segment) => directoriesToIgnore.includes(segment));
 			};
 			await fs.copy(srcDir, tempDir, {
 				dereference: true,
 				filter(file) {
-					file = slash(file);
 					return !isIgnored(file);
 				}
 			});

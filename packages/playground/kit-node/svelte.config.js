@@ -1,21 +1,17 @@
-const node = require('@sveltejs/adapter-node');
-const pkg = require('./package.json');
+import node from '@sveltejs/adapter-node';
 
 /** @type {import('@sveltejs/kit').Config} */
-module.exports = {
+const config = {
 	kit: {
 		// By default, `npm run build` will create a standard Node app.
 		// You can create optimized builds for different platforms by
 		// specifying a different adapter
-		adapter: node(),
+		adapter: node({}),
 
 		// hydrate the <div id="svelte"> element in src/app.html
 		target: '#svelte',
 
 		vite: {
-			ssr: {
-				noExternal: Object.keys(pkg.dependencies || {})
-			},
 			server: {
 				watch: {
 					// During tests we edit the files too fast and sometimes chokidar
@@ -23,7 +19,8 @@ module.exports = {
 					usePolling: true,
 					interval: 100
 				}
-			},
+			}
 		}
 	}
 };
+export default config;
