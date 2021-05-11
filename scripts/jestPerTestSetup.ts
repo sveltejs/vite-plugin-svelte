@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as http from 'http';
-import { resolve, dirname, join, sep as pathSeparator } from 'path';
+import * as path from 'path';
 import sirv from 'sirv';
 import { createServer, build, ViteDevServer, UserConfig } from 'vite';
 import { Page } from 'playwright-core';
@@ -43,17 +43,20 @@ beforeAll(async () => {
 		page.on('console', onConsole);
 
 		const testPath = expect.getState().testPath;
-		const testName = testPath.match(/playground\/([\w-]+)\//)?.[1];
+		const segments = testPath.split(path.sep);
+		const testName = segments.includes('playground')
+			? segments[segments.indexOf('playground') + 1]
+			: null;
 
 		// if this is a test placed under playground/xxx/__tests__
 		// start a vite server in that directory.
 		if (testName) {
-			const playgroundRoot = resolve(__dirname, '../packages/playground');
-			const srcDir = resolve(playgroundRoot, testName);
-			tempDir = resolve(__dirname, '../temp', isBuildTest ? 'build' : 'serve', testName);
+			const playgroundRoot = path.resolve(__dirname, '../packages/playground');
+			const srcDir = path.resolve(playgroundRoot, testName);
+			tempDir = path.resolve(__dirname, '../temp', isBuildTest ? 'build' : 'serve', testName);
 			const directoriesToIgnore = ['node_modules', '__tests__', 'dist', 'build', '.svelte'];
 			const isIgnored = (file) => {
-				const segments = file.split(pathSeparator);
+				const segments = file.split(path.sep);
 				return segments.some((segment) => directoriesToIgnore.includes(segment));
 			};
 			await fs.copy(srcDir, tempDir, {
@@ -63,8 +66,8 @@ beforeAll(async () => {
 				}
 			});
 
-			const playground_node_modules = join(srcDir, 'node_modules');
-			const temp_node_modules = join(tempDir, 'node_modules');
+			const playground_node_modules = path.join(srcDir, 'node_modules');
+			const temp_node_modules = path.join(tempDir, 'node_modules');
 			if (fs.existsSync(temp_node_modules)) {
 				console.error('temp node_modules already exist', temp_node_modules);
 			}
@@ -73,7 +76,7 @@ beforeAll(async () => {
 			if (!stat.isSymbolicLink()) {
 				console.error(`failed to symlink ${playground_node_modules} to ${temp_node_modules}`);
 			}
-			const testCustomServe = resolve(dirname(testPath), 'serve.js');
+			const testCustomServe = path.resolve(path.dirname(testPath), 'serve.js');
 			if (fs.existsSync(testCustomServe)) {
 				// test has custom server configuration.
 				const { serve } = require(testCustomServe);
@@ -123,6 +126,13 @@ beforeAll(async () => {
 		// jest doesn't exit if our setup has error here
 		// https://github.com/facebook/jest/issues/2713
 		err = e;
+
+		// tests are still executed so close page to shorten
+		try {
+			await page.close();
+		} catch (e2) {
+			console.error('failed to close page on error', e2);
+		}
 	}
 }, 30000);
 
@@ -146,7 +156,7 @@ afterAll(async () => {
 	}
 
 	// unlink node modules to prevent removal of linked modules on cleanup
-	const temp_node_modules = join(tempDir, 'node_modules');
+	const temp_node_modules = path.join(tempDir, 'node_modules');
 	try {
 		await fs.unlink(temp_node_modules);
 	} catch (e) {
@@ -163,7 +173,7 @@ afterAll(async () => {
 
 function startStaticServer(): Promise<string> {
 	// check if the test project has base config
-	const configFile = resolve(tempDir, 'vite.config.js');
+	const configFile = path.resolve(tempDir, 'vite.config.js');
 	let config: UserConfig;
 	try {
 		config = require(configFile);
@@ -178,7 +188,7 @@ function startStaticServer(): Promise<string> {
 	}
 
 	// start static file server
-	const serve = sirv(resolve(tempDir, 'dist'));
+	const serve = sirv(path.resolve(tempDir, 'dist'));
 	const httpServer = (server = http.createServer((req, res) => {
 		if (req.url === '/ping') {
 			res.statusCode = 200;

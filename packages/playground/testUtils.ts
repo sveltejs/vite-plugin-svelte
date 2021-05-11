@@ -9,7 +9,8 @@ import { ElementHandle } from 'playwright-core';
 export const isBuild = !!process.env.VITE_TEST_BUILD;
 
 const testPath = expect.getState().testPath;
-const testName = testPath.match(/playground\/([\w-]+)\//)?.[1];
+const segments = testPath.split(path.sep);
+const testName = segments[segments.indexOf('playground') + 1];
 export const testDir = path.resolve(__dirname, '../../temp', isBuild ? 'build' : 'serve', testName);
 
 const hexToNameMap: Record<string, string> = {};

@@ -9,7 +9,7 @@ const DIR = path.join(os.tmpdir(), 'jest_playwright_global_setup');
 module.exports = class PlaywrightEnvironment extends NodeEnvironment {
 	constructor(config, context) {
 		super(config);
-		this.testPath = context.testPath.split(path.sep).join(path.posix.sep);
+		this.testPath = context.testPath;
 	}
 
 	async setup() {
@@ -32,7 +32,11 @@ module.exports = class PlaywrightEnvironment extends NodeEnvironment {
 
 	async teardown() {
 		if (this.browser) {
-			await this.browser.close();
+			try {
+				await this.browser.close();
+			} catch (e) {
+				console.error('failed to close browser', e);
+			}
 		}
 		await super.teardown();
 	}
