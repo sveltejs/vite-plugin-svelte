@@ -229,12 +229,12 @@ importers:
   packages/playground/kit-node:
     specifiers:
       '@sveltejs/adapter-node': ^1.0.0-next.20
-      '@sveltejs/kit': ^1.0.0-next.104
+      '@sveltejs/kit': ^1.0.0-next.107
       svelte: ^3.38.2
       vite: ^2.3.3
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.20
-      '@sveltejs/kit': 1.0.0-next.105_svelte@3.38.2
+      '@sveltejs/kit': 1.0.0-next.107_svelte@3.38.2
       svelte: 3.38.2
       vite: 2.3.3
 
@@ -1280,8 +1280,8 @@ packages:
     resolution: {integrity: sha512-ornNW289XN4TyY3tRXVGH38FxrqLsw1MHn4oq92T7U6EqnSbw/22waMZnPBQUxcj5GxZsXuuFjeBjn1BWt0x2A==}
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.105_svelte@3.38.2:
-    resolution: {integrity: sha512-bmo5OD5cLyxk1DWE0Boj6NOXI4CviE93WCcdTpLpAXi8l/JQIk38o/lCbtm+edmdYdEI+J6TuseU2zTa+bA6cg==}
+  /@sveltejs/kit/1.0.0-next.107_svelte@3.38.2:
+    resolution: {integrity: sha512-HxomGMWbuWTU8lahk98hqIL/xjW6HzNTAvTZVMnnmlMHN1N8x7+abkz4Y09Zhu8lZkZpFuqBj2UlsgPW4uJXtw==}
     engines: {node: '>= 12.17.0'}
     hasBin: true
     peerDependencies:
@@ -1291,7 +1291,7 @@ packages:
       cheap-watch: 1.0.3
       sade: 1.7.4
       svelte: 3.38.2
-      vite: 2.3.1
+      vite: 2.3.3
     dev: true
 
   /@szmarczak/http-timer/1.1.2:
@@ -3034,12 +3034,6 @@ packages:
       is-callable: 1.2.3
       is-date-object: 1.0.4
       is-symbol: 1.0.4
-    dev: true
-
-  /esbuild/0.11.20:
-    resolution: {integrity: sha512-QOZrVpN/Yz74xfat0H6euSgn3RnwLevY1mJTEXneukz1ln9qB+ieaerRMzSeETpz/UJWsBMzRVR/andBht5WKw==}
-    hasBin: true
-    requiresBuild: true
     dev: true
 
   /esbuild/0.11.23:
@@ -8413,19 +8407,6 @@ packages:
       windicss: 2.5.14
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /vite/2.3.1:
-    resolution: {integrity: sha512-yvcLclv/G0syHL+bBtahdaymH0x6La8kbTlnAssRH+XFvDNb8VPRruHhILCCmZgtx6Zu/UKNFTQnQ4Gk/omyUA==}
-    engines: {node: '>=12.0.0'}
-    hasBin: true
-    dependencies:
-      esbuild: 0.11.20
-      postcss: 8.2.15
-      resolve: 1.20.0
-      rollup: 2.47.0
-    optionalDependencies:
-      fsevents: 2.3.2
     dev: true
 
   /vite/2.3.3:
