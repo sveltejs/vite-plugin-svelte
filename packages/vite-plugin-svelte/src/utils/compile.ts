@@ -5,12 +5,14 @@ import { createMakeHot } from 'svelte-hmr';
 import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
+import {PluginContext} from "rollup";
 
 const _createCompileSvelte = (makeHot: Function) =>
 	async function compileSvelte(
 		svelteRequest: SvelteRequest,
 		code: string,
-		options: Partial<ResolvedOptions>
+		options: Partial<ResolvedOptions>,
+		pluginContext: PluginContext
 	): Promise<CompileData> {
 		const { filename, normalizedFilename, cssId, ssr } = svelteRequest;
 		const { onwarn, emitCss = true } = options;
@@ -39,8 +41,11 @@ const _createCompileSvelte = (makeHot: Function) =>
 		(compiled.warnings || []).forEach((warning) => {
 			if (!emitCss && warning.code === 'css-unused-selector') return;
 			// TODO handle warnings
-			if (onwarn) onwarn(warning /*, this.warn*/);
-			//else this.warn(warning)
+			if (onwarn) {
+				onwarn(warning , pluginContext.warn);
+			} else {
+				pluginContext.warn(warning)
+			}
 		});
 
 		if (emitCss && compiled.css.code) {

@@ -4,6 +4,7 @@ import { log } from './utils/log';
 import { SvelteRequest } from './utils/id';
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 import { ResolvedOptions } from './utils/options';
+import {PluginContext} from "rollup";
 
 /**
  * Vite-specific HMR handling
@@ -13,7 +14,8 @@ export async function handleHotUpdate(
 	ctx: HmrContext,
 	svelteRequest: SvelteRequest,
 	cache: VitePluginSvelteCache,
-	options: Partial<ResolvedOptions>
+	options: Partial<ResolvedOptions>,
+	pluginContext: PluginContext
 ): Promise<ModuleNode[] | void> {
 	const { read, server } = ctx;
 
@@ -26,7 +28,7 @@ export async function handleHotUpdate(
 	const cachedCss = cache.getCSS(svelteRequest);
 
 	const content = await read();
-	const compileData: CompileData = await compileSvelte(svelteRequest, content, options);
+	const compileData: CompileData = await compileSvelte(svelteRequest, content, options,pluginContext);
 	cache.update(compileData);
 
 	const affectedModules = new Set<ModuleNode | undefined>();

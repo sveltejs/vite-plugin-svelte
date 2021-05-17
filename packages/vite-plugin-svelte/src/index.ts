@@ -19,6 +19,7 @@ import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 
 import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
 import { setupWatchers } from './utils/watch';
+import {PluginContext} from "rollup";
 
 export {
 	Options,
@@ -57,7 +58,8 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 	let compileSvelte: (
 		svelteRequest: SvelteRequest,
 		code: string,
-		options: Partial<ResolvedOptions>
+		options: Partial<ResolvedOptions>,
+		pluginContext: PluginContext
 	) => Promise<CompileData>;
 	/* eslint-enable no-unused-vars */
 
@@ -202,7 +204,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 				log.error('failed to transform tagged svelte request', svelteRequest);
 				throw new Error(`failed to transform tagged svelte request for id ${id}`);
 			}
-			const compileData = await compileSvelte(svelteRequest, code, options);
+			const compileData = await compileSvelte(svelteRequest, code, options, this);
 
 			cache.update(compileData);
 			if (compileData.dependencies?.length && options.server) {
@@ -221,7 +223,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 				return;
 			}
 			log.debug('handleHotUpdate', svelteRequest);
-			return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
+			return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options,this);
 		},
 
 		// eslint-disable-next-line no-unused-vars
