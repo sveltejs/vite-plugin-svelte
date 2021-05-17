@@ -40,7 +40,6 @@ const _createCompileSvelte = (makeHot: Function) =>
 
 		(compiled.warnings || []).forEach((warning) => {
 			if (!emitCss && warning.code === 'css-unused-selector') return;
-			// TODO handle warnings
 			if (onwarn) {
 				onwarn(warning , pluginContext.warn);
 			} else {
