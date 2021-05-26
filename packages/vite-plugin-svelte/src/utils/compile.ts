@@ -5,17 +5,15 @@ import { createMakeHot } from 'svelte-hmr';
 import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
-import {PluginContext} from "rollup";
 
 const _createCompileSvelte = (makeHot: Function) =>
 	async function compileSvelte(
 		svelteRequest: SvelteRequest,
 		code: string,
-		options: Partial<ResolvedOptions>,
-		pluginContext: PluginContext
+		options: Partial<ResolvedOptions>
 	): Promise<CompileData> {
 		const { filename, normalizedFilename, cssId, ssr } = svelteRequest;
-		const { onwarn, emitCss = true } = options;
+		const { emitCss = true } = options;
 		const dependencies = [];
 		const finalCompilerOptions: CompileOptions = {
 			...options.compilerOptions,
@@ -37,15 +35,6 @@ const _createCompileSvelte = (makeHot: Function) =>
 		}
 
 		const compiled = compile(preprocessed ? preprocessed.code : code, finalCompilerOptions);
-
-		(compiled.warnings || []).forEach((warning) => {
-			if (!emitCss && warning.code === 'css-unused-selector') return;
-			if (onwarn) {
-				onwarn(warning , pluginContext.warn);
-			} else {
-				pluginContext.warn(warning)
-			}
-		});
 
 		if (emitCss && compiled.css.code) {
 			// TODO properly update sourcemap?

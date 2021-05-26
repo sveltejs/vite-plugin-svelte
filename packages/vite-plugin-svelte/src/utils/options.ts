@@ -11,6 +11,7 @@ const knownOptions = new Set([
 	'extensions',
 	'emitCss',
 	'compilerOptions',
+	'onwarn',
 	'preprocess',
 	'hot',
 	'disableCssHmr',
@@ -180,7 +181,10 @@ export interface Options {
 	/** Options passed to `svelte.compile` method. */
 	compilerOptions: Partial<CompileOptions>;
 
-	onwarn?: undefined | false | ((warning: any, defaultHandler?: any) => void);
+	/**
+	 * custom warning handler for svelte compiler warnings
+	 */
+	onwarn?: ((warning: Warning, defaultHandler?: (warning: Warning)=>void) => void);
 
 	/**
 	 * enable/disable hmr. You want this enabled.
@@ -392,3 +396,21 @@ export interface PreprocessorGroup {
 }
 
 export type Arrayable<T> = T | T[];
+
+export interface Warning {
+	start?: {
+		line: number;
+		column: number;
+		pos?: number;
+	};
+	end?: {
+		line: number;
+		column: number;
+	};
+	pos?: number;
+	code: string;
+	message: string;
+	filename?: string;
+	frame?: string;
+	toString: () => string;
+}

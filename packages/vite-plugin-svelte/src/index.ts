@@ -1,11 +1,9 @@
 import * as path from 'path';
 import { HmrContext, IndexHtmlTransformContext, ModuleNode, Plugin, UserConfig } from 'vite';
-
 // @ts-ignore
 import * as relative from 'require-relative';
-
 import { handleHotUpdate } from './handleHotUpdate';
-import { log } from './utils/log';
+import {log, logCompilerWarnings } from './utils/log';
 import { CompileData, createCompileSvelte } from './utils/compile';
 import { buildIdParser, IdParser, SvelteRequest } from './utils/id';
 import {
@@ -19,7 +17,6 @@ import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 
 import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
 import { setupWatchers } from './utils/watch';
-import {PluginContext} from "rollup";
 
 export {
 	Options,
@@ -58,8 +55,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 	let compileSvelte: (
 		svelteRequest: SvelteRequest,
 		code: string,
-		options: Partial<ResolvedOptions>,
-		pluginContext: PluginContext
+		options: Partial<ResolvedOptions>
 	) => Promise<CompileData>;
 	/* eslint-enable no-unused-vars */
 
@@ -204,8 +200,8 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 				log.error('failed to transform tagged svelte request', svelteRequest);
 				throw new Error(`failed to transform tagged svelte request for id ${id}`);
 			}
-			const compileData = await compileSvelte(svelteRequest, code, options, this);
-
+			const compileData = await compileSvelte(svelteRequest, code, options);
+			logCompilerWarnings(compileData.compiled.warnings,options)
 			cache.update(compileData);
 			if (compileData.dependencies?.length && options.server) {
 				compileData.dependencies.forEach((d) => this.addWatchFile(d));
@@ -223,7 +219,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 				return;
 			}
 			log.debug('handleHotUpdate', svelteRequest);
-			return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options,this);
+			return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
 		},
 
 		// eslint-disable-next-line no-unused-vars
