@@ -1,8 +1,9 @@
-import * as path from 'path';
+import path from 'path';
+import { readFileSync } from 'fs';
 import { HmrContext, IndexHtmlTransformContext, ModuleNode, Plugin, UserConfig } from 'vite';
 
 // @ts-ignore
-import * as relative from 'require-relative';
+import relative from 'require-relative';
 
 import { handleHotUpdate } from './handleHotUpdate';
 import { log } from './utils/log';
@@ -165,7 +166,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 				const file = `${name}/package.json`;
 				const resolved = relative.resolve(file, path.dirname(importer));
 				dir = path.dirname(resolved);
-				pkg = require(resolved);
+				pkg = JSON.parse(readFileSync(resolved, { encoding: 'utf8' }));
 			} catch (err) {
 				if (err.code === 'MODULE_NOT_FOUND') return null;
 				if (err.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
@@ -206,7 +207,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 
 			cache.update(compileData);
 			if (compileData.dependencies?.length && options.server) {
-				compileData.dependencies.forEach((d) => this.addWatchFile(d));
+				compileData.dependencies.forEach(d => this.addWatchFile(d));
 			}
 			log.debug(`transform returns compiled js for ${filename}`);
 			return compileData.compiled.js;
@@ -237,13 +238,9 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 			if (pkg_export_errors.size > 0) {
 				log.warn(
 					`The following packages did not export their \`package.json\` file so we could not check the "svelte" field. If you had difficulties importing svelte components from a package, then please contact the author and ask them to export the package.json file.`,
-					Array.from(pkg_export_errors, (s) => `- ${s}`).join('\n')
+					Array.from(pkg_export_errors, s => `- ${s}`).join('\n')
 				);
 			}
 		}
 	};
 }
-
-// overwrite for cjs require('...')() usage
-module.exports = vitePluginSvelte;
-vitePluginSvelte['default'] = vitePluginSvelte;
