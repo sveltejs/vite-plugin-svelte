@@ -19,7 +19,7 @@
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
     "format:fix": "pnpm format -- --write",
     "fixup": "run-s lint:fix format:fix",
-    "update-deps": "ncu -u",
+    "update-deps": "ncu -u && ncu -f \"/^@sveltejs\\/(?:kit|adapter)/\" --target=greatest -u",
     "release": "pnpm run build && pnpx --no changeset publish",
     "prepare": "husky install"
   },
