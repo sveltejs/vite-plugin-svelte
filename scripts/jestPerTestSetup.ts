@@ -5,7 +5,14 @@ import sirv from 'sirv';
 import { createServer, build, ViteDevServer, UserConfig } from 'vite';
 import { Page } from 'playwright-core';
 
-const isBuildTest = !!process.env.VITE_TEST_BUILD;
+const isBuild = !!process.env.VITE_TEST_BUILD;
+
+function testDir() {
+	const testPath = expect.getState().testPath;
+	const segments = testPath.split(path.sep);
+	const testName = segments[segments.indexOf('playground') + 1];
+	return path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
+}
 
 // injected by the test env
 declare global {
@@ -53,7 +60,7 @@ beforeAll(async () => {
 		if (testName) {
 			const playgroundRoot = path.resolve(__dirname, '../packages/playground');
 			const srcDir = path.resolve(playgroundRoot, testName);
-			tempDir = path.resolve(__dirname, '../temp', isBuildTest ? 'build' : 'serve', testName);
+			tempDir = path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
 			const directoriesToIgnore = ['node_modules', '__tests__', 'dist', 'build', '.svelte'];
 			const isIgnored = (file) => {
 				const segments = file.split(path.sep);
@@ -80,7 +87,7 @@ beforeAll(async () => {
 			if (fs.existsSync(testCustomServe)) {
 				// test has custom server configuration.
 				const { serve } = require(testCustomServe);
-				const customServer: CustomServer = await serve(tempDir, isBuildTest);
+				const customServer: CustomServer = await serve(tempDir, isBuild);
 				server = customServer;
 				// use resolved port/base from server
 				const port = customServer.port;
@@ -108,7 +115,7 @@ beforeAll(async () => {
 				}
 			};
 
-			if (!isBuildTest) {
+			if (!isBuild) {
 				process.env.VITE_INLINE = 'inline-serve';
 				server = await (await createServer(options)).listen();
 				// use resolved port/base from server
@@ -161,6 +168,17 @@ afterAll(async () => {
 		await fs.unlink(temp_node_modules);
 	} catch (e) {
 		console.error(`failed to unlink ${temp_node_modules}`);
+		if (!err) {
+			err = e;
+		}
+	}
+	const logDir = path.join(testDir(), 'logs');
+	const logFile = path.join(logDir, 'browser.log');
+	try {
+		await fs.mkdir(logDir);
+		await fs.writeFile(logFile, logs.join('\n'));
+	} catch (e) {
+		console.error(`failed to write browserlogs in ${logFile}`, e);
 		if (!err) {
 			err = e;
 		}

@@ -163,6 +163,31 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 				lastErr = e;
 			}
 		}
+		await saveScreenshot(`failed_update_${file}`);
 		throw lastErr;
+	}
+}
+
+export async function saveScreenshot(name?: string) {
+	if (!page) {
+		return;
+	}
+	if (!name) {
+		name = expect.getState().currentTestName;
+	}
+	const filename = `${new Date().toISOString().replace(/\D/g, '')}_${name
+		.toLowerCase()
+		.replace(/[^a-z]/g, '_')}.jpeg`;
+	const fullpath = path.resolve(testDir, 'screenshots', filename);
+	try {
+		await page.screenshot({
+			fullPage: true,
+			type: 'jpeg',
+			quality: 70,
+			timeout: 2000,
+			path: fullpath
+		});
+	} catch (e) {
+		console.log('failed to take screenshot', e);
 	}
 }
