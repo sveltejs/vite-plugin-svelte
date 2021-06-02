@@ -7,6 +7,10 @@ import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 
 export const isBuild = !!process.env.VITE_TEST_BUILD;
+export const isWin = process.platform === 'win32';
+export const isCI = !!process.env.CI;
+
+export const hmrUpdateTimeout = isCI && isWin ? 20000 : 10000;
 
 const testPath = expect.getState().testPath;
 const segments = testPath.split(path.sep);
@@ -145,10 +149,10 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 		fileUpdateToWaitFor = file;
 	}
 	try {
-		await hmrUpdateComplete(fileUpdateToWaitFor, 10000);
+		await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
 	} catch (e) {
 		console.log(`retrying hmr update for ${file}`);
 		await editFile(file, () => newContent);
-		await hmrUpdateComplete(fileUpdateToWaitFor, 5000);
+		await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
 	}
 }
