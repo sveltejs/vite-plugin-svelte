@@ -10,7 +10,7 @@ export const isBuild = !!process.env.VITE_TEST_BUILD;
 export const isWin = process.platform === 'win32';
 export const isCI = !!process.env.CI;
 
-export const hmrUpdateTimeout = isCI && isWin ? 20000 : 10000;
+export const hmrUpdateTimeout = 10000;
 
 const testPath = expect.getState().testPath;
 const segments = testPath.split(path.sep);
@@ -151,8 +151,18 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 	try {
 		await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
 	} catch (e) {
-		console.log(`retrying hmr update for ${file}`);
-		await editFile(file, () => newContent);
-		await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
+		const maxTries = isCI && isWin ? 3 : 1;
+		let lastErr;
+		for (let i = 1; i <= maxTries; i++) {
+			try {
+				console.log(`retry #${i} of hmr update for ${file}`);
+				await editFile(file, () => newContent);
+				await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
+				return;
+			} catch (e) {
+				lastErr = e;
+			}
+		}
+		throw lastErr;
 	}
 }
