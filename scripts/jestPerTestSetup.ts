@@ -1,12 +1,18 @@
 import * as fs from 'fs-extra';
 import * as http from 'http';
-import { resolve, dirname, join } from 'path';
-// @ts-ignore
-import slash from 'slash';
+import * as path from 'path';
 import sirv from 'sirv';
 import { createServer, build, ViteDevServer, UserConfig } from 'vite';
 import { Page } from 'playwright-core';
-const isBuildTest = !!process.env.VITE_TEST_BUILD;
+
+const isBuild = !!process.env.VITE_TEST_BUILD;
+
+function testDir() {
+	const testPath = expect.getState().testPath;
+	const segments = testPath.split(path.sep);
+	const testName = segments[segments.indexOf('playground') + 1];
+	return path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
+}
 
 // injected by the test env
 declare global {
@@ -44,29 +50,31 @@ beforeAll(async () => {
 		page.on('console', onConsole);
 
 		const testPath = expect.getState().testPath;
-		const testName = slash(testPath).match(/playground\/([\w-]+)\//)?.[1];
+		const segments = testPath.split(path.sep);
+		const testName = segments.includes('playground')
+			? segments[segments.indexOf('playground') + 1]
+			: null;
 
 		// if this is a test placed under playground/xxx/__tests__
 		// start a vite server in that directory.
 		if (testName) {
-			const playgroundRoot = resolve(__dirname, '../packages/playground');
-			const srcDir = resolve(playgroundRoot, testName);
-			tempDir = resolve(__dirname, '../temp', isBuildTest ? 'build' : 'serve', testName);
+			const playgroundRoot = path.resolve(__dirname, '../packages/playground');
+			const srcDir = path.resolve(playgroundRoot, testName);
+			tempDir = path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
 			const directoriesToIgnore = ['node_modules', '__tests__', 'dist', 'build', '.svelte'];
 			const isIgnored = (file) => {
-				const segments = file.split('/');
-				return segments.find((segment) => directoriesToIgnore.includes(segment));
+				const segments = file.split(path.sep);
+				return segments.some((segment) => directoriesToIgnore.includes(segment));
 			};
 			await fs.copy(srcDir, tempDir, {
 				dereference: true,
 				filter(file) {
-					file = slash(file);
 					return !isIgnored(file);
 				}
 			});
 
-			const playground_node_modules = join(srcDir, 'node_modules');
-			const temp_node_modules = join(tempDir, 'node_modules');
+			const playground_node_modules = path.join(srcDir, 'node_modules');
+			const temp_node_modules = path.join(tempDir, 'node_modules');
 			if (fs.existsSync(temp_node_modules)) {
 				console.error('temp node_modules already exist', temp_node_modules);
 			}
@@ -75,17 +83,17 @@ beforeAll(async () => {
 			if (!stat.isSymbolicLink()) {
 				console.error(`failed to symlink ${playground_node_modules} to ${temp_node_modules}`);
 			}
-			const testCustomServe = resolve(dirname(testPath), 'serve.js');
+			const testCustomServe = path.resolve(path.dirname(testPath), 'serve.js');
 			if (fs.existsSync(testCustomServe)) {
 				// test has custom server configuration.
 				const { serve } = require(testCustomServe);
-				const customServer: CustomServer = await serve(tempDir, isBuildTest);
+				const customServer: CustomServer = await serve(tempDir, isBuild);
 				server = customServer;
 				// use resolved port/base from server
 				const port = customServer.port;
 				const base = customServer.base && customServer.base !== '/' ? `/${customServer.base}` : '';
 				const url = (global.viteTestUrl = `http://localhost:${port}${base}`);
-				await page.goto(url);
+				await (isBuild ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
 				return;
 			}
 
@@ -107,13 +115,13 @@ beforeAll(async () => {
 				}
 			};
 
-			if (!isBuildTest) {
+			if (!isBuild) {
 				process.env.VITE_INLINE = 'inline-serve';
 				server = await (await createServer(options)).listen();
 				// use resolved port/base from server
 				const base = server.config.base === '/' ? '' : server.config.base;
 				const url = (global.viteTestUrl = `http://localhost:${server.config.server.port}${base}`);
-				await page.goto(url);
+				await goToUrlAndWaitForViteWSConnect(page, url);
 			} else {
 				process.env.VITE_INLINE = 'inline-build';
 				await build(options);
@@ -125,6 +133,13 @@ beforeAll(async () => {
 		// jest doesn't exit if our setup has error here
 		// https://github.com/facebook/jest/issues/2713
 		err = e;
+		console.error('beforeAll failed', e);
+		// tests are still executed so close page to shorten
+		try {
+			await page.close();
+		} catch (e2) {
+			console.error('failed to close page on error', e2);
+		}
 	}
 }, 30000);
 
@@ -148,11 +163,22 @@ afterAll(async () => {
 	}
 
 	// unlink node modules to prevent removal of linked modules on cleanup
-	const temp_node_modules = join(tempDir, 'node_modules');
+	const temp_node_modules = path.join(tempDir, 'node_modules');
 	try {
 		await fs.unlink(temp_node_modules);
 	} catch (e) {
 		console.error(`failed to unlink ${temp_node_modules}`);
+		if (!err) {
+			err = e;
+		}
+	}
+	const logDir = path.join(testDir(), 'logs');
+	const logFile = path.join(logDir, 'browser.log');
+	try {
+		await fs.mkdir(logDir);
+		await fs.writeFile(logFile, logs.join('\n'));
+	} catch (e) {
+		console.error(`failed to write browserlogs in ${logFile}`, e);
 		if (!err) {
 			err = e;
 		}
@@ -165,7 +191,7 @@ afterAll(async () => {
 
 function startStaticServer(): Promise<string> {
 	// check if the test project has base config
-	const configFile = resolve(tempDir, 'vite.config.js');
+	const configFile = path.resolve(tempDir, 'vite.config.js');
 	let config: UserConfig;
 	try {
 		config = require(configFile);
@@ -180,7 +206,7 @@ function startStaticServer(): Promise<string> {
 	}
 
 	// start static file server
-	const serve = sirv(resolve(tempDir, 'dist'));
+	const serve = sirv(path.resolve(tempDir, 'dist'));
 	const httpServer = (server = http.createServer((req, res) => {
 		if (req.url === '/ping') {
 			res.statusCode = 200;
@@ -205,4 +231,31 @@ function startStaticServer(): Promise<string> {
 			resolve(`http://localhost:${port}${base}`);
 		});
 	});
+}
+
+async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
+	let timerId;
+	let pageConsoleListener;
+	const timeoutMS = 10000;
+	const timeoutPromise = new Promise(
+		(_, reject) =>
+			(timerId = setTimeout(() => {
+				reject(`timeout after ${timeoutMS}`);
+			}, timeoutMS))
+	);
+	const connectedPromise = new Promise<void>((resolve) => {
+		pageConsoleListener = (data) => {
+			const text = data.text();
+			if (text.indexOf('[vite] connected.') > -1) {
+				resolve();
+			}
+		};
+		page.on('console', pageConsoleListener);
+	});
+
+	const connectedOrTimeout = Promise.race([connectedPromise, timeoutPromise]).finally(() => {
+		page.off('console', pageConsoleListener);
+		clearTimeout(timerId);
+	});
+	return page.goto(url).then(() => connectedOrTimeout);
 }

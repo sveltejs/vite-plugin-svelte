@@ -55,6 +55,9 @@ jobs:
       - name: install
         if: steps.pnpm-store.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+      - name: prune store
+        if: steps.pnpm-store.outputs.cache-hit != 'true'
+        run: pnpm store prune
       - name: check store
         if: steps.pnpm-store.outputs.cache-hit != 'true'
         run: pnpm store status
