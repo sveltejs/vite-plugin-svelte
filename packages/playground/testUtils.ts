@@ -1,17 +1,20 @@
 // test utils used in e2e tests for playgrounds.
 // this can be directly imported in any playground tests as 'testUtils', e.g.
 // `import { getColor } from 'testUtils'`
-
 import fs from 'fs';
 import path from 'path';
-import slash from 'slash';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 
 export const isBuild = !!process.env.VITE_TEST_BUILD;
+export const isWin = process.platform === 'win32';
+export const isCI = !!process.env.CI;
+
+export const hmrUpdateTimeout = 10000;
 
 const testPath = expect.getState().testPath;
-const testName = slash(testPath).match(/playground\/([\w-]+)\//)?.[1];
+const segments = testPath.split(path.sep);
+const testName = segments[segments.indexOf('playground') + 1];
 export const testDir = path.resolve(__dirname, '../../temp', isBuild ? 'build' : 'serve', testName);
 
 const hexToNameMap: Record<string, string> = {};
@@ -146,10 +149,45 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 		fileUpdateToWaitFor = file;
 	}
 	try {
-		await hmrUpdateComplete(fileUpdateToWaitFor, 10000);
+		await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
 	} catch (e) {
-		console.log(`retrying hmr update for ${file}`);
-		await editFile(file, () => newContent);
-		await hmrUpdateComplete(fileUpdateToWaitFor, 5000);
+		const maxTries = isCI && isWin ? 3 : 1;
+		let lastErr;
+		for (let i = 1; i <= maxTries; i++) {
+			try {
+				console.log(`retry #${i} of hmr update for ${file}`);
+				await editFile(file, () => newContent + '\n'.repeat(i));
+				await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
+				return;
+			} catch (e) {
+				lastErr = e;
+			}
+		}
+		await saveScreenshot(`failed_update_${file}`);
+		throw lastErr;
+	}
+}
+
+export async function saveScreenshot(name?: string) {
+	if (!page) {
+		return;
+	}
+	if (!name) {
+		name = expect.getState().currentTestName;
+	}
+	const filename = `${new Date().toISOString().replace(/\D/g, '')}_${name
+		.toLowerCase()
+		.replace(/[^a-z]/g, '_')}.jpeg`;
+	const fullpath = path.resolve(testDir, 'screenshots', filename);
+	try {
+		await page.screenshot({
+			fullPage: true,
+			type: 'jpeg',
+			quality: 70,
+			timeout: 2000,
+			path: fullpath
+		});
+	} catch (e) {
+		console.log('failed to take screenshot', e);
 	}
 }
