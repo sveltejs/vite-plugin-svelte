@@ -14,3 +14,5 @@ export const SVELTE_IMPORTS = [
 	'svelte-hmr/runtime/proxy-adapter-dom.js',
 	'svelte-hmr'
 ];
+
+export const SVELTE_VITE_ASSETS_EXTENSIONS = ['.svg'];

@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { HmrContext, IndexHtmlTransformContext, ModuleNode, Plugin, UserConfig } from 'vite';
 
@@ -17,7 +18,11 @@ import {
 } from './utils/options';
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 
-import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
+import {
+	SVELTE_IMPORTS,
+	SVELTE_RESOLVE_MAIN_FIELDS,
+	SVELTE_VITE_ASSETS_EXTENSIONS
+} from './utils/constants';
 import { setupWatchers } from './utils/watch';
 
 export {
@@ -128,6 +133,11 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 						return css;
 					}
 				}
+			}
+
+			// For extensions like .svg, we need to load that ourselves so Vite assets plugin doesn't
+			if (SVELTE_VITE_ASSETS_EXTENSIONS.includes(path.extname(filename))) {
+				return fs.readFileSync(filename, 'utf-8');
 			}
 		},
 
