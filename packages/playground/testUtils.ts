@@ -156,7 +156,7 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 		for (let i = 1; i <= maxTries; i++) {
 			try {
 				console.log(`retry #${i} of hmr update for ${file}`);
-				await editFile(file, () => newContent);
+				await editFile(file, () => newContent + '\n'.repeat(i));
 				await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
 				return;
 			} catch (e) {
