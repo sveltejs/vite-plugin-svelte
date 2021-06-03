@@ -93,7 +93,7 @@ beforeAll(async () => {
 				const port = customServer.port;
 				const base = customServer.base && customServer.base !== '/' ? `/${customServer.base}` : '';
 				const url = (global.viteTestUrl = `http://localhost:${port}${base}`);
-				await page.goto(url);
+				await (isBuild ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
 				return;
 			}
 
@@ -121,7 +121,7 @@ beforeAll(async () => {
 				// use resolved port/base from server
 				const base = server.config.base === '/' ? '' : server.config.base;
 				const url = (global.viteTestUrl = `http://localhost:${server.config.server.port}${base}`);
-				await page.goto(url);
+				await goToUrlAndWaitForViteWSConnect(page, url);
 			} else {
 				process.env.VITE_INLINE = 'inline-build';
 				await build(options);
@@ -133,7 +133,7 @@ beforeAll(async () => {
 		// jest doesn't exit if our setup has error here
 		// https://github.com/facebook/jest/issues/2713
 		err = e;
-
+		console.error('beforeAll failed', e);
 		// tests are still executed so close page to shorten
 		try {
 			await page.close();
@@ -231,4 +231,31 @@ function startStaticServer(): Promise<string> {
 			resolve(`http://localhost:${port}${base}`);
 		});
 	});
+}
+
+async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
+	let timerId;
+	let pageConsoleListener;
+	const timeoutMS = 10000;
+	const timeoutPromise = new Promise(
+		(_, reject) =>
+			(timerId = setTimeout(() => {
+				reject(`timeout after ${timeoutMS}`);
+			}, timeoutMS))
+	);
+	const connectedPromise = new Promise<void>((resolve) => {
+		pageConsoleListener = (data) => {
+			const text = data.text();
+			if (text.indexOf('[vite] connected.') > -1) {
+				resolve();
+			}
+		};
+		page.on('console', pageConsoleListener);
+	});
+
+	const connectedOrTimeout = Promise.race([connectedPromise, timeoutPromise]).finally(() => {
+		page.off('console', pageConsoleListener);
+		clearTimeout(timerId);
+	});
+	return page.goto(url).then(() => connectedOrTimeout);
 }
