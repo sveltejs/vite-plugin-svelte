@@ -3,7 +3,7 @@ import { HmrContext, IndexHtmlTransformContext, ModuleNode, Plugin, UserConfig }
 // @ts-ignore
 import * as relative from 'require-relative';
 import { handleHotUpdate } from './handleHotUpdate';
-import {log, logCompilerWarnings } from './utils/log';
+import { log, logCompilerWarnings } from './utils/log';
 import { CompileData, createCompileSvelte } from './utils/compile';
 import { buildIdParser, IdParser, SvelteRequest } from './utils/id';
 import {
@@ -27,7 +27,8 @@ export {
 	Arrayable,
 	MarkupPreprocessor,
 	ModuleFormat,
-	Processed
+	Processed,
+	Warning
 } from './utils/options';
 
 // extend the Vite plugin interface to be able to have `sveltePreprocess` injection
@@ -201,7 +202,7 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 				throw new Error(`failed to transform tagged svelte request for id ${id}`);
 			}
 			const compileData = await compileSvelte(svelteRequest, code, options);
-			logCompilerWarnings(compileData.compiled.warnings,options)
+			logCompilerWarnings(compileData.compiled.warnings, options);
 			cache.update(compileData);
 			if (compileData.dependencies?.length && options.server) {
 				compileData.dependencies.forEach((d) => this.addWatchFile(d));
