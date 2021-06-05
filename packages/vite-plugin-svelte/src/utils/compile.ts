@@ -13,7 +13,7 @@ const _createCompileSvelte = (makeHot: Function) =>
 		options: Partial<ResolvedOptions>
 	): Promise<CompileData> {
 		const { filename, normalizedFilename, cssId, ssr } = svelteRequest;
-		const { onwarn, emitCss = true } = options;
+		const { emitCss = true } = options;
 		const dependencies = [];
 		const finalCompilerOptions: CompileOptions = {
 			...options.compilerOptions,
@@ -35,13 +35,6 @@ const _createCompileSvelte = (makeHot: Function) =>
 		}
 
 		const compiled = compile(preprocessed ? preprocessed.code : code, finalCompilerOptions);
-
-		(compiled.warnings || []).forEach((warning) => {
-			if (!emitCss && warning.code === 'css-unused-selector') return;
-			// TODO handle warnings
-			if (onwarn) onwarn(warning /*, this.warn*/);
-			//else this.warn(warning)
-		});
 
 		if (emitCss && compiled.css.code) {
 			// TODO properly update sourcemap?
