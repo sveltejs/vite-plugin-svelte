@@ -32,7 +32,11 @@ module.exports = class PlaywrightEnvironment extends NodeEnvironment {
 
 	async teardown() {
 		if (this.browser) {
-			await this.browser.close();
+			try {
+				await this.browser.close();
+			} catch (e) {
+				console.error('failed to close browser', e);
+			}
 		}
 		await super.teardown();
 	}

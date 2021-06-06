@@ -1,6 +1,6 @@
 import { ModuleNode, HmrContext } from 'vite';
 import { Code, CompileData } from './utils/compile';
-import { log } from './utils/log';
+import { log, logCompilerWarnings } from './utils/log';
 import { SvelteRequest } from './utils/id';
 import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
 import { ResolvedOptions } from './utils/options';
@@ -13,7 +13,7 @@ export async function handleHotUpdate(
 	ctx: HmrContext,
 	svelteRequest: SvelteRequest,
 	cache: VitePluginSvelteCache,
-	options: Partial<ResolvedOptions>
+	options: ResolvedOptions
 ): Promise<ModuleNode[] | void> {
 	const { read, server } = ctx;
 
@@ -33,14 +33,20 @@ export async function handleHotUpdate(
 
 	const cssModule = server.moduleGraph.getModuleById(svelteRequest.cssId);
 	const mainModule = server.moduleGraph.getModuleById(svelteRequest.id);
-	if (cssModule && cssChanged(cachedCss, compileData.compiled.css)) {
+	const cssUpdated = cssModule && cssChanged(cachedCss, compileData.compiled.css);
+	if (cssUpdated) {
 		log.debug('handleHotUpdate css changed');
 		affectedModules.add(cssModule);
 	}
-
-	if (mainModule && jsChanged(cachedJS, compileData.compiled.js, svelteRequest.filename)) {
+	const jsUpdated = mainModule && jsChanged(cachedJS, compileData.compiled.js, svelteRequest.filename);
+	if (jsUpdated) {
 		log.debug('handleHotUpdate js changed');
 		affectedModules.add(mainModule);
+	}
+
+	if(!jsUpdated) {
+		// transform won't be called, log warnings here
+		logCompilerWarnings(compileData.compiled.warnings,options)
 	}
 
 	const result = [...affectedModules].filter(Boolean) as ModuleNode[];

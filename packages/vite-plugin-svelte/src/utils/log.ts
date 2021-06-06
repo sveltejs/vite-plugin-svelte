@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import chalk from 'chalk';
 import debug from 'debug';
+import {ResolvedOptions, Warning} from "./options";
+
 const levels: string[] = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
 const loggers: { [key: string]: any } = {
@@ -93,3 +95,44 @@ export const log = {
 	// TODO still needed?
 	setViteLogOverwriteProtection
 };
+
+
+export function logCompilerWarnings(
+	warnings: Warning[],
+	options: ResolvedOptions
+	) {
+	const {emitCss,onwarn, isBuild} = options;
+	const warn = isBuild ? warnBuild : warnDev;
+	warnings?.forEach(warning => {
+		if (!emitCss && warning.code === 'css-unused-selector'){
+			return;
+		}
+		if (onwarn) {
+			onwarn(warning , warn);
+		} else {
+			warn(warning)
+		}
+	})
+}
+
+function warnDev(w: Warning) {
+	log.info.enabled && log.info(buildExtendedLogMessage(w))
+}
+
+function warnBuild(w: Warning) {
+	log.warn.enabled && log.warn(buildExtendedLogMessage(w),w.frame)
+}
+
+function buildExtendedLogMessage(w: Warning) {
+	const parts = [];
+	if(w.filename) {
+		parts.push(w.filename)
+	}
+	if(w.start) {
+		parts.push(':',w.start.line,':',w.start.column)
+	}
+	if(w.message){
+		parts.push(' ',w.message)
+	}
+	return parts.join('');
+}
