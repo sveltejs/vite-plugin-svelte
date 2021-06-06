@@ -103,14 +103,14 @@ importers:
   packages/playground/asset-import:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: ^3.37.0
-      svelte-hmr: ^0.14.2
-      vite: ^2.2.3
+      svelte: ^3.38.2
+      svelte-hmr: ^0.14.4
+      vite: ^2.3.6
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
-      svelte: 3.37.0
-      svelte-hmr: 0.14.2_svelte@3.37.0
-      vite: 2.2.3
+      svelte: 3.38.2
+      svelte-hmr: 0.14.4_svelte@3.38.2
+      vite: 2.3.6
 
   packages/playground/autoprefixer-browerslist:
     specifiers:
@@ -6461,14 +6461,6 @@ packages:
       glob: 7.1.7
     dev: true
 
-  /rollup/2.50.5:
-    resolution: {integrity: sha512-Ztz4NurU2LbS3Jn5rlhnYv35z6pkjBUmYKr94fOBIKINKRO6kug9NTFHArT7jqwMP2kqEZ39jJuEtkk91NBltQ==}
-    engines: {node: '>=10.0.0'}
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /rollup/2.50.6:
     resolution: {integrity: sha512-6c5CJPLVgo0iNaZWWliNu1Kl43tjP9LZcp6D/tkf2eLH2a9/WeHxg9vfTFl8QV/2SOyaJX37CEm9XuGM0rviUg==}
     engines: {node: '>=10.0.0'}
@@ -7701,7 +7693,7 @@ packages:
       esbuild: 0.12.5
       postcss: 8.3.0
       resolve: 1.20.0
-      rollup: 2.50.5
+      rollup: 2.50.6
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
