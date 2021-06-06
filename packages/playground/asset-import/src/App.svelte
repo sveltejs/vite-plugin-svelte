@@ -1,11 +1,9 @@
 <script>
 	import Logo from './logo.svg';
-	import LogoText from './logotext.html';
 </script>
 
 <main>
 	<Logo />
-	<LogoText />
 	<p>
 		Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte
 		apps.
