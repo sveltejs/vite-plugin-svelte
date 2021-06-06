@@ -6,4 +6,5 @@ test('should render svg', async () => {
 
 test('should render html', async () => {
 	expect(await getEl('#logotext')).toBeTruthy();
+	expect(await getEl('img')).toBeTruthy();
 });
