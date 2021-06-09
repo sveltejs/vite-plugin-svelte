@@ -38,6 +38,24 @@ It supports all options from rollup-plugin-svelte and some additional options to
 
 For more Information check [options.ts](src/utils/options.ts)
 
+## Importing third-party Svelte libraries
+
+When importing any third-party libraries that uses Svelte's lifecycle API, e.g. `onMount`, `setContext`, and others, they need to be excluded from Vite's dependency pre-bundling process:
+
+```js
+// vite.config.js
+{
+	plugins: [svelte()],
+	optimizeDeps: {
+		exclude: ['svelte-library']
+	}
+}
+```
+
+This is needed because Vite's dependency pre-bundling doesn't deduplicate the Svelte instance, resulting in multiple Svelte instance running at once, causing errors like `Function called outside component initialization`.
+
+If you're unsure whether a library uses the lifecycle API, place it in `optimizeDeps.exclude` and you'll be fine. The team is working on removing this limitation soon.
+
 ## Integrations for other vite plugins
 
 ### Add an extra preprocessor
