@@ -51,6 +51,8 @@ For more Information check [options.ts](src/utils/options.ts)
 
 When importing any third-party libraries that uses Svelte's lifecycle API, e.g. `onMount`, `setContext`, and others, they need to be excluded from Vite's dependency pre-bundling process:
 
+<!-- eslint-skip -->
+
 ```js
 // vite.config.js
 {
