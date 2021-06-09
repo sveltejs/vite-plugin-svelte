@@ -3,11 +3,10 @@
 ## usage
 
 ```js
-// vite.config.js
-const svelte = require('@sveltejs/vite-plugin-svelte');
-const { defineConfig } = require('vite');
+import svelte from '@sveltejs/vite-plugin-svelte';
+import { defineConfig } from 'vite';
 
-module.exports = defineConfig(({ command, mode }) => {
+export default defineConfig(({ command, mode }) => {
 	const isProduction = mode === 'production';
 	return {
 		plugins: [
@@ -22,13 +21,23 @@ module.exports = defineConfig(({ command, mode }) => {
 });
 ```
 
+### commonjs
+
+If you cannot use import and need commonjs, vite-plugin-svelte provides a fallback build in `dist/index.cjs`
+
+require it like this:
+
+```js
+const svelte = require('@sveltejs/vite-plugin-svelte').default;
+```
+
 ## Options
 
 vite-plugin-svelte reads the vite configuration and uses an appropriate default configuration
 
 It also loads `svelte.config.js` (or `svelte.config.cjs`) from the configured `vite.root` directory automatically.
 
-Options are applied in the following order:
+Options are merged in the following order:
 
 1. vite-plugin-svelte defaults
 2. svelte.config.js in vite.root

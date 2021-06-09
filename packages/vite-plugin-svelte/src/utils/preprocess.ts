@@ -20,7 +20,7 @@ function createPreprocessorFromVitePlugin(
 	if (!plugin.transform) {
 		throw new Error(`plugin ${pluginName} has no transform`);
 	}
-	const pluginTransform = plugin.transform!.bind((null as unknown) as TransformPluginContext);
+	const pluginTransform = plugin.transform!.bind(null as unknown as TransformPluginContext);
 	// @ts-ignore
 	return async ({ attributes, content, filename }) => {
 		const lang = attributes.lang as string;

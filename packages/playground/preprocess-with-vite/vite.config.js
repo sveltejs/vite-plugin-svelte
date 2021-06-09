@@ -1,4 +1,4 @@
-const svelte = require('@sveltejs/vite-plugin-svelte');
+const svelte = require('@sveltejs/vite-plugin-svelte').default;
 const { defineConfig } = require('vite');
 
 module.exports = defineConfig(({ command, mode }) => {

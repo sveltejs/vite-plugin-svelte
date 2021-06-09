@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { ResolvedConfig, ViteDevServer } from 'vite';
 import { log } from './log';
-import { loadSvelteConfig } from './loadSvelteConfig';
+import { loadSvelteConfig } from './load-svelte-config';
 import { addExtraPreprocessors } from './preprocess';
 
 const knownOptions = new Set([
@@ -184,7 +184,7 @@ export interface Options {
 	/**
 	 * custom warning handler for svelte compiler warnings
 	 */
-	onwarn?: ((warning: Warning, defaultHandler?: (warning: Warning)=>void) => void);
+	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
 
 	/**
 	 * enable/disable hmr. You want this enabled.

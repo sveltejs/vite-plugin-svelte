@@ -1,56 +1,65 @@
 {
-  "name": "@sveltejs/vite-plugin-svelte",
-  "version": "1.0.0-next.10",
-  "license": "MIT",
-  "author": "dominikg",
-  "files": [
-    "dist"
-  ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "dev": "tsc -p . -w --incremental",
-    "build": "rimraf dist && run-s build-bundle build-types",
-    "build-bundle": "node scripts/build-bundle.js",
-    "build-types": "tsc -p . --emitDeclarationOnly --outDir temp && api-extractor run && rimraf temp"
-  },
-  "engines": {
+	"name": "@sveltejs/vite-plugin-svelte",
+	"version": "1.0.0-next.10",
+	"license": "MIT",
+	"author": "dominikg",
+	"files": [
+		"dist",
+		"src",
+		"README.md",
+		"LICENSE",
+		"package.json"
+	],
+	"type": "module",
+	"main": "dist/index.cjs",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./package.json": "./package.json"
+	},
+	"scripts": {
+		"dev": "pnpm run build:ci -- --watch src",
+		"build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
+		"build": "pnpm run build:ci -- --dts --dts-resolve --sourcemap"
+	},
+	"engines": {
 		"node": "^12.20 || ^14.13.1 || >= 16"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sveltejs/vite-plugin-svelte.git"
-  },
-  "keywords": [
-    "vite-plugin",
-    "vite plugin",
-    "vite",
-    "svelte"
-  ],
-  "bugs": {
-    "url": "https://github.com/sveltejs/vite-plugin-svelte/issues"
-  },
-  "homepage": "https://github.com/sveltejs/vite-plugin-svelte/tree/main/packages/vite-plugin-svelte#readme",
-  "dependencies": {
-    "@rollup/pluginutils": "^4.1.0",
-    "chalk": "^4.1.1",
-    "debug": "^4.3.2",
-    "require-relative": "^0.8.7",
-    "svelte-hmr": "^0.14.4"
-  },
-  "peerDependencies": {
-    "svelte": "^3.38.2",
-    "vite": "^2.3.6"
-  },
-  "devDependencies": {
-    "@types/debug": "^4.1.5",
-    "@types/es-module-lexer": "^0.3.0",
-    "@types/estree": "^0.0.48",
-    "esbuild": "~0.12.5",
-    "locate-character": "^2.0.5",
-    "magic-string": "^0.25.7",
-    "rollup": "^2.50.6",
-    "svelte": "^3.38.2",
-    "vite": "^2.3.6"
-  }
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/sveltejs/vite-plugin-svelte.git"
+	},
+	"keywords": [
+		"vite-plugin",
+		"vite plugin",
+		"vite",
+		"svelte"
+	],
+	"bugs": {
+		"url": "https://github.com/sveltejs/vite-plugin-svelte/issues"
+	},
+	"homepage": "https://github.com/sveltejs/vite-plugin-svelte/tree/main/packages/vite-plugin-svelte#readme",
+	"dependencies": {
+		"@rollup/pluginutils": "^4.1.0",
+		"chalk": "^4.1.1",
+		"debug": "^4.3.2",
+		"require-relative": "^0.8.7",
+		"svelte-hmr": "^0.14.4"
+	},
+	"peerDependencies": {
+		"svelte": "^3.38.2",
+		"vite": "^2.3.7"
+	},
+	"devDependencies": {
+		"@types/debug": "^4.1.5",
+		"esbuild": "^0.12.8",
+		"rollup": "^2.51.1",
+		"svelte": "^3.38.2",
+		"tsup": "^4.11.2",
+		"vite": "^2.3.7"
+	}
 }
