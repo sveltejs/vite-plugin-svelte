@@ -3,7 +3,7 @@
 ## usage
 
 ```js
-import svelte from '@sveltejs/vite-plugin-svelte';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vite';
 
 export default defineConfig(({ command, mode }) => {
@@ -28,7 +28,7 @@ If you cannot use import and need commonjs, vite-plugin-svelte provides a fallba
 require it like this:
 
 ```js
-const svelte = require('@sveltejs/vite-plugin-svelte').default;
+const { svelte } = require('@sveltejs/vite-plugin-svelte');
 ```
 
 ## Options

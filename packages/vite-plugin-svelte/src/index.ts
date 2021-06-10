@@ -16,19 +16,6 @@ import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
 import { setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 
-export {
-	Options,
-	Preprocessor,
-	PreprocessorGroup,
-	CompileOptions,
-	CssHashGetter,
-	Arrayable,
-	MarkupPreprocessor,
-	ModuleFormat,
-	Processed,
-	Warning
-} from './utils/options';
-
 // extend the Vite plugin interface to be able to have `sveltePreprocess` injection
 declare module 'vite' {
 	// eslint-disable-next-line no-unused-vars
@@ -39,7 +26,7 @@ declare module 'vite' {
 
 const pkg_export_errors = new Set();
 
-export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plugin {
+function svelte(inlineOptions?: Partial<Options>): Plugin {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
 	}
@@ -221,3 +208,30 @@ export default function vitePluginSvelte(inlineOptions?: Partial<Options>): Plug
 		}
 	};
 }
+
+export {
+	Options,
+	Preprocessor,
+	PreprocessorGroup,
+	CompileOptions,
+	CssHashGetter,
+	Arrayable,
+	MarkupPreprocessor,
+	ModuleFormat,
+	Processed,
+	Warning
+} from './utils/options';
+
+export { svelte };
+// temporary warning
+// TODO remove it after a grace period
+export default (inlineOptions: Partial<Options>) => {
+	console.warn(`Deprecation warning: The default export of vite-plugin-svelte is deprecated.
+Update your code to use the named export 'svelte':
+  old: "import svelte from '@sveltejs/vite-plugin-svelte';"
+  new: "import {svelte} from '@sveltejs/vite-plugin-svelte';"
+
+If you are using SvelteKit, update your "@sveltejs/kit" dependency.
+`);
+	return svelte(inlineOptions);
+};
