@@ -1,5 +1,40 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.11
+
+### Major Changes
+
+- [#54](https://github.com/sveltejs/vite-plugin-svelte/pull/54) [`0f7e256`](https://github.com/sveltejs/vite-plugin-svelte/commit/0f7e256a9ebb0ee9ac6075146d27bf4f11ecdab3) Thanks [@dominikg](https://github.com/dominikg)! - feat: convert to es module with cjs fallback, use named export instead of default
+
+  If you are using vite-plugin-svelte with require, you should switch to esm and import the named export "svelte".
+  An example can be found in the usage section of the [readme](README.md)
+
+  For existing esm configs update your import to use the new named export.
+
+  ```diff
+  - import svelte from '@sveltejs/vite-plugin-svelte';
+  + import { svelte } from '@sveltejs/vite-plugin-svelte';
+  ```
+
+  continuing with cjs/require is discouraged but if you must use it, update your require statement to use the named export
+
+  ```diff
+  - const svelte = require('@sveltejs/vite-plugin-svelte');
+  + const { svelte } = require('@sveltejs/vite-plugin-svelte');
+  ```
+
+### Minor Changes
+
+- [#45](https://github.com/sveltejs/vite-plugin-svelte/pull/45) [`673cf61`](https://github.com/sveltejs/vite-plugin-svelte/commit/673cf61b3800e7a64be2b73a7273909da95729d2) Thanks [@dominikg](https://github.com/dominikg)! - Feature: log svelte compiler warnings to console. use options.onwarn to customize logging
+
+### Patch Changes
+
+- [#44](https://github.com/sveltejs/vite-plugin-svelte/pull/44) [`24ae093`](https://github.com/sveltejs/vite-plugin-svelte/commit/24ae0934301cb50506bf39cdccc07ad3eac546fd) Thanks [@dominikg](https://github.com/dominikg)! - update to esbuild 0.12 and vite 2.3.6
+
+* [#44](https://github.com/sveltejs/vite-plugin-svelte/pull/44) [`24ae093`](https://github.com/sveltejs/vite-plugin-svelte/commit/24ae0934301cb50506bf39cdccc07ad3eac546fd) Thanks [@dominikg](https://github.com/dominikg)! - update engines.node to "^12.20 || ^14.13.1 || >= 16"
+
+- [#45](https://github.com/sveltejs/vite-plugin-svelte/pull/45) [`673cf61`](https://github.com/sveltejs/vite-plugin-svelte/commit/673cf61b3800e7a64be2b73a7273909da95729d2) Thanks [@dominikg](https://github.com/dominikg)! - enable logging for compiler warnings
+
 ## 1.0.0-next.10
 
 ### Minor Changes
