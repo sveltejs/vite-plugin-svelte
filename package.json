@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --dir packages/vite-plugin-svelte dev",
-    "build:ci": "pnpm -r build-bundle --filter=./packages/vite-plugin-svelte",
+    "build:ci": "pnpm -r build:ci --filter=./packages/vite-plugin-svelte",
     "build": "pnpm -r build --filter=\\!./packages/playground",
     "build:vite-plugin-svelte": "pnpm --dir packages/vite-plugin-svelte build",
     "test": "run-s test:serve test:build",
@@ -15,9 +15,9 @@
     "test:ci:serve": "cross-env VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/serve/jest-results.json\"",
     "test:ci:build": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/build/jest-results.json\"",
     "lint": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
-    "lint:fix": "pnpm lint -- --fix",
+    "lint:fix": "pnpm run lint -- --fix",
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
-    "format:fix": "pnpm format -- --write",
+    "format:fix": "pnpm run format -- --write",
     "fixup": "run-s lint:fix format:fix",
     "update-deps": "ncu -u && ncu -f \"/^@sveltejs\\/(?:kit|adapter)/\" --target=greatest -u",
     "release": "pnpm run build && pnpx --no changeset publish",
@@ -26,18 +26,17 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.0",
     "@changesets/cli": "^2.16.0",
-    "@microsoft/api-extractor": "^7.15.2",
     "@types/fs-extra": "^9.0.11",
     "@types/jest": "^26.0.23",
-    "@types/node": "^15.12.0",
+    "@types/node": "^15.12.2",
     "@types/semver": "^7.3.6",
-    "@typescript-eslint/eslint-plugin": "^4.26.0",
-    "@typescript-eslint/parser": "^4.26.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/parser": "^4.26.1",
     "chalk": "^4.1.1",
     "cross-env": "^7.0.3",
     "enquirer": "^2.3.6",
-    "esbuild": "~0.12.5",
-    "eslint": "^7.27.0",
+    "esbuild": "^0.12.8",
+    "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-html": "^6.1.2",
     "eslint-plugin-jest": "^24.3.6",
@@ -45,7 +44,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-svelte3": "^3.2.0",
-    "execa": "^5.1.0",
+    "execa": "^5.1.1",
     "fs-extra": "^10.0.0",
     "husky": "^6.0.0",
     "jest": "^27.0.4",
@@ -56,17 +55,17 @@
     "node-fetch": "^2.6.1",
     "npm-check-updates": "^11.6.0",
     "npm-run-all": "^4.1.5",
-    "playwright-core": "^1.11.1",
-    "pnpm": "^6.6.2",
-    "prettier": "^2.3.0",
+    "playwright-core": "^1.12.0",
+    "pnpm": "^6.7.4",
+    "prettier": "^2.3.1",
     "prettier-plugin-svelte": "^2.3.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
     "sirv": "^1.0.12",
     "svelte": "^3.38.2",
-    "ts-jest": "^27.0.2",
+    "ts-jest": "^27.0.3",
     "typescript": "^4.3.2",
-    "vite": "^2.3.6"
+    "vite": "^2.3.7"
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --fix",
@@ -75,9 +74,9 @@
     ]
   },
   "engines": {
-    "pnpm": ">=6",
+    "pnpm": "^6.7.0",
     "yarn": "forbidden, use pnpm",
     "npm": "forbidden, use pnpm",
-		"node": "^12.20 || ^14.13.1 || >= 16"
+    "node": "^12.20 || ^14.13.1 || >= 16"
   }
 }

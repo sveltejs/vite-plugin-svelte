@@ -2,7 +2,7 @@ import { ModuleNode, HmrContext } from 'vite';
 import { Code, CompileData } from './utils/compile';
 import { log, logCompilerWarnings } from './utils/log';
 import { SvelteRequest } from './utils/id';
-import { VitePluginSvelteCache } from './utils/VitePluginSvelteCache';
+import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { ResolvedOptions } from './utils/options';
 
 /**
@@ -38,15 +38,16 @@ export async function handleHotUpdate(
 		log.debug('handleHotUpdate css changed');
 		affectedModules.add(cssModule);
 	}
-	const jsUpdated = mainModule && jsChanged(cachedJS, compileData.compiled.js, svelteRequest.filename);
+	const jsUpdated =
+		mainModule && jsChanged(cachedJS, compileData.compiled.js, svelteRequest.filename);
 	if (jsUpdated) {
 		log.debug('handleHotUpdate js changed');
 		affectedModules.add(mainModule);
 	}
 
-	if(!jsUpdated) {
+	if (!jsUpdated) {
 		// transform won't be called, log warnings here
-		logCompilerWarnings(compileData.compiled.warnings,options)
+		logCompilerWarnings(compileData.compiled.warnings, options);
 	}
 
 	const result = [...affectedModules].filter(Boolean) as ModuleNode[];

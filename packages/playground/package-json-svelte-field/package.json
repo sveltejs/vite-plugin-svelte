@@ -1,20 +1,18 @@
 {
-  "name": "playground-windicss",
+  "name": "playground-package-json-svelte-field",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "dev": "vite"
   },
   "dependencies": {
-    "windicss": "^3.1.3"
+    "playground-test-dependency-svelte-field": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "workspace:*",
     "svelte": "^3.38.2",
     "svelte-hmr": "^0.14.4",
-    "vite": "^2.3.7",
-    "vite-plugin-windicss": "^1.0.3"
+    "vite": "^2.3.7"
   }
 }

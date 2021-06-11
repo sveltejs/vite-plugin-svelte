@@ -24,7 +24,7 @@ export async function loadSvelteConfig(
 			try {
 				return await dynamicImportDefault(pathToFileURL(configFile).href);
 			} catch (e) {
-				log.debug(`failed to import config ${configFile}`, e);
+				log.error(`failed to import config ${configFile}`, e);
 				err = e;
 			}
 		}

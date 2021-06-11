@@ -1,5 +1,5 @@
 import { ViteDevServer } from 'vite';
-import { VitePluginSvelteCache } from './VitePluginSvelteCache';
+import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 import fs from 'fs';
 import { log } from './log';
 import { IdParser } from './id';

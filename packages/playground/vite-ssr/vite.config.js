@@ -1,5 +1,5 @@
 const { defineConfig } = require('vite');
-const svelte = require('@sveltejs/vite-plugin-svelte');
+const { svelte } = require('@sveltejs/vite-plugin-svelte');
 
 module.exports = defineConfig(({ command, mode }) => {
 	const isProduction = mode === 'production';

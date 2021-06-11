@@ -1,22 +1,45 @@
-.DS_Store
-node_modules
-dist
-dist-ssr
-build
-TODOs.md
+# logs and temp
 *.log
-temp
-explorations
-.idea
-*.local
+**/*.log
 *.cpuprofile
+**/*.cpuprofile
+temp
+**/temp
+*.tmp
+**/*.tmp
+
+# build and dist
+build
+**/build
+dist
+**/dist
+.svelte
+.svelte-kit
+**/.svelte
+**/.svelte-kit
+
+# env and local
+*.local
+**/*.local
 .env
-packages/**/pnpm-lock.yaml
-packages/**/package-lock.json
-packages/**/yarn.lock
-packages/**/dist
-packages/**/dist-ssr
-packages/**/build
-packages/**/node_modules
-temp/**/*
+**/.env
+
+#node_modules and pnpm
+node_modules
+**/node_modules
+# only workspace root has a lock
+**/pnpm-lock.yaml
 .pnpm-store
+**/.pnpm-store
+
+#ide
+.idea
+**/.idea
+.vscode
+**/.vscode
+
+# macos
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store

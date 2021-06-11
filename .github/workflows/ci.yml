@@ -1,4 +1,4 @@
-# build and test on linux, windows, mac with node 12,14
+# build and test on linux, windows, mac with node 12, 14, 16
 name: CI
 
 env:
@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        node: [ 12, 14 ]
+        node: [ 12, 14, 16 ]
 
     steps:
       - uses: actions/setup-node@v2
@@ -136,7 +136,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        node: [ 12, 14 ]
+        node: [ 12, 14, 16 ]
     steps:
       - uses: actions/setup-node@v2
         with:
