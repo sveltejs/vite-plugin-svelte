@@ -24,15 +24,13 @@ declare module 'vite' {
 	}
 }
 
-const pkg_export_errors = new Set();
-
-function svelte(inlineOptions?: Partial<Options>): Plugin {
+export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
 	}
 	validateInlineOptions(inlineOptions);
 	const cache = new VitePluginSvelteCache();
-
+	const pkg_export_errors = new Set();
 	// updated in configResolved hook
 	let requestParser: IdParser;
 	let options: ResolvedOptions;
@@ -221,17 +219,3 @@ export {
 	Processed,
 	Warning
 } from './utils/options';
-
-export { svelte };
-// temporary warning
-// TODO remove it after a grace period
-export default (inlineOptions: Partial<Options>) => {
-	console.warn(`Deprecation warning: The default export of vite-plugin-svelte is deprecated.
-Update your code to use the named export 'svelte':
-  old: "import svelte from '@sveltejs/vite-plugin-svelte';"
-  new: "import {svelte} from '@sveltejs/vite-plugin-svelte';"
-
-If you are using SvelteKit, update your "@sveltejs/kit" dependency.
-`);
-	return svelte(inlineOptions);
-};
