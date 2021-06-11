@@ -223,12 +223,12 @@ importers:
 
   packages/playground/kit-node:
     specifiers:
-      '@sveltejs/adapter-node': ^1.0.0-next.24
-      '@sveltejs/kit': ^1.0.0-next.113
+      '@sveltejs/adapter-node': ^1.0.0-next.25
+      '@sveltejs/kit': ^1.0.0-next.115
       svelte: ^3.38.2
     devDependencies:
-      '@sveltejs/adapter-node': 1.0.0-next.24
-      '@sveltejs/kit': 1.0.0-next.113_svelte@3.38.2
+      '@sveltejs/adapter-node': 1.0.0-next.25
+      '@sveltejs/kit': 1.0.0-next.115_svelte@3.38.2
       svelte: 3.38.2
 
   packages/playground/package-json-svelte-field:
@@ -1227,12 +1227,14 @@ packages:
       '@sinonjs/commons': 1.8.3
     dev: true
 
-  /@sveltejs/adapter-node/1.0.0-next.24:
-    resolution: {integrity: sha512-33IbIYsIOq3LapSlW519oWuFvEHh8EHqU4FsOg1UZaF2EE5CkOh23SXjv0H9RT0iLCxvhifqiFN+vb/vlDRSWw==}
+  /@sveltejs/adapter-node/1.0.0-next.25:
+    resolution: {integrity: sha512-6Kg3eJBKoug+XMW0AJlXD+etD3j5f5CJhLeUhZ8fM5b6Ds8nODoObozHcmkUoZUsI2i6sIcD37ctpPCNeTjsBg==}
+    dependencies:
+      esbuild: 0.12.8
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.113_svelte@3.38.2:
-    resolution: {integrity: sha512-X7feyAD9ZWQ79W5MXgF0t3JBsA+pTqCrnl2l8y8PNCP7pEJwizPCfmFAjwx7luz3OZUA2FTFBB7bqG7K1IUaYg==}
+  /@sveltejs/kit/1.0.0-next.115_svelte@3.38.2:
+    resolution: {integrity: sha512-XbkL9hI7LI0Dfum9crtBIeENqdJEjMfDaX3qQTTgdYkhlb4KNNYErmDWo8bJNJKEfdV0BJBVN/I0wiat3cd/yA==}
     engines: {node: ^12.20 || ^14.13.1 || >= 16}
     hasBin: true
     peerDependencies:
