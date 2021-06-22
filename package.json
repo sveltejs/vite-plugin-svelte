@@ -3,9 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --dir packages/vite-plugin-svelte dev",
-    "build:ci": "pnpm -r build:ci --filter=./packages/vite-plugin-svelte",
-    "build": "pnpm -r build --filter=\\!./packages/playground",
-    "build:vite-plugin-svelte": "pnpm --dir packages/vite-plugin-svelte build",
+    "build:ci": "pnpm --dir packages/vite-plugin-svelte build:ci",
+    "build": "pnpm --dir packages/vite-plugin-svelte build",
     "test": "run-s test:serve test:build",
     "test:serve": "jest",
     "test:serve:debug": "cross-env VITE_DEBUG_SERVE=1 node --inspect-brk ./node_modules/.bin/jest",

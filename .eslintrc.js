@@ -59,7 +59,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['packages/playground/**'],
+			files: ['packages/e2e-tests/**', 'packages/playground/**'],
 			rules: {
 				'node/no-extraneous-import': 'off',
 				'node/no-extraneous-require': 'off',
@@ -70,7 +70,7 @@ module.exports = {
 			}
 		},
 		{
-			files: ['packages/playground/**/vite.config.js'],
+			files: ['packages/e2e-tests/**/vite.config.js', 'packages/playground/**'],
 			rules: {
 				'no-unused-vars': 'off',
 				'node/no-missing-require': 'off'

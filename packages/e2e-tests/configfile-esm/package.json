@@ -1,0 +1,20 @@
+{
+  "name": "e2e-tests-configfile-esm",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
+	"dependencies": {
+		"e2e-tests-hmr-test-dependency": "workspace:*"
+	},
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "workspace:*",
+    "svelte": "^3.38.2",
+    "svelte-hmr": "^0.14.4",
+    "svelte-preprocess": "^4.7.3",
+    "vite": "^2.3.7"
+  },
+	"type": "module"
+}
