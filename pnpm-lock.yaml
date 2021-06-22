@@ -90,7 +90,7 @@ importers:
       typescript: 4.3.2
       vite: 2.3.7
 
-  packages/playground:
+  packages/e2e-tests:
     specifiers:
       css-color-names: ^1.0.1
       tree-kill: ^1.2.2
@@ -98,11 +98,11 @@ importers:
       css-color-names: 1.0.1
       tree-kill: 1.2.2
 
-  packages/playground/autoprefixer-browerslist:
+  packages/e2e-tests/autoprefixer-browerslist:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       autoprefixer: ^10.2.6
-      playground-hmr-test-dependency: workspace:*
+      e2e-tests-hmr-test-dependency: workspace:*
       postcss: ^8.3.0
       postcss-load-config: ^3.0.1
       svelte: ^3.38.2
@@ -110,7 +110,7 @@ importers:
       svelte-preprocess: ^4.7.3
       vite: ^2.3.7
     dependencies:
-      playground-hmr-test-dependency: link:../hmr-test-dependency
+      e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       autoprefixer: 10.2.6_postcss@8.3.0
@@ -121,28 +121,16 @@ importers:
       svelte-preprocess: 4.7.3_98db3e04868c8b1b4a541d81d8c3c555
       vite: 2.3.7
 
-  packages/playground/big:
+  packages/e2e-tests/configfile-custom:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: ^3.38.2
-      svelte-hmr: ^0.14.4
-      vite: ^2.3.7
-    devDependencies:
-      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
-      svelte: 3.38.2
-      svelte-hmr: 0.14.4_svelte@3.38.2
-      vite: 2.3.7
-
-  packages/playground/configfile-custom:
-    specifiers:
-      '@sveltejs/vite-plugin-svelte': workspace:*
-      playground-hmr-test-dependency: workspace:*
+      e2e-tests-hmr-test-dependency: workspace:*
       svelte: ^3.38.2
       svelte-hmr: ^0.14.4
       svelte-preprocess: ^4.7.3
       vite: ^2.3.7
     dependencies:
-      playground-hmr-test-dependency: link:../hmr-test-dependency
+      e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.2
@@ -150,16 +138,16 @@ importers:
       svelte-preprocess: 4.7.3_svelte@3.38.2
       vite: 2.3.7
 
-  packages/playground/configfile-esm:
+  packages/e2e-tests/configfile-esm:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      playground-hmr-test-dependency: workspace:*
+      e2e-tests-hmr-test-dependency: workspace:*
       svelte: ^3.38.2
       svelte-hmr: ^0.14.4
       svelte-preprocess: ^4.7.3
       vite: ^2.3.7
     dependencies:
-      playground-hmr-test-dependency: link:../hmr-test-dependency
+      e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.2
@@ -167,50 +155,16 @@ importers:
       svelte-preprocess: 4.7.3_svelte@3.38.2
       vite: 2.3.7
 
-  packages/playground/default-svelte-template:
+  packages/e2e-tests/hmr:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: ^3.38.2
-      svelte-hmr: ^0.14.4
-      vite: ^2.3.7
-    devDependencies:
-      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
-      svelte: 3.38.2
-      svelte-hmr: 0.14.4_svelte@3.38.2
-      vite: 2.3.7
-
-  packages/playground/default-svelte-template-ts:
-    specifiers:
-      '@sveltejs/vite-plugin-svelte': workspace:*
-      '@tsconfig/svelte': ^2.0.1
-      svelte: ^3.38.2
-      svelte-check: ^2.1.0
-      svelte-hmr: ^0.14.4
-      svelte-preprocess: ^4.7.3
-      tslib: ^2.2.0
-      typescript: ^4.3.2
-      vite: ^2.3.7
-    devDependencies:
-      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
-      '@tsconfig/svelte': 2.0.1
-      svelte: 3.38.2
-      svelte-check: 2.1.0_svelte@3.38.2
-      svelte-hmr: 0.14.4_svelte@3.38.2
-      svelte-preprocess: 4.7.3_svelte@3.38.2+typescript@4.3.2
-      tslib: 2.2.0
-      typescript: 4.3.2
-      vite: 2.3.7
-
-  packages/playground/hmr:
-    specifiers:
-      '@sveltejs/vite-plugin-svelte': workspace:*
+      e2e-tests-hmr-test-dependency: workspace:*
       node-fetch: ^2.6.1
-      playground-hmr-test-dependency: workspace:*
       svelte: ^3.38.2
       svelte-hmr: ^0.14.4
       vite: ^2.3.7
     dependencies:
-      playground-hmr-test-dependency: link:../hmr-test-dependency
+      e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       node-fetch: 2.6.1
@@ -218,28 +172,99 @@ importers:
       svelte-hmr: 0.14.4_svelte@3.38.2
       vite: 2.3.7
 
-  packages/playground/hmr-test-dependency:
+  packages/e2e-tests/hmr-test-dependency:
     specifiers: {}
 
-  packages/playground/kit-node:
+  packages/e2e-tests/kit-node:
     specifiers:
       '@sveltejs/adapter-node': ^1.0.0-next.25
       '@sveltejs/kit': ^1.0.0-next.115
       svelte: ^3.38.2
     devDependencies:
-      '@sveltejs/adapter-node': 1.0.0-next.25
+      '@sveltejs/adapter-node': 1.0.0-next.26
       '@sveltejs/kit': 1.0.0-next.115_svelte@3.38.2
       svelte: 3.38.2
 
-  packages/playground/package-json-svelte-field:
+  packages/e2e-tests/package-json-svelte-field:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      playground-test-dependency-svelte-field: workspace:*
+      e2e-tests-test-dependency-svelte-field: workspace:*
       svelte: ^3.38.2
       svelte-hmr: ^0.14.4
       vite: ^2.3.7
     dependencies:
-      playground-test-dependency-svelte-field: link:../test-dependency-svelte-field
+      e2e-tests-test-dependency-svelte-field: link:../test-dependency-svelte-field
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      svelte: 3.38.2
+      svelte-hmr: 0.14.4_svelte@3.38.2
+      vite: 2.3.7
+
+  packages/e2e-tests/svelte-preprocess:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      svelte: ^3.38.2
+      svelte-preprocess: ^4.7.3
+      typescript: ^4.3.2
+      vite: ^2.3.7
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      svelte: 3.38.2
+      svelte-preprocess: 4.7.3_svelte@3.38.2+typescript@4.3.2
+      typescript: 4.3.2
+      vite: 2.3.7
+
+  packages/e2e-tests/test-dependency-svelte-field:
+    specifiers: {}
+
+  packages/e2e-tests/ts-type-import:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      '@tsconfig/svelte': ^2.0.1
+      '@types/node': ^15.12.2
+      svelte-preprocess: ^4.7.3
+      vite: ^2.3.7
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      '@tsconfig/svelte': 2.0.1
+      '@types/node': 15.12.2
+      svelte-preprocess: 4.7.3
+      vite: 2.3.7
+
+  packages/e2e-tests/vite-ssr:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      compression: ^1.7.4
+      cross-env: ^7.0.3
+      express: ^4.17.1
+      serve-static: ^1.14.1
+      svelte: ^3.38.2
+      svelte-hmr: ^0.14.4
+      vite: ^2.3.7
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      compression: 1.7.4
+      cross-env: 7.0.3
+      express: 4.17.1
+      serve-static: 1.14.1
+      svelte: 3.38.2
+      svelte-hmr: 0.14.4_svelte@3.38.2
+      vite: 2.3.7
+
+  packages/playground:
+    specifiers:
+      css-color-names: ^1.0.1
+      tree-kill: ^1.2.2
+    devDependencies:
+      css-color-names: 1.0.1
+      tree-kill: 1.2.2
+
+  packages/playground/big:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      svelte: ^3.38.2
+      svelte-hmr: ^0.14.4
+      vite: ^2.3.7
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.2
@@ -258,57 +283,6 @@ importers:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       sass: 1.34.1
       stylus: 0.54.8
-      svelte: 3.38.2
-      svelte-hmr: 0.14.4_svelte@3.38.2
-      vite: 2.3.7
-
-  packages/playground/svelte-preprocess:
-    specifiers:
-      '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: ^3.38.2
-      svelte-preprocess: ^4.7.3
-      typescript: ^4.3.2
-      vite: ^2.3.7
-    devDependencies:
-      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
-      svelte: 3.38.2
-      svelte-preprocess: 4.7.3_svelte@3.38.2+typescript@4.3.2
-      typescript: 4.3.2
-      vite: 2.3.7
-
-  packages/playground/test-dependency-svelte-field:
-    specifiers: {}
-
-  packages/playground/ts-type-import:
-    specifiers:
-      '@sveltejs/vite-plugin-svelte': workspace:*
-      '@tsconfig/svelte': ^2.0.1
-      '@types/node': ^15.12.2
-      svelte-preprocess: ^4.7.3
-      vite: ^2.3.7
-    devDependencies:
-      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
-      '@tsconfig/svelte': 2.0.1
-      '@types/node': 15.12.2
-      svelte-preprocess: 4.7.3
-      vite: 2.3.7
-
-  packages/playground/vite-ssr:
-    specifiers:
-      '@sveltejs/vite-plugin-svelte': workspace:*
-      compression: ^1.7.4
-      cross-env: ^7.0.3
-      express: ^4.17.1
-      serve-static: ^1.14.1
-      svelte: ^3.38.2
-      svelte-hmr: ^0.14.4
-      vite: ^2.3.7
-    devDependencies:
-      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
-      compression: 1.7.4
-      cross-env: 7.0.3
-      express: 4.17.1
-      serve-static: 1.14.1
       svelte: 3.38.2
       svelte-hmr: 0.14.4_svelte@3.38.2
       vite: 2.3.7
@@ -1227,8 +1201,8 @@ packages:
       '@sinonjs/commons': 1.8.3
     dev: true
 
-  /@sveltejs/adapter-node/1.0.0-next.25:
-    resolution: {integrity: sha512-6Kg3eJBKoug+XMW0AJlXD+etD3j5f5CJhLeUhZ8fM5b6Ds8nODoObozHcmkUoZUsI2i6sIcD37ctpPCNeTjsBg==}
+  /@sveltejs/adapter-node/1.0.0-next.26:
+    resolution: {integrity: sha512-jhlCBJH/Gyge0u5sx67UgEEHzoBk69Z9pXXtvERXrDyfmbao5v55zEaroPucc089CHKQvLRQJ3mGU81QZmk31Q==}
     dependencies:
       esbuild: 0.12.8
     dev: true
@@ -1380,7 +1354,7 @@ packages:
   /@types/sass/1.16.0:
     resolution: {integrity: sha512-2XZovu4NwcqmtZtsBR5XYLw18T8cBCnU2USFHTnYLLHz9fkhnoEMoDsqShJIOFsFhn5aJHjweiUUdTrDGujegA==}
     dependencies:
-      '@types/node': 15.6.2
+      '@types/node': 15.12.2
     dev: true
 
   /@types/semver/6.2.2:
@@ -7017,35 +6991,6 @@ packages:
       supports-color: 7.2.0
     dev: true
 
-  /svelte-check/2.1.0_svelte@3.38.2:
-    resolution: {integrity: sha512-kKLXkFt0XZTn+O1fnilGTQ1SFLsOFF+lXp1YjPfeN9nX+Y3ZpELtZSQCkbuK6HMkWugFvsOM17FCOSa1mfrEFA==}
-    hasBin: true
-    peerDependencies:
-      svelte: ^3.24.0
-    dependencies:
-      chalk: 4.1.1
-      chokidar: 3.5.1
-      glob: 7.1.7
-      import-fresh: 3.3.0
-      minimist: 1.2.5
-      sade: 1.7.4
-      source-map: 0.7.3
-      svelte: 3.38.2
-      svelte-preprocess: 4.7.3_svelte@3.38.2+typescript@4.3.2
-      typescript: 4.3.2
-    transitivePeerDependencies:
-      - '@babel/core'
-      - coffeescript
-      - less
-      - node-sass
-      - postcss
-      - postcss-load-config
-      - pug
-      - sass
-      - stylus
-      - sugarss
-    dev: true
-
   /svelte-hmr/0.14.4_svelte@3.38.2:
     resolution: {integrity: sha512-kItFF7vqzStckSigoFmMnxJpTOdB9TWnQAW6Js+yAB4277tLbJIIE5KBlGHNmJNpA7MguqidsPB27Uw5UzQPCA==}
     peerDependencies:
@@ -7434,10 +7379,6 @@ packages:
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
-    dev: true
-
-  /tslib/2.2.0:
-    resolution: {integrity: sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==}
     dev: true
 
   /tsup/4.11.2:

@@ -85,7 +85,7 @@ All pull requests should be opened against the `main` branch.
 #### Tests
 
 Integration tests for new features or regression tests as part of a bug fix are very welcome.
-Add them to projects in `packages/playground`.
+Add them to projects in `packages/e2e-tests`.
 
 #### Documentation
 

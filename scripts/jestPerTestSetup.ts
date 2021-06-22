@@ -10,7 +10,7 @@ const isBuild = !!process.env.VITE_TEST_BUILD;
 function testDir() {
 	const testPath = expect.getState().testPath;
 	const segments = testPath.split(path.sep);
-	const testName = segments[segments.indexOf('playground') + 1];
+	const testName = segments[segments.indexOf('e2e-tests') + 1];
 	return path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
 }
 
@@ -51,15 +51,15 @@ beforeAll(async () => {
 
 		const testPath = expect.getState().testPath;
 		const segments = testPath.split(path.sep);
-		const testName = segments.includes('playground')
-			? segments[segments.indexOf('playground') + 1]
+		const testName = segments.includes('e2e-tests')
+			? segments[segments.indexOf('e2e-tests') + 1]
 			: null;
 
-		// if this is a test placed under playground/xxx/__tests__
+		// if this is a test placed under e2e-tests/xxx/__tests__
 		// start a vite server in that directory.
 		if (testName) {
-			const playgroundRoot = path.resolve(__dirname, '../packages/playground');
-			const srcDir = path.resolve(playgroundRoot, testName);
+			const e2eTestsRoot = path.resolve(__dirname, '../packages/e2e-tests');
+			const srcDir = path.resolve(e2eTestsRoot, testName);
 			tempDir = path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
 			const directoriesToIgnore = ['node_modules', '__tests__', 'dist', 'build', '.svelte'];
 			const isIgnored = (file) => {
@@ -73,15 +73,15 @@ beforeAll(async () => {
 				}
 			});
 
-			const playground_node_modules = path.join(srcDir, 'node_modules');
+			const e2e_tests_node_modules = path.join(srcDir, 'node_modules');
 			const temp_node_modules = path.join(tempDir, 'node_modules');
 			if (fs.existsSync(temp_node_modules)) {
 				console.error('temp node_modules already exist', temp_node_modules);
 			}
-			await fs.symlink(playground_node_modules, temp_node_modules, 'dir');
+			await fs.symlink(e2e_tests_node_modules, temp_node_modules, 'dir');
 			const stat = fs.lstatSync(temp_node_modules);
 			if (!stat.isSymbolicLink()) {
-				console.error(`failed to symlink ${playground_node_modules} to ${temp_node_modules}`);
+				console.error(`failed to symlink ${e2e_tests_node_modules} to ${temp_node_modules}`);
 			}
 			const testCustomServe = path.resolve(path.dirname(testPath), 'serve.js');
 			if (fs.existsSync(testCustomServe)) {

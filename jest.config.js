@@ -4,7 +4,7 @@ const isCI = !!process.env.CI;
 module.exports = {
 	preset: 'ts-jest',
 	testMatch: process.env.VITE_TEST_BUILD
-		? ['**/playground/**/*.spec.[jt]s?(x)']
+		? ['**/e2e-tests/**/*.spec.[jt]s?(x)']
 		: ['**/*.spec.[jt]s?(x)'],
 	testTimeout: isCI ? (isWin ? 45000 : 30000) : 10000,
 	globalSetup: './scripts/jestGlobalSetup.js',
@@ -14,11 +14,11 @@ module.exports = {
 	watchPathIgnorePatterns: ['<rootDir>/temp'],
 	modulePathIgnorePatterns: ['<rootDir>/temp'],
 	moduleNameMapper: {
-		testUtils: '<rootDir>/packages/playground/testUtils.ts'
+		testUtils: '<rootDir>/packages/e2e-tests/testUtils.ts'
 	},
 	globals: {
 		'ts-jest': {
-			tsconfig: './packages/playground/tsconfig.json'
+			tsconfig: './packages/e2e-tests/tsconfig.json'
 		}
 	},
 	reporters: [

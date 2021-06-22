@@ -1,1 +1,1 @@
-playground projects used for testing
+playground projects used for experiments, demos and manual testing

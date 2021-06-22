@@ -19,8 +19,8 @@ module.exports = class PlaywrightEnvironment extends NodeEnvironment {
 			throw new Error('wsEndpoint not found');
 		}
 
-		// skip browser setup for non-playground tests
-		if (!this.testPath.includes('playground')) {
+		// skip browser setup for non-e2e tests
+		if (!this.testPath.includes('e2e-tests')) {
 			return;
 		}
 
