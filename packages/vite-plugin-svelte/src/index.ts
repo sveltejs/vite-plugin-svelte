@@ -15,6 +15,7 @@ import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
 import { setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
+import { addExtraPreprocessors } from './utils/preprocess';
 
 // extend the Vite plugin interface to be able to have `sveltePreprocess` injection
 declare module 'vite' {
@@ -34,7 +35,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	// updated in configResolved hook
 	let requestParser: IdParser;
 	let options: ResolvedOptions;
-
 	/* eslint-disable no-unused-vars */
 	let compileSvelte: (
 		svelteRequest: SvelteRequest,
@@ -47,14 +47,14 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		name: 'vite-plugin-svelte',
 		// make sure our resolver runs before vite internal resolver to resolve svelte field correctly
 		enforce: 'pre',
-		config(config): Partial<UserConfig> {
+		async config(config, configEnv): Promise<Partial<UserConfig>> {
 			// setup logger
 			if (process.env.DEBUG) {
 				log.setLevel('debug');
 			} else if (config.logLevel) {
 				log.setLevel(config.logLevel);
 			}
-
+			options = await resolveOptions(inlineOptions, config, configEnv);
 			// extra vite config
 			const extraViteConfig: Partial<UserConfig> = {
 				optimizeDeps: {
@@ -63,11 +63,15 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 				resolve: {
 					mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
 					dedupe: [...SVELTE_IMPORTS]
-				}
+				},
+				// this option is still awaiting a PR in vite to be supported
+				// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
+				// @ts-ignore
+				knownJsSrcExtensions: options.extensions
 			};
 			// needed to transform svelte files with component imports
 			// can cause issues with other typescript files, see https://github.com/sveltejs/vite-plugin-svelte/pull/20
-			if (inlineOptions?.useVitePreprocess) {
+			if (options.useVitePreprocess) {
 				extraViteConfig.esbuild = {
 					tsconfigRaw: {
 						compilerOptions: {
@@ -81,9 +85,10 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		},
 
 		async configResolved(config) {
-			options = await resolveOptions(inlineOptions, config);
+			addExtraPreprocessors(options, config);
 			requestParser = buildIdParser(options);
 			compileSvelte = createCompileSvelte(options);
+			log.debug('resolved options', options);
 		},
 
 		configureServer(server) {
