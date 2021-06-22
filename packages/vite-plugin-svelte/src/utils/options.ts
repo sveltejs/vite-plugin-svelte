@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
-import { ResolvedConfig, ViteDevServer } from 'vite';
+import { ConfigEnv, UserConfig, ViteDevServer } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
-import { addExtraPreprocessors } from './preprocess';
 
 const knownOptions = new Set([
 	'configFile',
@@ -18,10 +17,7 @@ const knownOptions = new Set([
 	'useVitePreprocess'
 ]);
 
-function buildDefaultOptions(
-	{ isProduction }: ResolvedConfig,
-	options: Partial<Options>
-): Partial<Options> {
+function buildDefaultOptions(isProduction: boolean, options: Partial<Options>): Partial<Options> {
 	const disableCssHmr = !!options?.disableCssHmr;
 	// emit for prod, emit in dev unless css hmr is disabled
 	const emitCss = options?.emitCss != null ? options.emitCss : isProduction || !disableCssHmr;
@@ -115,7 +111,8 @@ function mergeOptions(
 	defaultOptions: Partial<Options>,
 	svelteConfig: Partial<Options>,
 	inlineOptions: Partial<Options>,
-	viteConfig: ResolvedConfig
+	viteConfig: UserConfig,
+	viteEnv: ConfigEnv
 ): ResolvedOptions {
 	return {
 		...defaultOptions,
@@ -126,27 +123,31 @@ function mergeOptions(
 			...(svelteConfig?.compilerOptions || {}),
 			...(inlineOptions?.compilerOptions || {})
 		},
-		root: viteConfig.root,
-		isProduction: viteConfig.isProduction,
-		isBuild: viteConfig.command === 'build',
-		isServe: viteConfig.command === 'serve'
+		root: viteConfig.root || process.cwd(),
+		isProduction: viteEnv.mode === 'production',
+		isBuild: viteEnv.command === 'build',
+		isServe: viteEnv.command === 'serve'
 	};
 }
 
 export async function resolveOptions(
 	inlineOptions: Partial<Options> = {},
-	viteConfig: ResolvedConfig
+	viteConfig: UserConfig,
+	viteEnv: ConfigEnv
 ): Promise<ResolvedOptions> {
-	const defaultOptions = buildDefaultOptions(viteConfig, inlineOptions);
+	const defaultOptions = buildDefaultOptions(viteEnv.mode === 'production', inlineOptions);
 	const svelteConfig = (await loadSvelteConfig(viteConfig, inlineOptions)) || {};
-	const resolvedOptions = mergeOptions(defaultOptions, svelteConfig, inlineOptions, viteConfig);
+	const resolvedOptions = mergeOptions(
+		defaultOptions,
+		svelteConfig,
+		inlineOptions,
+		viteConfig,
+		viteEnv
+	);
 
 	enforceOptionsForProduction(resolvedOptions);
-
 	enforceOptionsForHmr(resolvedOptions);
 
-	addExtraPreprocessors(resolvedOptions, viteConfig);
-	log.debug('resolved options', resolvedOptions);
 	return resolvedOptions;
 }
 

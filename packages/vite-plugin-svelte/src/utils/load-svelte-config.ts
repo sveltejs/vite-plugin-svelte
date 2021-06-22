@@ -3,7 +3,7 @@ import fs from 'fs';
 import { pathToFileURL } from 'url';
 import { log } from './log';
 import { Options } from './options';
-import { ResolvedConfig } from 'vite';
+import { UserConfig } from 'vite';
 
 const knownSvelteConfigNames = ['svelte.config.js', 'svelte.config.cjs', 'svelte.config.mjs'];
 
@@ -12,11 +12,10 @@ const knownSvelteConfigNames = ['svelte.config.js', 'svelte.config.cjs', 'svelte
 const dynamicImportDefault = new Function('path', 'return import(path).then(m => m.default)');
 
 export async function loadSvelteConfig(
-	viteConfig: ResolvedConfig,
+	viteConfig: UserConfig,
 	inlineOptions: Partial<Options>
-) {
+): Promise<Partial<Options> | undefined> {
 	const configFile = findConfigToLoad(viteConfig, inlineOptions);
-
 	if (configFile) {
 		let err;
 		// try to use dynamic import for svelte.config.js first
@@ -42,7 +41,7 @@ export async function loadSvelteConfig(
 	}
 }
 
-function findConfigToLoad(viteConfig: ResolvedConfig, inlineOptions: Partial<Options>) {
+function findConfigToLoad(viteConfig: UserConfig, inlineOptions: Partial<Options>) {
 	const root = viteConfig.root || process.cwd();
 	if (inlineOptions.configFile) {
 		const abolutePath = path.isAbsolute(inlineOptions.configFile)
