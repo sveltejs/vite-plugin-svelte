@@ -9,7 +9,10 @@ export const SVELTE_IMPORTS = [
 	'svelte/motion',
 	'svelte/store',
 	'svelte/transition',
-	'svelte',
+	'svelte'
+];
+
+export const SVELTE_HMR_IMPORTS = [
 	'svelte-hmr/runtime/hot-api-esm.js',
 	'svelte-hmr/runtime/proxy-adapter-dom.js',
 	'svelte-hmr'
