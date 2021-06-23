@@ -4,6 +4,7 @@ import { log, logCompilerWarnings } from './utils/log';
 import { CompileData, createCompileSvelte } from './utils/compile';
 import { buildIdParser, IdParser, SvelteRequest } from './utils/id';
 import {
+	buildExtraViteConfig,
 	validateInlineOptions,
 	Options,
 	ResolvedOptions,
@@ -12,7 +13,6 @@ import {
 } from './utils/options';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 
-import { SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './utils/constants';
 import { setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { addExtraPreprocessors } from './utils/preprocess';
@@ -56,30 +56,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			}
 			options = await resolveOptions(inlineOptions, config, configEnv);
 			// extra vite config
-			const extraViteConfig: Partial<UserConfig> = {
-				optimizeDeps: {
-					exclude: [...SVELTE_IMPORTS]
-				},
-				resolve: {
-					mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
-					dedupe: [...SVELTE_IMPORTS]
-				},
-				// this option is still awaiting a PR in vite to be supported
-				// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
-				// @ts-ignore
-				knownJsSrcExtensions: options.extensions
-			};
-			// needed to transform svelte files with component imports
-			// can cause issues with other typescript files, see https://github.com/sveltejs/vite-plugin-svelte/pull/20
-			if (options.useVitePreprocess) {
-				extraViteConfig.esbuild = {
-					tsconfigRaw: {
-						compilerOptions: {
-							importsNotUsedAsValues: 'preserve'
-						}
-					}
-				};
-			}
+			const extraViteConfig = buildExtraViteConfig(options, config);
 			log.debug('additional vite config', extraViteConfig);
 			return extraViteConfig as Partial<UserConfig>;
 		},

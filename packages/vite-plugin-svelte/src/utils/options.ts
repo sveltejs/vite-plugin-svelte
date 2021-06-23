@@ -2,6 +2,7 @@
 import { ConfigEnv, UserConfig, ViteDevServer } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
+import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
 
 const knownOptions = new Set([
 	'configFile',
@@ -149,6 +150,45 @@ export async function resolveOptions(
 	enforceOptionsForHmr(resolvedOptions);
 
 	return resolvedOptions;
+}
+
+export function buildExtraViteConfig(
+	options: ResolvedOptions,
+	config: UserConfig
+): Partial<UserConfig> {
+	const allSvelteImports = [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS];
+
+	// exclude svelte imports from optimization unless explicitly included
+	const excludeFromOptimize = allSvelteImports.filter(
+		(x) => !config.optimizeDeps?.include?.includes(x)
+	);
+
+	const extraViteConfig: Partial<UserConfig> = {
+		optimizeDeps: {
+			exclude: excludeFromOptimize
+		},
+		resolve: {
+			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
+			dedupe: allSvelteImports
+		},
+		// this option is still awaiting a PR in vite to be supported
+		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
+		// @ts-ignore
+		knownJsSrcExtensions: options.extensions
+	};
+
+	if (options.useVitePreprocess) {
+		// needed to transform svelte files with component imports
+		// can cause issues with other typescript files, see https://github.com/sveltejs/vite-plugin-svelte/pull/20
+		extraViteConfig.esbuild = {
+			tsconfigRaw: {
+				compilerOptions: {
+					importsNotUsedAsValues: 'preserve'
+				}
+			}
+		};
+	}
+	return extraViteConfig;
 }
 
 export interface Options {
