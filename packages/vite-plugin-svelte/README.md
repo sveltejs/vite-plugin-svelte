@@ -63,7 +63,7 @@ When importing any third-party libraries that uses Svelte's lifecycle API, e.g. 
 }
 ```
 
-This is needed because Vite's dependency pre-bundling doesn't deduplicate the Svelte instance, resulting in multiple Svelte instance running at once, causing errors like `Function called outside component initialization`.
+This is needed because [Vite's dependency pre-bundling doesn't deduplicate the Svelte instance](https://github.com/vitejs/vite/issues/3910), resulting in multiple Svelte instance running at once, causing errors like `Function called outside component initialization`.
 
 If you're unsure whether a library uses the lifecycle API, place it in `optimizeDeps.exclude` and you'll be fine. The team is working on removing this limitation soon.
 
