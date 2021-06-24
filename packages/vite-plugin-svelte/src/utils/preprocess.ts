@@ -1,4 +1,5 @@
 import { ResolvedConfig, TransformResult } from 'vite';
+import MagicString from 'magic-string';
 import { Preprocessor, PreprocessorGroup, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
 import { log } from './log';
@@ -67,9 +68,12 @@ export function createVitePreprocessorGroup(
  */
 function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
 	return {
-		style({ content }) {
+		style({ content, filename }) {
+			const s = new MagicString(content);
+			s.append(' *{}');
 			return {
-				code: `${content} *{}`
+				code: s.toString(),
+				map: s.generateDecodedMap({ file: filename })
 			};
 		}
 	};
