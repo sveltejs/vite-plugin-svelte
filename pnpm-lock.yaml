@@ -270,11 +270,13 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       svelte: ^3.38.1
+      svelte-preprocess: ^4.7.3
       tinro: ^0.6.4
       vite: ^2.3.8
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.2
+      svelte-preprocess: 4.7.3_svelte@3.38.2
       tinro: 0.6.4
       vite: 2.3.8
 
@@ -318,6 +320,7 @@ importers:
       chalk: ^4.1.1
       debug: ^4.3.2
       esbuild: ^0.12.9
+      magic-string: ^0.25.7
       require-relative: ^0.8.7
       rollup: ^2.52.2
       svelte: ^3.38.2
@@ -328,6 +331,7 @@ importers:
       '@rollup/pluginutils': 4.1.0_rollup@2.52.2
       chalk: 4.1.1
       debug: 4.3.2
+      magic-string: 0.25.7
       require-relative: 0.8.7
       svelte-hmr: 0.14.4_svelte@3.38.2
     devDependencies:
@@ -5078,7 +5082,6 @@ packages:
     resolution: {integrity: sha512-4CrMT5DOHTDk4HYDlzmwu4FVCcIYI8gauveasrdCu2IKIFOJ3f0v/8MDGJCDL9oD2ppz/Av1b0Nj345H9M+XIA==}
     dependencies:
       sourcemap-codec: 1.4.8
-    dev: true
 
   /make-dir/3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
@@ -6735,7 +6738,6 @@ packages:
 
   /sourcemap-codec/1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
-    dev: true
 
   /spawn-please/1.0.0:
     resolution: {integrity: sha512-Kz33ip6NRNKuyTRo3aDWyWxeGeM0ORDO552Fs6E1nj4pLWPkl37SrRtTnq+MEopVaqgmaO6bAvVS+v64BJ5M/A==}
