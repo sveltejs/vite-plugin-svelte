@@ -5,11 +5,19 @@ import { log } from './log';
 import { Options } from './options';
 import { UserConfig } from 'vite';
 
-const knownSvelteConfigNames = ['svelte.config.js', 'svelte.config.cjs', 'svelte.config.mjs'];
+export const knownSvelteConfigNames = [
+	'svelte.config.js',
+	'svelte.config.cjs',
+	'svelte.config.mjs'
+];
 
 // hide dynamic import from ts transform to prevent it turning into a require
 // see https://github.com/microsoft/TypeScript/issues/43329#issuecomment-811606238
-const dynamicImportDefault = new Function('path', 'return import(path).then(m => m.default)');
+// also use timestamp query to avoid caching on reload
+const dynamicImportDefault = new Function(
+	'path',
+	'return import(path + "?t=" + Date.now()).then(m => m.default)'
+);
 
 export async function loadSvelteConfig(
 	viteConfig: UserConfig,
@@ -21,19 +29,37 @@ export async function loadSvelteConfig(
 		// try to use dynamic import for svelte.config.js first
 		if (configFile.endsWith('.js') || configFile.endsWith('.mjs')) {
 			try {
-				return await dynamicImportDefault(pathToFileURL(configFile).href);
+				const result = await dynamicImportDefault(pathToFileURL(configFile).href);
+				if (result != null) {
+					return {
+						...result,
+						configFile
+					};
+				} else {
+					throw new Error(`invalid export in ${configFile}`);
+				}
 			} catch (e) {
 				log.error(`failed to import config ${configFile}`, e);
 				err = e;
 			}
 		}
 		// cjs or error with dynamic import
-		try {
-			return require(configFile);
-		} catch (e) {
-			log.error(`failed to require config ${configFile}`, e);
-			if (!err) {
-				err = e;
+		if (!configFile.endsWith('.mjs')) {
+			try {
+				const result = require(configFile);
+				if (result != null) {
+					return {
+						...result,
+						configFile
+					};
+				} else {
+					throw new Error(`invalid export in ${configFile}`);
+				}
+			} catch (e) {
+				log.error(`failed to require config ${configFile}`, e);
+				if (!err) {
+					err = e;
+				}
 			}
 		}
 		// failed to load existing config file

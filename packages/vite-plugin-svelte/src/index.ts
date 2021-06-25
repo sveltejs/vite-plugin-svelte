@@ -71,7 +71,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		configureServer(server) {
 			// eslint-disable-next-line no-unused-vars
 			options.server = server;
-			setupWatchers(server, cache, requestParser);
+			setupWatchers(options, cache, requestParser);
 		},
 
 		load(id, ssr) {
