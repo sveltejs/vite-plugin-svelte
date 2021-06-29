@@ -4,15 +4,13 @@
 
 const path = require('path');
 
-// must be unique across all e2e-tests!
-const port = 9527;
-
 /**
  * @param {string} root
- * @param {boolean} isProd
+ * @param {boolean} isBuild
+ * @param {number} port
  */
-exports.serve = async function serve(root, isProd) {
-	if (isProd) {
+exports.serve = async function serve(root, isBuild, port) {
+	if (isBuild) {
 		// build first
 		const { build } = require('vite');
 		// client build
@@ -39,7 +37,7 @@ exports.serve = async function serve(root, isProd) {
 	}
 
 	const { createServer } = require(path.resolve(root, 'server.js'));
-	const { app, vite } = await createServer(root, isProd, true);
+	const { app, vite } = await createServer(root, isBuild, true);
 
 	return new Promise((resolve, reject) => {
 		try {

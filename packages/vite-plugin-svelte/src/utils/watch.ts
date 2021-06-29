@@ -15,9 +15,8 @@ export function setupWatchers(
 	if (!server) {
 		return;
 	}
-	const watcher = server.watcher;
-	const viteConfig = server.config.configFile;
-	const root = server.config.root;
+	const { watcher, ws } = server;
+	const { configFile: viteConfigFile, root, server: serverConfig } = server.config;
 
 	const emitChangeEventOnDependants = (filename: string) => {
 		const dependants = cache.getDependants(filename);
@@ -41,18 +40,33 @@ export function setupWatchers(
 		}
 	};
 
+	const triggerViteRestart = (filename: string) => {
+		// vite restart is triggered by simulating a change to vite config. This requires that vite config exists
+		// also we do not restart in middleware-mode as it could be risky
+		if (!!viteConfigFile && !serverConfig.middlewareMode) {
+			log.info(`svelte config changed: restarting vite server. - file: ${filename}`);
+			watcher.emit('change', viteConfigFile);
+		} else {
+			const message =
+				'Svelte config change detected, restart your dev process to apply the changes.';
+			log.info(message, filename);
+			ws.send({
+				type: 'error',
+				err: { message, stack: '', plugin: 'vite-plugin-svelte', id: filename }
+			});
+		}
+	};
+
 	const possibleSvelteConfigs = knownSvelteConfigNames.map((cfg) => path.join(root, cfg));
 	const restartOnConfigAdd = (filename: string) => {
 		if (possibleSvelteConfigs.includes(filename)) {
-			log.info(`svelte config added: restarting vite server. - file: ${filename}`);
-			server.watcher.emit('change', viteConfig);
+			triggerViteRestart(filename);
 		}
 	};
 
 	const restartOnConfigChange = (filename: string) => {
 		if (filename === svelteConfigFile) {
-			log.info(`svelte config changed: restarting vite server. - file: ${filename}`);
-			server.watcher.emit('change', viteConfig);
+			triggerViteRestart(filename);
 		}
 	};
 

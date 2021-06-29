@@ -1,4 +1,5 @@
 import {
+	editFile,
 	editFileAndWaitForHmrComplete,
 	getColor,
 	getEl,
@@ -168,6 +169,17 @@ describe('kit-node', () => {
 						expect(await getText('button')).toBe('Clicks: 2');
 						await updateCounter((content) => content.replace('let count = 2', 'let count = 0'));
 						expect(await getText('button')).toBe('Clicks: 0');
+					});
+				});
+				describe('config file update', () => {
+					it('should show an overlay', async () => {
+						await editFile('svelte.config.js', (config) => config + '\n');
+						const errorOverlay = await page.waitForSelector('vite-error-overlay');
+						expect(errorOverlay).toBeTruthy();
+						const message = await errorOverlay.$$eval('.message-body', (m) => {
+							return m[0].innerHTML;
+						});
+						expect(message).toContain('Svelte config change detected');
 					});
 				});
 			});

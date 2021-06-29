@@ -3,12 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
+    "dev": "vite",
     "build": "vite build",
-    "dev": "vite"
+    "preview": "vite preview"
   },
-	"dependencies": {
-		"e2e-tests-hmr-test-dependency": "workspace:*"
-	},
+  "dependencies": {
+    "e2e-tests-hmr-test-dependency": "workspace:*"
+  },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "workspace:*",
     "svelte": "^3.38.2",
@@ -16,5 +17,5 @@
     "svelte-preprocess": "^4.7.3",
     "vite": "^2.3.8"
   },
-	"type": "module"
+  "type": "module"
 }

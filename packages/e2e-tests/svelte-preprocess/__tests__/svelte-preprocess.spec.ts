@@ -3,7 +3,6 @@ import {
 	getEl,
 	getText,
 	editFileAndWaitForHmrComplete,
-	untilUpdated,
 	sleep,
 	getColor,
 	addFile,

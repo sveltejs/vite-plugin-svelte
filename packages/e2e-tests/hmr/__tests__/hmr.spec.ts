@@ -6,7 +6,10 @@ import {
 	untilUpdated,
 	sleep,
 	getColor,
-	editFile
+	editFile,
+	addFile,
+	removeFile,
+	saveScreenshot
 } from '../../testUtils';
 
 test('should render App', async () => {
@@ -132,6 +135,67 @@ if (!isBuild) {
 			await updateHmrTest((content) => content.replace('color: green', 'color: red'));
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+		});
+
+		test('should detect changes in svelte config and restart', async () => {
+			const injectPreprocessor = ({ content, filename }) => {
+				if (filename && filename.includes('App.svelte')) {
+					return {
+						code: content.replace(
+							'<!-- HMR-TEMPLATE-INJECT -->',
+							'<div id="preprocess-inject">Injected</div>\n<!-- HMR-TEMPLATE-INJECT -->'
+						)
+					};
+				}
+			};
+			await addFile(
+				'svelte.config.cjs',
+				`module.exports = {
+			  preprocess:[{markup:${injectPreprocessor.toString()}}]};`
+			);
+			await sleep(250); // adding config restarts server, give it some time
+			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
+			await sleep(50);
+			await saveScreenshot('added');
+			expect(await getText('#preprocess-inject')).toBe('Injected');
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
+			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
+			await (await getEl(`#hmr-test-1 .increment`)).click();
+			await sleep(50);
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+			await updateHmrTest((content) => content.replace('color: red', 'color: green'));
+			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+			await jest.resetModules();
+			await editFile('svelte.config.cjs', (content) =>
+				content
+					.replace('preprocess-inject', 'preprocess-inject-2')
+					.replace('Injected', 'Injected 2')
+			);
+			await sleep(250); // editing config restarts server, give it some time
+			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
+			await sleep(50);
+			await saveScreenshot('edited');
+			expect(await getText('#preprocess-inject-2')).toBe('Injected 2');
+			expect(await getEl('#preprocess-inject')).toBe(null);
+			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
+			await (await getEl(`#hmr-test-1 .increment`)).click();
+			await sleep(50);
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+			await updateHmrTest((content) => content.replace('color: green', 'color: red'));
+			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+			await jest.resetModules();
+			await removeFile('svelte.config.cjs');
+			await sleep(250); // editing config restarts server, give it some time
+			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
+			await sleep(50);
+			await saveScreenshot('deleted');
+			expect(await getEl('#preprocess-inject-2')).toBe(null);
+			expect(await getEl('#preprocess-inject')).toBe(null);
+			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
+			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
 		});
 	});
 }

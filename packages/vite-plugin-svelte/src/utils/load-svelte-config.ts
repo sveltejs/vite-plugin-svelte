@@ -46,6 +46,8 @@ export async function loadSvelteConfig(
 		// cjs or error with dynamic import
 		if (!configFile.endsWith('.mjs')) {
 			try {
+				// avoid loading cached version on reload
+				delete require.cache[require.resolve(configFile)];
 				const result = require(configFile);
 				if (result != null) {
 					return {
