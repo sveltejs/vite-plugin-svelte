@@ -8,8 +8,7 @@ import {
 	getColor,
 	editFile,
 	addFile,
-	removeFile,
-	saveScreenshot
+	removeFile
 } from '../../testUtils';
 
 test('should render App', async () => {
@@ -156,7 +155,6 @@ if (!isBuild) {
 			await sleep(250); // adding config restarts server, give it some time
 			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
 			await sleep(50);
-			await saveScreenshot('added');
 			expect(await getText('#preprocess-inject')).toBe('Injected');
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
@@ -175,7 +173,6 @@ if (!isBuild) {
 			await sleep(250); // editing config restarts server, give it some time
 			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
 			await sleep(50);
-			await saveScreenshot('edited');
 			expect(await getText('#preprocess-inject-2')).toBe('Injected 2');
 			expect(await getEl('#preprocess-inject')).toBe(null);
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
@@ -191,7 +188,6 @@ if (!isBuild) {
 			await sleep(250); // editing config restarts server, give it some time
 			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
 			await sleep(50);
-			await saveScreenshot('deleted');
 			expect(await getEl('#preprocess-inject-2')).toBe(null);
 			expect(await getEl('#preprocess-inject')).toBe(null);
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
