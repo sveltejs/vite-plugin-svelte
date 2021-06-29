@@ -1,7 +1,7 @@
 // script to start package.json dev/build/preview scripts with execa for e2e tests
 const execa = require('execa');
 const treeKill = require('tree-kill');
-const fs = require('fs/promises');
+const fs = require('fs');
 const path = require('path');
 
 async function startedOnPort(serverProcess, port, timeout) {
@@ -46,12 +46,12 @@ exports.serve = async function serve(root, isBuild, port) {
 	};
 	const writeLogs = async (name, result) => {
 		try {
-			result.out &&
-				result.out.length > 0 &&
-				(await fs.writeFile(path.join(logDir, `${name}.log`), result.out.join(''), 'utf-8'));
-			result.err &&
-				result.err.length > 0 &&
-				(await fs.writeFile(path.join(logDir, `${name}.err.log`), result.err.join(''), 'utf-8'));
+			if (result.out && result.out.length > 0) {
+				fs.writeFileSync(path.join(logDir, `${name}.log`), result.out.join(''), 'utf-8');
+			}
+			if (result.err && result.err.length > 0) {
+				fs.writeFileSync(path.join(logDir, `${name}.err.log`), result.err.join(''), 'utf-8');
+			}
 		} catch (e1) {
 			console.error(`failed to write ${name} logs in ${logDir}`, e1);
 		}
@@ -64,7 +64,11 @@ exports.serve = async function serve(root, isBuild, port) {
 		let err = [];
 
 		try {
-			const buildProcess = execa('pnpm', ['build'], { preferLocal: true, cwd: root });
+			const buildProcess = execa('pnpm', ['build'], {
+				preferLocal: true,
+				cwd: root,
+				stdio: 'pipe'
+			});
 			logs.build = { out, err };
 			buildProcess.stdout.on('data', (d) => out.push(d.toString()));
 			buildProcess.stderr.on('data', (d) => err.push(d.toString()));
@@ -87,7 +91,8 @@ exports.serve = async function serve(root, isBuild, port) {
 
 	const serverProcess = execa('pnpm', [isBuild ? 'preview' : 'dev', '--', '--port', port], {
 		preferLocal: true,
-		cwd: root
+		cwd: root,
+		stdio: 'pipe'
 	});
 	const out = [],
 		err = [];
