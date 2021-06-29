@@ -46,9 +46,11 @@ exports.serve = async function serve(root, isBuild, port) {
 	};
 	const writeLogs = async (name, result) => {
 		try {
-			result.out?.length > 0 &&
+			result.out &&
+				result.out.length > 0 &&
 				(await fs.writeFile(path.join(logDir, `${name}.log`), result.out.join(''), 'utf-8'));
-			result.err?.length > 0 &&
+			result.err &&
+				result.err.length > 0 &&
 				(await fs.writeFile(path.join(logDir, `${name}.err.log`), result.err.join(''), 'utf-8'));
 		} catch (e1) {
 			console.error(`failed to write ${name} logs in ${logDir}`, e1);
