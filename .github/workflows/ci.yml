@@ -168,7 +168,7 @@ jobs:
       - name: archive tests temp directory
         if: failure()
         shell: bash
-        run: tar -cvf test-temp.tar  --exclude="node_modules" --exclude=".yarn" --exclude="dist" --exclude=".pnp.js" temp/
+        run: tar -cvf test-temp.tar  --exclude="node_modules"  temp/
       - uses: actions/upload-artifact@v2
         if: failure()
         with:

@@ -18,13 +18,15 @@ async function startedOnPort(serverProcess, port, timeout) {
 			const str = data.toString();
 			// hack, console output may contain color code gibberish
 			// skip gibberish between localhost: and port number
-			const match = str.match(/(http:\/\/localhost:)(?:[^35]*)(\d{5})/);
+			const match = str.match(/(http:\/\/localhost:)(?:.*)(\d{4})/);
 			if (match) {
 				const startedPort = parseInt(match[2], 10);
 				if (startedPort === port) {
 					resolve();
 				} else {
-					reject(`test server started on ${startedPort} instead of ${port}`);
+					const msg = `test server started on ${startedPort} instead of ${port}`;
+					console.log(msg);
+					reject(msg);
 				}
 			}
 		};

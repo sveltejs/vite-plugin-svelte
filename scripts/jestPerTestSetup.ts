@@ -58,7 +58,7 @@ const getUniqueTestPort = async (testRoot, testName, isBuild) => {
 	if (idx < 0) {
 		throw new Error(`failed to find ${testName} in ${testRoot}`);
 	}
-	return (isBuild ? 50000 : 30000) + idx;
+	return (isBuild ? 5500 : 3500) + idx;
 };
 
 beforeAll(async () => {
