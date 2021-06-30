@@ -40,8 +40,8 @@ const onConsole = (msg) => {
 
 /**
  * return a unique port for serving this e2e test.
- * dev ports   3xxxx
- * build ports 5xxxx
+ * dev ports   3500+
+ * build ports 5500+
  *
  * needed to avoid port clashes on parallel
  *
