@@ -1,5 +1,6 @@
 import {
 	isBuild,
+	isWin,
 	getEl,
 	getText,
 	editFileAndWaitForHmrComplete,
@@ -123,7 +124,7 @@ if (!isBuild) {
 
 		test('should work with emitCss: false', async () => {
 			await editFile('vite.config.js', (c) => c.replace('svelte()', 'svelte({emitCss:false})'));
-			await sleep(500); // editing vite config restarts server, give it some time
+			await sleep(isWin ? 1000 : 500); // editing vite config restarts server, give it some time
 			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
 			await sleep(50);
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
@@ -152,7 +153,7 @@ if (!isBuild) {
 				`module.exports = {
 			  preprocess:[{markup:${injectPreprocessor.toString()}}]};`
 			);
-			await sleep(250); // adding config restarts server, give it some time
+			await sleep(isWin ? 1000 : 500); // adding config restarts server, give it some time
 			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
 			await sleep(50);
 			expect(await getText('#preprocess-inject')).toBe('Injected');
@@ -170,7 +171,7 @@ if (!isBuild) {
 					.replace('preprocess-inject', 'preprocess-inject-2')
 					.replace('Injected', 'Injected 2')
 			);
-			await sleep(250); // editing config restarts server, give it some time
+			await sleep(isWin ? 1000 : 500); // editing config restarts server, give it some time
 			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
 			await sleep(50);
 			expect(await getText('#preprocess-inject-2')).toBe('Injected 2');
@@ -185,7 +186,7 @@ if (!isBuild) {
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
 			await jest.resetModules();
 			await removeFile('svelte.config.cjs');
-			await sleep(250); // editing config restarts server, give it some time
+			await sleep(isWin ? 1000 : 500); // editing config restarts server, give it some time
 			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
 			await sleep(50);
 			expect(await getEl('#preprocess-inject-2')).toBe(null);
