@@ -127,6 +127,7 @@ function mergeOptions(
 		root: viteConfig.root || process.cwd(),
 		isProduction: viteEnv.mode === 'production',
 		isBuild: viteEnv.command === 'build',
+		isSSRBuild: viteEnv.command === 'build' && !!viteConfig.build?.ssr,
 		isServe: viteEnv.command === 'serve'
 	};
 	// configFile of svelteConfig contains the absolute path it was loaded from,
@@ -379,6 +380,7 @@ export interface ResolvedOptions extends Options {
 	root: string;
 	isProduction: boolean;
 	isBuild?: boolean;
+	isSSRBuild?: boolean;
 	isServe?: boolean;
 	server?: ViteDevServer;
 }
