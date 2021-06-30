@@ -3,7 +3,7 @@ const execa = require('execa');
 const treeKill = require('tree-kill');
 const fs = require('fs');
 const path = require('path');
-export const isWin = process.platform === 'win32';
+const isWin = process.platform === 'win32';
 async function startedOnPort(serverProcess, port, timeout) {
 	let id;
 	let stdoutListener;
