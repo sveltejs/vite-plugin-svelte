@@ -29,7 +29,6 @@ async function createServer(
 	if (!isProd) {
 		const inlineCfg = {
 			root,
-			logLevel: _isTest ? 'error' : 'info',
 			server: {
 				middlewareMode: true
 			}

@@ -1,17 +1,18 @@
 {
   "name": "e2e-tests-hmr",
-	"private": true,
+  "private": true,
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "e2e-tests-hmr-test-dependency": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "workspace:*",
-    "svelte": "^3.38.2",
+    "svelte": "^3.38.3",
     "svelte-hmr": "^0.14.4",
     "vite": "^2.3.8",
     "node-fetch": "^2.6.1"

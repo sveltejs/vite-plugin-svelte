@@ -1,8 +1,5 @@
 import * as fs from 'fs-extra';
-import * as http from 'http';
 import * as path from 'path';
-import sirv from 'sirv';
-import { createServer, build, ViteDevServer, UserConfig } from 'vite';
 import { Page } from 'playwright-core';
 
 const isBuild = !!process.env.VITE_TEST_BUILD;
@@ -26,13 +23,13 @@ declare global {
 	}
 }
 
-interface CustomServer {
+interface E2EServer {
 	port: number;
-	base?: string;
+	logs: { server?: { out: string[]; err: string[] }; build?: { out: string[]; err: string[] } };
 	close: () => {};
 }
 
-let server: ViteDevServer | http.Server | CustomServer;
+let server: E2EServer;
 let tempDir: string;
 let err: Error;
 
@@ -41,27 +38,56 @@ const onConsole = (msg) => {
 	logs.push(msg.text());
 };
 
+/**
+ * return a unique port for serving this e2e test.
+ * dev ports   3500+
+ * build ports 5500+
+ *
+ * needed to avoid port clashes on parallel
+ *
+ * @param testRoot
+ * @param testName
+ * @param isBuild
+ */
+const getUniqueTestPort = async (testRoot, testName, isBuild) => {
+	const testDirs = await fs.readdir(testRoot, { withFileTypes: true });
+	const idx = testDirs
+		.filter((f) => f.isDirectory())
+		.map((d) => d.name)
+		.indexOf(testName);
+	if (idx < 0) {
+		throw new Error(`failed to find ${testName} in ${testRoot}`);
+	}
+	return (isBuild ? 5500 : 3500) + idx;
+};
+
 beforeAll(async () => {
 	const page = global.page;
 	if (!page) {
 		return;
 	}
+	const testPath = expect.getState().testPath;
+	const segments = testPath.split(path.sep);
+	const testName = segments.includes('e2e-tests')
+		? segments[segments.indexOf('e2e-tests') + 1]
+		: null;
 	try {
-		page.on('console', onConsole);
-
-		const testPath = expect.getState().testPath;
-		const segments = testPath.split(path.sep);
-		const testName = segments.includes('e2e-tests')
-			? segments[segments.indexOf('e2e-tests') + 1]
-			: null;
-
 		// if this is a test placed under e2e-tests/xxx/__tests__
 		// start a vite server in that directory.
 		if (testName) {
+			page.on('console', onConsole);
 			const e2eTestsRoot = path.resolve(__dirname, '../packages/e2e-tests');
 			const srcDir = path.resolve(e2eTestsRoot, testName);
+
 			tempDir = path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
-			const directoriesToIgnore = ['node_modules', '__tests__', 'dist', 'build', '.svelte'];
+			const directoriesToIgnore = [
+				'node_modules',
+				'__tests__',
+				'dist',
+				'build',
+				'.svelte',
+				'.svelte-kit'
+			];
 			const isIgnored = (file) => {
 				const segments = file.split(path.sep);
 				return segments.some((segment) => directoriesToIgnore.includes(segment));
@@ -83,57 +109,23 @@ beforeAll(async () => {
 			if (!stat.isSymbolicLink()) {
 				console.error(`failed to symlink ${e2e_tests_node_modules} to ${temp_node_modules}`);
 			}
-			const testCustomServe = path.resolve(path.dirname(testPath), 'serve.js');
-			if (fs.existsSync(testCustomServe)) {
-				// test has custom server configuration.
-				const { serve } = require(testCustomServe);
-				const customServer: CustomServer = await serve(tempDir, isBuild);
-				server = customServer;
-				// use resolved port/base from server
-				const port = customServer.port;
-				const base = customServer.base && customServer.base !== '/' ? `/${customServer.base}` : '';
-				const url = (global.viteTestUrl = `http://localhost:${port}${base}`);
-				await (isBuild ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
-				return;
-			}
-
-			const options: UserConfig = {
-				root: tempDir,
-				logLevel: 'error',
-				server: {
-					watch: {
-						// During tests we edit the files too fast and sometimes chokidar
-						// misses change events, so enforce polling for consistency
-						usePolling: true,
-						interval: 100
-					}
-				},
-				build: {
-					// skip transpilation and dynamic import polyfills during tests to
-					// make it faster
-					target: 'esnext'
-				}
-			};
-
-			if (!isBuild) {
-				process.env.VITE_INLINE = 'inline-serve';
-				server = await (await createServer(options)).listen();
-				// use resolved port/base from server
-				const base = server.config.base === '/' ? '' : server.config.base;
-				const url = (global.viteTestUrl = `http://localhost:${server.config.server.port}${base}`);
-				await goToUrlAndWaitForViteWSConnect(page, url);
-			} else {
-				process.env.VITE_INLINE = 'inline-build';
-				await build(options);
-				const url = (global.viteTestUrl = await startStaticServer());
-				await page.goto(url);
-			}
+			await fs.mkdir(path.join(tempDir, 'logs'));
+			const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
+			const defaultServerScript = path.resolve(e2eTestsRoot, 'e2e-server.js');
+			const hasCustomServer = fs.existsSync(customServerScript);
+			const { serve } = require(hasCustomServer ? customServerScript : defaultServerScript);
+			const port = await getUniqueTestPort(e2eTestsRoot, testName, isBuild);
+			server = await serve(tempDir, isBuild, port);
+			const url = (global.viteTestUrl = `http://localhost:${port}`);
+			await (isBuild
+				? page.goto(url, { waitUntil: 'networkidle' })
+				: goToUrlAndWaitForViteWSConnect(page, url));
 		}
 	} catch (e) {
 		// jest doesn't exit if our setup has error here
 		// https://github.com/facebook/jest/issues/2713
 		err = e;
-		console.error('beforeAll failed', e);
+		console.error(`beforeAll failed for ${testName}.`, e);
 		// tests are still executed so close page to shorten
 		try {
 			await page.close();
@@ -175,7 +167,6 @@ afterAll(async () => {
 	const logDir = path.join(testDir(), 'logs');
 	const logFile = path.join(logDir, 'browser.log');
 	try {
-		await fs.mkdir(logDir);
 		await fs.writeFile(logFile, logs.join('\n'));
 	} catch (e) {
 		console.error(`failed to write browserlogs in ${logFile}`, e);
@@ -189,58 +180,15 @@ afterAll(async () => {
 	}
 });
 
-function startStaticServer(): Promise<string> {
-	// check if the test project has base config
-	const configFile = path.resolve(tempDir, 'vite.config.js');
-	let config: UserConfig;
-	try {
-		config = require(configFile);
-		// eslint-disable-next-line no-empty
-	} catch (e) {}
-	const base = (config?.base || '/') === '/' ? '' : config.base;
-
-	// @ts-ignore
-	if (config && config.__test__) {
-		// @ts-ignore
-		config.__test__();
-	}
-
-	// start static file server
-	const serve = sirv(path.resolve(tempDir, 'dist'));
-	const httpServer = (server = http.createServer((req, res) => {
-		if (req.url === '/ping') {
-			res.statusCode = 200;
-			res.end('pong');
-		} else {
-			serve(req, res);
-		}
-	}));
-	let port = 5000;
-	return new Promise((resolve, reject) => {
-		const onError = (e: any) => {
-			if (e.code === 'EADDRINUSE') {
-				httpServer.close();
-				httpServer.listen(++port);
-			} else {
-				reject(e);
-			}
-		};
-		httpServer.on('error', onError);
-		httpServer.listen(port, () => {
-			httpServer.removeListener('error', onError);
-			resolve(`http://localhost:${port}${base}`);
-		});
-	});
-}
-
 async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
 	let timerId;
 	let pageConsoleListener;
 	const timeoutMS = 10000;
 	const timeoutPromise = new Promise(
+		// eslint-disable-next-line no-unused-vars
 		(_, reject) =>
 			(timerId = setTimeout(() => {
-				reject(`timeout after ${timeoutMS}`);
+				reject(`page under test not ready after ${timeoutMS}ms. url: ${url}`);
 			}, timeoutMS))
 	);
 	const connectedPromise = new Promise<void>((resolve) => {

@@ -115,7 +115,7 @@ function mergeOptions(
 	viteConfig: UserConfig,
 	viteEnv: ConfigEnv
 ): ResolvedOptions {
-	return {
+	const merged = {
 		...defaultOptions,
 		...svelteConfig,
 		...inlineOptions,
@@ -129,6 +129,12 @@ function mergeOptions(
 		isBuild: viteEnv.command === 'build',
 		isServe: viteEnv.command === 'serve'
 	};
+	// configFile of svelteConfig contains the absolute path it was loaded from,
+	// prefer it over the possibly relative inline path
+	if (svelteConfig?.configFile) {
+		merged.configFile = svelteConfig.configFile;
+	}
+	return merged;
 }
 
 export async function resolveOptions(
@@ -148,7 +154,6 @@ export async function resolveOptions(
 
 	enforceOptionsForProduction(resolvedOptions);
 	enforceOptionsForHmr(resolvedOptions);
-
 	return resolvedOptions;
 }
 
