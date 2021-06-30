@@ -3,7 +3,7 @@ const execa = require('execa');
 const treeKill = require('tree-kill');
 const fs = require('fs');
 const path = require('path');
-
+export const isWin = process.platform === 'win32';
 async function startedOnPort(serverProcess, port, timeout) {
 	let id;
 	let stdoutListener;
@@ -81,7 +81,7 @@ exports.serve = async function serve(root, isBuild, port) {
 				out.push(buildResult.stdout);
 			}
 			if (buildResult.stderr) {
-				out.push(buildResult.stderr);
+				err.push(buildResult.stderr);
 			}
 			hasErr = true;
 		}
@@ -103,37 +103,36 @@ exports.serve = async function serve(root, isBuild, port) {
 	serverProcess.stderr.on('data', (d) => err.push(d.toString()));
 
 	const closeServer = async () => {
-		if (serverProcess && serverProcess.pid) {
-			await new Promise((resolve) => {
-				treeKill(serverProcess.pid, (err) => {
-					if (err) {
-						console.error(`failed to treekill serverprocess ${serverProcess.pid}`, err);
-					}
-					resolve();
+		if (serverProcess) {
+			if (serverProcess.pid) {
+				await new Promise((resolve) => {
+					treeKill(serverProcess.pid, (err) => {
+						if (err) {
+							console.error(`failed to treekill serverprocess ${serverProcess.pid}`, err);
+						}
+						resolve();
+					});
 				});
-			});
-		} else if (serverProcess) {
-			serverProcess.cancel();
-		}
+			} else {
+				serverProcess.cancel();
+			}
 
-		let serverResult;
-		let hasErr = false;
-		try {
-			serverResult = await serverProcess;
-		} catch (e) {
-			serverResult = e;
-			hasErr = true;
-		}
-		if (serverResult.stdout) {
-			out.push(serverResult.stdout);
-		}
-		if (serverResult.stderr) {
-			out.push(serverResult.stderr);
+			try {
+				await serverProcess;
+			} catch (e) {
+				if (e.stdout) {
+					out.push(e.stdout);
+				}
+				if (e.stderr) {
+					err.push(e.stderr);
+				}
+				if (!isWin) {
+					// treekill on windows uses taskkill and that ends up here always
+					console.error(`server process did not exit gracefully. dir: ${root}`, e);
+				}
+			}
 		}
 		await writeLogs('server', logs.server);
-		if (hasErr) {
-			throw serverResult;
-		}
 	};
 	try {
 		await startedOnPort(serverProcess, port, 20000);
