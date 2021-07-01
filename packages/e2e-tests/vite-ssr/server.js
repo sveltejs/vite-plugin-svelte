@@ -30,6 +30,9 @@ async function createServer(
 		const inlineCfg = {
 			root,
 			server: {
+				fs: {
+					strict: true
+				},
 				middlewareMode: true
 			}
 		};
