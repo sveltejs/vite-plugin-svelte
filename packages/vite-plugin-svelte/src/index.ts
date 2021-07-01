@@ -96,8 +96,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		},
 
 		async resolveId(importee, importer, customOptions, ssr) {
-			const isSSR = !!(ssr || options.isSSRBuild);
-			const svelteRequest = requestParser(importee, isSSR);
+			const svelteRequest = requestParser(importee, !!ssr);
 			log.debug('resolveId', svelteRequest || importee);
 			if (svelteRequest?.query.svelte) {
 				if (svelteRequest.query.type === 'style') {
@@ -110,7 +109,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 				return importee; // query with svelte tag, an id we generated, no need for further analysis
 			}
 
-			if (isSSR && importee === 'svelte') {
+			if (ssr && importee === 'svelte') {
 				try {
 					const svelteSSR = await this.resolve('svelte/ssr', importer, { skipSelf: true });
 					if (svelteSSR) {
@@ -120,7 +119,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 						log.warn('svelte/ssr did not resolve');
 					}
 				} catch (e) {
-					log.warn(`failed to resolve ${importee}  to svelte/ssr`, e);
+					log.warn(`failed to resolve ${importee} to svelte/ssr`, e);
 					// ignore exception
 				}
 			}
