@@ -98,6 +98,18 @@ importers:
       css-color-names: 1.0.1
       tree-kill: 1.2.2
 
+  packages/e2e-tests/asset-import:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      svelte: ^3.38.3
+      svelte-hmr: ^0.14.4
+      vite: ^2.3.8
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      svelte: 3.38.3
+      svelte-hmr: 0.14.4_svelte@3.38.3
+      vite: 2.3.8
+
   packages/e2e-tests/autoprefixer-browerslist:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
@@ -6477,14 +6489,6 @@ packages:
       glob: 7.1.7
     dev: true
 
-  /rollup/2.52.2:
-    resolution: {integrity: sha512-4RlFC3k2BIHlUsJ9mGd8OO+9Lm2eDF5P7+6DNQOp5sx+7N/1tFM01kELfbxlMX3MxT6owvLB1ln4S3QvvQlbUA==}
-    engines: {node: '>=10.0.0'}
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /rollup/2.52.3:
     resolution: {integrity: sha512-QF3Sju8Kl2z0osI4unyOLyUudyhOMK6G0AeqJWgfiyigqLAlnNrfBcDWDx+f1cqn+JU2iIYVkDrgQ6/KtwEfrg==}
     engines: {node: '>=10.0.0'}
@@ -7662,7 +7666,7 @@ packages:
       esbuild: 0.12.12
       postcss: 8.3.5
       resolve: 1.20.0
-      rollup: 2.52.2
+      rollup: 2.52.3
     optionalDependencies:
       fsevents: 2.3.2
     dev: true

@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { HmrContext, IndexHtmlTransformContext, ModuleNode, Plugin, UserConfig } from 'vite';
 import { handleHotUpdate } from './handle-hot-update';
 import { log, logCompilerWarnings } from './utils/log';
@@ -92,6 +93,11 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 						return css;
 					}
 				}
+			}
+
+			// load svg here so vite asset plugin doesn't load it as url
+			if (filename.endsWith('.svg')) {
+				return fs.readFileSync(id, 'utf-8');
 			}
 		},
 
