@@ -182,6 +182,14 @@ export function buildExtraViteConfig(
 		knownJsSrcExtensions: options.extensions
 	};
 
+	if (options.isBuild && config.build?.ssr) {
+		// make sure svelte isn't external so we can resolve it with svelte/ssr
+		// @ts-ignore
+		extraViteConfig.ssr = {
+			noExternal: ['svelte']
+		};
+	}
+
 	if (options.useVitePreprocess) {
 		// needed to transform svelte files with component imports
 		// can cause issues with other typescript files, see https://github.com/sveltejs/vite-plugin-svelte/pull/20

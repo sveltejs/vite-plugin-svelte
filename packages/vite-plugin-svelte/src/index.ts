@@ -115,12 +115,10 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 					if (svelteSSR) {
 						log.debug(`resolveId resolved ${importee} to svelte/ssr`, svelteSSR);
 						return svelteSSR;
-					} else {
-						log.warn('svelte/ssr did not resolve');
 					}
 				} catch (e) {
-					log.warn(`failed to resolve ${importee} to svelte/ssr`, e);
-					// ignore exception
+					// ignore missing export error if svelte version is too old, keeps using regular svelte
+					log.info('failed to resolve svelte/ssr, update svelte to ^3.39.0');
 				}
 			}
 

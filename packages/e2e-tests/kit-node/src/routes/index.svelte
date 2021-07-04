@@ -1,6 +1,12 @@
 <script>
+	import { onMount } from 'svelte';
 	// eslint-disable-next-line node/no-missing-import
 	import Counter from '$lib/Counter.svelte';
+
+	onMount(async () => {
+		const isSSR = (await import('../client-only-module.js')).default;
+		console.log(`onMount dynamic imported isSSR: ${isSSR}`);
+	});
 </script>
 
 <main>

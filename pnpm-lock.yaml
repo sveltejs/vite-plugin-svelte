@@ -270,17 +270,17 @@ importers:
     specifiers:
       '@fontsource/fira-mono': ^4.2.2
       '@lukeed/uuid': ^2.0.0
-      '@sveltejs/adapter-node': ^1.0.0-next.29
-      '@sveltejs/kit': ^1.0.0-next.119
+      '@sveltejs/adapter-node': ^1.0.0-next.30
+      '@sveltejs/kit': ^1.0.0-next.120
       cookie: ^0.4.1
-      svelte: ^3.34.0
+      svelte: ^3.38.3
     dependencies:
       '@fontsource/fira-mono': 4.4.5
       '@lukeed/uuid': 2.0.0
       cookie: 0.4.1
     devDependencies:
-      '@sveltejs/adapter-node': 1.0.0-next.29
-      '@sveltejs/kit': 1.0.0-next.119_svelte@3.38.3
+      '@sveltejs/adapter-node': 1.0.0-next.30
+      '@sveltejs/kit': 1.0.0-next.120_svelte@3.38.3
       svelte: 3.38.3
 
   packages/playground/optimizedeps-include:
@@ -1277,8 +1277,29 @@ packages:
       tiny-glob: 0.2.9
     dev: true
 
+  /@sveltejs/adapter-node/1.0.0-next.30:
+    resolution: {integrity: sha512-DTvazMWs0h5zG++uaT7Yg0JkWfqU8htu3EYFsKh+oeDMviJ8SRXTXSZFtBGr2ltyPBwKUvgEoUYITOl1NHimKQ==}
+    dependencies:
+      esbuild: 0.12.12
+      tiny-glob: 0.2.9
+    dev: true
+
   /@sveltejs/kit/1.0.0-next.119_svelte@3.38.3:
     resolution: {integrity: sha512-Pp971N1m2yKQg01kUxwQAolhUb1y9NNPV7zfQLIHQdvlFwrNI5hvOMlGiHj26mM5AyQSU4pnH8X1YUPSqi57gw==}
+    engines: {node: ^12.20 || >=14.13}
+    hasBin: true
+    peerDependencies:
+      svelte: ^3.34.0
+    dependencies:
+      '@sveltejs/vite-plugin-svelte': link:packages/vite-plugin-svelte
+      cheap-watch: 1.0.3
+      sade: 1.7.4
+      svelte: 3.38.3
+      vite: 2.3.8
+    dev: true
+
+  /@sveltejs/kit/1.0.0-next.120_svelte@3.38.3:
+    resolution: {integrity: sha512-1sVhlF9zea9Er6abAjqRefQ1mIE9AjtYdRek3ilUTQ44FM2w/e8VgZCo5XXbnz9M564OaZnihyS9XjINlu4Chg==}
     engines: {node: ^12.20 || >=14.13}
     hasBin: true
     peerDependencies:
