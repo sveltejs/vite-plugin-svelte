@@ -1,5 +1,12 @@
 import fs from 'fs';
-import { HmrContext, IndexHtmlTransformContext, ModuleNode, Plugin, UserConfig } from 'vite';
+import {
+	HmrContext,
+	IndexHtmlTransformContext,
+	ModuleNode,
+	Plugin,
+	ResolvedConfig,
+	UserConfig
+} from 'vite';
 import { handleHotUpdate } from './handle-hot-update';
 import { log, logCompilerWarnings } from './utils/log';
 import { CompileData, createCompileSvelte } from './utils/compile';
@@ -36,6 +43,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	// updated in configResolved hook
 	let requestParser: IdParser;
 	let options: ResolvedOptions;
+	let viteConfig: ResolvedConfig;
 	/* eslint-disable no-unused-vars */
 	let compileSvelte: (
 		svelteRequest: SvelteRequest,
@@ -66,6 +74,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			addExtraPreprocessors(options, config);
 			requestParser = buildIdParser(options);
 			compileSvelte = createCompileSvelte(options);
+			viteConfig = config;
 			log.debug('resolved options', options);
 		},
 
@@ -77,27 +86,21 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 
 		load(id, ssr) {
 			const svelteRequest = requestParser(id, !!ssr);
-			if (!svelteRequest) {
-				return;
-			}
-
-			log.debug('load', svelteRequest);
-			const { filename, query } = svelteRequest;
-
-			//
-			if (query.svelte) {
-				if (query.type === 'style') {
+			if (svelteRequest) {
+				const { filename, query } = svelteRequest;
+				// virtual css module
+				if (query.svelte && query.type === 'style') {
 					const css = cache.getCSS(svelteRequest);
 					if (css) {
 						log.debug(`load returns css for ${filename}`);
 						return css;
 					}
 				}
-			}
-
-			// load svg here so vite asset plugin doesn't load it as url
-			if (filename.endsWith('.svg')) {
-				return fs.readFileSync(id, 'utf-8');
+				// prevent vite asset plugin from loading files as url that should be compiled in transform
+				if (!query.url && !query.raw && viteConfig.assetsInclude(filename)) {
+					log.debug(`load returns raw content for ${filename}`);
+					return fs.readFileSync(filename, 'utf-8');
+				}
 			}
 		},
 
