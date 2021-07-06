@@ -62,7 +62,7 @@ const getUniqueTestPort = async (testRoot, testName, isBuild) => {
 };
 
 beforeAll(async () => {
-	const page = global.page;
+	const page = (global as any).page;
 	if (!page) {
 		return;
 	}
@@ -116,7 +116,7 @@ beforeAll(async () => {
 			const { serve } = require(hasCustomServer ? customServerScript : defaultServerScript);
 			const port = await getUniqueTestPort(e2eTestsRoot, testName, isBuild);
 			server = await serve(tempDir, isBuild, port);
-			const url = (global.viteTestUrl = `http://localhost:${port}`);
+			const url = ((global as any).viteTestUrl = `http://localhost:${port}`);
 			await (isBuild
 				? page.goto(url, { waitUntil: 'networkidle' })
 				: goToUrlAndWaitForViteWSConnect(page, url));
@@ -137,8 +137,11 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	try {
-		global.page?.off('console', onConsole);
-		await global.page?.close();
+		const page = (global as any).page;
+		if (page) {
+			page.off('console', onConsole);
+			await page.close();
+		}
 	} catch (e) {
 		console.error('failed to close test page', e);
 		if (!err) {
