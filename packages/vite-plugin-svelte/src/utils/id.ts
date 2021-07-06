@@ -7,11 +7,16 @@ import * as fs from 'fs';
 
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
+
 export type SvelteQueryTypes = 'style' | 'script';
 
-export interface SvelteQuery {
+export interface RequestQuery {
+	// our own
 	svelte?: boolean;
 	type?: SvelteQueryTypes;
+	// vite specific
+	url?: boolean;
+	raw?: boolean;
 }
 
 export interface SvelteRequest {
@@ -19,7 +24,7 @@ export interface SvelteRequest {
 	cssId: string;
 	filename: string;
 	normalizedFilename: string;
-	query: SvelteQuery;
+	query: RequestQuery;
 	timestamp: number;
 	ssr: boolean;
 }
@@ -39,9 +44,12 @@ function parseToSvelteRequest(
 	timestamp: number,
 	ssr: boolean
 ): SvelteRequest {
-	const query = qs.parse(rawQuery) as SvelteQuery;
-	if (query.svelte != null) {
-		query.svelte = true;
+	const query: RequestQuery = qs.parse(rawQuery) as RequestQuery;
+	for (const p of ['svelte', 'url', 'raw'] as Array<keyof RequestQuery>) {
+		if (query[p] != null) {
+			// @ts-ignore
+			query[p] = true;
+		}
 	}
 
 	const normalizedFilename = normalize(filename, root);
