@@ -333,9 +333,9 @@ importers:
       magic-string: ^0.25.7
       require-relative: ^0.8.7
       rollup: ^2.52.7
-      svelte: ^3.38.2
+      svelte: ^3.38.3
       svelte-hmr: ^0.14.4
-      tsup: ^4.12.0
+      tsup: ^4.12.2
       vite: ^2.4.0
     dependencies:
       '@rollup/pluginutils': 4.1.0_rollup@2.52.7
@@ -343,13 +343,13 @@ importers:
       debug: 4.3.2
       magic-string: 0.25.7
       require-relative: 0.8.7
-      svelte-hmr: 0.14.4_svelte@3.38.2
+      svelte-hmr: 0.14.4_svelte@3.38.3
     devDependencies:
       '@types/debug': 4.1.6
       esbuild: 0.12.15
       rollup: 2.52.7
-      svelte: 3.38.2
-      tsup: 4.12.0_typescript@4.3.5
+      svelte: 3.38.3
+      tsup: 4.12.2_typescript@4.3.5
       vite: 2.4.0
 
 packages:
@@ -6520,14 +6520,6 @@ packages:
       glob: 7.1.7
     dev: true
 
-  /rollup/2.52.3:
-    resolution: {integrity: sha512-QF3Sju8Kl2z0osI4unyOLyUudyhOMK6G0AeqJWgfiyigqLAlnNrfBcDWDx+f1cqn+JU2iIYVkDrgQ6/KtwEfrg==}
-    engines: {node: '>=10.0.0'}
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /rollup/2.52.7:
     resolution: {integrity: sha512-55cSH4CCU6MaPr9TAOyrIC+7qFCHscL7tkNsm1MBfIJRRqRbCEY0mmeFn4Wg8FKsHtEH8r389Fz38r/o+kgXLg==}
     engines: {node: '>=10.0.0'}
@@ -7090,21 +7082,12 @@ packages:
       supports-color: 7.2.0
     dev: true
 
-  /svelte-hmr/0.14.4_svelte@3.38.2:
-    resolution: {integrity: sha512-kItFF7vqzStckSigoFmMnxJpTOdB9TWnQAW6Js+yAB4277tLbJIIE5KBlGHNmJNpA7MguqidsPB27Uw5UzQPCA==}
-    peerDependencies:
-      svelte: '>=3.19.0'
-    dependencies:
-      svelte: 3.38.2
-    dev: false
-
   /svelte-hmr/0.14.4_svelte@3.38.3:
     resolution: {integrity: sha512-kItFF7vqzStckSigoFmMnxJpTOdB9TWnQAW6Js+yAB4277tLbJIIE5KBlGHNmJNpA7MguqidsPB27Uw5UzQPCA==}
     peerDependencies:
       svelte: '>=3.19.0'
     dependencies:
       svelte: 3.38.3
-    dev: true
 
   /svelte-preprocess/4.7.3_a5a18df0fd80b121f7e25f45162d169d:
     resolution: {integrity: sha512-Zx1/xLeGOIBlZMGPRCaXtlMe4ZA0faato5Dc3CosEqwu75MIEPuOstdkH6cy+RYTUYynoxzNaDxkPX4DbrPwRA==}
@@ -7204,11 +7187,6 @@ packages:
       strip-indent: 3.0.0
       svelte: 3.38.3
       typescript: 4.3.5
-    dev: true
-
-  /svelte/3.38.2:
-    resolution: {integrity: sha512-q5Dq0/QHh4BLJyEVWGe7Cej5NWs040LWjMbicBGZ+3qpFWJ1YObRmUDZKbbovddLC9WW7THTj3kYbTOFmU9fbg==}
-    engines: {node: '>= 8'}
     dev: true
 
   /svelte/3.38.3:
@@ -7411,8 +7389,8 @@ packages:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: true
 
-  /tsup/4.12.0_typescript@4.3.5:
-    resolution: {integrity: sha512-TjODlDrJYcMHW8nRVbhf2PBelo2ew3s7zfSdp/17dXlPkMbnYs80ZmITPgR1KRa6cagSqU+9lYZZe/xbRqhWAQ==}
+  /tsup/4.12.2_typescript@4.3.5:
+    resolution: {integrity: sha512-iVj6fJrWta7bilb5QGGgwv5uLGTlYkOnksVB86sP6NA6lsxmpSTf3sSFP9x0No/Thdw7JgNQIUI0yGbjB0t6Mg==}
     hasBin: true
     peerDependencies:
       typescript: ^4.2.3
@@ -7423,14 +7401,14 @@ packages:
       cac: 6.7.3
       chalk: 4.1.1
       chokidar: 3.5.1
-      debug: 4.3.1
+      debug: 4.3.2
       esbuild: 0.12.15
       execa: 5.1.1
       globby: 11.0.4
       joycon: 3.0.1
       postcss-load-config: 3.1.0
       resolve-from: 5.0.0
-      rollup: 2.52.3
+      rollup: 2.52.7
       sucrase: 3.18.1
       tree-kill: 1.2.2
       typescript: 4.3.5
