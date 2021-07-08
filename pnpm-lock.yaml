@@ -344,9 +344,9 @@ importers:
     specifiers:
       '@rollup/pluginutils': ^4.1.0
       '@types/debug': ^4.1.6
-      chalk: ^4.1.1
       debug: ^4.3.2
       esbuild: ^0.12.15
+      kleur: ^4.1.4
       magic-string: ^0.25.7
       require-relative: ^0.8.7
       rollup: ^2.52.7
@@ -356,8 +356,8 @@ importers:
       vite: ^2.4.0
     dependencies:
       '@rollup/pluginutils': 4.1.0_rollup@2.52.7
-      chalk: 4.1.1
       debug: 4.3.2
+      kleur: 4.1.4
       magic-string: 0.25.7
       require-relative: 0.8.7
       svelte-hmr: 0.14.4_svelte@3.38.3
@@ -366,7 +366,7 @@ importers:
       esbuild: 0.12.15
       rollup: 2.52.7
       svelte: 3.38.3
-      tsup: 4.12.2_typescript@4.3.5
+      tsup: 4.12.2
       vite: 2.4.0
 
 packages:
@@ -1830,6 +1830,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       color-convert: 2.0.1
+    dev: true
 
   /ansi-styles/5.2.0:
     resolution: {integrity: sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==}
@@ -2250,6 +2251,7 @@ packages:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
+    dev: true
 
   /char-regex/1.0.2:
     resolution: {integrity: sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==}
@@ -2402,6 +2404,7 @@ packages:
     engines: {node: '>=7.0.0'}
     dependencies:
       color-name: 1.1.4
+    dev: true
 
   /color-name/1.1.3:
     resolution: {integrity: sha1-p9BVi9icQveV3UIyj3QIMcpTvCU=}
@@ -2409,6 +2412,7 @@ packages:
 
   /color-name/1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+    dev: true
 
   /colorette/1.2.2:
     resolution: {integrity: sha512-MKGMzyfeuutC/ZJ1cba9NqcNpfeqMUcYmyF1ZFY6/Cn7CNSAKx6a+s48sqLqyAiZuaP2TcqMhoo+dlwFnVxT9w==}
@@ -3789,6 +3793,7 @@ packages:
   /has-flag/4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
+    dev: true
 
   /has-symbols/1.0.2:
     resolution: {integrity: sha512-chXa79rL/UC2KlX17jo3vRGz0azaWEx5tGqZg5pO3NUyEJVB17dMruQlzCCOfUvElghKcm5194+BCRvi2Rv/Gw==}
@@ -5001,6 +5006,11 @@ packages:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
     dev: true
+
+  /kleur/4.1.4:
+    resolution: {integrity: sha512-8QADVssbrFjivHWQU7KkMgptGTl6WAcSdlbBPY4uNF+mWr6DGcKrvY2w4FQJoXch7+fKMjj0dRrL75vk3k23OA==}
+    engines: {node: '>=6'}
+    dev: false
 
   /latest-version/5.1.0:
     resolution: {integrity: sha512-weT+r0kTkRQdCdYCNtkMwWXQTMEswKrFBkm4ckQOMVhhqhIMI1UT2hMj+1iigIhgSZm5gTmrRXBNoGUgaTY1xA==}
@@ -7104,6 +7114,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       has-flag: 4.0.0
+    dev: true
 
   /supports-color/8.1.1:
     resolution: {integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==}
@@ -7427,7 +7438,7 @@ packages:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: true
 
-  /tsup/4.12.2_typescript@4.3.5:
+  /tsup/4.12.2:
     resolution: {integrity: sha512-iVj6fJrWta7bilb5QGGgwv5uLGTlYkOnksVB86sP6NA6lsxmpSTf3sSFP9x0No/Thdw7JgNQIUI0yGbjB0t6Mg==}
     hasBin: true
     peerDependencies:
@@ -7449,7 +7460,6 @@ packages:
       rollup: 2.52.7
       sucrase: 3.18.1
       tree-kill: 1.2.2
-      typescript: 4.3.5
     transitivePeerDependencies:
       - supports-color
       - ts-node
