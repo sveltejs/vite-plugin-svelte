@@ -175,11 +175,11 @@ export function buildExtraViteConfig(
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
 			dedupe: allSvelteImports
-		},
+		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
 		// @ts-ignore
-		knownJsSrcExtensions: options.extensions
+		// knownJsSrcExtensions: options.extensions
 	};
 
 	if (options.isBuild && config.build?.ssr) {
