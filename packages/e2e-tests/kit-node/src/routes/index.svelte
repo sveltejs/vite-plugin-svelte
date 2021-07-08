@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	// eslint-disable-next-line node/no-missing-import
 	import Counter from '$lib/Counter.svelte';
+	// eslint-disable-next-line node/no-missing-import
+	import Child from '$lib/Child.svelte';
 
 	onMount(async () => {
 		const isSSR = (await import('../client-only-module.js')).default;
@@ -15,6 +17,10 @@
 	<Counter />
 
 	<p>Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte apps.</p>
+
+	<div id="before-child">before-child</div>
+	<Child testId="test-child" />
+	<div id="after-child">after-child</div>
 </main>
 
 <!-- HMR-TEMPLATE-INJECT -->

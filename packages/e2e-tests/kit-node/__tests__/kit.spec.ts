@@ -139,8 +139,24 @@ describe('kit-node', () => {
 					await expect(await getText(`#hmr-test2`)).toBe('bar');
 				});
 
-				describe('Counter.svelte', () => {
+				describe('child component update', () => {
+					const updateChild = editFileAndWaitForHmrComplete.bind(null, 'src/lib/Child.svelte');
 					const updateCounter = editFileAndWaitForHmrComplete.bind(null, 'src/lib/Counter.svelte');
+					it('should preserve dom order', async () => {
+						expect(await getText('#before-child')).toBe('before-child');
+						expect(await getText('#test-child')).toBe('test-child');
+						expect(await getText('#after-child')).toBe('after-child');
+						expect(await getEl('#before-child + #test-child')).not.toBe(null);
+						expect(await getEl('#test-child + #after-child')).not.toBe(null);
+						await updateChild((content) =>
+							content.replace('<!-- HMR-TEMPLATE-INJECT -->', '-foo<!-- HMR-TEMPLATE-INJECT -->')
+						);
+						expect(await getText('#before-child')).toBe('before-child');
+						expect(await getText('#test-child')).toBe('test-child-foo');
+						expect(await getText('#after-child')).toBe('after-child');
+						expect(await getEl('#before-child + #test-child')).not.toBe(null);
+						expect(await getEl('#test-child + #after-child')).not.toBe(null);
+					});
 					it('should render additional html', async () => {
 						// add div 1
 						expect(await getEl('#hmr-test3')).toBe(null);
