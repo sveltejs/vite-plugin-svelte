@@ -183,11 +183,15 @@ export function buildExtraViteConfig(
 	};
 
 	if (options.isBuild && config.build?.ssr) {
-		// make sure svelte isn't external so we can resolve it with svelte/ssr
+		// add svelte to ssr.noExternal unless it is present in ssr.external
+		// so we can resolve it with svelte/ssr
 		// @ts-ignore
-		extraViteConfig.ssr = {
-			noExternal: ['svelte']
-		};
+		if (!config.ssr?.external?.includes('svelte')) {
+			// @ts-ignore
+			extraViteConfig.ssr = {
+				noExternal: ['svelte']
+			};
+		}
 	}
 
 	if (options.useVitePreprocess) {
