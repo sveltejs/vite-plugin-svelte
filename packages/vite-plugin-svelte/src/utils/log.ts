@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import chalk from 'chalk';
+import { cyan, yellow, red } from 'kleur/colors';
 import debug from 'debug';
 import { ResolvedOptions, Warning } from './options';
 
@@ -12,17 +12,17 @@ const loggers: { [key: string]: any } = {
 		isDebug: true
 	},
 	info: {
-		color: chalk.cyan,
+		color: cyan,
 		log: console.log,
 		enabled: true
 	},
 	warn: {
-		color: chalk.yellow,
+		color: yellow,
 		log: console.warn,
 		enabled: true
 	},
 	error: {
-		color: chalk.red,
+		color: red,
 		log: console.error,
 		enabled: true
 	},
@@ -47,11 +47,6 @@ function setLevel(level: string) {
 	}
 }
 
-let _viteLogOverwriteProtection = false;
-function setViteLogOverwriteProtection(viteLogOverwriteProtection: boolean) {
-	_viteLogOverwriteProtection = viteLogOverwriteProtection;
-}
-
 function _log(logger: any, message: string, payload?: any) {
 	if (!logger.enabled) {
 		return;
@@ -59,13 +54,10 @@ function _log(logger: any, message: string, payload?: any) {
 	if (logger.isDebug) {
 		payload !== undefined ? logger.log(message, payload) : logger.log(message);
 	} else {
-		logger.log(logger.color(`[${prefix}] ${message}`));
+		logger.log(logger.color(`${new Date().toLocaleTimeString()} [${prefix}] ${message}`));
 		if (payload) {
 			logger.log(payload);
 		}
-	}
-	if (_viteLogOverwriteProtection) {
-		logger.log('');
 	}
 }
 
@@ -90,10 +82,7 @@ export const log = {
 	info: createLogger('info'),
 	warn: createLogger('warn'),
 	error: createLogger('error'),
-	setLevel,
-
-	// TODO still needed?
-	setViteLogOverwriteProtection
+	setLevel
 };
 
 export function logCompilerWarnings(warnings: Warning[], options: ResolvedOptions) {

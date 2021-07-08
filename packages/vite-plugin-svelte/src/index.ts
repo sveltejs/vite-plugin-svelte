@@ -1,12 +1,5 @@
 import fs from 'fs';
-import {
-	HmrContext,
-	IndexHtmlTransformContext,
-	ModuleNode,
-	Plugin,
-	ResolvedConfig,
-	UserConfig
-} from 'vite';
+import { HmrContext, ModuleNode, Plugin, ResolvedConfig, UserConfig } from 'vite';
 import { handleHotUpdate } from './handle-hot-update';
 import { log, logCompilerWarnings } from './utils/log';
 import { CompileData, createCompileSvelte } from './utils/compile';
@@ -109,7 +102,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 
 		async resolveId(importee, importer, customOptions, ssr) {
 			const svelteRequest = requestParser(importee, !!ssr);
-			log.debug('resolveId', svelteRequest || importee);
 			if (svelteRequest?.query.svelte) {
 				if (svelteRequest.query.type === 'style') {
 					// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
@@ -164,7 +156,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			if (!svelteRequest) {
 				return;
 			}
-			log.debug('transform', svelteRequest);
 			const { filename, query } = svelteRequest;
 
 			if (query.svelte) {
@@ -193,18 +184,11 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 				return;
 			}
 			const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);
-			if (!svelteRequest) {
-				return;
+			if (svelteRequest) {
+				return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
 			}
-			log.debug('handleHotUpdate', svelteRequest);
-			return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
 		},
 
-		// eslint-disable-next-line no-unused-vars
-		transformIndexHtml(html: string, ctx: IndexHtmlTransformContext) {
-			// TODO useful for ssr? and maybe svelte:head stuff
-			log.debug('transformIndexHtml', html);
-		},
 		/**
 		 * All resolutions done; display warnings wrt `package.json` access.
 		 */
