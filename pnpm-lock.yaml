@@ -106,7 +106,7 @@ importers:
       postcss: ^8.3.5
       postcss-load-config: ^3.1.0
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       svelte-preprocess: ^4.7.3
       vite: ^2.4.0
     dependencies:
@@ -117,7 +117,7 @@ importers:
       postcss: 8.3.5
       postcss-load-config: 3.1.0
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       svelte-preprocess: 4.7.3_a5a18df0fd80b121f7e25f45162d169d
       vite: 2.4.0
 
@@ -126,14 +126,14 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-tests-hmr-test-dependency: workspace:*
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       vite: ^2.4.0
     dependencies:
       e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       vite: 2.4.0
 
   packages/e2e-tests/configfile-esm:
@@ -141,7 +141,7 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-tests-hmr-test-dependency: workspace:*
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       svelte-preprocess: ^4.7.3
       vite: ^2.4.0
     dependencies:
@@ -149,7 +149,7 @@ importers:
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       svelte-preprocess: 4.7.3_svelte@3.38.3+typescript@4.3.5
       vite: 2.4.0
 
@@ -157,12 +157,12 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       vite: ^2.4.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       vite: 2.4.0
 
   packages/e2e-tests/hmr:
@@ -171,7 +171,7 @@ importers:
       e2e-tests-hmr-test-dependency: workspace:*
       node-fetch: ^2.6.1
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       vite: ^2.4.0
     dependencies:
       e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
@@ -179,7 +179,7 @@ importers:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       node-fetch: 2.6.1
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       vite: 2.4.0
 
   packages/e2e-tests/hmr-test-dependency:
@@ -200,28 +200,28 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-tests-test-dependency-svelte-field: workspace:*
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       vite: ^2.4.0
     dependencies:
       e2e-tests-test-dependency-svelte-field: link:../test-dependency-svelte-field
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       vite: 2.4.0
 
   packages/e2e-tests/svelte-preprocess:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       svelte-preprocess: ^4.7.3
       typescript: ^4.3.5
       vite: ^2.4.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       svelte-preprocess: 4.7.3_svelte@3.38.3+typescript@4.3.5
       typescript: 4.3.5
       vite: 2.4.0
@@ -251,7 +251,7 @@ importers:
       express: ^4.17.1
       serve-static: ^1.14.1
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       vite: ^2.4.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -260,7 +260,7 @@ importers:
       express: 4.17.1
       serve-static: 1.14.1
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       vite: 2.4.0
 
   packages/playground:
@@ -270,12 +270,12 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       vite: ^2.4.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       vite: 2.4.0
 
   packages/playground/kit-demo-app:
@@ -313,21 +313,21 @@ importers:
       sass: ^1.35.1
       stylus: ^0.54.8
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       vite: ^2.4.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       sass: 1.35.1
       stylus: 0.54.8
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       vite: 2.4.0
 
   packages/playground/windicss:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       vite: ^2.4.0
       vite-plugin-windicss: ^1.2.3
       windicss: ^3.1.4
@@ -336,7 +336,7 @@ importers:
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.38.3
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
       vite: 2.4.0
       vite-plugin-windicss: 1.2.3_vite@2.4.0
 
@@ -351,7 +351,7 @@ importers:
       require-relative: ^0.8.7
       rollup: ^2.52.7
       svelte: ^3.38.3
-      svelte-hmr: ^0.14.4
+      svelte-hmr: ^0.14.5-0
       tsup: ^4.12.2
       vite: ^2.4.0
     dependencies:
@@ -360,7 +360,7 @@ importers:
       debug: 4.3.2
       magic-string: 0.25.7
       require-relative: 0.8.7
-      svelte-hmr: 0.14.4_svelte@3.38.3
+      svelte-hmr: 0.14.5-0_svelte@3.38.3
     devDependencies:
       '@types/debug': 4.1.6
       esbuild: 0.12.15
@@ -7120,8 +7120,8 @@ packages:
       supports-color: 7.2.0
     dev: true
 
-  /svelte-hmr/0.14.4_svelte@3.38.3:
-    resolution: {integrity: sha512-kItFF7vqzStckSigoFmMnxJpTOdB9TWnQAW6Js+yAB4277tLbJIIE5KBlGHNmJNpA7MguqidsPB27Uw5UzQPCA==}
+  /svelte-hmr/0.14.5-0_svelte@3.38.3:
+    resolution: {integrity: sha512-shoJ+CoL9m3+qx9miVJ8J7cf9I8a0NQuyXccUXjy7DExfNmhAu0Cg+ob5cHfVCiRjRtQzW2LrmOGl7lgy/XL5w==}
     peerDependencies:
       svelte: '>=3.19.0'
     dependencies:
