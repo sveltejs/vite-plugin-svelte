@@ -1,4 +1,5 @@
 import {
+	readFileContent,
 	editFile,
 	editFileAndWaitForHmrComplete,
 	getColor,
@@ -9,6 +10,7 @@ import {
 } from '../../testUtils';
 
 import fetch from 'node-fetch';
+import path from 'path';
 
 describe('kit-node', () => {
 	describe('index route', () => {
@@ -46,6 +48,19 @@ describe('kit-node', () => {
 				expect(msg).not.toMatch('404');
 			});
 		});
+
+		it('should load dynamic import in onMount', async () => {
+			// expect log to contain message with dynamic import value from onMount
+			expect(browserLogs.some((x) => x === `onMount dynamic imported isSSR: false`)).toBe(true);
+		});
+
+		if (isBuild) {
+			// disabled until svelte releases svelte/ssr export
+			it.skip('should not include dynamic import from onmount in ssr output', async () => {
+				const app = readFileContent(path.join('.svelte-kit', 'output', 'server', 'app.js'));
+				expect(app.includes('__SHOULD_NOT_BE_IN_SSR_APP_JS')).toBe(false);
+			});
+		}
 
 		if (!isBuild) {
 			describe('hmr', () => {

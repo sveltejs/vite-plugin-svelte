@@ -278,6 +278,23 @@ importers:
       svelte-hmr: 0.14.4_svelte@3.38.3
       vite: 2.4.0
 
+  packages/playground/kit-demo-app:
+    specifiers:
+      '@fontsource/fira-mono': ^4.2.2
+      '@lukeed/uuid': ^2.0.0
+      '@sveltejs/adapter-node': ^1.0.0-next.29
+      '@sveltejs/kit': ^1.0.0-next.119
+      cookie: ^0.4.1
+      svelte: ^3.34.0
+    dependencies:
+      '@fontsource/fira-mono': 4.4.5
+      '@lukeed/uuid': 2.0.0
+      cookie: 0.4.1
+    devDependencies:
+      '@sveltejs/adapter-node': 1.0.0-next.30
+      '@sveltejs/kit': 1.0.0-next.120_svelte@3.38.3
+      svelte: 3.38.3
+
   packages/playground/optimizedeps-include:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
@@ -884,6 +901,10 @@ packages:
       - supports-color
     dev: true
 
+  /@fontsource/fira-mono/4.4.5:
+    resolution: {integrity: sha512-LWbsPhTr1JRV3zUgvMrOxQDn1BG9F4R0FPeBkqWP8/oqPxvVYAhEepg1DN9M1k6L9sRN2I2HWHBpt4QVbDGXpw==}
+    dev: false
+
   /@humanwhocodes/config-array/0.5.0:
     resolution: {integrity: sha512-FagtKFz74XrTl7y6HCzQpwDfXP0yhxe9lHLD1UZxjvZIcbyRz8zTFF/yYNfSfzU414eDwZ1SrO0Qvtyf+wFMQg==}
     engines: {node: '>=10.10.0'}
@@ -1127,6 +1148,18 @@ packages:
       '@types/yargs': 16.0.3
       chalk: 4.1.1
     dev: true
+
+  /@lukeed/csprng/1.0.0:
+    resolution: {integrity: sha512-ruuGHsnabmObBdeMg3vKdGRmh06Oog3eFpf/Tk6X0kDSJDpJTDCj2dqdp1+0VjzIUgHlFF9GBm7uFqfYhhdX9g==}
+    engines: {node: '>=8'}
+    dev: false
+
+  /@lukeed/uuid/2.0.0:
+    resolution: {integrity: sha512-dUz8OmYvlY5A9wXaroHIMSPASpSYRLCqbPvxGSyHguhtTQIy24lC+EGxQlwv71AhRCO55WOtgwhzQLpw27JaJQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@lukeed/csprng': 1.0.0
+    dev: false
 
   /@manypkg/find-root/1.1.0:
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -2474,6 +2507,11 @@ packages:
     resolution: {integrity: sha512-+Hp8fLp57wnUSt0tY0tHEXh4voZRDnoIrZPqlo3DPiI4y9lwg/jqx+1Om94/W6ZaPDOUbnjOt/99w66zk+l1Xg==}
     engines: {node: '>= 0.6'}
     dev: true
+
+  /cookie/0.4.1:
+    resolution: {integrity: sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==}
+    engines: {node: '>= 0.6'}
+    dev: false
 
   /core-util-is/1.0.2:
     resolution: {integrity: sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=}

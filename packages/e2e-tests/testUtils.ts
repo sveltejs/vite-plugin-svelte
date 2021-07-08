@@ -62,6 +62,11 @@ export async function getBg(el: string | ElementHandle) {
 	return el.evaluate((el) => getComputedStyle(el as Element).backgroundImage);
 }
 
+export function readFileContent(filename: string) {
+	filename = path.resolve(testDir, filename);
+	return fs.readFileSync(filename, 'utf-8');
+}
+
 export function editFile(filename: string, replacer: (str: string) => string) {
 	if (isBuild) return;
 	filename = path.resolve(testDir, filename);

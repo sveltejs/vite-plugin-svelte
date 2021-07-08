@@ -150,6 +150,13 @@ module.exports = {
 			settings: {
 				'svelte3/ignore-styles': () => true
 			}
+		},
+		{
+			/* required because $app and $lib are not known */
+			files: ['packages/playground/kit-demo-app/src/**'],
+			rules: {
+				'node/no-missing-import': 'off'
+			}
 		}
 	]
 };
