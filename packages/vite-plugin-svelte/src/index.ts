@@ -24,6 +24,7 @@ import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { addExtraPreprocessors } from './utils/preprocess';
+import { PartialResolvedId } from 'rollup';
 
 // extend the Vite plugin interface to be able to have `sveltePreprocess` injection
 declare module 'vite' {
@@ -51,6 +52,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		options: Partial<ResolvedOptions>
 	) => Promise<CompileData>;
 	/* eslint-enable no-unused-vars */
+
+	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;
 
 	return {
 		name: 'vite-plugin-svelte',
@@ -119,16 +122,22 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			}
 
 			if (ssr && importee === 'svelte') {
-				try {
-					const svelteSSR = await this.resolve('svelte/ssr', importer, { skipSelf: true });
-					if (svelteSSR) {
-						log.debug(`resolveId resolved ${importee} to svelte/ssr`, svelteSSR);
-						return svelteSSR;
-					}
-				} catch (e) {
-					// ignore missing export error if svelte version is too old, keeps using regular svelte
-					log.info('failed to resolve svelte/ssr, update svelte to ^3.39.0');
+				if (!resolvedSvelteSSR) {
+					resolvedSvelteSSR = this.resolve('svelte/ssr', undefined, { skipSelf: true }).then(
+						(svelteSSR) => {
+							log.debug('resolved svelte to svelte/ssr');
+							return svelteSSR;
+						},
+						(err) => {
+							log.debug(
+								'failed to resolve svelte to svelte/ssr. Update svelte to a version that exports it',
+								err
+							);
+							return null; // returning null here leads to svelte getting resolved regularly
+						}
+					);
 				}
+				return resolvedSvelteSSR;
 			}
 
 			try {
