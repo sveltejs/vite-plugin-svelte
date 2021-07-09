@@ -153,7 +153,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 
 		async transform(code, id, ssr) {
 			const svelteRequest = requestParser(id, !!ssr);
-			if (!svelteRequest) {
+			if (!svelteRequest || svelteRequest.query.raw) {
 				return;
 			}
 			const { filename, query } = svelteRequest;
