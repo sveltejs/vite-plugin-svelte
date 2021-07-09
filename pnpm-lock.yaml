@@ -4,8 +4,8 @@ importers:
 
   .:
     specifiers:
-      '@changesets/changelog-github': ^0.4.0
       '@changesets/cli': ^2.16.0
+      '@changesets/get-github-info': ^0.5.0
       '@types/fs-extra': ^9.0.12
       '@types/jest': ^26.0.24
       '@types/node': ^16.3.0
@@ -14,6 +14,7 @@ importers:
       '@typescript-eslint/parser': ^4.28.2
       chalk: ^4.1.1
       cross-env: ^7.0.3
+      dotenv: ^10.0.0
       enquirer: ^2.3.6
       esbuild: ^0.12.15
       eslint: ^7.30.0
@@ -47,8 +48,8 @@ importers:
       typescript: ^4.3.5
       vite: ^2.4.1
     devDependencies:
-      '@changesets/changelog-github': 0.4.0
       '@changesets/cli': 2.16.0
+      '@changesets/get-github-info': 0.5.0
       '@types/fs-extra': 9.0.12
       '@types/jest': 26.0.24
       '@types/node': 16.3.0
@@ -57,6 +58,7 @@ importers:
       '@typescript-eslint/parser': 4.28.2_eslint@7.30.0+typescript@4.3.5
       chalk: 4.1.1
       cross-env: 7.0.3
+      dotenv: 10.0.0
       enquirer: 2.3.6
       esbuild: 0.12.15
       eslint: 7.30.0
@@ -704,14 +706,6 @@ packages:
       '@changesets/types': 4.0.0
       '@manypkg/get-packages': 1.1.1
       semver: 5.7.1
-    dev: true
-
-  /@changesets/changelog-github/0.4.0:
-    resolution: {integrity: sha512-4GphTAdHJfECuuQg4l0eFGYyUh26mfyXpAi2FImrQvaN+boqTM+9EAAJe2b8Y3OKRfoET+ihgo+LARhW2xJoiw==}
-    dependencies:
-      '@changesets/get-github-info': 0.5.0
-      '@changesets/types': 4.0.0
-      dotenv: 8.6.0
     dev: true
 
   /@changesets/cli/2.16.0:
@@ -2815,8 +2809,8 @@ packages:
       is-obj: 2.0.0
     dev: true
 
-  /dotenv/8.6.0:
-    resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
+  /dotenv/10.0.0:
+    resolution: {integrity: sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==}
     engines: {node: '>=10'}
     dev: true
 
