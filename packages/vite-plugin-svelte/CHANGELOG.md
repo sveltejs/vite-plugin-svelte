@@ -1,5 +1,37 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.12
+
+### Minor Changes
+
+- resolve svelte to svelte/ssr when building for ssr (see #74) ([#75](https://github.com/sveltejs/vite-plugin-svelte/pull/75)) ([`f6f56fe`](https://github.com/sveltejs/vite-plugin-svelte/commit/f6f56fee7d3567196052a23440cb1818187fa232))
+
+* Support svg extension ([#78](https://github.com/sveltejs/vite-plugin-svelte/pull/78)) ([`2eb09cf`](https://github.com/sveltejs/vite-plugin-svelte/commit/2eb09cf180c7ebf0fb4ccfccee663e5264b3814c))
+
+- - Restart dev server when svelte config file changes ([#72](https://github.com/sveltejs/vite-plugin-svelte/pull/72)) ([`5100376`](https://github.com/sveltejs/vite-plugin-svelte/commit/5100376ef91d5e39ec00222f1043e4fda047678b))
+  - Refactored e2e-tests to use package.json scripts
+  - Updated dependencies
+
+* feat: Allow svelte imports to be added to optimizeDeps.include and don't exclude svelte from optimizeDeps then ([#68](https://github.com/sveltejs/vite-plugin-svelte/pull/68)) ([`9583900`](https://github.com/sveltejs/vite-plugin-svelte/commit/9583900a2b3600133cee3a46b6dbb7df137977b6))
+
+- feat: vite config can be updated based on values in svelte config, provide knownJsSrcExtensions (see #60) ([#64](https://github.com/sveltejs/vite-plugin-svelte/pull/64)) ([`c3f65fd`](https://github.com/sveltejs/vite-plugin-svelte/commit/c3f65fdf414b22810ad60817b3e1e62790ba816f))
+
+### Patch Changes
+
+- customize changelog format ([#90](https://github.com/sveltejs/vite-plugin-svelte/pull/90)) ([`b5a58cd`](https://github.com/sveltejs/vite-plugin-svelte/commit/b5a58cd814bbc71a5e59060d436770f7a0102262))
+
+* relax svelte peer dependency to 3.34.0 ([#70](https://github.com/sveltejs/vite-plugin-svelte/pull/70)) ([`377d464`](https://github.com/sveltejs/vite-plugin-svelte/commit/377d464eba30c56f012deba3d306cb5a7195b787))
+
+- do not transform imports tagged with ?url or ?raw (fixes #87) ([#88](https://github.com/sveltejs/vite-plugin-svelte/pull/88)) ([`d1d2638`](https://github.com/sveltejs/vite-plugin-svelte/commit/d1d2638b247830852faa89e7b9bc9a430b81ba51))
+
+* update svelte-hmr to ^0.14.5 to fix hmr reordering issue introduced by a change in svelte 3.38.3 ([#92](https://github.com/sveltejs/vite-plugin-svelte/pull/92)) ([`cdfd821`](https://github.com/sveltejs/vite-plugin-svelte/commit/cdfd8210770150c6e40f68b6b48cd2e455414299))
+
+- fix kit-node tests ([#55](https://github.com/sveltejs/vite-plugin-svelte/pull/55)) ([`09b63d3`](https://github.com/sveltejs/vite-plugin-svelte/commit/09b63d32e8816acc554a66d4d01062be197dfbb7))
+
+* output sourcemap in hmr helper preprocessor ([#71](https://github.com/sveltejs/vite-plugin-svelte/pull/71)) ([`97ee68c`](https://github.com/sveltejs/vite-plugin-svelte/commit/97ee68c5106e58b2e7c4eb97e8cf7dd1c52bbfd3))
+
+- reduced debug output ([#83](https://github.com/sveltejs/vite-plugin-svelte/pull/83)) ([`eb048ff`](https://github.com/sveltejs/vite-plugin-svelte/commit/eb048ff9419488f75869ffb880a78a2a3aa5a6bb))
+
 ## 1.0.0-next.11
 
 ### Major Changes
