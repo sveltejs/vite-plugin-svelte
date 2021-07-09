@@ -93,7 +93,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 					}
 				}
 				// prevent vite asset plugin from loading files as url that should be compiled in transform
-				if (!query.url && !query.raw && viteConfig.assetsInclude(filename)) {
+				if (viteConfig.assetsInclude(filename)) {
 					log.debug(`load returns raw content for ${filename}`);
 					return fs.readFileSync(filename, 'utf-8');
 				}
@@ -153,7 +153,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 
 		async transform(code, id, ssr) {
 			const svelteRequest = requestParser(id, !!ssr);
-			if (!svelteRequest || svelteRequest.query.raw) {
+			if (!svelteRequest) {
 				return;
 			}
 			const { filename, query } = svelteRequest;
