@@ -3,8 +3,8 @@
 // - removed thanks notes. We're thanking contributors in the PRs or acknowledge their work in different ways
 // - moved issue links to end of first line
 
-import { config } from 'dotenv';
-import { getInfo, getInfoFromPullRequest } from '@changesets/get-github-info';
+const { config } = require('dotenv');
+const { getInfo, getInfoFromPullRequest } = require('@changesets/get-github-info');
 
 config();
 
@@ -106,4 +106,4 @@ const changelogFunctions = {
 	}
 };
 
-export default changelogFunctions;
+module.exports = changelogFunctions;
