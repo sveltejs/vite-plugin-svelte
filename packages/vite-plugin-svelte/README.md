@@ -86,6 +86,54 @@ const vitePluginCoolCss = {
 
 Check out [windicss](https://github.com/windicss/vite-plugin-windicss/blob/517eca0cebc879d931c6578a08accadfb112157c/packages/vite-plugin-windicss/src/index.ts#L167)
 
+## FAQ
+
+### Why is component state reset on hmr update?
+
+Preservation of local component state after js updates is disabled to avoid unpredictable and errorprone behavior. You can read more about it [here](https://github.com/rixo/svelte-hmr#preservation-of-local-state).
+
+Please note that if you only edit the `style` node, a separate css update can be applied where component state is 100% preserved.
+
+### What is the recommended node order for svelte sfc files?
+
+The `<style>` node should be last to ensure optimal hmr results.
+This is also the default order with [prettier-plugin-svelte](https://github.com/sveltejs/prettier-plugin-svelte)
+
+Good:
+
+```sveltehtml
+<script></script>
+<div></div>
+<style></style>
+```
+
+Bad:
+
+```sveltehtml
+<script></script>
+<style></style>
+<!-- this template element is below the style node and may cause extra js hmr updates -->
+<div></div>
+```
+
+### Why isn't vite detecting my imports correctly in `.svelte` files with typescript?
+
+You have to use the `lang="ts"` attribute for vite to parse it. Never `lang="typescript"` or `type="text/typescript"`
+
+Good:
+
+```sveltehtml
+<script lang="ts"></script>
+```
+
+Bad:
+
+```sveltehtml
+<!-- these are not detected by vite -->
+<script lang="typescript"></script>
+<script type="text/typescript"></script>
+```
+
 ## License
 
-MIT
+[MIT](./LICENSE)

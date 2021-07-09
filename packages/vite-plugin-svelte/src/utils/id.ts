@@ -43,7 +43,7 @@ function parseToSvelteRequest(
 	root: string,
 	timestamp: number,
 	ssr: boolean
-): SvelteRequest {
+): SvelteRequest | undefined {
 	const query: RequestQuery = qs.parse(rawQuery) as RequestQuery;
 	for (const p of ['svelte', 'url', 'raw'] as Array<keyof RequestQuery>) {
 		if (query[p] != null) {
@@ -51,7 +51,10 @@ function parseToSvelteRequest(
 			query[p] = true;
 		}
 	}
-
+	if (query.url || query.raw) {
+		// skip requests with special vite tags
+		return;
+	}
 	const normalizedFilename = normalize(filename, root);
 	const cssId = createVirtualImportId(filename, root, 'style');
 
