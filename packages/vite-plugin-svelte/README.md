@@ -116,6 +116,24 @@ Bad:
 <div></div>
 ```
 
+### Why isn't vite detecting my imports correctly in `.svelte` files with typescript?
+
+You have to use the `lang="ts"` attribute for vite to parse it. Never `lang="typescript"` or `type="text/typescript"`
+
+Good:
+
+```sveltehtml
+<script lang="ts"></script>
+```
+
+Bad:
+
+```sveltehtml
+<!-- these are not detected by vite -->
+<script lang="typescript"></script>
+<script type="text/typescript"></script>
+```
+
 ## License
 
 [MIT](./LICENSE)
