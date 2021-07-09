@@ -4,8 +4,7 @@
 
 ### Minor Changes
 
-- Resolve svelte to svelte/ssr when building for ssr ([#75](https://github.com/sveltejs/vite-plugin-svelte/pull/75)) ([`f6f56fe`](https://github.com/sveltejs/vite-plugin-svelte/commit/f6f56fee7d3567196052a23440cb1818187fa232))
-	(see #74)
+- Resolve svelte to svelte/ssr when building for ssr (fixes [#74](https://github.com/sveltejs/vite-plugin-svelte/issues/74)) ([#75](https://github.com/sveltejs/vite-plugin-svelte/pull/75)) ([`f6f56fe`](https://github.com/sveltejs/vite-plugin-svelte/commit/f6f56fee7d3567196052a23440cb1818187fa232))
 
 - Support svg extension ([#78](https://github.com/sveltejs/vite-plugin-svelte/pull/78)) ([`2eb09cf`](https://github.com/sveltejs/vite-plugin-svelte/commit/2eb09cf180c7ebf0fb4ccfccee663e5264b3814c))
 
@@ -13,8 +12,7 @@
 
 - Allow svelte imports to be added to optimizeDeps.include and don't exclude svelte from optimizeDeps then ([#68](https://github.com/sveltejs/vite-plugin-svelte/pull/68)) ([`9583900`](https://github.com/sveltejs/vite-plugin-svelte/commit/9583900a2b3600133cee3a46b6dbb7df137977b6))
 
-- Vite config can be updated based on values in svelte config ([#64](https://github.com/sveltejs/vite-plugin-svelte/pull/64)) ([`c3f65fd`](https://github.com/sveltejs/vite-plugin-svelte/commit/c3f65fdf414b22810ad60817b3e1e62790ba816f))
-	(see #60)
+- Vite config can be updated based on values in svelte config (see [#60](https://github.com/sveltejs/vite-plugin-svelte/issues/60)) ([#64](https://github.com/sveltejs/vite-plugin-svelte/pull/64)) ([`c3f65fd`](https://github.com/sveltejs/vite-plugin-svelte/commit/c3f65fdf414b22810ad60817b3e1e62790ba816f))
 
 ### Patch Changes
 
@@ -75,8 +73,7 @@
 
 ### Minor Changes
 
-- Allow `emitCss: false` for production builds and customizable compilerOptions.css and hydratable ([#41](https://github.com/sveltejs/vite-plugin-svelte/pull/41)) ([`cb7f03d`](https://github.com/sveltejs/vite-plugin-svelte/commit/cb7f03d61c19f0b98c6412c11bbaa4af978da9ed))
-	(fixes #9)
+- Allow `emitCss: false` for production builds and customizable compilerOptions.css and hydratable (fixes [#9](https://github.com/sveltejs/vite-plugin-svelte/issues/9)) ([#41](https://github.com/sveltejs/vite-plugin-svelte/pull/41)) ([`cb7f03d`](https://github.com/sveltejs/vite-plugin-svelte/commit/cb7f03d61c19f0b98c6412c11bbaa4af978da9ed))
 
 ## 1.0.0-next.9
 
