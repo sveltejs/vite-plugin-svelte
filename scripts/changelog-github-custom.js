@@ -71,7 +71,9 @@ const changelogFunctions = {
 		// add links to issue hints (fix #123) => (fix [#123](https://....))
 		const linkifyIssueHints = (line) =>
 			line.replace(/(?<=\( ?(?:fix|fixes|see) )(#\d+)(?= ?\))/g, (issueHash) => {
-				return `[${issueHash}](https://github.com/${options.repo}/issue/${issueHash.substring(1)})`;
+				return `[${issueHash}](https://github.com/${options.repo}/issues/${issueHash.substring(
+					1
+				)})`;
 			});
 		const [firstLine, ...futureLines] = replacedChangelog
 			.split('\n')
