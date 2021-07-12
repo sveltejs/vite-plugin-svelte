@@ -15,7 +15,8 @@ const knownOptions = new Set([
 	'preprocess',
 	'hot',
 	'disableCssHmr',
-	'useVitePreprocess'
+	'useVitePreprocess',
+	'ignorePluginPreprocessors'
 ]);
 
 function buildDefaultOptions(isProduction: boolean, options: Partial<Options>): Partial<Options> {
@@ -379,6 +380,14 @@ export interface Options {
 	 * @default false
 	 */
 	disableCssHmr?: boolean;
+
+	/**
+	 * vite plugins can contribute additional preprocessors by defining api.sveltePreprocess.
+	 * If you don't want to use them, set this to true to ignore them all or use an array of strings with plugin names to specify which
+	 *
+	 * @default false
+	 */
+	ignorePluginPreprocessors?: boolean | string[];
 
 	/**
 	 * use vite as extra css preprocessor EXPERIMENTAL!

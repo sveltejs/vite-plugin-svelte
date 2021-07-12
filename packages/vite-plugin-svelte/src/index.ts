@@ -9,8 +9,7 @@ import {
 	validateInlineOptions,
 	Options,
 	ResolvedOptions,
-	resolveOptions,
-	PreprocessorGroup
+	resolveOptions
 } from './utils/options';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 
@@ -18,14 +17,6 @@ import { setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { addExtraPreprocessors } from './utils/preprocess';
 import { PartialResolvedId } from 'rollup';
-
-// extend the Vite plugin interface to be able to have `sveltePreprocess` injection
-declare module 'vite' {
-	// eslint-disable-next-line no-unused-vars
-	interface Plugin {
-		sveltePreprocess?: PreprocessorGroup;
-	}
-}
 
 export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	if (process.env.DEBUG != null) {
