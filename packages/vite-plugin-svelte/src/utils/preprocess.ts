@@ -81,7 +81,7 @@ function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
 
 function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
 	const extraPreprocessors = [];
-	if (options.useVitePreprocess) {
+	if (options.experimental?.useVitePreprocess) {
 		log.debug('adding vite preprocessor');
 		extraPreprocessors.push(createVitePreprocessorGroup(config, options));
 	}
@@ -140,7 +140,7 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 		extraPreprocessors.push(...pluginsWithPreprocessors.map((p) => p.api.sveltePreprocess));
 	}
 
-	if (options.hot && !options.disableCssHmr) {
+	if (options.hot && options.emitCss) {
 		extraPreprocessors.push(createInjectScopeEverythingRulePreprocessorGroup());
 	}
 

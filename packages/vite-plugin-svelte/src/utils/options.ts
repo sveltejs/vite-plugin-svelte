@@ -15,14 +15,13 @@ const knownOptions = new Set([
 	'preprocess',
 	'hot',
 	'disableCssHmr',
-	'useVitePreprocess',
-	'ignorePluginPreprocessors'
+	'ignorePluginPreprocessors',
+	'experimental'
 ]);
 
 function buildDefaultOptions(isProduction: boolean, options: Partial<Options>): Partial<Options> {
-	const disableCssHmr = !!options?.disableCssHmr;
 	// emit for prod, emit in dev unless css hmr is disabled
-	const emitCss = options?.emitCss != null ? options.emitCss : isProduction || !disableCssHmr;
+	const emitCss = options?.emitCss != null ? options.emitCss : true;
 	// no hmr in prod, only inject css in dev if emitCss is false
 	const hot = isProduction
 		? false
@@ -40,12 +39,7 @@ function buildDefaultOptions(isProduction: boolean, options: Partial<Options>): 
 			hydratable: true
 		}
 	};
-	log.debug(
-		`default options for ${isProduction ? 'production' : 'development'} ${
-			!isProduction && disableCssHmr ? ' with css hmr disabled' : ''
-		}`,
-		defaultOptions
-	);
+	log.debug(`default options for ${isProduction ? 'production' : 'development'}`, defaultOptions);
 	return defaultOptions;
 }
 
@@ -125,6 +119,10 @@ function mergeOptions(
 			...(svelteConfig?.compilerOptions || {}),
 			...(inlineOptions?.compilerOptions || {})
 		},
+		experimental: {
+			...(svelteConfig?.experimental || {}),
+			...(inlineOptions?.experimental || {})
+		},
 		root: viteConfig.root || process.cwd(),
 		isProduction: viteEnv.mode === 'production',
 		isBuild: viteEnv.command === 'build',
@@ -195,7 +193,7 @@ export function buildExtraViteConfig(
 		}
 	}
 
-	if (options.useVitePreprocess) {
+	if (options.experimental?.useVitePreprocess) {
 		// needed to transform svelte files with component imports
 		// can cause issues with other typescript files, see https://github.com/sveltejs/vite-plugin-svelte/pull/20
 		extraViteConfig.esbuild = {
@@ -390,7 +388,20 @@ export interface Options {
 	ignorePluginPreprocessors?: boolean | string[];
 
 	/**
-	 * use vite as extra css preprocessor EXPERIMENTAL!
+	 * These options are considered experimental and breaking changes to them can occur in any release
+	 */
+	experimental?: ExperimentalOptions;
+}
+
+/**
+ * These options are considered experimental and breaking changes to them can occur in any release
+ */
+export interface ExperimentalOptions {
+	/**
+	 * use extra preprocessors that delegate style and typescript preproessing to native vite plugins
+	 *
+	 * do not use together with svelte-preprocess!
+	 *
 	 * @default false
 	 */
 	useVitePreprocess?: boolean;
