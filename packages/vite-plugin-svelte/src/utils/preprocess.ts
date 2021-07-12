@@ -1,4 +1,4 @@
-import { ResolvedConfig, TransformResult } from 'vite';
+import { ResolvedConfig, TransformResult, Plugin } from 'vite';
 import MagicString from 'magic-string';
 import { Preprocessor, PreprocessorGroup, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
@@ -86,16 +86,58 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 		extraPreprocessors.push(createVitePreprocessorGroup(config, options));
 	}
 
-	const pluginsWithPreprocessors = config.plugins.filter((p) => p?.sveltePreprocess);
-	if (pluginsWithPreprocessors.length > 0) {
-		log.debug(
-			`adding preprocessors from other vite plugins: ${pluginsWithPreprocessors
+	// @ts-ignore
+	const pluginsWithPreprocessorsDeprecated = config.plugins.filter((p) => p?.sveltePreprocess);
+	if (pluginsWithPreprocessorsDeprecated.length > 0) {
+		log.warn(
+			`The following plugins use the deprecated 'plugin.sveltePreprocess' field. Please contact their maintainers and ask them to move it to 'plugin.api.sveltePreprocess': ${pluginsWithPreprocessorsDeprecated
 				.map((p) => p.name)
 				.join(', ')}`
 		);
-		extraPreprocessors.push(
-			...pluginsWithPreprocessors.map((p) => p.sveltePreprocess as PreprocessorGroup)
+		// patch plugin to avoid breaking
+		pluginsWithPreprocessorsDeprecated.forEach((p) => {
+			if (!p.api) {
+				p.api = {};
+			}
+			if (p.api.sveltePreprocess === undefined) {
+				// @ts-ignore
+				p.api.sveltePreprocess = p.sveltePreprocess;
+			} else {
+				log.error(
+					`ignoring plugin.sveltePreprocess of ${p.name} because it already defined plugin.api.sveltePreprocess.`
+				);
+			}
+		});
+	}
+
+	const pluginsWithPreprocessors: Plugin[] = config.plugins.filter((p) => p?.api?.sveltePreprocess);
+	const ignored: Plugin[] = [],
+		included: Plugin[] = [];
+	for (const p of pluginsWithPreprocessors) {
+		if (
+			options.ignorePluginPreprocessors === true ||
+			(Array.isArray(options.ignorePluginPreprocessors) &&
+				options.ignorePluginPreprocessors?.includes(p.name))
+		) {
+			ignored.push(p);
+		} else {
+			included.push(p);
+		}
+	}
+	if (ignored.length > 0) {
+		log.debug(
+			`Ignoring svelte preprocessors defined by these vite plugins: ${ignored
+				.map((p) => p.name)
+				.join(', ')}`
 		);
+	}
+	if (included.length > 0) {
+		log.debug(
+			`Adding svelte preprocessors defined by these vite plugins: ${included
+				.map((p) => p.name)
+				.join(', ')}`
+		);
+		extraPreprocessors.push(...pluginsWithPreprocessors.map((p) => p.api.sveltePreprocess));
 	}
 
 	if (options.hot && !options.disableCssHmr) {
