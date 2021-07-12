@@ -171,7 +171,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		},
 
 		handleHotUpdate(ctx: HmrContext): void | Promise<Array<ModuleNode> | void> {
-			if (!options.emitCss || options.disableCssHmr) {
+			if (!options.hot || !options.emitCss) {
 				return;
 			}
 			const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);

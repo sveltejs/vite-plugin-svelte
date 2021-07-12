@@ -6,7 +6,9 @@ module.exports = defineConfig(({ command, mode }) => {
 	return {
 		plugins: [
 			svelte({
-				useVitePreprocess: true
+				experimental: {
+					useVitePreprocess: true
+				}
 			})
 		],
 		build: {
