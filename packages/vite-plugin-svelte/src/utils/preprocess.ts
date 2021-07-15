@@ -170,8 +170,8 @@ export function addExtraPreprocessors(options: ResolvedOptions, config: Resolved
 function validateSourceMapOutputWrapper(group: PreprocessorGroup, i: number): PreprocessorGroup {
 	const wrapper: PreprocessorGroup = {};
 
-	// eslint-disable-next-line no-unused-vars
 	for (const [processorType, processorFn] of Object.entries(group) as Array<
+		// eslint-disable-next-line no-unused-vars
 		[keyof PreprocessorGroup, (options: { filename?: string; content: string }) => Processed]
 	>) {
 		wrapper[processorType] = async (options) => {
