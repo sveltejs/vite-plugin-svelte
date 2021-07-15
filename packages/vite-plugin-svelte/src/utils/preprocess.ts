@@ -1,8 +1,9 @@
 import { ResolvedConfig, TransformResult, Plugin } from 'vite';
 import MagicString from 'magic-string';
-import { Preprocessor, PreprocessorGroup, ResolvedOptions } from './options';
+import { Preprocessor, PreprocessorGroup, Processed, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
 import { log } from './log';
+import { buildSourceMap } from './sourcemap';
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss'];
 
@@ -38,13 +39,13 @@ function createPreprocessorFromVitePlugin(
 			moduleId
 		)) as TransformResult;
 		// TODO vite:css transform currently returns an empty mapping that would kill svelte compiler.
-		const hasMap = !!transformResult.map?.mappings;
+		const hasMap = transformResult.map && transformResult.map?.mappings !== '';
 		if (transformResult.map?.sources?.[0] === moduleId) {
 			transformResult.map.sources[0] = filename as string;
 		}
 		return {
 			code: transformResult.code,
-			map: hasMap ? (transformResult.map as object) : null,
+			map: hasMap ? (transformResult.map as object) : undefined,
 			dependencies: transformResult.deps
 		};
 	};
@@ -73,7 +74,7 @@ function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
 			s.append(' *{}');
 			return {
 				code: s.toString(),
-				map: s.generateDecodedMap({ file: filename })
+				map: s.generateDecodedMap({ file: filename, hires: true })
 			};
 		}
 	};
@@ -158,4 +159,62 @@ export function addExtraPreprocessors(options: ResolvedOptions, config: Resolved
 			options.preprocess = [options.preprocess, ...extra];
 		}
 	}
+	const generateMissingSourceMaps = !!options.experimental?.generateMissingPreprocessorSourcemaps;
+	if (options.preprocess && generateMissingSourceMaps) {
+		options.preprocess = Array.isArray(options.preprocess)
+			? options.preprocess.map((p, i) => validateSourceMapOutputWrapper(p, i))
+			: validateSourceMapOutputWrapper(options.preprocess, 0);
+	}
+}
+
+function validateSourceMapOutputWrapper(group: PreprocessorGroup, i: number): PreprocessorGroup {
+	const wrapper: PreprocessorGroup = {};
+
+	// eslint-disable-next-line no-unused-vars
+	for (const [processorType, processorFn] of Object.entries(group) as Array<
+		[keyof PreprocessorGroup, (options: { filename?: string; content: string }) => Processed]
+	>) {
+		wrapper[processorType] = async (options) => {
+			const result = await processorFn(options);
+
+			if (result && result.code !== options.content) {
+				let invalidMap = false;
+				if (!result.map) {
+					invalidMap = true;
+					log.warn.enabled &&
+						log.warn.once(
+							`preprocessor at index ${i} did not return a sourcemap for ${processorType} transform`,
+							{
+								filename: options.filename,
+								type: processorType,
+								processor: processorFn.toString()
+							}
+						);
+				} else if ((result.map as any)?.mappings === '') {
+					invalidMap = true;
+					log.warn.enabled &&
+						log.warn.once(
+							`preprocessor at index ${i} returned an invalid empty sourcemap for ${processorType} transform`,
+							{
+								filename: options.filename,
+								type: processorType,
+								processor: processorFn.toString()
+							}
+						);
+				}
+				if (invalidMap) {
+					try {
+						const map = buildSourceMap(options.content, result.code, options.filename);
+						log.warn.once('adding generated sourcemap to preprocesor result');
+						result.map = map;
+					} catch (e) {
+						log.error(`failed to build sourcemap`, e);
+					}
+				}
+			}
+			return result;
+		};
+	}
+
+	return wrapper;
 }

@@ -156,25 +156,26 @@ afterAll(async () => {
 			err = e;
 		}
 	}
-
-	// unlink node modules to prevent removal of linked modules on cleanup
-	const temp_node_modules = path.join(tempDir, 'node_modules');
-	try {
-		await fs.unlink(temp_node_modules);
-	} catch (e) {
-		console.error(`failed to unlink ${temp_node_modules}`);
-		if (!err) {
-			err = e;
+	if (tempDir) {
+		// unlink node modules to prevent removal of linked modules on cleanup
+		const temp_node_modules = path.join(tempDir, 'node_modules');
+		try {
+			await fs.unlink(temp_node_modules);
+		} catch (e) {
+			console.error(`failed to unlink ${temp_node_modules}`);
+			if (!err) {
+				err = e;
+			}
 		}
-	}
-	const logDir = path.join(testDir(), 'logs');
-	const logFile = path.join(logDir, 'browser.log');
-	try {
-		await fs.writeFile(logFile, logs.join('\n'));
-	} catch (e) {
-		console.error(`failed to write browserlogs in ${logFile}`, e);
-		if (!err) {
-			err = e;
+		const logDir = path.join(testDir(), 'logs');
+		const logFile = path.join(logDir, 'browser.log');
+		try {
+			await fs.writeFile(logFile, logs.join('\n'));
+		} catch (e) {
+			console.error(`failed to write browserlogs in ${logFile}`, e);
+			if (!err) {
+				err = e;
+			}
 		}
 	}
 
