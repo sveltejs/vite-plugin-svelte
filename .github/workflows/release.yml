@@ -24,6 +24,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 14
+          cache: npm
       # install pnpm and try to reuse cache from ci action by using same cache keys
       - name: install pnpm
         run: npm i -g pnpm@6
@@ -72,7 +73,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       # TODO alert discord
       # - name: Send a Slack notification if a publish happens
       #   if: steps.changesets.outputs.published == 'true'
