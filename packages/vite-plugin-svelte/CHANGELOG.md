@@ -1,5 +1,45 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.13
+
+### Minor Changes
+
+- Add `experimental` section to options and move `useVitePreprocess` there ([#99](https://github.com/sveltejs/vite-plugin-svelte/pull/99))
+
+  Experimental options are not ready for production use and breaking changes to them can occur in any release
+
+  If you already had `useVitePreprocess` enabled, update you config:
+
+  ```diff
+  - svelte({useVitePreprocess: true})
+  + svelte({experimental: {useVitePreprocess: true}})
+  ```
+
+* Add option to ignore svelte preprocessors of other vite plugins ([#98](https://github.com/sveltejs/vite-plugin-svelte/pull/98))
+
+  - ignore them all: `ignorePluginPreprocessors: true`
+  - ignore by name: `ignorePluginPreprocessors: ['<name of plugin>',...]`
+
+- Move plugin preprocessor definition to api namespace ([#98](https://github.com/sveltejs/vite-plugin-svelte/pull/98))
+
+  Plugins that provide `myplugin.sveltePreprocess`, should move it to `myplugin.api.sveltePreprocess`, as suggested by [rollup](https://rollupjs.org/guide/en/#direct-plugin-communication)
+
+* Experimental: Generate sourcemaps for preprocessors that lack them ([#101](https://github.com/sveltejs/vite-plugin-svelte/pull/101))
+
+  enable option `experimental.generateMissingPreprocessorSourcemaps` to use it
+
+### Patch Changes
+
+- removed redundant `disableCssHmr` option ([#99](https://github.com/sveltejs/vite-plugin-svelte/pull/99))
+
+  You can use `emitCss: false` or `emitCss: !!isProduction` instead
+
+* further improvements to changelog (see [#93](https://github.com/sveltejs/vite-plugin-svelte/issues/93)) ([#94](https://github.com/sveltejs/vite-plugin-svelte/pull/94))
+
+- reduce log output with log.once function to filter repetetive messages ([#101](https://github.com/sveltejs/vite-plugin-svelte/pull/101))
+
+* remove transitive peer dependency on rollup (fixes [#57](https://github.com/sveltejs/vite-plugin-svelte/issues/57)) ([#103](https://github.com/sveltejs/vite-plugin-svelte/pull/103))
+
 ## 1.0.0-next.12
 
 ### Minor Changes
