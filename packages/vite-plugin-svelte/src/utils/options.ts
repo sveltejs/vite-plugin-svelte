@@ -405,6 +405,11 @@ export interface ExperimentalOptions {
 	 * @default false
 	 */
 	useVitePreprocess?: boolean;
+
+	/**
+	 * wrap all preprocessors in with a function that adds a sourcemap to the output if missing
+	 */
+	generateMissingPreprocessorSourcemaps?: boolean;
 }
 
 export interface ResolvedOptions extends Options {

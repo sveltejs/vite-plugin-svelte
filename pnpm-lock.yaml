@@ -324,7 +324,9 @@ importers:
     specifiers:
       '@rollup/pluginutils': ^4.1.0
       '@types/debug': ^4.1.6
+      '@types/diff-match-patch': ^1.0.32
       debug: ^4.3.2
+      diff-match-patch: ^1.0.5
       esbuild: ^0.12.15
       kleur: ^4.1.4
       magic-string: ^0.25.7
@@ -337,16 +339,18 @@ importers:
     dependencies:
       '@rollup/pluginutils': 4.1.0_rollup@2.53.1
       debug: 4.3.2
+      diff-match-patch: 1.0.5
       kleur: 4.1.4
       magic-string: 0.25.7
       require-relative: 0.8.7
       svelte-hmr: 0.14.5_svelte@3.38.3
     devDependencies:
       '@types/debug': 4.1.6
+      '@types/diff-match-patch': 1.0.32
       esbuild: 0.12.15
       rollup: 2.53.1
       svelte: 3.38.3
-      tsup: 4.12.5_typescript@4.3.5
+      tsup: 4.12.5
       vite: 2.4.1
 
 packages:
@@ -1323,6 +1327,10 @@ packages:
 
   /@types/debug/4.1.6:
     resolution: {integrity: sha512-7fDOJFA/x8B+sO1901BmHlf5dE1cxBU8mRXj8QOEDnn16hhGJv/IHxJtZhvsabZsIMn0eLIyeOKAeqSNJJYTpA==}
+    dev: true
+
+  /@types/diff-match-patch/1.0.32:
+    resolution: {integrity: sha512-bPYT5ECFiblzsVzyURaNhljBH2Gh1t9LowgUwciMrNAhFewLkHT2H0Mto07Y4/3KCOGZHRQll3CTtQZ0X11D/A==}
     dev: true
 
   /@types/fs-extra/9.0.12:
@@ -2747,6 +2755,10 @@ packages:
     resolution: {integrity: sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==}
     engines: {node: '>=8'}
     dev: true
+
+  /diff-match-patch/1.0.5:
+    resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
+    dev: false
 
   /diff-sequences/26.6.2:
     resolution: {integrity: sha512-Mv/TDa3nZ9sbc5soK+OoA74BsS3mL37yixCvUAQkiuA4Wz6YtwP/K47n2rv2ovzHZvoiQeA5FTQOschKkEwB0Q==}
@@ -7430,7 +7442,7 @@ packages:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: true
 
-  /tsup/4.12.5_typescript@4.3.5:
+  /tsup/4.12.5:
     resolution: {integrity: sha512-3f0StcX+trOZvgaY/iU11U8HvvQ4v/LLgoP9OmxtOQVXP8e/Q8FSk69d0bXFb2pHB77CmVxvqiWdwybELQfx1A==}
     hasBin: true
     peerDependencies:
@@ -7452,7 +7464,6 @@ packages:
       rollup: 2.52.8
       sucrase: 3.18.1
       tree-kill: 1.2.2
-      typescript: 4.3.5
     transitivePeerDependencies:
       - supports-color
       - ts-node

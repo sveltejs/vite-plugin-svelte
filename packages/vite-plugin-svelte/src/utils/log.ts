@@ -64,14 +64,28 @@ function _log(logger: any, message: string, payload?: any) {
 export interface LogFn {
 	(message: string, payload?: any): void;
 	enabled: boolean;
+	once: (message: string, payload?: any) => void;
 }
 
 function createLogger(level: string): LogFn {
 	const logger = loggers[level];
 	const logFn: LogFn = _log.bind(null, logger) as LogFn;
+	const logged = new Set<String>();
+	const once = function (message: string, payload?: any) {
+		if (logged.has(message)) {
+			return;
+		}
+		logged.add(message);
+		logFn.apply(null, [message, payload]);
+	};
 	Object.defineProperty(logFn, 'enabled', {
 		get() {
 			return logger.enabled;
+		}
+	});
+	Object.defineProperty(logFn, 'once', {
+		get() {
+			return once;
 		}
 	});
 	return logFn;
