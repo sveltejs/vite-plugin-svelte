@@ -39,6 +39,7 @@ export function buildMagicString(
 }
 
 export function buildSourceMap(from: string, to: string, filename?: string) {
-	const m = buildMagicString(from, to);
-	return m.generateDecodedMap({ hires: true, file: filename });
+	// @ts-ignore
+	const m = buildMagicString(from, to, { filename });
+	return m.generateDecodedMap({ source: filename, hires: true, includeContent: false });
 }

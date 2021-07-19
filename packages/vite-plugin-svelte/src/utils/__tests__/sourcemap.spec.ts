@@ -18,7 +18,7 @@ describe('sourcemap', () => {
 			expect(map.mappings).toBeDefined();
 			expect(map.mappings[0]).toBeDefined();
 			expect(map.mappings[0][0]).toBeDefined();
-			expect(map.file).toBe('foo.txt');
+			expect(map.sources[0]).toBe('foo.txt');
 		});
 	});
 });

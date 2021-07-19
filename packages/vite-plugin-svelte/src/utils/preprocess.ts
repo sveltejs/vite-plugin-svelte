@@ -74,7 +74,7 @@ function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
 			s.append(' *{}');
 			return {
 				code: s.toString(),
-				map: s.generateDecodedMap({ file: filename, hires: true })
+				map: s.generateDecodedMap({ source: filename, hires: true })
 			};
 		}
 	};
