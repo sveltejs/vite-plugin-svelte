@@ -3,6 +3,15 @@ import { ConfigEnv, UserConfig, ViteDevServer } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
+// eslint-disable-next-line node/no-missing-import
+import { CompileOptions } from 'svelte/types/compiler/interfaces';
+import {
+	MarkupPreprocessor,
+	Preprocessor,
+	PreprocessorGroup,
+	Processed
+	// eslint-disable-next-line node/no-missing-import
+} from 'svelte/types/compiler/preprocess';
 
 const knownOptions = new Set([
 	'configFile',
@@ -420,63 +429,11 @@ export interface ResolvedOptions extends Options {
 	server?: ViteDevServer;
 }
 
-// TODO import from appropriate places
-export declare type ModuleFormat = 'esm' | 'cjs';
+export { CompileOptions, Processed, MarkupPreprocessor, Preprocessor, PreprocessorGroup };
 
-export interface CompileOptions {
-	format?: ModuleFormat;
-	name?: string;
-	filename?: string;
-	generate?: 'dom' | 'ssr' | false;
-	sourcemap?: object | string;
-	outputFilename?: string;
-	cssOutputFilename?: string;
-	sveltePath?: string;
-	dev?: boolean;
-	accessors?: boolean;
-	immutable?: boolean;
-	hydratable?: boolean;
-	legacy?: boolean;
-	customElement?: boolean;
-	tag?: string;
-	css?: boolean;
-	loopGuardTimeout?: number;
-	namespace?: string;
-	preserveComments?: boolean;
-	preserveWhitespace?: boolean;
-	cssHash?: CssHashGetter;
-}
+export type ModuleFormat = NonNullable<CompileOptions['format']>;
 
-export interface Processed {
-	code: string;
-	map?: string | object;
-	dependencies?: string[];
-	toString?: () => string;
-}
-
-export declare type CssHashGetter = (args: {
-	name: string;
-	filename: string | undefined;
-	css: string;
-	hash: (input: string) => string;
-}) => string;
-
-export declare type MarkupPreprocessor = (options: {
-	content: string;
-	filename: string;
-}) => Processed | Promise<Processed>;
-
-export declare type Preprocessor = (options: {
-	content: string;
-	attributes: Record<string, string | boolean>;
-	filename?: string;
-}) => Processed | Promise<Processed>;
-
-export interface PreprocessorGroup {
-	markup?: MarkupPreprocessor;
-	style?: Preprocessor;
-	script?: Preprocessor;
-}
+export type CssHashGetter = NonNullable<CompileOptions['cssHash']>;
 
 export type Arrayable<T> = T | T[];
 
