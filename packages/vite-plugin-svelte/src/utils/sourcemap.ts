@@ -1,11 +1,24 @@
 import MagicString, { MagicStringOptions } from 'magic-string';
-import { diff_match_patch, DIFF_DELETE, DIFF_INSERT } from 'diff-match-patch';
+import { log } from './log';
 
-export function buildMagicString(
+export async function buildMagicString(
 	from: string,
 	to: string,
 	options?: MagicStringOptions
-): MagicString {
+): Promise<MagicString | null> {
+	let diff_match_patch, DIFF_DELETE: number, DIFF_INSERT: number;
+	try {
+		const dmpPkg = await import('diff-match-patch');
+		diff_match_patch = dmpPkg.diff_match_patch;
+		DIFF_INSERT = dmpPkg.DIFF_INSERT;
+		DIFF_DELETE = dmpPkg.DIFF_DELETE;
+	} catch (e) {
+		log.error.once(
+			'Failed to import optional dependency "diff-match-patch". Please install it to enable generated sourcemaps.'
+		);
+		return null;
+	}
+
 	const dmp = new diff_match_patch();
 	const diffs = dmp.diff_main(from, to);
 	dmp.diff_cleanupSemantic(diffs);
@@ -38,8 +51,8 @@ export function buildMagicString(
 	return m;
 }
 
-export function buildSourceMap(from: string, to: string, filename?: string) {
+export async function buildSourceMap(from: string, to: string, filename?: string) {
 	// @ts-ignore
-	const m = buildMagicString(from, to, { filename });
-	return m.generateDecodedMap({ source: filename, hires: true, includeContent: false });
+	const m = await buildMagicString(from, to, { filename });
+	return m ? m.generateDecodedMap({ source: filename, hires: true, includeContent: false }) : null;
 }

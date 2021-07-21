@@ -295,6 +295,8 @@ export interface ExperimentalOptions {
 
 	/**
 	 * wrap all preprocessors in with a function that adds a sourcemap to the output if missing
+	 *
+	 * to use this option you have to install "diff-match-patch"
 	 */
 	generateMissingPreprocessorSourcemaps?: boolean;
 }

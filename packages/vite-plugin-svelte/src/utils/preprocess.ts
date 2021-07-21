@@ -204,9 +204,14 @@ function validateSourceMapOutputWrapper(group: PreprocessorGroup, i: number): Pr
 				}
 				if (invalidMap) {
 					try {
-						const map = buildSourceMap(options.content, result.code, options.filename);
-						log.warn.once('adding generated sourcemap to preprocesor result');
-						result.map = map;
+						const map = await buildSourceMap(options.content, result.code, options.filename);
+						if (map) {
+							log.debug.enabled &&
+								log.debug(
+									`adding generated sourcemap to preprocesor result for ${options.filename}`
+								);
+							result.map = map;
+						}
 					} catch (e) {
 						log.error(`failed to build sourcemap`, e);
 					}

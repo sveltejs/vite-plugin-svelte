@@ -308,6 +308,7 @@ importers:
   packages/playground/windicss:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
+      diff-match-patch: ^1.0.5
       svelte: ^3.38.3
       vite: ^2.4.2
       vite-plugin-windicss: ^1.2.4
@@ -316,6 +317,7 @@ importers:
       windicss: 3.1.5
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      diff-match-patch: 1.0.5
       svelte: 3.38.3
       vite: 2.4.2
       vite-plugin-windicss: 1.2.4_vite@2.4.2
@@ -339,7 +341,6 @@ importers:
     dependencies:
       '@rollup/pluginutils': 4.1.1
       debug: 4.3.2
-      diff-match-patch: 1.0.5
       kleur: 4.1.4
       magic-string: 0.25.7
       require-relative: 0.8.7
@@ -347,6 +348,7 @@ importers:
     devDependencies:
       '@types/debug': 4.1.6
       '@types/diff-match-patch': 1.0.32
+      diff-match-patch: 1.0.5
       esbuild: 0.12.15
       rollup: 2.53.2
       svelte: 3.38.3
@@ -2755,7 +2757,7 @@ packages:
 
   /diff-match-patch/1.0.5:
     resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
-    dev: false
+    dev: true
 
   /diff-sequences/26.6.2:
     resolution: {integrity: sha512-Mv/TDa3nZ9sbc5soK+OoA74BsS3mL37yixCvUAQkiuA4Wz6YtwP/K47n2rv2ovzHZvoiQeA5FTQOschKkEwB0Q==}
