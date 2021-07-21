@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-import qs from 'querystring';
 import { createFilter } from '@rollup/pluginutils';
 import { Arrayable, ResolvedOptions } from './options';
 import { normalizePath } from 'vite';
@@ -44,7 +43,7 @@ function parseToSvelteRequest(
 	timestamp: number,
 	ssr: boolean
 ): SvelteRequest | undefined {
-	const query: RequestQuery = qs.parse(rawQuery) as RequestQuery;
+	const query: RequestQuery = Object.fromEntries(new URLSearchParams(rawQuery)) as RequestQuery;
 	for (const p of ['svelte', 'url', 'raw'] as Array<keyof RequestQuery>) {
 		if (query[p] != null) {
 			// @ts-ignore
