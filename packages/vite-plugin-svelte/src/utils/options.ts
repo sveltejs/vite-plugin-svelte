@@ -4,7 +4,7 @@ import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
 // eslint-disable-next-line node/no-missing-import
-import { CompileOptions } from 'svelte/types/compiler/interfaces';
+import { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
 import {
 	MarkupPreprocessor,
 	Preprocessor,
@@ -23,7 +23,6 @@ const knownOptions = new Set([
 	'onwarn',
 	'preprocess',
 	'hot',
-	'disableCssHmr',
 	'ignorePluginPreprocessors',
 	'experimental'
 ]);
@@ -261,132 +260,11 @@ export interface Options {
 	 *                             YOU HAVE BEEN WARNED
 	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	 *
+	 * set to object to pass custom options to svelte-hmr, see https://github.com/rixo/svelte-hmr#options
+	 *
 	 * @default true for development, always false for production
 	 */
-	hot?:
-		| undefined
-		| boolean
-		| {
-				// svelte-hmr options
-				/**
-				 * preserve all local state
-				 * @default false
-				 */
-				preserveLocalState?: boolean;
-
-				/**
-				 * escape hatchs from preservation of local state
-				 * disable preservation of state for this component
-				 *
-				 * @default ['\@hmr:reset', '\@!hmr']
-				 */
-				noPreserveStateKey?: string[];
-
-				/**
-				 * enable preservation of state for all variables in this component
-				 *
-				 * @default '\@hmr:keep-all'
-				 */
-				preserveAllLocalStateKey?: string;
-
-				/**
-				 * enable preservation of state for a given variable (must be inline or
-				 * above the target variable or variables; can be repeated)
-				 *
-				 * @default '\@hmr:keep'
-				 */
-				preserveLocalStateKey?: string;
-
-				/**
-				 * don't reload on fatal error
-				 *
-				 * @default false
-				 */
-				noReload?: boolean;
-
-				/**
-				 * try to recover after runtime errors during component init
-				 *
-				 * @default true
-				 */
-				optimistic?: boolean;
-				/**
-				 * auto accept modules of components that have named exports (i.e. exports
-				 * from context="module")
-				 *
-				 * @default true
-				 */
-				acceptNamedExports?: boolean;
-
-				/**
-				 * auto accept modules of components have accessors (either accessors compile
-				 * option, or \<svelte:option accessors=\{true\} /\>) -- this means that if you
-				 * set accessors compile option globally, you must also set this option to
-				 * true, or no component will be hot reloaded (but there are a lot of edge
-				 * cases that HMR can't support correctly with accessors)
-				 *
-				 * @default true
-				 */
-				acceptAccessors?: boolean;
-
-				/**
-				 * only inject CSS instead of recreating components when only CSS changes
-				 *
-				 * @default true, but vite-plugin-svelte configures this automatically according to emitCss requirements
-				 */
-				injectCss?: boolean;
-
-				/**
-				 * to mitigate FOUC between dispose (remove stylesheet) and accept
-				 *
-				 * note: has no effect when emitCss is true (vite-plugin-svelte default)
-				 * @default 100
-				 */
-				cssEjectDelay?: number;
-
-				//
-				/**
-				 * Svelte Native mode
-				 *
-				 * @default false
-				 */
-				native?: boolean;
-
-				/**
-				 * name of the adapter import binding
-				 *
-				 * @default '___SVELTE_HMR_HOT_API_PROXY_ADAPTER'
-				 */
-				importAdapterName?: string;
-				/**
-				 * use absolute file paths to import runtime deps of svelte-hmr
-				 * (see https://github.com/rixo/svelte-hmr/issues/11)
-				 *
-				 * @default true
-				 */
-				absoluteImports?: boolean;
-
-				/**
-				 * disable runtime error overlay
-				 *
-				 * @default false
-				 */
-				noOverlay?: boolean;
-
-				/**
-				 * custom import path for hotApi
-				 */
-				hotApi?: string;
-				/**
-				 * custom path for adapter
-				 */
-				adapter?: string;
-		  };
-	/**
-	 * disable separate hmr update for css files via vite
-	 * @default false
-	 */
-	disableCssHmr?: boolean;
+	hot?: boolean | { injectCss?: boolean; [key: string]: any };
 
 	/**
 	 * vite plugins can contribute additional preprocessors by defining api.sveltePreprocess.
@@ -429,28 +307,17 @@ export interface ResolvedOptions extends Options {
 	server?: ViteDevServer;
 }
 
-export type { CompileOptions, Processed, MarkupPreprocessor, Preprocessor, PreprocessorGroup };
+export type {
+	CompileOptions,
+	Processed,
+	MarkupPreprocessor,
+	Preprocessor,
+	PreprocessorGroup,
+	Warning
+};
 
 export type ModuleFormat = NonNullable<CompileOptions['format']>;
 
 export type CssHashGetter = NonNullable<CompileOptions['cssHash']>;
 
 export type Arrayable<T> = T | T[];
-
-export interface Warning {
-	start?: {
-		line: number;
-		column: number;
-		pos?: number;
-	};
-	end?: {
-		line: number;
-		column: number;
-	};
-	pos?: number;
-	code: string;
-	message: string;
-	filename?: string;
-	frame?: string;
-	toString: () => string;
-}
