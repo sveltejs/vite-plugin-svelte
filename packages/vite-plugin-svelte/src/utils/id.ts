@@ -43,13 +43,7 @@ function parseToSvelteRequest(
 	timestamp: number,
 	ssr: boolean
 ): SvelteRequest | undefined {
-	const query: RequestQuery = Object.fromEntries(new URLSearchParams(rawQuery)) as RequestQuery;
-	for (const p of ['svelte', 'url', 'raw'] as Array<keyof RequestQuery>) {
-		if (query[p] != null) {
-			// @ts-ignore
-			query[p] = true;
-		}
-	}
+	const query = parseRequestQuery(rawQuery);
 	if (query.url || query.raw) {
 		// skip requests with special vite tags
 		return;
@@ -82,6 +76,17 @@ function createVirtualImportId(filename: string, root: string, type: SvelteQuery
 	}
 	// return same virtual id format as vite-plugin-vue eg ...App.svelte?svelte&type=style&lang.css
 	return `${filename}?${parts.join('&')}`;
+}
+
+function parseRequestQuery(rawQuery: string): RequestQuery {
+	const query = Object.fromEntries(new URLSearchParams(rawQuery));
+	for (const key in query) {
+		if (query[key] === '') {
+			// @ts-ignore
+			query[key] = true;
+		}
+	}
+	return query as RequestQuery;
 }
 
 /**
