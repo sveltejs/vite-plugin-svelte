@@ -429,7 +429,7 @@ export interface ResolvedOptions extends Options {
 	server?: ViteDevServer;
 }
 
-export { CompileOptions, Processed, MarkupPreprocessor, Preprocessor, PreprocessorGroup };
+export type { CompileOptions, Processed, MarkupPreprocessor, Preprocessor, PreprocessorGroup };
 
 export type ModuleFormat = NonNullable<CompileOptions['format']>;
 
