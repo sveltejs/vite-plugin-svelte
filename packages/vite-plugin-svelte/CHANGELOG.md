@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.14
+
+### Patch Changes
+
+- replace querystring with URLSearchParams ([#107](https://github.com/sveltejs/vite-plugin-svelte/pull/107))
+
+* import svelte types instead of duplicating them ([#105](https://github.com/sveltejs/vite-plugin-svelte/pull/105))
+
+- update svelte-hmr to 0.14.7 to fix issue with svelte 3.40 ([#112](https://github.com/sveltejs/vite-plugin-svelte/pull/112))
+
+* turn diff-match-patch into an optional peer dependency to reduce footprint ([#110](https://github.com/sveltejs/vite-plugin-svelte/pull/110))
+
 ## 1.0.0-next.13
 
 ### Minor Changes
