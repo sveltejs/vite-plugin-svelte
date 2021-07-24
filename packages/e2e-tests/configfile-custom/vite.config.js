@@ -3,6 +3,7 @@ const { defineConfig } = require('vite');
 
 module.exports = defineConfig(() => {
 	return {
+		root: './', // ensure custom root works, see https://github.com/sveltejs/vite-plugin-svelte/issues/113
 		plugins: [svelte({ configFile: 'svelte.config.custom.cjs' })],
 		build: {
 			// make build faster by skipping transforms and minification
