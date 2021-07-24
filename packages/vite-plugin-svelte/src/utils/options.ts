@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { ConfigEnv, UserConfig, ViteDevServer } from 'vite';
+import { ConfigEnv, UserConfig, ViteDevServer, normalizePath } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
@@ -12,6 +12,7 @@ import {
 	Processed
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
+import path from 'path';
 
 const knownOptions = new Set([
 	'configFile',
@@ -131,7 +132,7 @@ function mergeOptions(
 			...(svelteConfig?.experimental || {}),
 			...(inlineOptions?.experimental || {})
 		},
-		root: viteConfig.root || process.cwd(),
+		root: viteConfig.root!,
 		isProduction: viteEnv.mode === 'production',
 		isBuild: viteEnv.command === 'build',
 		isServe: viteEnv.command === 'serve'
@@ -149,19 +150,30 @@ export async function resolveOptions(
 	viteConfig: UserConfig,
 	viteEnv: ConfigEnv
 ): Promise<ResolvedOptions> {
+	const viteConfigWithResolvedRoot = {
+		...viteConfig,
+		root: resolveViteRoot(viteConfig)
+	};
 	const defaultOptions = buildDefaultOptions(viteEnv.mode === 'production', inlineOptions);
-	const svelteConfig = (await loadSvelteConfig(viteConfig, inlineOptions)) || {};
+	const svelteConfig = (await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions)) || {};
 	const resolvedOptions = mergeOptions(
 		defaultOptions,
 		svelteConfig,
 		inlineOptions,
-		viteConfig,
+		viteConfigWithResolvedRoot,
 		viteEnv
 	);
 
 	enforceOptionsForProduction(resolvedOptions);
 	enforceOptionsForHmr(resolvedOptions);
 	return resolvedOptions;
+}
+
+// vite passes unresolved `root`option to config hook but we need the resolved value, so do it here
+// https://github.com/sveltejs/vite-plugin-svelte/issues/113
+// https://github.com/vitejs/vite/blob/43c957de8a99bb326afd732c962f42127b0a4d1e/packages/vite/src/node/config.ts#L293
+function resolveViteRoot(viteConfig: UserConfig): string | undefined {
+	return normalizePath(viteConfig.root ? path.resolve(viteConfig.root) : process.cwd());
 }
 
 export function buildExtraViteConfig(

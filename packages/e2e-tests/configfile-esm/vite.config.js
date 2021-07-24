@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(({ command, mode }) => {
 	return {
+		root: './', // ensure custom root works, see https://github.com/sveltejs/vite-plugin-svelte/issues/113
 		plugins: [svelte()],
 		build: {
 			// make build faster by skipping transforms and minification

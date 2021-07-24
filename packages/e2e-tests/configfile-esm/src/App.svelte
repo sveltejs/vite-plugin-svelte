@@ -1,9 +1,11 @@
 <script>
 	import Dependency from 'e2e-tests-hmr-test-dependency';
+	import Child from './lib/Child.svelte';
 </script>
 
 <h1>Hello world!</h1>
 <Dependency />
+<Child />
 
 <style>
 	h1 {
