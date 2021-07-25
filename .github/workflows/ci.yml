@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        node: [ 12, 14, 16 ]
+        node: [ 14 ]
 
     steps:
       - uses: actions/setup-node@v2
@@ -40,7 +40,7 @@ jobs:
         id: pnpm-store
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: pnpm-store-fallback
         if: steps.pnpm-store.outputs.cache-hit != 'true'
@@ -48,10 +48,10 @@ jobs:
         id: pnpm-store-fallback
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-fallback-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-pnpm-store-fallback-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-fallback-
-            ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-
+            ${{ matrix.os }}-pnpm-store-fallback-
+            ${{ matrix.os }}-pnpm-store-
 
       - name: install
         if: steps.pnpm-store.outputs.cache-hit != 'true'
@@ -84,7 +84,7 @@ jobs:
         id: pnpm-store
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: install pnpm
         run: npm i -g pnpm@6
       - name: set pnpm store-dir
@@ -119,7 +119,7 @@ jobs:
         id: pnpm-store
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: install pnpm
         run: npm i -g pnpm@6
       - name: set pnpm store-dir
@@ -151,7 +151,7 @@ jobs:
         id: pnpm-store
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: install pnpm
         run: npm i -g pnpm@6
@@ -212,7 +212,7 @@ jobs:
         id: pnpm-store
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: install pnpm
         run: npm i -g pnpm@6
       - name: set pnpm store-dir

@@ -34,7 +34,7 @@ jobs:
         id: pnpm-store
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ubuntu-latest-node-v14-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ubuntu-latest-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: pnpm-store-fallback
         if: steps.pnpm-store.outputs.cache-hit != 'true'
@@ -42,10 +42,10 @@ jobs:
         id: pnpm-store-fallback
         with:
           path: ${{ env.pnpm_store_path }}
-          key: ubuntu-latest-node-v14-pnpm-store-fallback-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ubuntu-latest-pnpm-store-fallback-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ubuntu-latest-node-v14-pnpm-store-fallback-
-            ubuntu-latest-node-v14-pnpm-store-
+            ubuntu-latest-pnpm-store-fallback-
+            ubuntu-latest-pnpm-store-
 
       - name: install
         # install but don't run scripts, they could be evil
