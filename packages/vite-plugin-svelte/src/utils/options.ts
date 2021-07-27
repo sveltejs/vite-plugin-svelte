@@ -44,8 +44,7 @@ function buildDefaultOptions(isProduction: boolean, options: Partial<Options>): 
 		compilerOptions: {
 			format: 'esm',
 			css: !emitCss,
-			dev: !isProduction,
-			hydratable: true
+			dev: !isProduction
 		}
 	};
 	log.debug(`default options for ${isProduction ? 'production' : 'development'}`, defaultOptions);
@@ -311,6 +310,26 @@ export interface ExperimentalOptions {
 	 * to use this option you have to install "diff-match-patch"
 	 */
 	generateMissingPreprocessorSourcemaps?: boolean;
+
+	/**
+	 * function to update compilerOptions before compilation
+	 *
+	 * data.filename is the file to be compiled,
+	 * data.code is the already preprocessed code
+	 * data.compileOptions are the compilerOptions that are going to be used
+	 *
+	 * to change one, you should return an object with the changes you need, eg:
+	 *
+	 * ```
+	 * ({filename,compileOptions}) => { if( compileWithHydratable(filename) && !compileOptions.hydratable ){ return {hydratable: true}}}
+	 * ```
+	 * @default undefined
+	 */
+	dynamicCompileOptions?: (data: {
+		filename: string;
+		code: string;
+		compileOptions: Partial<CompileOptions>;
+	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
 }
 
 export interface ResolvedOptions extends Options {

@@ -117,9 +117,7 @@ beforeAll(async () => {
 			const port = await getUniqueTestPort(e2eTestsRoot, testName, isBuild);
 			server = await serve(tempDir, isBuild, port);
 			const url = ((global as any).viteTestUrl = `http://localhost:${port}`);
-			await (isBuild
-				? page.goto(url, { waitUntil: 'networkidle' })
-				: goToUrlAndWaitForViteWSConnect(page, url));
+			await (isBuild ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
 		}
 	} catch (e) {
 		// jest doesn't exit if our setup has error here

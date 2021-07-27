@@ -2,6 +2,10 @@ import node from '@sveltejs/adapter-node';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
+	compilerOptions: {
+		// enabling hydratable here makes tests pass, so once kits sets it the tests turn green again
+		// hydratable: true
+	},
 	kit: {
 		// By default, `npm run build` will create a standard Node app.
 		// You can create optimized builds for different platforms by

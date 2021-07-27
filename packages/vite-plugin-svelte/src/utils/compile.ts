@@ -15,7 +15,8 @@ const _createCompileSvelte = (makeHot: Function) =>
 		const { filename, normalizedFilename, cssId, ssr } = svelteRequest;
 		const { emitCss = true } = options;
 		const dependencies = [];
-		const finalCompilerOptions: CompileOptions = {
+
+		const compileOptions: CompileOptions = {
 			...options.compilerOptions,
 			filename,
 			generate: ssr ? 'ssr' : 'dom'
@@ -23,7 +24,7 @@ const _createCompileSvelte = (makeHot: Function) =>
 		if (options.hot && options.emitCss) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
 			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
-			finalCompilerOptions.cssHash = () => hash;
+			compileOptions.cssHash = () => hash;
 		}
 
 		let preprocessed;
@@ -31,10 +32,26 @@ const _createCompileSvelte = (makeHot: Function) =>
 		if (options.preprocess) {
 			preprocessed = await preprocess(code, options.preprocess, { filename });
 			if (preprocessed.dependencies) dependencies.push(...preprocessed.dependencies);
-			if (preprocessed.map) finalCompilerOptions.sourcemap = preprocessed.map;
+			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 		}
-
-		const compiled = compile(preprocessed ? preprocessed.code : code, finalCompilerOptions);
+		const finalCode = preprocessed ? preprocessed.code : code;
+		const dynamicCompileOptions = await options.experimental?.dynamicCompileOptions?.({
+			filename,
+			code: finalCode,
+			compileOptions
+		});
+		if (dynamicCompileOptions && log.debug.enabled) {
+			log.debug(
+				`dynamic compile options for  ${filename}: ${JSON.stringify(dynamicCompileOptions)}`
+			);
+		}
+		const finalCompileOptions = dynamicCompileOptions
+			? {
+					...compileOptions,
+					...dynamicCompileOptions
+			  }
+			: compileOptions;
+		const compiled = compile(finalCode, finalCompileOptions);
 
 		if (emitCss && compiled.css.code) {
 			// TODO properly update sourcemap?
@@ -49,7 +66,7 @@ const _createCompileSvelte = (makeHot: Function) =>
 				hotOptions: options.hot,
 				compiled,
 				originalCode: code,
-				compileOptions: finalCompilerOptions
+				compileOptions: finalCompileOptions
 			});
 		}
 
@@ -58,6 +75,7 @@ const _createCompileSvelte = (makeHot: Function) =>
 		return {
 			filename,
 			normalizedFilename,
+			// @ts-ignore
 			compiled,
 			ssr,
 			dependencies
