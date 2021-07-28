@@ -1,5 +1,23 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.15
+
+### Major Changes
+
+- change default value of compilerOptions.hydratable to false ([#122](https://github.com/sveltejs/vite-plugin-svelte/pull/122))
+
+  This is done to align with svelte compiler defaults and improve output in non-ssr scenarios.
+
+  Add `{compilerOptions: {hydratable: true}}` to vite-plugin-svelte config if you need hydration (eg. for ssr)
+
+### Minor Changes
+
+- add config option `experimental.dynamicCompileOptions` for finegrained control over compileOptions ([#122](https://github.com/sveltejs/vite-plugin-svelte/pull/122))
+
+### Patch Changes
+
+- resolve vite.root option correctly (fixes [#113](https://github.com/sveltejs/vite-plugin-svelte/issues/113)) ([#115](https://github.com/sveltejs/vite-plugin-svelte/pull/115))
+
 ## 1.0.0-next.14
 
 ### Patch Changes
