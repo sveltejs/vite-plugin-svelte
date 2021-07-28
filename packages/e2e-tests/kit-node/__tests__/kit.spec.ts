@@ -1,11 +1,12 @@
 import {
-	readFileContent,
 	editFile,
 	editFileAndWaitForHmrComplete,
 	getColor,
 	getEl,
 	getText,
 	isBuild,
+	readFileContent,
+	sleep,
 	untilUpdated
 } from '../../testUtils';
 
@@ -14,12 +15,37 @@ import path from 'path';
 
 describe('kit-node', () => {
 	describe('index route', () => {
-		it('should contain greeting', async () => {
-			// TODO is hydration testing needed here?
-			expect(await page.textContent('h1')).toMatch('Hello world!'); // after hydration
+		it('should hydrate', async () => {
+			// mark initial nodes
+			await page.$eval('#load', (e) => {
+				e['__initialNode'] = true;
+			});
+			await page.$eval('#mount', (e) => {
+				e['__initialNode'] = true;
+			});
 
+			// check content before hydration
+			expect(await getText('h1')).toBe('Hello world!');
+			expect(await getText('#load')).toBe('SERVER_LOADED');
+			expect(await getText('#mount')).toBe('BEFORE_MOUNT');
+
+			// also get page as text to confirm
 			const html = await (await fetch(page.url())).text();
-			expect(html).toMatch('Hello world!'); // before hydration
+			expect(html).toMatch('Hello world!');
+			expect(html).toMatch('SERVER_LOADED');
+			expect(html).toMatch('BEFORE_MOUNT');
+
+			// wait a bit for hydration to kick in
+			await sleep(250);
+
+			// check hydrated content
+			expect(await getText('#load')).toBe('CLIENT_LOADED');
+			expect(await getText('#mount')).toBe('AFTER_MOUNT');
+
+			// check that it did not replace the dom elements with new ones
+			expect(await page.$eval('#load', (e) => e['__initialNode'])).toBe(true);
+			expect(await page.$eval('#mount', (e) => e['__initialNode'])).toBe(true);
+
 			if (isBuild) {
 				// TODO additional testing needed here once vite-plugin-svelte implements indexHtmlTransform hook
 			}
@@ -51,7 +77,7 @@ describe('kit-node', () => {
 
 		it('should load dynamic import in onMount', async () => {
 			// expect log to contain message with dynamic import value from onMount
-			expect(browserLogs.some((x) => x === `onMount dynamic imported isSSR: false`)).toBe(true);
+			expect(browserLogs.some((x) => x === 'onMount dynamic imported isSSR: false')).toBe(true);
 		});
 
 		if (isBuild) {
