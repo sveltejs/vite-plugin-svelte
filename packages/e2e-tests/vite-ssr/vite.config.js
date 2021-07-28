@@ -7,7 +7,7 @@ module.exports = defineConfig(({ command, mode }) => {
 		plugins: [
 			svelte({
 				compilerOptions: {
-					hydratable: true
+					hydratable: true /* required for clientside hydration */
 				}
 			})
 		],
