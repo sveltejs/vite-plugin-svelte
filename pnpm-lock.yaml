@@ -8,7 +8,7 @@ importers:
       '@changesets/get-github-info': ^0.5.0
       '@types/fs-extra': ^9.0.12
       '@types/jest': ^26.0.24
-      '@types/node': ^16.4.3
+      '@types/node': ^16.4.5
       '@types/semver': ^7.3.8
       '@typescript-eslint/eslint-plugin': ^4.28.5
       '@typescript-eslint/parser': ^4.28.5
@@ -52,7 +52,7 @@ importers:
       '@changesets/get-github-info': 0.5.0
       '@types/fs-extra': 9.0.12
       '@types/jest': 26.0.24
-      '@types/node': 16.4.3
+      '@types/node': 16.4.5
       '@types/semver': 7.3.8
       '@typescript-eslint/eslint-plugin': 4.28.5_514553717ff968e20f6d1c6e521f8616
       '@typescript-eslint/parser': 4.28.5_eslint@7.31.0+typescript@4.3.5
@@ -180,11 +180,11 @@ importers:
   packages/e2e-tests/kit-node:
     specifiers:
       '@sveltejs/adapter-node': ^1.0.0-next.35
-      '@sveltejs/kit': ^1.0.0-next.137
+      '@sveltejs/kit': ^1.0.0-next.138
       svelte: ^3.41.0
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.35
-      '@sveltejs/kit': 1.0.0-next.137_svelte@3.41.0
+      '@sveltejs/kit': 1.0.0-next.138_svelte@3.41.0
       svelte: 3.41.0
 
   packages/e2e-tests/package-json-svelte-field:
@@ -221,13 +221,13 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       '@tsconfig/svelte': ^2.0.1
-      '@types/node': ^16.4.3
+      '@types/node': ^16.4.5
       svelte-preprocess: ^4.7.4
       vite: ^2.4.4
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       '@tsconfig/svelte': 2.0.1
-      '@types/node': 16.4.3
+      '@types/node': 16.4.5
       svelte-preprocess: 4.7.4_svelte@3.41.0+typescript@4.3.5
       vite: 2.4.4
 
@@ -267,7 +267,7 @@ importers:
       '@fontsource/fira-mono': ^4.5.0
       '@lukeed/uuid': ^2.0.0
       '@sveltejs/adapter-node': ^1.0.0-next.35
-      '@sveltejs/kit': ^1.0.0-next.137
+      '@sveltejs/kit': ^1.0.0-next.138
       cookie: ^0.4.1
       svelte: ^3.41.0
     dependencies:
@@ -276,7 +276,7 @@ importers:
       cookie: 0.4.1
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.35
-      '@sveltejs/kit': 1.0.0-next.137_svelte@3.41.0
+      '@sveltejs/kit': 1.0.0-next.138_svelte@3.41.0
       svelte: 3.41.0
 
   packages/playground/optimizedeps-include:
@@ -333,7 +333,7 @@ importers:
       kleur: ^4.1.4
       magic-string: ^0.25.7
       require-relative: ^0.8.7
-      rollup: ^2.54.0
+      rollup: ^2.55.0
       svelte: ^3.41.0
       svelte-hmr: ^0.14.7
       tsup: ^4.12.5
@@ -350,7 +350,7 @@ importers:
       '@types/diff-match-patch': 1.0.32
       diff-match-patch: 1.0.5
       esbuild: 0.12.16
-      rollup: 2.54.0
+      rollup: 2.55.0
       svelte: 3.41.0
       tsup: 4.12.5_typescript@4.3.5
       vite: 2.4.4
@@ -1254,8 +1254,8 @@ packages:
       tiny-glob: 0.2.9
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.137_svelte@3.41.0:
-    resolution: {integrity: sha512-YdcwaN9zWcbz4jLZS4j9/7fNZIVO8WkXDuwGTiKARhOLIuuJAjCvSuOZ3btJdV/ySpizTWX22u632weVPLECdw==}
+  /@sveltejs/kit/1.0.0-next.138_svelte@3.41.0:
+    resolution: {integrity: sha512-ajJVravr/h0uWysyKyrdqOphNj1bgPZ7Ovgf6dv/L+ubE5LKA8ZgqqxgfmMHIwm9d66vcYU6TydaQOAGrlIGCA==}
     engines: {node: ^12.20 || >=14.13}
     hasBin: true
     peerDependencies:
@@ -1396,8 +1396,8 @@ packages:
     resolution: {integrity: sha512-HrJuE7Mlqcjj+00JqMWpZ3tY8w7EUd+S0U3L1+PQSWiXZbOgyQDvi+ogoUxaHApPJq5diKxYBQwA3iIlNcPqOg==}
     dev: true
 
-  /@types/node/16.4.3:
-    resolution: {integrity: sha512-GKM4FLMkWDc0sfx7tXqPWkM6NBow1kge0fgQh0bOnlqo4iT1kvTvMEKE0c1RtUGnbLlGRXiAA8SumE//90uKAg==}
+  /@types/node/16.4.5:
+    resolution: {integrity: sha512-+0GPv/hIFNoy8r5MFf7vRpBjnqNYNrlHdetoy23E7TYc7JB2ctwyi3GMKpviozaHQ/Sy2kBNUTvG9ywN66zV1g==}
     dev: true
 
   /@types/normalize-package-data/2.4.0:
@@ -6519,6 +6519,14 @@ packages:
 
   /rollup/2.54.0:
     resolution: {integrity: sha512-RHzvstAVwm9A751NxWIbGPFXs3zL4qe/eYg+N7WwGtIXVLy1cK64MiU37+hXeFm1jqipK6DGgMi6Z2hhPuCC3A==}
+    engines: {node: '>=10.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /rollup/2.55.0:
+    resolution: {integrity: sha512-Atc3QqelKzrKwRkqnSdq0d2Mi8e0iGuL+kZebKMZ4ysyWHD5hw9VfVCAuODIW5837RENV8LXcbAEHurYf+ArvA==}
     engines: {node: '>=10.0.0'}
     hasBin: true
     optionalDependencies:
