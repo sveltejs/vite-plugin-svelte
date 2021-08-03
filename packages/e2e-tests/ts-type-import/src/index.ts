@@ -1,4 +1,5 @@
-import { test, Test } from './lib';
+import type { Test } from './lib';
+import { test } from './lib';
 import App from './App.svelte';
 
 main();
