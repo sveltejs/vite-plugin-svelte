@@ -46,7 +46,7 @@ importers:
       svelte: ^3.41.0
       ts-jest: ^27.0.4
       typescript: ^4.3.5
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     devDependencies:
       '@changesets/cli': 2.16.0
       '@changesets/get-github-info': 0.5.0
@@ -90,7 +90,7 @@ importers:
       svelte: 3.41.0
       ts-jest: 27.0.4_52cc4273aa16028085013af47e479e10
       typescript: 4.3.5
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/e2e-tests:
     specifiers:
@@ -109,7 +109,7 @@ importers:
       postcss-load-config: ^3.1.0
       svelte: ^3.41.0
       svelte-preprocess: ^4.7.4
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     dependencies:
       e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
     devDependencies:
@@ -119,20 +119,20 @@ importers:
       postcss-load-config: 3.1.0
       svelte: 3.41.0
       svelte-preprocess: 4.7.4_698a88b88e7140eb9c0fbe72081930ab
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/e2e-tests/configfile-custom:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-tests-hmr-test-dependency: workspace:*
       svelte: ^3.41.0
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     dependencies:
       e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.41.0
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/e2e-tests/configfile-esm:
     specifiers:
@@ -140,24 +140,24 @@ importers:
       e2e-tests-hmr-test-dependency: workspace:*
       svelte: ^3.41.0
       svelte-preprocess: ^4.7.4
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     dependencies:
       e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.41.0
       svelte-preprocess: 4.7.4_svelte@3.41.0+typescript@4.3.5
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/e2e-tests/custom-extensions:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       svelte: ^3.41.0
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.41.0
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/e2e-tests/hmr:
     specifiers:
@@ -165,14 +165,14 @@ importers:
       e2e-tests-hmr-test-dependency: workspace:*
       node-fetch: ^2.6.1
       svelte: ^3.41.0
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     dependencies:
       e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       node-fetch: 2.6.1
       svelte: 3.41.0
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/e2e-tests/hmr-test-dependency:
     specifiers: {}
@@ -192,13 +192,13 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-tests-test-dependency-svelte-field: workspace:*
       svelte: ^3.41.0
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     dependencies:
       e2e-tests-test-dependency-svelte-field: link:../test-dependency-svelte-field
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.41.0
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/e2e-tests/svelte-preprocess:
     specifiers:
@@ -206,13 +206,13 @@ importers:
       svelte: ^3.41.0
       svelte-preprocess: ^4.7.4
       typescript: ^4.3.5
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.41.0
       svelte-preprocess: 4.7.4_svelte@3.41.0+typescript@4.3.5
       typescript: 4.3.5
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/e2e-tests/test-dependency-svelte-field:
     specifiers: {}
@@ -223,13 +223,13 @@ importers:
       '@tsconfig/svelte': ^2.0.1
       '@types/node': ^16.4.10
       svelte-preprocess: ^4.7.4
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       '@tsconfig/svelte': 2.0.1
       '@types/node': 16.4.10
       svelte-preprocess: 4.7.4_svelte@3.41.0+typescript@4.3.5
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/e2e-tests/vite-ssr:
     specifiers:
@@ -239,7 +239,7 @@ importers:
       express: ^4.17.1
       serve-static: ^1.14.1
       svelte: ^3.41.0
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       compression: 1.7.4
@@ -247,7 +247,7 @@ importers:
       express: 4.17.1
       serve-static: 1.14.1
       svelte: 3.41.0
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/playground:
     specifiers: {}
@@ -256,11 +256,11 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       svelte: ^3.41.0
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.41.0
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/playground/kit-demo-app:
     specifiers:
@@ -284,12 +284,12 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       svelte: ^3.41.0
       tinro: ^0.6.5
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.41.0
       tinro: 0.6.5
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/playground/preprocess-with-vite:
     specifiers:
@@ -297,20 +297,20 @@ importers:
       sass: ^1.37.2
       stylus: ^0.54.8
       svelte: ^3.41.0
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       sass: 1.37.2
       stylus: 0.54.8
       svelte: 3.41.0
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
   packages/playground/windicss:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       diff-match-patch: ^1.0.5
       svelte: ^3.41.0
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
       vite-plugin-windicss: ^1.2.7
       windicss: ^3.1.6
     dependencies:
@@ -319,8 +319,8 @@ importers:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       diff-match-patch: 1.0.5
       svelte: 3.41.0
-      vite: 2.4.4
-      vite-plugin-windicss: 1.2.7_vite@2.4.4
+      vite: 2.5.0-beta.0
+      vite-plugin-windicss: 1.2.7_vite@2.5.0-beta.0
 
   packages/vite-plugin-svelte:
     specifiers:
@@ -337,7 +337,7 @@ importers:
       svelte: ^3.41.0
       svelte-hmr: ^0.14.7
       tsup: ^4.12.5
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     dependencies:
       '@rollup/pluginutils': 4.1.1
       debug: 4.3.2
@@ -353,7 +353,7 @@ importers:
       rollup: 2.55.1
       svelte: 3.41.0
       tsup: 4.12.5_typescript@4.3.5
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
 
 packages:
 
@@ -1265,7 +1265,7 @@ packages:
       cheap-watch: 1.0.3
       sade: 1.7.4
       svelte: 3.41.0
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
     dev: true
 
   /@szmarczak/http-timer/1.1.2:
@@ -6525,14 +6525,6 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /rollup/2.54.0:
-    resolution: {integrity: sha512-RHzvstAVwm9A751NxWIbGPFXs3zL4qe/eYg+N7WwGtIXVLy1cK64MiU37+hXeFm1jqipK6DGgMi6Z2hhPuCC3A==}
-    engines: {node: '>=10.0.0'}
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /rollup/2.55.1:
     resolution: {integrity: sha512-1P9w5fpb6b4qroePh8vHKGIvPNxwoCQhjJpIqfZGHLKpZ0xcU2/XBmFxFbc9697/6bmHpmFTLk5R1dAQhFSo0g==}
     engines: {node: '>=10.0.0'}
@@ -7687,29 +7679,29 @@ packages:
       extsprintf: 1.3.0
     dev: true
 
-  /vite-plugin-windicss/1.2.7_vite@2.4.4:
+  /vite-plugin-windicss/1.2.7_vite@2.5.0-beta.0:
     resolution: {integrity: sha512-JgIGsH5HPaz3ghDRhhLeF8VZQMUE+R0jD9u8sbne5KdBBa208r0IuTcx73V7CPcmsu7KABG6rfLgST9ffVoiDA==}
     peerDependencies:
-      vite: ^2.4.4
+      vite: ^2.5.0-beta.0
     dependencies:
       '@windicss/plugin-utils': 1.2.7
       chalk: 4.1.1
       debug: 4.3.2
-      vite: 2.4.4
+      vite: 2.5.0-beta.0
       windicss: 3.1.6
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /vite/2.4.4:
-    resolution: {integrity: sha512-m1wK6pFJKmaYA6AeZIUXyiAgUAAJzVXhIMYCdZUpCaFMGps0v0IlNJtbmPvkUhVEyautalajmnW5X6NboUPsnw==}
-    engines: {node: '>=12.0.0'}
+  /vite/2.5.0-beta.0:
+    resolution: {integrity: sha512-X3/aK7GxAuDLxcSL4tDyjm76DJLdIz8e0JD3oC7xEcZ7MpoCSJwehAnULr3+0XCzDLpdIAZbKSyKue9fPt7NCg==}
+    engines: {node: '>=12.2.0'}
     hasBin: true
     dependencies:
       esbuild: 0.12.17
       postcss: 8.3.6
       resolve: 1.20.0
-      rollup: 2.54.0
+      rollup: 2.55.1
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
