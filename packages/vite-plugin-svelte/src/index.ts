@@ -13,7 +13,7 @@ import {
 } from './utils/options';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 
-import { setupWatchers } from './utils/watch';
+import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { addExtraPreprocessors } from './utils/preprocess';
 import { PartialResolvedId } from 'rollup';
@@ -164,7 +164,9 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			logCompilerWarnings(compileData.compiled.warnings, options);
 			cache.update(compileData);
 			if (compileData.dependencies?.length && options.server) {
-				compileData.dependencies.forEach((d) => this.addWatchFile(d));
+				compileData.dependencies.forEach((d) => {
+					ensureWatchedFile(options.server!.watcher, d, options.root);
+				});
 			}
 			log.debug(`transform returns compiled js for ${filename}`);
 			return compileData.compiled.js;
