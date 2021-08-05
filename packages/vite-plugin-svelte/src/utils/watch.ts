@@ -5,6 +5,7 @@ import { IdParser } from './id';
 import { ResolvedOptions } from './options';
 import { knownSvelteConfigNames } from './load-svelte-config';
 import path from 'path';
+import { FSWatcher } from 'vite';
 
 export function setupWatchers(
 	options: ResolvedOptions,
@@ -71,22 +72,35 @@ export function setupWatchers(
 	};
 
 	// collection of watcher listeners by event
-	const listeners = {
-		add: [],
+	const listenerCollection = {
+		add: [] as Array<Function>,
 		change: [emitChangeEventOnDependants],
 		unlink: [removeUnlinkedFromCache, emitChangeEventOnDependants]
 	};
 	if (svelteConfigFile) {
-		listeners.change.push(restartOnConfigChange);
-		listeners.unlink.push(restartOnConfigChange);
+		listenerCollection.change.push(restartOnConfigChange);
+		listenerCollection.unlink.push(restartOnConfigChange);
 	} else {
-		// @ts-ignore
-		listeners.add.push(restartOnConfigAdd);
+		listenerCollection.add.push(restartOnConfigAdd);
 	}
 
-	Object.entries(listeners).forEach(([evt, listeners]) => {
+	Object.entries(listenerCollection).forEach(([evt, listeners]) => {
 		if (listeners.length > 0) {
 			watcher.on(evt, (filename) => listeners.forEach((listener) => listener(filename)));
 		}
 	});
+}
+// taken from vite utils
+export function ensureWatchedFile(watcher: FSWatcher, file: string | null, root: string): void {
+	if (
+		file &&
+		// only need to watch if out of root
+		!file.startsWith(root + '/') &&
+		// some rollup plugins use null bytes for private resolved Ids
+		!file.includes('\0') &&
+		fs.existsSync(file)
+	) {
+		// resolve file to normalized system path
+		watcher.add(path.resolve(file));
+	}
 }
