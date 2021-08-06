@@ -1,9 +1,6 @@
 # build and test on linux, windows, mac with node 12, 14, 16
 name: CI
 
-env:
-  pnpm_store_path: ${{github.workspace}}/.pnpm-store
-
 on:
   push:
     branches:
@@ -13,159 +10,79 @@ on:
       - main
 
 jobs:
-  pnpmstore:
-    timeout-minutes: 5
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-        node: [ 14 ]
-
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: install pnpm
-        run: npm i -g pnpm@6
-      - name: set pnpm store-dir
-        run: pnpm config set store-dir ${{ env.pnpm_store_path }}
-      - name: pnpm-store
-        uses: actions/cache@v2
-        id: pnpm-store
-        with:
-          path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - name: pnpm-store-fallback
-        if: steps.pnpm-store.outputs.cache-hit != 'true'
-        uses: actions/cache@v2
-        id: pnpm-store-fallback
-        with:
-          path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-pnpm-store-fallback-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ matrix.os }}-pnpm-store-fallback-
-            ${{ matrix.os }}-pnpm-store-
-
-      - name: install
-        if: steps.pnpm-store.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
-      - name: prune store
-        if: steps.pnpm-store.outputs.cache-hit != 'true'
-        run: pnpm store prune
-      - name: check store
-        if: steps.pnpm-store.outputs.cache-hit != 'true'
-        run: pnpm store status
-
-  lint:
-    needs: pnpmstore
+  # "checks" job runs on linux + node14 only and checks that install, build, lint and audit work
+  # it also primes the pnpm store cache for linux, important for downstream tests
+  checks:
     timeout-minutes: 5
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
+        # pseudo-matrix for convenience, NEVER use more than a single combination
+        node: [14]
+        os: [ubuntu-latest]
+    outputs:
+      build_successful: ${{ steps.build.outcome == 'success' }}
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: pnpm-store
-        uses: actions/cache@v2
-        id: pnpm-store
+      - run: npm i -g pnpm@6
+      - uses: actions/setup-node@v2
         with:
-          path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: install pnpm
-        run: npm i -g pnpm@6
-      - name: set pnpm store-dir
-        run: pnpm config set store-dir ${{ env.pnpm_store_path }}
+          node-version: ${{ matrix.node }}
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
-        run: pnpm install --frozen-lockfile --offline --ignore-scripts
-      - name: install esbuild
-        run: node node_modules/esbuild/install.js
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+          node node_modules/esbuild/install.js
       - name: build
-        run: pnpm run build:ci
+        id: build
+        run: pnpm run build
       - name: lint
-        run: pnpm lint
-
-  audit:
-    needs: pnpmstore
-    timeout-minutes: 5
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: pnpm-store
-        uses: actions/cache@v2
-        id: pnpm-store
-        with:
-          path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: install pnpm
-        run: npm i -g pnpm@6
-      - name: set pnpm store-dir
-        run: pnpm config set store-dir ${{ env.pnpm_store_path }}
-      - name: install
-        run: pnpm install --frozen-lockfile --offline --ignore-scripts
+        if: (${{ success() }} || ${{ failure() }})
+        run: pnpm run lint
       - name: audit
+        if: (${{ success() }} || ${{ failure() }})
         run: pnpm audit
 
+  # this is the test matrix, it runs with node14 on linux,windows,macos + node12,16 on linux
+  # it is skipped if the build step of the checks job wasn't successful (still runs if lint or audit fail)
   test:
-    needs: pnpmstore
+    needs: checks
+    if: (${{ success() }} || ${{ failure() }}) && (${{ needs.checks.output.build_successful }})
     timeout-minutes: 10
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-        node: [ 12, 14, 16 ]
+        node: [14]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - node: 12
+            os: ubuntu-latest
+          - node: 16
+            os: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: pnpm-store
-        uses: actions/cache@v2
-        id: pnpm-store
+      - run: npm i -g pnpm@6
+      - uses: actions/setup-node@v2
         with:
-          path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - name: install pnpm
-        run: npm i -g pnpm@6
-      - name: set pnpm store-dir
-        run: pnpm config set store-dir ${{ env.pnpm_store_path }}
+          node-version: ${{ matrix.node }}
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
-        run: pnpm install --frozen-lockfile --offline --ignore-scripts
-      - name: install esbuild
-        run: node node_modules/esbuild/install.js
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+          node node_modules/esbuild/install.js
       - name: build
         run: pnpm run build:ci
       - name: run tests
         run: pnpm test:ci
-
       - name: archive tests temp directory
         if: failure()
         shell: bash
@@ -190,36 +107,3 @@ jobs:
             temp/serve/junit.xml
             temp/build/jest-results.json
             temp/build/junit.xml
-
-  build:
-    needs: pnpmstore
-    timeout-minutes: 5
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: pnpm-store
-        uses: actions/cache@v2
-        id: pnpm-store
-        with:
-          path: ${{ env.pnpm_store_path }}
-          key: ${{ matrix.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: install pnpm
-        run: npm i -g pnpm@6
-      - name: set pnpm store-dir
-        run: pnpm config set store-dir ${{ env.pnpm_store_path }}
-      - name: install
-        run: pnpm install --frozen-lockfile --offline --ignore-scripts
-      - name: install esbuild
-        run: node node_modules/esbuild/install.js
-      - name: build
-        run: pnpm run build
