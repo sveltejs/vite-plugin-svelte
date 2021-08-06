@@ -42,10 +42,10 @@ jobs:
         run: pnpm run build
       - name: lint
         if: (${{ success() }} || ${{ failure() }})
-        run: pnpm run lint && exit 1
+        run: pnpm run lint
       - name: audit
         if: (${{ success() }} || ${{ failure() }})
-        run: pnpm audit && exit 1
+        run: pnpm audit
 
   # this is the test matrix, it runs with node14 on linux,windows,macos + node12,16 on linux
   # it is skipped if the build step of the checks job wasn't successful (still runs if lint or audit fail)
