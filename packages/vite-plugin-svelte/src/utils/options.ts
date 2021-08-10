@@ -179,20 +179,24 @@ export function buildExtraViteConfig(
 	options: ResolvedOptions,
 	config: UserConfig
 ): Partial<UserConfig> {
-	const allSvelteImports = [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS];
-
-	// exclude svelte imports from optimization unless explicitly included
-	const excludeFromOptimize = allSvelteImports.filter(
-		(x) => !config.optimizeDeps?.include?.includes(x)
-	);
-
+	// include svelte imports for optimization unless explicitly excluded
+	const include: string[] = [];
+	const exclude: string[] = ['svelte-hmr'];
+	const isSvelteExcluded = config.optimizeDeps?.exclude?.includes('svelte');
+	if (!isSvelteExcluded) {
+		log.debug(`adding bare svelte packages to optimizeDeps.include: ${SVELTE_IMPORTS.join(', ')} `);
+		include.push(...SVELTE_IMPORTS);
+	} else {
+		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
+	}
 	const extraViteConfig: Partial<UserConfig> = {
 		optimizeDeps: {
-			exclude: excludeFromOptimize
+			include,
+			exclude
 		},
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
-			dedupe: allSvelteImports
+			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
 		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
