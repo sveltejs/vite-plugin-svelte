@@ -184,8 +184,11 @@ export function buildExtraViteConfig(
 	const exclude: string[] = ['svelte-hmr'];
 	const isSvelteExcluded = config.optimizeDeps?.exclude?.includes('svelte');
 	if (!isSvelteExcluded) {
-		log.debug(`adding bare svelte packages to optimizeDeps.include: ${SVELTE_IMPORTS.join(', ')} `);
-		include.push(...SVELTE_IMPORTS);
+		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
+		log.debug(
+			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `
+		);
+		include.push(...svelteImportsToInclude);
 	} else {
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
