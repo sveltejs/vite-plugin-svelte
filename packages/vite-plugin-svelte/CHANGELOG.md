@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.17
+
+### Patch Changes
+
+- don't add svelte/ssr to vite.optimizeDeps.include (fixes [#138](https://github.com/sveltejs/vite-plugin-svelte/issues/138)) ([#139](https://github.com/sveltejs/vite-plugin-svelte/pull/139))
+
 ## 1.0.0-next.16
 
 ### Major Changes
