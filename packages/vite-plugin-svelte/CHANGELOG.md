@@ -28,14 +28,14 @@
   To get the old behavior back, add the following to your vite config
 
   ```js
-  optimizeDeps: {
-  	exclude: ['svelte'];
+  {
+  	['svelte'];
   }
   ```
 
 ### Patch Changes
 
-- prepare for a change in vite 2.5.0 that would lead to errors in preprocessor dependency handling (fixes [#130](https://github.com/sveltejs/vite-plugin-svelte/issues/130)) ([`5ea82cb`](https://github.com/sveltejs/vite-plugin-svelte/commit/5ea82cb8351c8d9a8765ecc27b793582a9845c13))
+- prepare for a change in vite 2.5.0 that would lead to errors in preprocessor dependency handling (fixes [#130](https://github.com/sveltejs/vite-plugin-svelte/issues/130)) ([#131](https://github.com/sveltejs/vite-plugin-svelte/pull/131))
 
 ## 1.0.0-next.15
 
