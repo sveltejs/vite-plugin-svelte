@@ -1,9 +1,12 @@
+import { createRequire } from 'module';
 import path from 'path';
 import fs from 'fs';
 import { pathToFileURL } from 'url';
 import { log } from './log';
 import { Options } from './options';
 import { UserConfig } from 'vite';
+
+const _require = createRequire(import.meta.url);
 
 export const knownSvelteConfigNames = [
 	'svelte.config.js',
@@ -27,7 +30,7 @@ export async function loadSvelteConfig(
 	if (configFile) {
 		let err;
 		// try to use dynamic import for svelte.config.js first
-		if (configFile.endsWith('.js') || configFile.endsWith('.mjs') || configFile.endsWith('.cjs')) {
+		if (configFile.endsWith('.js') || configFile.endsWith('.mjs')) {
 			try {
 				const result = await dynamicImportDefault(pathToFileURL(configFile).href);
 				if (result != null) {
@@ -44,6 +47,27 @@ export async function loadSvelteConfig(
 			}
 		}
 		// cjs or error with dynamic import
+		if (!configFile.endsWith('.mjs')) {
+			try {
+				// avoid loading cached version on reload
+				delete _require.cache[_require.resolve(configFile)];
+				const result = _require(configFile);
+				if (result != null) {
+					return {
+						...result,
+						configFile
+					};
+				} else {
+					throw new Error(`invalid export in ${configFile}`);
+				}
+			} catch (e) {
+				log.error(`failed to require config ${configFile}`, e);
+				if (!err) {
+					err = e;
+				}
+			}
+		}
+		// cjs but project is using `type: module`
 		if (!configFile.endsWith('.mjs')) {
 			try {
 				// avoid loading cached version on reload
