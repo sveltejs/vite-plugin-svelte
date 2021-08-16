@@ -2,4 +2,4 @@
 '@sveltejs/vite-plugin-svelte': patch
 ---
 
-also try load cjs config
+use createRequire to load svelte.config.cjs in esm projects (fixes #141)
