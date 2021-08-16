@@ -9,7 +9,8 @@ import {
 	getColor,
 	editFile,
 	addFile,
-	removeFile
+	removeFile,
+	editViteConfig
 } from '../../testUtils';
 
 test('should render App', async () => {
@@ -123,10 +124,7 @@ if (!isBuild) {
 		});
 
 		test('should work with emitCss: false', async () => {
-			await editFile('vite.config.js', (c) => c.replace('svelte()', 'svelte({emitCss:false})'));
-			await sleep(isWin ? 1000 : 500); // editing vite config restarts server, give it some time
-			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
-			await sleep(50);
+			await editViteConfig((c) => c.replace('svelte()', 'svelte({emitCss:false})'));
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
 			await (await getEl(`#hmr-test-1 .increment`)).click();

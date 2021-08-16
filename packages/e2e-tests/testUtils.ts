@@ -196,3 +196,10 @@ export async function saveScreenshot(name?: string) {
 		console.log('failed to take screenshot', e);
 	}
 }
+
+export async function editViteConfig(replacer: (str: string) => string) {
+	editFile('vite.config.js', replacer);
+	await sleep(isWin ? 1000 : 500); // editing vite config restarts server, give it some time
+	await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
+	await sleep(50);
+}
