@@ -1,9 +1,15 @@
+import { createRequire } from 'module';
 import path from 'path';
 import fs from 'fs';
 import { pathToFileURL } from 'url';
 import { log } from './log';
 import { Options } from './options';
 import { UserConfig } from 'vite';
+
+// used to require cjs config in esm.
+// NOTE dynamic import() cjs technically works, but timestamp query cache bust
+// have no effect, likely because it has another internal cache?
+let esmRequire: NodeRequire;
 
 export const knownSvelteConfigNames = [
 	'svelte.config.js',
@@ -46,9 +52,14 @@ export async function loadSvelteConfig(
 		// cjs or error with dynamic import
 		if (!configFile.endsWith('.mjs')) {
 			try {
+				// identify which require function to use (esm and cjs mode)
+				const _require = import.meta.url
+					? (esmRequire ??= createRequire(import.meta.url))
+					: require;
+
 				// avoid loading cached version on reload
-				delete require.cache[require.resolve(configFile)];
-				const result = require(configFile);
+				delete _require.cache[_require.resolve(configFile)];
+				const result = _require(configFile);
 				if (result != null) {
 					return {
 						...result,
