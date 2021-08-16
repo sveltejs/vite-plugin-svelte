@@ -9,7 +9,7 @@ import { UserConfig } from 'vite';
 // used to require cjs config in esm.
 // NOTE dynamic import() cjs technically works, but timestamp query cache bust
 // have no effect, likely because it has another internal cache?
-let _require: NodeRequire;
+let esmRequire: NodeRequire;
 
 export const knownSvelteConfigNames = [
 	'svelte.config.js',
@@ -52,30 +52,11 @@ export async function loadSvelteConfig(
 		// cjs or error with dynamic import
 		if (!configFile.endsWith('.mjs')) {
 			try {
-				// avoid loading cached version on reload
-				delete require.cache[require.resolve(configFile)];
-				const result = require(configFile);
-				if (result != null) {
-					return {
-						...result,
-						configFile
-					};
-				} else {
-					throw new Error(`invalid export in ${configFile}`);
-				}
-			} catch (e) {
-				log.error(`failed to require config ${configFile}`, e);
-				if (!err) {
-					err = e;
-				}
-			}
-		}
-		// cjs but project is using `type: module`
-		if (!configFile.endsWith('.mjs') && import.meta.url) {
-			try {
-				if (!_require) {
-					_require = createRequire(import.meta.url);
-				}
+				// identify which require function to use (esm and cjs mode)
+				const _require = import.meta.url
+					? (esmRequire ??= createRequire(import.meta.url))
+					: require;
+
 				// avoid loading cached version on reload
 				delete _require.cache[_require.resolve(configFile)];
 				const result = _require(configFile);
