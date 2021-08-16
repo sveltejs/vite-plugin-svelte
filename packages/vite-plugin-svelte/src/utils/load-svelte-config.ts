@@ -27,7 +27,7 @@ export async function loadSvelteConfig(
 	if (configFile) {
 		let err;
 		// try to use dynamic import for svelte.config.js first
-		if (configFile.endsWith('.js') || configFile.endsWith('.mjs')) {
+		if (configFile.endsWith('.js') || configFile.endsWith('.mjs') || configFile.endsWith('.cjs')) {
 			try {
 				const result = await dynamicImportDefault(pathToFileURL(configFile).href);
 				if (result != null) {
