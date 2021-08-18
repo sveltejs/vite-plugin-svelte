@@ -13,6 +13,7 @@ import {
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
 import path from 'path';
+import { findSvelteDependencies } from './dependencies';
 
 const knownOptions = new Set([
 	'configFile',
@@ -192,6 +193,14 @@ export function buildExtraViteConfig(
 	} else {
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
+
+	const svelteDeps = findSvelteDependencies(options.root);
+	console.log('svelteDeps', svelteDeps);
+	const svelteDepsToExclude = Object.keys(svelteDeps).filter(
+		(dep) => !config?.optimizeDeps?.include?.includes(dep)
+	);
+	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
+	exclude.push(...svelteDepsToExclude);
 	const extraViteConfig: Partial<UserConfig> = {
 		optimizeDeps: {
 			include,

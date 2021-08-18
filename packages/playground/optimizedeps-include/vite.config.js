@@ -12,9 +12,6 @@ const SVELTE_IMPORTS = [
 export default defineConfig(({ command, mode }) => {
 	const isProduction = mode === 'production';
 	return {
-		optimizeDeps: {
-			include: [...SVELTE_IMPORTS]
-		},
 		plugins: [svelte()],
 		build: {
 			minify: isProduction
