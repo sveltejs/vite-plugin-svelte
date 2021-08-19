@@ -14,6 +14,7 @@ import {
 } from 'svelte/types/compiler/preprocess';
 import path from 'path';
 import { findSvelteDependencies } from './dependencies';
+import { DepOptimizationOptions } from 'vite/src/node/optimizer/index';
 
 const knownOptions = new Set([
 	'configFile',
@@ -180,32 +181,8 @@ export function buildExtraViteConfig(
 	options: ResolvedOptions,
 	config: UserConfig
 ): Partial<UserConfig> {
-	// include svelte imports for optimization unless explicitly excluded
-	const include: string[] = [];
-	const exclude: string[] = ['svelte-hmr'];
-	const isSvelteExcluded = config.optimizeDeps?.exclude?.includes('svelte');
-	if (!isSvelteExcluded) {
-		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
-		log.debug(
-			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `
-		);
-		include.push(...svelteImportsToInclude);
-	} else {
-		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
-	}
-
-	const svelteDeps = findSvelteDependencies(options.root);
-	console.log('svelteDeps', svelteDeps);
-	const svelteDepsToExclude = Object.keys(svelteDeps).filter(
-		(dep) => !config?.optimizeDeps?.include?.includes(dep)
-	);
-	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
-	exclude.push(...svelteDepsToExclude);
 	const extraViteConfig: Partial<UserConfig> = {
-		optimizeDeps: {
-			include,
-			exclude
-		},
+		optimizeDeps: buildOptimizeDepsForSvelte(options.root, config.optimizeDeps),
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
 			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
@@ -240,6 +217,50 @@ export function buildExtraViteConfig(
 		};
 	}
 	return extraViteConfig;
+}
+
+function buildOptimizeDepsForSvelte(
+	root: string,
+	optimizeDeps?: DepOptimizationOptions
+): DepOptimizationOptions {
+	// include svelte imports for optimization unless explicitly excluded
+	const include: string[] = [];
+	const exclude: string[] = ['svelte-hmr'];
+	const isSvelteExcluded = optimizeDeps?.exclude?.includes('svelte');
+	if (!isSvelteExcluded) {
+		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
+		log.debug(
+			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `
+		);
+		include.push(...svelteImportsToInclude);
+	} else {
+		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
+	}
+
+	// extra handling for svelte dependencies in the project
+	const svelteDeps = findSvelteDependencies(root);
+	console.log('svelteDeps', svelteDeps);
+	const svelteDepsToExclude = Array.from(new Set(svelteDeps.map((dep) => dep.name))).filter(
+		(dep) => !optimizeDeps?.include?.includes(dep)
+	);
+	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
+	exclude.push(...svelteDepsToExclude);
+
+	/* // TODO enable once https://github.com/vitejs/vite/pull/4634 lands
+	const transitiveDepsToInclude = svelteDeps
+		.filter((dep) => svelteDepsToExclude.includes(dep.name))
+		.flatMap((dep) =>
+			Object.keys(dep.pkg.dependencies || {})
+				.filter((depOfDep) => !svelteDepsToExclude.includes(depOfDep))
+				.map((depOfDep) => dep.path.concat(depOfDep).join('>'))
+		);
+	log.debug(
+		`reincluding transitive dependencies of excluded svelte dependencies`,
+		transitiveDepsToInclude
+	);
+	include.push(...transitiveDepsToInclude);
+*/
+	return { include, exclude };
 }
 
 export interface Options {

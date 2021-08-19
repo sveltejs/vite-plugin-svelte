@@ -3,118 +3,150 @@ import path from 'path';
 import fs from 'fs';
 import { createRequire } from 'module';
 
-export function findSvelteDependencies(
-	root: string,
-	cwdFallback = true
-): Record<string, SvelteDependency[]> {
+export function findSvelteDependencies(root: string, cwdFallback = true): SvelteDependency[] {
 	log.debug(`findSvelteDependencies: searching svelte dependencies in ${root}`);
-
 	const pkgFile = path.join(root, 'package.json');
 	if (!fs.existsSync(pkgFile)) {
 		if (cwdFallback) {
 			const cwd = process.cwd();
 			if (root !== cwd) {
-				log.debug(`no package.json found in  vite root ${root}`);
+				log.debug(`no package.json found in vite root ${root}`);
 				return findSvelteDependencies(cwd, false);
 			}
 		}
 		log.debug(`no package.json found, search failed`);
-		return {};
+		return [];
 	}
 
-	const stack = [{ dir: root, depPath: [] as string[] }];
-	// name->SvelteDependency[]
-	const result: Record<string, SvelteDependency[]> = {};
-	const doNotScan = new Set<string>([
-		'svelte',
-		'vite',
-		'@sveltejs/kit',
-		'@sveltejs/vite-plugin-svelte'
-	]);
+	const pkg = parsePkg(root);
+	if (!pkg) {
+		return [];
+	}
 
-	while (stack.length > 0) {
-		const { dir, depPath } = stack.shift()!;
-		const pkg = parsePkg(dir);
-		if (!pkg) {
-			continue;
-		}
-		if (dir !== root) {
-			if (!isSvelte(pkg)) {
-				doNotScan.add(pkg.name);
-				continue;
-			}
-			if (!result[pkg.name]) {
-				result[pkg.name] = [];
-			}
-			result[pkg.name].push({ name: pkg.name, pkg, dir, paths: [depPath] });
-		}
+	const deps = [
+		...Object.keys(pkg.dependencies || {}),
+		...Object.keys(pkg.devDependencies || {})
+	].filter((dep) => !excludeFromScan(dep));
 
-		const pkgRequire = createRequire(dir);
-		const deps = [
-			...Object.keys(pkg.dependencies || {}),
-			...Object.keys(pkg.devDependencies || {})
-		];
-		const resolvedDeps = deps.map((dep) => ({ name: dep, dir: getDependencyDir(pkgRequire, dep) }));
-		const nestedDepPath = [...depPath, pkg.name];
-		for (const dep of resolvedDeps) {
-			if (doNotScan.has(dep.name)) {
-				continue;
+	return getSvelteDependencies(deps, root);
+}
+
+function getSvelteDependencies(
+	deps: string[],
+	pkgDir: string,
+	path: string[] = []
+): SvelteDependency[] {
+	const result = [];
+	const require = createRequire(pkgDir);
+	const resolvedDeps = deps.map((dep) => resolveSvelteDependency(dep, require)).filter(Boolean);
+	// @ts-ignore
+	for (const { pkg, dir } of resolvedDeps) {
+		result.push({ name: pkg.name, pkg, dir, path });
+		if (pkg.dependencies) {
+			let dependencyNames = Object.keys(pkg.dependencies);
+			const circular = dependencyNames.filter((name) => path.includes(name));
+			if (circular.length > 0) {
+				log.warn.enabled &&
+					log.warn(
+						`skipping circular svelte dependencies in automated vite optimizeDeps handling`,
+						circular.map((x) => path.concat(x).join('>'))
+					);
+				dependencyNames = dependencyNames.filter((name) => !path.includes(name));
 			}
-			const existingResult = result[dep.name]?.find((x) => x.dir === dep.dir);
-			if (existingResult) {
-				// we already have this, just add an additional path to it
-				existingResult.paths.push(nestedDepPath);
-			} else {
-				stack.push({ dir: dep.dir, depPath: nestedDepPath });
+			if (path.length === 3) {
+				log.warn.once(`encountered deep svelte dependency tree ${path.join('>')}`);
 			}
+			result.push(...getSvelteDependencies(dependencyNames, dir, path.concat(pkg.name)));
 		}
 	}
 	return result;
 }
 
-// TODO better implementation
-function getDependencyDir(pkgRequire: NodeRequire, dep: string) {
+function resolveSvelteDependency(
+	dep: string,
+	require: NodeRequire
+): { dir: string; pkg: Pkg } | void {
 	try {
-		return path.dirname(pkgRequire.resolve(path.join(dep, 'package.json')));
-	} catch (e) {
-		// does not export package.json, walk up parent directories of default export until we find the one named like the package
-		let dir = path.dirname(pkgRequire.resolve(path.join(dep)));
-		while (dir && path.basename(dir) !== dep) {
-			const parent = path.dirname(dir);
-			if (parent !== dir) {
-				dir = parent;
-			}
+		const pkgJson = `${dep}/package.json`;
+		const pkg = require(pkgJson);
+		if (!isSvelte(pkg)) {
+			return;
 		}
-		return dir;
+		const dir = path.dirname(require.resolve(pkgJson));
+		return { dir, pkg };
+	} catch (e) {
+		log.debug.once(`dependency ${dep} does not export package.json`, e);
+		// walk up from default export until we find package.json with name=dep
+		let dir = path.dirname(require.resolve(dep));
+		while (dir) {
+			const pkg = parsePkg(dir, true);
+			if (pkg && pkg.name === dep) {
+				if (!isSvelte(pkg)) {
+					return;
+				}
+				log.warn(`package ${dep} has a "svelte" field but does not export it's package.json`);
+				return { dir, pkg };
+			}
+			const parent = path.dirname(dir);
+			if (parent === dir) {
+				break;
+			}
+			dir = parent;
+		}
 	}
+	log.debug.once(`failed to resolve ${dep}`);
 }
 
-function parsePkg(dir: string) {
+function parsePkg(dir: string, silent = false): Pkg | void {
 	const pkgFile = path.join(dir, 'package.json');
 	try {
 		return JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
 	} catch (e) {
-		log.warn(`failed to parse ${pkgFile}`, e);
-		return null;
+		!silent && log.warn.enabled && log.warn(`failed to parse ${pkgFile}`, e);
 	}
 }
 
 function isSvelte(pkg: Pkg) {
-	return pkg.svelte || pkg.peerDependencies?.svelte;
+	return !!pkg.svelte;
+}
+
+const EXCLUDE = [
+	'@sveltejs/vite-plugin-svelte',
+	'@sveltejs/kit',
+	'svelte',
+	'svelte-hmr',
+	'svelte-preprocess',
+	'eslint',
+	'prettier',
+	'vite',
+	'postcss'
+];
+const EXCLUDE_PREFIX = [
+	'@types/',
+	'@rollup/',
+	'@sveltejs/adapter-',
+	'eslint-plugin-',
+	'prettier-plugin-',
+	'postcss-plugin-',
+	'@postcss-plugins/',
+	'@rollup/'
+];
+
+function excludeFromScan(dep: string): boolean {
+	return EXCLUDE.some((ex) => dep === ex) || EXCLUDE_PREFIX.some((ex) => dep.startsWith(ex));
 }
 
 export interface SvelteDependency {
 	name: string;
 	dir: string;
 	pkg: Pkg;
-	paths: string[][];
+	path: string[];
 }
 
 export interface Pkg {
 	name: string;
 	svelte?: string;
 	dependencies?: DependencyList;
-	peerDependencies?: DependencyList;
 	devDependencies?: DependencyList;
 	[key: string]: any;
 }
