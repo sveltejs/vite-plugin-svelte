@@ -115,9 +115,11 @@ function isSvelte(pkg: Pkg) {
 }
 
 const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
+	'@lukeed/uuid',
 	'@sveltejs/vite-plugin-svelte',
 	'@sveltejs/kit',
 	'autoprefixer',
+	'cookie',
 	'dotenv',
 	'esbuild',
 	'eslint',
@@ -126,12 +128,15 @@ const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'postcss',
 	'prettier',
 	'svelte',
+	'svelte-check',
 	'svelte-hmr',
 	'svelte-preprocess',
+	'tslib',
 	'typescript',
 	'vite'
 ];
 const COMMON_PREFIXES_WITHOUT_SVELTE_FIELD = [
+	'@fontsource/',
 	'@postcss-plugins/',
 	'@rollup/',
 	'@sveltejs/adapter-',
