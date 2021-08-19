@@ -37,8 +37,10 @@ function getSvelteDependencies(
 	path: string[] = []
 ): SvelteDependency[] {
 	const result = [];
-	const require = createRequire(pkgDir);
-	const resolvedDeps = deps.map((dep) => resolveSvelteDependency(dep, require)).filter(Boolean);
+	const localRequire = createRequire(`${pkgDir}/package.json`);
+	const resolvedDeps = deps
+		.map((dep) => resolveSvelteDependency(dep, localRequire))
+		.filter(Boolean);
 	// @ts-ignore
 	for (const { pkg, dir } of resolvedDeps) {
 		result.push({ name: pkg.name, pkg, dir, path });
@@ -64,20 +66,20 @@ function getSvelteDependencies(
 
 function resolveSvelteDependency(
 	dep: string,
-	require: NodeRequire
+	localRequire: NodeRequire
 ): { dir: string; pkg: Pkg } | void {
 	try {
 		const pkgJson = `${dep}/package.json`;
-		const pkg = require(pkgJson);
+		const pkg = localRequire(pkgJson);
 		if (!isSvelte(pkg)) {
 			return;
 		}
-		const dir = path.dirname(require.resolve(pkgJson));
+		const dir = path.dirname(localRequire.resolve(pkgJson));
 		return { dir, pkg };
 	} catch (e) {
 		log.debug.once(`dependency ${dep} does not export package.json`, e);
 		// walk up from default export until we find package.json with name=dep
-		let dir = path.dirname(require.resolve(dep));
+		let dir = path.dirname(localRequire.resolve(dep));
 		while (dir) {
 			const pkg = parsePkg(dir, true);
 			if (pkg && pkg.name === dep) {
@@ -113,27 +115,42 @@ function isSvelte(pkg: Pkg) {
 const EXCLUDE = [
 	'@sveltejs/vite-plugin-svelte',
 	'@sveltejs/kit',
+	'autoprefixer',
+	'dotenv',
+	'esbuild',
+	'eslint',
+	'jest',
+	'postcss',
+	'prettier',
 	'svelte',
 	'svelte-hmr',
 	'svelte-preprocess',
-	'eslint',
-	'prettier',
-	'vite',
-	'postcss'
+	'typescript',
+	'vite'
 ];
 const EXCLUDE_PREFIX = [
-	'@types/',
+	'@postcss-plugins/',
 	'@rollup/',
 	'@sveltejs/adapter-',
-	'eslint-plugin-',
-	'prettier-plugin-',
+	'@types/',
+	'@typescript-eslint/',
+	'eslint-',
+	'jest-',
 	'postcss-plugin-',
-	'@postcss-plugins/',
-	'@rollup/'
+	'prettier-plugin-',
+	'rollup-plugin-',
+	'vite-plugin-'
 ];
 
 function excludeFromScan(dep: string): boolean {
-	return EXCLUDE.some((ex) => dep === ex) || EXCLUDE_PREFIX.some((ex) => dep.startsWith(ex));
+	return (
+		EXCLUDE.some((ex) => dep === ex) ||
+		EXCLUDE_PREFIX.some((ex) =>
+			ex.startsWith('@')
+				? dep.startsWith(ex)
+				: dep.substring(dep.lastIndexOf('/') + 1).startsWith(ex)
+		)
+	);
 }
 
 export interface SvelteDependency {
