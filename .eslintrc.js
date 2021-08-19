@@ -22,6 +22,7 @@ module.exports = {
 		ecmaVersion: 2020
 	},
 	rules: {
+		'no-console': ['error'],
 		'no-debugger': ['error'],
 		'node/no-missing-import': [
 			'error',
