@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars,no-console */
 import { cyan, yellow, red } from 'kleur/colors';
 import debug from 'debug';
 import { ResolvedOptions, Warning } from './options';
