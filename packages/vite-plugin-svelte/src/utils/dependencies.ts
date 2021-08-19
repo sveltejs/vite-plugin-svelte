@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { createRequire } from 'module';
 
-export function findSvelteDependencies(root: string, cwdFallback = true): SvelteDependency[] {
+export function findRootSvelteDependencies(root: string, cwdFallback = true): SvelteDependency[] {
 	log.debug(`findSvelteDependencies: searching svelte dependencies in ${root}`);
 	const pkgFile = path.join(root, 'package.json');
 	if (!fs.existsSync(pkgFile)) {
@@ -11,10 +11,10 @@ export function findSvelteDependencies(root: string, cwdFallback = true): Svelte
 			const cwd = process.cwd();
 			if (root !== cwd) {
 				log.debug(`no package.json found in vite root ${root}`);
-				return findSvelteDependencies(cwd, false);
+				return findRootSvelteDependencies(cwd, false);
 			}
 		}
-		log.debug(`no package.json found, search failed`);
+		log.warn(`no package.json found, findRootSvelteDependencies failed`);
 		return [];
 	}
 
@@ -26,7 +26,7 @@ export function findSvelteDependencies(root: string, cwdFallback = true): Svelte
 	const deps = [
 		...Object.keys(pkg.dependencies || {}),
 		...Object.keys(pkg.devDependencies || {})
-	].filter((dep) => !excludeFromScan(dep));
+	].filter((dep) => !is_common_without_svelte_field(dep));
 
 	return getSvelteDependencies(deps, root);
 }
@@ -56,7 +56,7 @@ function getSvelteDependencies(
 				dependencyNames = dependencyNames.filter((name) => !path.includes(name));
 			}
 			if (path.length === 3) {
-				log.warn.once(`encountered deep svelte dependency tree ${path.join('>')}`);
+				log.warn.once(`encountered deep svelte dependency tree: ${path.join('>')}`);
 			}
 			result.push(...getSvelteDependencies(dependencyNames, dir, path.concat(pkg.name)));
 		}
@@ -86,7 +86,9 @@ function resolveSvelteDependency(
 				if (!isSvelte(pkg)) {
 					return;
 				}
-				log.warn(`package ${dep} has a "svelte" field but does not export it's package.json`);
+				log.warn.once(
+					`package.json of ${dep} has a "svelte" field but does not include itself in exports field. Please ask package maintainer to update`
+				);
 				return { dir, pkg };
 			}
 			const parent = path.dirname(dir);
@@ -112,7 +114,7 @@ function isSvelte(pkg: Pkg) {
 	return !!pkg.svelte;
 }
 
-const EXCLUDE = [
+const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'@sveltejs/vite-plugin-svelte',
 	'@sveltejs/kit',
 	'autoprefixer',
@@ -120,6 +122,7 @@ const EXCLUDE = [
 	'esbuild',
 	'eslint',
 	'jest',
+	'mdsvex',
 	'postcss',
 	'prettier',
 	'svelte',
@@ -128,7 +131,7 @@ const EXCLUDE = [
 	'typescript',
 	'vite'
 ];
-const EXCLUDE_PREFIX = [
+const COMMON_PREFIXES_WITHOUT_SVELTE_FIELD = [
 	'@postcss-plugins/',
 	'@rollup/',
 	'@sveltejs/adapter-',
@@ -142,13 +145,22 @@ const EXCLUDE_PREFIX = [
 	'vite-plugin-'
 ];
 
-function excludeFromScan(dep: string): boolean {
+/**
+ * Test for common dependency names that tell us it is not a package including a svelte field, eg. eslint + plugins.
+ *
+ * This speeds up the find process as we don't have to try and require the package.json for all of them
+ *
+ * @param dependency {string}
+ * @returns {boolean} true if it is a dependency without a svelte field
+ */
+function is_common_without_svelte_field(dependency: string): boolean {
 	return (
-		EXCLUDE.some((ex) => dep === ex) ||
-		EXCLUDE_PREFIX.some((ex) =>
-			ex.startsWith('@')
-				? dep.startsWith(ex)
-				: dep.substring(dep.lastIndexOf('/') + 1).startsWith(ex)
+		COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD.includes(dependency) ||
+		COMMON_PREFIXES_WITHOUT_SVELTE_FIELD.some(
+			(prefix) =>
+				prefix.startsWith('@')
+					? dependency.startsWith(prefix)
+					: dependency.substring(dependency.lastIndexOf('/') + 1).startsWith(prefix) // check prefix omitting @scope/
 		)
 	);
 }

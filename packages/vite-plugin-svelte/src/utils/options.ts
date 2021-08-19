@@ -13,7 +13,7 @@ import {
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
 import path from 'path';
-import { findSvelteDependencies } from './dependencies';
+import { findRootSvelteDependencies } from './dependencies';
 import { DepOptimizationOptions } from 'vite/src/node/optimizer/index';
 
 const knownOptions = new Set([
@@ -238,7 +238,7 @@ function buildOptimizeDepsForSvelte(
 	}
 
 	// extra handling for svelte dependencies in the project
-	const svelteDeps = findSvelteDependencies(root);
+	const svelteDeps = findRootSvelteDependencies(root);
 	console.log('svelteDeps', svelteDeps);
 	const svelteDepsToExclude = Array.from(new Set(svelteDeps.map((dep) => dep.name))).filter(
 		(dep) => !optimizeDeps?.include?.includes(dep)
