@@ -56,7 +56,7 @@ function getSvelteDependencies(
 				dependencyNames = dependencyNames.filter((name) => !path.includes(name));
 			}
 			if (path.length === 3) {
-				log.warn.once(`encountered deep svelte dependency tree: ${path.join('>')}`);
+				log.debug.once(`encountered deep svelte dependency tree: ${path.join('>')}`);
 			}
 			result.push(...getSvelteDependencies(dependencyNames, dir, path.concat(pkg.name)));
 		}
@@ -79,23 +79,27 @@ function resolveSvelteDependency(
 	} catch (e) {
 		log.debug.once(`dependency ${dep} does not export package.json`, e);
 		// walk up from default export until we find package.json with name=dep
-		let dir = path.dirname(localRequire.resolve(dep));
-		while (dir) {
-			const pkg = parsePkg(dir, true);
-			if (pkg && pkg.name === dep) {
-				if (!isSvelte(pkg)) {
-					return;
+		try {
+			let dir = path.dirname(localRequire.resolve(dep));
+			while (dir) {
+				const pkg = parsePkg(dir, true);
+				if (pkg && pkg.name === dep) {
+					if (!isSvelte(pkg)) {
+						return;
+					}
+					log.warn.once(
+						`package.json of ${dep} has a "svelte" field but does not include itself in exports field. Please ask package maintainer to update`
+					);
+					return { dir, pkg };
 				}
-				log.warn.once(
-					`package.json of ${dep} has a "svelte" field but does not include itself in exports field. Please ask package maintainer to update`
-				);
-				return { dir, pkg };
+				const parent = path.dirname(dir);
+				if (parent === dir) {
+					break;
+				}
+				dir = parent;
 			}
-			const parent = path.dirname(dir);
-			if (parent === dir) {
-				break;
-			}
-			dir = parent;
+		} catch (e) {
+			log.debug.once(`error while trying to find package.json of ${dep}`, e);
 		}
 	}
 	log.debug.once(`failed to resolve ${dep}`);
