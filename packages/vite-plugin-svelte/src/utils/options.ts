@@ -232,7 +232,7 @@ function buildOptimizeDepsForSvelte(
 		log.debug(
 			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `
 		);
-		include.push(...svelteImportsToInclude);
+		include.push(...svelteImportsToInclude.filter((x) => !optimizeDeps?.include?.includes(x)));
 	} else {
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
@@ -243,7 +243,7 @@ function buildOptimizeDepsForSvelte(
 		(dep) => !optimizeDeps?.include?.includes(dep)
 	);
 	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
-	exclude.push(...svelteDepsToExclude);
+	exclude.push(...svelteDepsToExclude.filter((x) => !optimizeDeps?.exclude?.includes(x)));
 
 	/* // TODO enable once https://github.com/vitejs/vite/pull/4634 lands
 	const transitiveDepsToInclude = svelteDeps
