@@ -219,7 +219,10 @@ importers:
       vite: 2.5.0
 
   packages/e2e-tests/test-dependency-svelte-field:
-    specifiers: {}
+    specifiers:
+      e2e-tests-hmr-test-dependency: workspace:*
+    dependencies:
+      e2e-tests-hmr-test-dependency: link:../hmr-test-dependency
 
   packages/e2e-tests/ts-type-import:
     specifiers:

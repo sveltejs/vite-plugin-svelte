@@ -22,7 +22,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "dev": "pnpm run build:ci -- --watch src",
+    "dev": "pnpm run build:ci -- --sourcemap --watch src",
     "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting",
     "build": "pnpm run build:ci -- --dts --sourcemap"
   },

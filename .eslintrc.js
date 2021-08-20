@@ -22,7 +22,8 @@ module.exports = {
 		ecmaVersion: 2020
 	},
 	rules: {
-		'no-debugger': ['error'],
+		'no-console': 'off',
+		'no-debugger': 'error',
 		'node/no-missing-import': [
 			'error',
 			{
@@ -58,6 +59,12 @@ module.exports = {
 		'no-process-exit': 'off'
 	},
 	overrides: [
+		{
+			files: ['packages/vite-plugin-svelte/src/**'],
+			rules: {
+				'no-console': 'error'
+			}
+		},
 		{
 			files: ['packages/e2e-tests/**', 'packages/playground/**'],
 			rules: {
