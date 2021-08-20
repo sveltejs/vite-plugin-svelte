@@ -13,7 +13,7 @@ import {
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
 import path from 'path';
-import { findRootSvelteDependencies } from './dependencies';
+import { findRootSvelteDependencies, SvelteDependency } from './dependencies';
 import { DepOptimizationOptions } from 'vite/src/node/optimizer/index';
 
 const knownOptions = new Set([
@@ -181,8 +181,10 @@ export function buildExtraViteConfig(
 	options: ResolvedOptions,
 	config: UserConfig
 ): Partial<UserConfig> {
+	// extra handling for svelte dependencies in the project
+	const svelteDeps = findRootSvelteDependencies(options.root);
 	const extraViteConfig: Partial<UserConfig> = {
-		optimizeDeps: buildOptimizeDepsForSvelte(options.root, config.optimizeDeps),
+		optimizeDeps: buildOptimizeDepsForSvelte(svelteDeps, config.optimizeDeps),
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
 			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
@@ -193,17 +195,8 @@ export function buildExtraViteConfig(
 		// knownJsSrcExtensions: options.extensions
 	};
 
-	if (options.isBuild && config.build?.ssr) {
-		// add svelte to ssr.noExternal unless it is present in ssr.external
-		// so we can resolve it with svelte/ssr
-		// @ts-ignore
-		if (!config.ssr?.external?.includes('svelte')) {
-			// @ts-ignore
-			extraViteConfig.ssr = {
-				noExternal: ['svelte']
-			};
-		}
-	}
+	// @ts-ignore
+	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config);
 
 	if (options.experimental?.useVitePreprocess) {
 		// needed to transform svelte files with component imports
@@ -220,7 +213,7 @@ export function buildExtraViteConfig(
 }
 
 function buildOptimizeDepsForSvelte(
-	root: string,
+	svelteDeps: SvelteDependency[],
 	optimizeDeps?: DepOptimizationOptions
 ): DepOptimizationOptions {
 	// include svelte imports for optimization unless explicitly excluded
@@ -237,8 +230,6 @@ function buildOptimizeDepsForSvelte(
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
 
-	// extra handling for svelte dependencies in the project
-	const svelteDeps = findRootSvelteDependencies(root);
 	const svelteDepsToExclude = Array.from(new Set(svelteDeps.map((dep) => dep.name))).filter(
 		(dep) => !optimizeDeps?.include?.includes(dep)
 	);
@@ -260,6 +251,34 @@ function buildOptimizeDepsForSvelte(
 	include.push(...transitiveDepsToInclude);
 */
 	return { include, exclude };
+}
+
+function buildSSROptionsForSvelte(
+	svelteDeps: SvelteDependency[],
+	options: ResolvedOptions,
+	config: UserConfig
+): any {
+	const noExternal: string[] = [];
+
+	// add svelte to ssr.noExternal unless it is present in ssr.external
+	// so we can resolve it with svelte/ssr
+	if (options.isBuild && config.build?.ssr) {
+		// @ts-ignore
+		if (!config.ssr?.external?.includes('svelte')) {
+			noExternal.push('svelte');
+		}
+	}
+
+	// add svelte dependencies to ssr.noExternal unless present in ssr.external or optimizeDeps.include
+	noExternal.push(
+		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter((x) => {
+			// @ts-ignore
+			return !config.ssr?.external?.includes(x) && !config.optimizeDeps?.include?.includes(x);
+		})
+	);
+	return {
+		noExternal
+	};
 }
 
 export interface Options {
