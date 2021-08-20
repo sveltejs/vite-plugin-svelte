@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.18
+
+### Minor Changes
+
+- automatically exclude svelte dependencies in vite.optimizeDeps ([#145](https://github.com/sveltejs/vite-plugin-svelte/pull/145))
+
+### Patch Changes
+
+- use createRequire to load svelte.config.cjs in esm projects (fixes [#141](https://github.com/sveltejs/vite-plugin-svelte/issues/141)) ([#142](https://github.com/sveltejs/vite-plugin-svelte/pull/142))
+
 ## 1.0.0-next.17
 
 ### Patch Changes
@@ -35,9 +45,9 @@
 
   ```js
   {
-    {
-      ['svelte']
-    }
+  	{
+  		['svelte'];
+  	}
   }
   ```
 
