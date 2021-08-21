@@ -50,10 +50,8 @@
   To get the old behavior back, add the following to your vite config
 
   ```js
-  {
-  	{
-  		['svelte'];
-  	}
+  optimizeDeps: {
+      exclude: ['svelte'];
   }
   ```
 
