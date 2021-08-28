@@ -61,4 +61,10 @@ const vitePluginCoolCss = {
 };
 ```
 
-For reference, check out [windicss](https://github.com/windicss/vite-plugin-windicss/blob/517eca0cebc879d931c6578a08accadfb112157c/packages/vite-plugin-windicss/src/index.ts#L167)!
+For reference, check out [windicss](https://github.com/windicss/vite-plugin-windicss/blob/517eca0cebc879d931c6578a08accadfb112157c/packages/vite-plugin-windicss/src/index.ts#L167).
+
+### What is `The requested module 'xxx' does not provide an export named 'yyy'`?
+
+This usually happens when a dependency (e.g. `xxx`) only exports CJS code, but is not optimized by Vite. It's also a common issue among many Svelte libraries because they are [excluded from optimization by default](https://github.com/vitejs/vite/issues/3910#issuecomment-897006012) by `vite-plugin-svelte`.
+
+A pending [Vite pull request](https://github.com/vitejs/vite/pull/4634) would help solve this issue soon, but until then, try contacting the `xxx` library authors to also export ESM code.
