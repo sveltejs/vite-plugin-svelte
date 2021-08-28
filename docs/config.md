@@ -24,7 +24,7 @@ Besides inline options, `vite-plugin-svelte` will also automatically resolve opt
 - `svelte.config.mjs`
 - `svelte.config.cjs`
 
-To set a specific config file, use the `configFile` inline option. The path can be absolute or relative to the Vite root. For example:
+To set a specific config file, use the `configFile` inline option. The path can be absolute or relative to the [Vite root](https://vitejs.dev/config/#root). For example:
 
 ```js
 export default defineConfig({

@@ -282,9 +282,10 @@ function buildSSROptionsForSvelte(
 }
 
 export interface Options {
-	// eslint-disable no-unused-vars
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
+	 *
+	 * @see https://vitejs.dev/config/#root
 	 */
 	configFile?: string;
 
