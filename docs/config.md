@@ -154,9 +154,7 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 - **Type:** `boolean | string[]`
 - **Default:** `false`
 
-  <!-- TODO: Link to api.sveltePreprocess -->
-
-  Some Vite plugins can contribute additional preprocessors by defining `api.sveltePreprocess`. If you don't want to use them, set this to true to ignore them all or use an array of strings with plugin names to specify which.
+  Some Vite plugins can contribute additional preprocessors by defining [api.sveltePreprocess](./faq#how-do-i-add-a-svelte-preprocessor-from-a-vite-plugin). If you don't want to use them, set this to true to ignore them all or use an array of strings with plugin names to specify which.
 
 ## Experimental options
 
