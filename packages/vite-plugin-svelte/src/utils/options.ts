@@ -330,7 +330,7 @@ export interface Options {
 	 *
 	 * @see https://svelte.dev/docs#svelte_compile
 	 */
-	compilerOptions: CompileOptions;
+	compilerOptions?: CompileOptions;
 
 	/**
 	 * Handles warning emitted from the Svelte compiler
@@ -419,6 +419,10 @@ export interface ExperimentalOptions {
 }
 
 export interface ResolvedOptions extends Options {
+	// these options are non-nullable after resolve
+	compilerOptions: CompileOptions;
+	experimental: ExperimentalOptions;
+	// extra options
 	root: string;
 	isProduction: boolean;
 	isBuild?: boolean;
