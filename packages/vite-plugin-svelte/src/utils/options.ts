@@ -283,58 +283,82 @@ function buildSSROptionsForSvelte(
 
 export interface Options {
 	// eslint-disable no-unused-vars
-	/** path to svelte config file, either absolute or relative to vite root*/
+	/**
+	 * Path to a svelte config file, either absolute or relative to Vite root
+	 */
 	configFile?: string;
 
-	/** One or more minimatch patterns */
+	/**
+	 * A `minimatch` pattern, or array of patterns, which specifies the files the plugin should
+	 * operate on. By default, all svelte files are included.
+	 *
+	 * @see https://github.com/isaacs/minimatch
+	 */
 	include?: Arrayable<string>;
 
-	/** One or more minimatch patterns */
+	/**
+	 * A `minimatch` pattern, or array of patterns, which specifies the files to be ignored by the
+	 * plugin. By default, no files are ignored.
+	 *
+	 * @see https://github.com/isaacs/minimatch
+	 */
 	exclude?: Arrayable<string>;
 
 	/**
-	 * By default, all ".svelte" files are compiled
+	 * A list of file extensions to be compiled by Svelte
+	 *
 	 * @default ['.svelte']
 	 */
 	extensions?: string[];
 
 	/**
-	 * Optionally, preprocess components with svelte.preprocess:
-	 * \@see https://svelte.dev/docs#svelte_preprocess
+	 * An array of preprocessors to transform the Svelte source code before compilation
+	 *
+	 * @see https://svelte.dev/docs#svelte_preprocess
 	 */
 	preprocess?: Arrayable<PreprocessorGroup>;
 
-	/** Emit Svelte styles as virtual CSS files for other plugins to process.
+	/**
+	 * Emit Svelte styles as virtual CSS files for Vite and other plugins to process
+	 *
 	 * @default true
 	 */
 	emitCss?: boolean;
 
-	/** Options passed to `svelte.compile` method. */
-	compilerOptions: Partial<CompileOptions>;
+	/**
+	 * The options to be passed to the Svelte compiler
+	 *
+	 * @see https://svelte.dev/docs#svelte_compile
+	 */
+	compilerOptions: CompileOptions;
 
 	/**
-	 * custom warning handler for svelte compiler warnings
+	 * Handles warning emitted from the Svelte compiler
 	 */
 	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
 
 	/**
-	 * enable/disable hmr. You want this enabled.
+	 * Enable or disable Hot Module Replacement.
 	 *
 	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 *
 	 * DO NOT CUSTOMIZE SVELTE-HMR OPTIONS UNLESS YOU KNOW EXACTLY WHAT YOU ARE DOING
 	 *
 	 *                             YOU HAVE BEEN WARNED
+	 *
 	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	 *
-	 * set to object to pass custom options to svelte-hmr, see https://github.com/rixo/svelte-hmr#options
+	 * Set an object to pass custom options to svelte-hmr
 	 *
+	 * @see https://github.com/rixo/svelte-hmr#options
 	 * @default true for development, always false for production
 	 */
 	hot?: boolean | { injectCss?: boolean; [key: string]: any };
 
 	/**
-	 * vite plugins can contribute additional preprocessors by defining api.sveltePreprocess.
-	 * If you don't want to use them, set this to true to ignore them all or use an array of strings with plugin names to specify which
+	 * Some Vite plugins can contribute additional preprocessors by defining `api.sveltePreprocess`.
+	 * If you don't want to use them, set this to true to ignore them all or use an array of strings
+	 * with plugin names to specify which.
 	 *
 	 * @default false
 	 */
@@ -351,34 +375,41 @@ export interface Options {
  */
 export interface ExperimentalOptions {
 	/**
-	 * use extra preprocessors that delegate style and typescript preproessing to native vite plugins
+	 * Use extra preprocessors that delegate style and TypeScript preprocessing to native Vite plugins
 	 *
-	 * do not use together with svelte-preprocess!
+	 * Do not use together with `svelte-preprocess`!
 	 *
 	 * @default false
 	 */
 	useVitePreprocess?: boolean;
 
 	/**
-	 * wrap all preprocessors in with a function that adds a sourcemap to the output if missing
+	 * If a preprocessor does not provide a sourcemap, a best-effort fallback sourcemap will be provided.
+	 * This option requires `diff-match-patch` to be installed as a peer dependency.
 	 *
-	 * to use this option you have to install "diff-match-patch"
+	 * @see https://github.com/google/diff-match-patch
+	 * @default false
 	 */
 	generateMissingPreprocessorSourcemaps?: boolean;
 
 	/**
-	 * function to update compilerOptions before compilation
+	 * A function to update `compilerOptions` before compilation
 	 *
-	 * data.filename is the file to be compiled,
-	 * data.code is the already preprocessed code
-	 * data.compileOptions are the compilerOptions that are going to be used
+	 * `data.filename` - The file to be compiled
+	 * `data.code` - The preprocessed Svelte code
+	 * `data.compileOptions` - The current compiler options
 	 *
-	 * to change one, you should return an object with the changes you need, eg:
+	 * To change part of the compiler options, return an object with the changes you need.
 	 *
+	 * @example
 	 * ```
-	 * ({filename,compileOptions}) => { if( compileWithHydratable(filename) && !compileOptions.hydratable ){ return {hydratable: true}}}
+	 * ({ filename, compileOptions }) => {
+	 *   // Dynamically set hydration per Svelte file
+	 *   if (compileWithHydratable(filename) && !compileOptions.hydratable) {
+	 *     return { hydratable: true };
+	 *   }
+	 * }
 	 * ```
-	 * @default undefined
 	 */
 	dynamicCompileOptions?: (data: {
 		filename: string;
