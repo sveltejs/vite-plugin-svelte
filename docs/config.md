@@ -118,7 +118,7 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 
 ### onwarn
 
-- **Type:**: `(warning: Warning, defaultHandler?: (warning: Warning) => void) => void` - See [Warning](https://github.com/sveltejs/svelte/blob/ce550adef65a7e04c381b11c24f07a2ae1c25783/src/compiler/interfaces.ts#L121-L130)
+- **Type:** `(warning: Warning, defaultHandler?: (warning: Warning) => void) => void` - See [Warning](https://github.com/sveltejs/svelte/blob/ce550adef65a7e04c381b11c24f07a2ae1c25783/src/compiler/interfaces.ts#L121-L130)
 
   Handles warning emitted from the Svelte compiler. Useful to suppress warning messages.
 

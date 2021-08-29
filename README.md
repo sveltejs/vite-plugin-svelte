@@ -1,5 +1,9 @@
 # @sveltejs/vite-plugin-svelte
 
+[![npm version](https://img.shields.io/npm/v/@sveltejs/vite-plugin-svelte)](https://www.npmjs.com/package/svelte)
+[![CI](https://github.com/sveltejs/vite-plugin-svelte/actions/workflows/ci.yml/badge.svg)](https://github.com/sveltejs/vite-plugin-svelte/actions/workflows/ci.yml)
+[![Chat](https://img.shields.io/discord/457912077277855764?label=chat&logo=discord)](https://svelte.dev/chat)
+
 The official [Svelte](https://svelte.dev) plugin for [Vite](https://vitejs.dev).
 
 ## Installation
@@ -30,9 +34,9 @@ export default defineConfig({
 
 ## Packages
 
-| Package                                                     | changelog                                             |
+| Package                                                     | Changelog                                             |
 | ----------------------------------------------------------- | ----------------------------------------------------- |
-| [@sveltejs/vite-plugin-svelte](packages/vite-plugin-svelte) | [changelog](packages/vite-plugin-svelte/CHANGELOG.md) |
+| [@sveltejs/vite-plugin-svelte](packages/vite-plugin-svelte) | [Changelog](packages/vite-plugin-svelte/CHANGELOG.md) |
 
 ## Got a question? / Need help?
 
