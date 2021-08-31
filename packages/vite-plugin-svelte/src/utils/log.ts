@@ -106,9 +106,8 @@ export function logCompilerWarnings(warnings: Warning[], options: ResolvedOption
 		if (!emitCss && warning.code === 'css-unused-selector') {
 			return;
 		}
-		// suppress `* {}` warnings injected in style tags for CSS HMR
-		if (!isBuild && warning.message === 'Unused CSS selector "*"') {
-			return;
+		if (!isBuild) {
+			enhanceDevWarning(warning);
 		}
 		if (onwarn) {
 			onwarn(warning, warn);
@@ -124,6 +123,15 @@ function warnDev(w: Warning) {
 
 function warnBuild(w: Warning) {
 	log.warn.enabled && log.warn(buildExtendedLogMessage(w), w.frame);
+}
+
+function enhanceDevWarning(w: Warning) {
+	// handles warning caused by `*{}` for css hmr, but also recommend a better alternative
+	// see https://github.com/sveltejs/vite-plugin-svelte/issues/153
+	if (w.code === 'css-unused-selector' && w.message.includes('"*"')) {
+		w.code = 'vite-plugin-svelte-css-no-scopable-elements';
+		w.message = `No scopable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles.`;
+	}
 }
 
 function buildExtendedLogMessage(w: Warning) {

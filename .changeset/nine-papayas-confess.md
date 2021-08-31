@@ -2,4 +2,4 @@
 '@sveltejs/vite-plugin-svelte': patch
 ---
 
-suppress unused css compiler warning when component has style tag but no element to select
+warn on no scopable elements and provide improvement suggestions
