@@ -1,5 +1,5 @@
 <script>
-	import Dependency from 'e2e-tests-hmr-test-dependency';
+	import Dependency from 'e2e-test-dep-svelte-simple';
 	import Child from './lib/Child.svelte';
 </script>
 

@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "private": true,
+  "name": "e2e-test-dep-esm-only",
+  "main": "index.js",
+  "module": "index.js",
+  "files": [
+    "package.json",
+    "index.cjs"
+  ],
+  "exports":{
+    ".": {
+      "import": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "type": "module"
+}

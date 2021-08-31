@@ -1,6 +1,6 @@
 <script>
 	import StaticImport from './components/StaticImport.svelte';
-	import Dependency from 'e2e-tests-hmr-test-dependency';
+	import Dependency from 'e2e-test-dep-svelte-simple';
 	import HmrTest from './components/HmrTest.svelte';
 	let dynamicImportComponent;
 	function importDynamic() {
