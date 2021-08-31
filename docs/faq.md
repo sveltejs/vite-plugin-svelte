@@ -47,7 +47,7 @@ Bad:
 
 ### Where should I put my global styles?
 
-Global styles should always be placed in their own stylesheet files whwnever possible, and not in a Svelte component's `<style>` tag. The stylesheet files can then be imported directly in JS and would take advantage of Vite's own style processing. It would also significantly improve the dev server startup time.
+Global styles should always be placed in their own stylesheet files whenever possible, and not in a Svelte component's `<style>` tag. The stylesheet files can then be imported directly in JS and take advantage of Vite's own style processing. It would also significantly improve the dev server startup time.
 
 Good:
 
