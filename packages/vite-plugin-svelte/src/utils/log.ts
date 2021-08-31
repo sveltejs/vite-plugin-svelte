@@ -106,6 +106,10 @@ export function logCompilerWarnings(warnings: Warning[], options: ResolvedOption
 		if (!emitCss && warning.code === 'css-unused-selector') {
 			return;
 		}
+		// suppress `* {}` warnings injected in style tags for CSS HMR
+		if (!isBuild && warning.message === 'Unused CSS selector "*"') {
+			return;
+		}
 		if (onwarn) {
 			onwarn(warning, warn);
 		} else {
