@@ -12,6 +12,8 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+		// see https://devblogs.microsoft.com/typescript/announcing-typescript-4-4-beta/#use-unknown-catch-variables
+		"useUnknownInCatchVariables": false
   }
 }
