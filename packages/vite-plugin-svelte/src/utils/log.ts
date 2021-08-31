@@ -102,13 +102,9 @@ export const log = {
 export function logCompilerWarnings(warnings: Warning[], options: ResolvedOptions) {
 	const { emitCss, onwarn, isBuild } = options;
 	const warn = isBuild ? warnBuild : warnDev;
-	warnings?.forEach((warning) => {
-		if (!emitCss && warning.code === 'css-unused-selector') {
-			return;
-		}
-		if (!isBuild) {
-			enhanceDevWarning(warning);
-		}
+	const notIgnoredWarnings = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
+	const extraWarnings = buildExtraWarnings(warnings, isBuild);
+	[...notIgnoredWarnings, ...extraWarnings].forEach((warning) => {
 		if (onwarn) {
 			onwarn(warning, warn);
 		} else {
@@ -117,21 +113,46 @@ export function logCompilerWarnings(warnings: Warning[], options: ResolvedOption
 	});
 }
 
+function ignoreCompilerWarning(
+	warning: Warning,
+	isBuild: boolean,
+	emitCss: boolean | undefined
+): boolean {
+	return (
+		(!emitCss && warning.code === 'css-unused-selector') || // same as rollup-plugin-svelte
+		(!isBuild && isNoScopeableElementWarning(warning))
+	);
+}
+
+function isNoScopeableElementWarning(warning: Warning) {
+	// see https://github.com/sveltejs/vite-plugin-svelte/issues/153
+	return warning.code === 'css-unused-selector' && warning.message.includes('"*"');
+}
+
+function buildExtraWarnings(warnings: Warning[], isBuild: boolean): Warning[] {
+	const extraWarnings = [];
+	if (!isBuild) {
+		const noScopeableElementWarnings = warnings.filter((w) => isNoScopeableElementWarning(w));
+		if (noScopeableElementWarnings.length > 0) {
+			// in case there are multiple, use last one as that is the one caused by our *{} rule
+			const noScopeableElementWarning =
+				noScopeableElementWarnings[noScopeableElementWarnings.length - 1];
+			extraWarnings.push({
+				...noScopeableElementWarning,
+				code: 'vite-plugin-svelte-css-no-scopeable-elements',
+				message: `No scopeable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles.`
+			});
+		}
+	}
+	return extraWarnings;
+}
+
 function warnDev(w: Warning) {
 	log.info.enabled && log.info(buildExtendedLogMessage(w));
 }
 
 function warnBuild(w: Warning) {
 	log.warn.enabled && log.warn(buildExtendedLogMessage(w), w.frame);
-}
-
-function enhanceDevWarning(w: Warning) {
-	// handles warning caused by `*{}` for css hmr, but also recommend a better alternative
-	// see https://github.com/sveltejs/vite-plugin-svelte/issues/153
-	if (w.code === 'css-unused-selector' && w.message.includes('"*"')) {
-		w.code = 'vite-plugin-svelte-css-no-scopable-elements';
-		w.message = `No scopable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles.`;
-	}
 }
 
 function buildExtendedLogMessage(w: Warning) {

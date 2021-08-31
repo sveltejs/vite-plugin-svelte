@@ -426,8 +426,8 @@ export interface ResolvedOptions extends Options {
 	// extra options
 	root: string;
 	isProduction: boolean;
-	isBuild?: boolean;
-	isServe?: boolean;
+	isBuild: boolean;
+	isServe: boolean;
 	server?: ViteDevServer;
 }
 
