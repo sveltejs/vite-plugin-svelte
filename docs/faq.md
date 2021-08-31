@@ -45,6 +45,34 @@ Bad:
 <script type="text/typescript"></script>
 ```
 
+### Where should I put my global styles?
+
+Global styles should always be placed in their own stylesheet files whenever possible, and not in a Svelte component's `<style>` tag. The stylesheet files can then be imported directly in JS and take advantage of Vite's own style processing. It would also significantly improve the dev server startup time.
+
+Good:
+
+```scss
+/* global.scss */
+html {
+	color: $text-color;
+}
+```
+
+```js
+// main.js
+import './global.scss';
+```
+
+Bad:
+
+```svelte
+<style lang="scss">
+	:global(html) {
+		color: $text-color;
+	}
+</style>
+```
+
 ### How do I add a Svelte preprocessor from a Vite plugin?
 
 If you are building a Vite plugin that transforms CSS or JS, you can add a `api.sveltePreprocess: PreprocessorGroup` to your Vite plugin definition and it will be added to the list of Svelte preprocessors used at runtime.

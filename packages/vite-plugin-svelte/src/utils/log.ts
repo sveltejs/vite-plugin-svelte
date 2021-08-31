@@ -102,16 +102,49 @@ export const log = {
 export function logCompilerWarnings(warnings: Warning[], options: ResolvedOptions) {
 	const { emitCss, onwarn, isBuild } = options;
 	const warn = isBuild ? warnBuild : warnDev;
-	warnings?.forEach((warning) => {
-		if (!emitCss && warning.code === 'css-unused-selector') {
-			return;
-		}
+	const notIgnoredWarnings = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
+	const extraWarnings = buildExtraWarnings(warnings, isBuild);
+	[...notIgnoredWarnings, ...extraWarnings].forEach((warning) => {
 		if (onwarn) {
 			onwarn(warning, warn);
 		} else {
 			warn(warning);
 		}
 	});
+}
+
+function ignoreCompilerWarning(
+	warning: Warning,
+	isBuild: boolean,
+	emitCss: boolean | undefined
+): boolean {
+	return (
+		(!emitCss && warning.code === 'css-unused-selector') || // same as rollup-plugin-svelte
+		(!isBuild && isNoScopableElementWarning(warning))
+	);
+}
+
+function isNoScopableElementWarning(warning: Warning) {
+	// see https://github.com/sveltejs/vite-plugin-svelte/issues/153
+	return warning.code === 'css-unused-selector' && warning.message.includes('"*"');
+}
+
+function buildExtraWarnings(warnings: Warning[], isBuild: boolean): Warning[] {
+	const extraWarnings = [];
+	if (!isBuild) {
+		const noScopableElementWarnings = warnings.filter((w) => isNoScopableElementWarning(w));
+		if (noScopableElementWarnings.length > 0) {
+			// in case there are multiple, use last one as that is the one caused by our *{} rule
+			const noScopableElementWarning =
+				noScopableElementWarnings[noScopableElementWarnings.length - 1];
+			extraWarnings.push({
+				...noScopableElementWarning,
+				code: 'vite-plugin-svelte-css-no-scopable-elements',
+				message: `No scopable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles.`
+			});
+		}
+	}
+	return extraWarnings;
 }
 
 function warnDev(w: Warning) {
