@@ -120,11 +120,11 @@ function ignoreCompilerWarning(
 ): boolean {
 	return (
 		(!emitCss && warning.code === 'css-unused-selector') || // same as rollup-plugin-svelte
-		(!isBuild && isNoScopeableElementWarning(warning))
+		(!isBuild && isNoScopableElementWarning(warning))
 	);
 }
 
-function isNoScopeableElementWarning(warning: Warning) {
+function isNoScopableElementWarning(warning: Warning) {
 	// see https://github.com/sveltejs/vite-plugin-svelte/issues/153
 	return warning.code === 'css-unused-selector' && warning.message.includes('"*"');
 }
@@ -132,15 +132,15 @@ function isNoScopeableElementWarning(warning: Warning) {
 function buildExtraWarnings(warnings: Warning[], isBuild: boolean): Warning[] {
 	const extraWarnings = [];
 	if (!isBuild) {
-		const noScopeableElementWarnings = warnings.filter((w) => isNoScopeableElementWarning(w));
-		if (noScopeableElementWarnings.length > 0) {
+		const noScopableElementWarnings = warnings.filter((w) => isNoScopableElementWarning(w));
+		if (noScopableElementWarnings.length > 0) {
 			// in case there are multiple, use last one as that is the one caused by our *{} rule
-			const noScopeableElementWarning =
-				noScopeableElementWarnings[noScopeableElementWarnings.length - 1];
+			const noScopableElementWarning =
+				noScopableElementWarnings[noScopableElementWarnings.length - 1];
 			extraWarnings.push({
-				...noScopeableElementWarning,
-				code: 'vite-plugin-svelte-css-no-scopeable-elements',
-				message: `No scopeable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles.`
+				...noScopableElementWarning,
+				code: 'vite-plugin-svelte-css-no-scopable-elements',
+				message: `No scopable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles.`
 			});
 		}
 	}
