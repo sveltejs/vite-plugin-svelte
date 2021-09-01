@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.20
+
+### Major Changes
+
+- Enable optimization for nested dependencies of excluded svelte dependencies ([#157](https://github.com/sveltejs/vite-plugin-svelte/pull/157))
+
+  Vite 2.5.3 and above is needed to support this feature.
+
+### Minor Changes
+
+- Improve dev warning message for components including only unscoped styles (fixes [#153](https://github.com/sveltejs/vite-plugin-svelte/issues/153)) ([#154](https://github.com/sveltejs/vite-plugin-svelte/pull/154))
+
 ## 1.0.0-next.19
 
 ### Patch Changes
@@ -51,7 +63,7 @@
 
   ```js
   optimizeDeps: {
-      exclude: ['svelte'];
+  	exclude: ['svelte'];
   }
   ```
 
