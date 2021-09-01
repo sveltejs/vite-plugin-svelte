@@ -3,13 +3,15 @@ const { svelte } = require('@sveltejs/vite-plugin-svelte');
 
 module.exports = defineConfig(({ command, mode }) => {
 	return {
-		optimizeDeps: {
-			exclude: ['e2e-tests-hmr-test-dependency']
-		},
 		plugins: [svelte()],
 		build: {
 			minify: false,
-			target: 'esnext'
+			target: 'esnext',
+			commonjsOptions: {
+				// pnpm only symlinks packages, and vite wont process cjs deps not in
+				// node_modules, so we add the cjs dep here
+				include: [/node_modules/, /cjs-only/]
+			}
 		},
 		server: {
 			watch: {

@@ -236,20 +236,19 @@ function buildOptimizeDepsForSvelte(
 	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
 	exclude.push(...svelteDepsToExclude.filter((x) => !optimizeDeps?.exclude?.includes(x)));
 
-	/* // TODO enable once https://github.com/vitejs/vite/pull/4634 lands
 	const transitiveDepsToInclude = svelteDeps
 		.filter((dep) => svelteDepsToExclude.includes(dep.name))
 		.flatMap((dep) =>
 			Object.keys(dep.pkg.dependencies || {})
 				.filter((depOfDep) => !svelteDepsToExclude.includes(depOfDep))
-				.map((depOfDep) => dep.path.concat(depOfDep).join('>'))
+				.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '))
 		);
 	log.debug(
 		`reincluding transitive dependencies of excluded svelte dependencies`,
 		transitiveDepsToInclude
 	);
 	include.push(...transitiveDepsToInclude);
-*/
+
 	return { include, exclude };
 }
 
