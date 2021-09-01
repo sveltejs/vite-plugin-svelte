@@ -113,6 +113,14 @@ importers:
   packages/e2e-tests/_test_dependencies/esm-only:
     specifiers: {}
 
+  packages/e2e-tests/_test_dependencies/svelte-hybrid:
+    specifiers:
+      '@types/node': ^16.7.8
+      e2e-test-dep-cjs-only: workspace:*
+    dependencies:
+      '@types/node': 16.7.8
+      e2e-test-dep-cjs-only: link:../cjs-only
+
   packages/e2e-tests/_test_dependencies/svelte-nested:
     specifiers:
       e2e-test-dep-cjs-and-esm: workspace:*
@@ -214,10 +222,12 @@ importers:
   packages/e2e-tests/package-json-svelte-field:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
+      e2e-test-dep-svelte-hybrid: workspace:*
       e2e-test-dep-svelte-nested: workspace:*
       svelte: ^3.42.4
       vite: ^2.5.3
     dependencies:
+      e2e-test-dep-svelte-hybrid: link:../_test_dependencies/svelte-hybrid
       e2e-test-dep-svelte-nested: link:../_test_dependencies/svelte-nested
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -1434,7 +1444,6 @@ packages:
 
   /@types/node/16.7.8:
     resolution: {integrity: sha512-8upnoQU0OPzbIkm+ZMM0zCeFCkw2s3mS0IWdx0+AAaWqm4fkBb0UJp8Edl7FVKRamYbpJC/aVsHpKWBIbiC7Zg==}
-    dev: true
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
