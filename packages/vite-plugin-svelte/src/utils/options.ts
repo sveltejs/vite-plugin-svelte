@@ -219,28 +219,29 @@ function buildOptimizeDepsForSvelte(
 	// include svelte imports for optimization unless explicitly excluded
 	const include: string[] = [];
 	const exclude: string[] = ['svelte-hmr'];
-	const isSvelteExcluded = optimizeDeps?.exclude?.includes('svelte');
-	if (!isSvelteExcluded) {
+	const isIncluded = (dep: string) => include.includes(dep) || optimizeDeps?.include?.includes(dep);
+	const isExcluded = (dep: string) => exclude.includes(dep) || optimizeDeps?.exclude?.includes(dep);
+	if (!isExcluded('svelte')) {
 		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
 		log.debug(
 			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `
 		);
-		include.push(...svelteImportsToInclude.filter((x) => !optimizeDeps?.include?.includes(x)));
+		include.push(...svelteImportsToInclude.filter((x) => !isIncluded(x)));
 	} else {
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
 
 	const svelteDepsToExclude = Array.from(new Set(svelteDeps.map((dep) => dep.name))).filter(
-		(dep) => !optimizeDeps?.include?.includes(dep)
+		(dep) => !isIncluded(dep)
 	);
 	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
-	exclude.push(...svelteDepsToExclude.filter((x) => !optimizeDeps?.exclude?.includes(x)));
+	exclude.push(...svelteDepsToExclude.filter((x) => !isExcluded(x)));
 
 	const transitiveDepsToInclude = svelteDeps
-		.filter((dep) => svelteDepsToExclude.includes(dep.name))
+		.filter((dep) => !isExcluded(dep.name))
 		.flatMap((dep) =>
 			Object.keys(dep.pkg.dependencies || {})
-				.filter((depOfDep) => !svelteDepsToExclude.includes(depOfDep))
+				.filter((depOfDep) => !isExcluded(depOfDep))
 				.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '))
 		);
 	log.debug(
