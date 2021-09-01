@@ -220,7 +220,14 @@ function buildOptimizeDepsForSvelte(
 	const include: string[] = [];
 	const exclude: string[] = ['svelte-hmr'];
 	const isIncluded = (dep: string) => include.includes(dep) || optimizeDeps?.include?.includes(dep);
-	const isExcluded = (dep: string) => exclude.includes(dep) || optimizeDeps?.exclude?.includes(dep);
+	const isExcluded = (dep: string) => {
+		return (
+			exclude.includes(dep) ||
+			// vite optimizeDeps.exclude works for subpackages too
+			// see https://github.com/vitejs/vite/blob/c87763c1418d1ba876eae13d139eba83ac6f28b2/packages/vite/src/node/optimizer/scan.ts#L293
+			optimizeDeps?.exclude?.some((id) => dep === id || id.startsWith(`${dep}/`))
+		);
+	};
 	if (!isExcluded('svelte')) {
 		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
 		log.debug(
@@ -238,7 +245,7 @@ function buildOptimizeDepsForSvelte(
 	exclude.push(...svelteDepsToExclude.filter((x) => !isExcluded(x)));
 
 	const transitiveDepsToInclude = svelteDeps
-		.filter((dep) => !isExcluded(dep.name))
+		.filter((dep) => isExcluded(dep.name))
 		.flatMap((dep) =>
 			Object.keys(dep.pkg.dependencies || {})
 				.filter((depOfDep) => !isExcluded(depOfDep))
