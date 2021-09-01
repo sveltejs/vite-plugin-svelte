@@ -4,4 +4,4 @@
 
 Enable optimization for nested dependencies of excluded svelte dependencies
 
-Vite 2.5.2 and above is needed to support this feature.
+Vite 2.5.3 and above is needed to support this feature.
