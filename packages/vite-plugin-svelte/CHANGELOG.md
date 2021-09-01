@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.21
+
+### Minor Changes
+
+- Add option disableDependencyReinclusion to offer users a way out of automatic optimization for hybrid packages ([#161](https://github.com/sveltejs/vite-plugin-svelte/pull/161))
+
+### Patch Changes
+
+- Improve automatic dependency pre-bundling by not reincluding dependencies that are already present in optimizeDeps.exclude ([#159](https://github.com/sveltejs/vite-plugin-svelte/pull/159))
+
 ## 1.0.0-next.20
 
 ### Major Changes
