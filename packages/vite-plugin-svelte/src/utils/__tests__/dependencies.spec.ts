@@ -13,10 +13,11 @@ describe('dependencies', () => {
 			const deps = findRootSvelteDependencies(
 				path.resolve('packages/e2e-tests/package-json-svelte-field')
 			);
-			expect(deps).toHaveLength(2);
+			expect(deps).toHaveLength(3);
 			expect(deps[0].name).toBe('e2e-test-dep-svelte-nested');
 			expect(deps[1].name).toBe('e2e-test-dep-svelte-simple');
 			expect(deps[1].path).toEqual(['e2e-test-dep-svelte-nested']);
+			expect(deps[2].name).toBe('e2e-test-dep-svelte-hybrid');
 		});
 	});
 });

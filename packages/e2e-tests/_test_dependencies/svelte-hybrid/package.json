@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "private": true,
+  "name": "e2e-test-dep-svelte-hybrid",
+  "bin": "cli.js",
+  "main": "index.js",
+  "svelte": "index.js",
+  "files": [
+    "index.js",
+    "cli.js",
+    "package.json"
+  ],
+  "dependencies": {
+    "@types/node": "^16.7.8",
+    "e2e-test-dep-cjs-only": "workspace:*"
+  }
+}
