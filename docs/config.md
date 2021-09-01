@@ -164,10 +164,10 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
   vite-plugin-svelte automatically manages [pre-bundling for Svelte components](./faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies).
   To opt-out of this automatic behavior you can use
 
-  - `disableDependencyReinclusion: true` to disable all reinclusions
-  - `disableDependencyReinclusion: ['foo']` to disable reinclusions only for dependencies of foo.
+  - `disableDependencyReinclusion: true` to disable all re-inclusions
+  - `disableDependencyReinclusion: ['foo']` to disable re-inclusions only for dependencies of `foo`.
 
-  If you want to manually re-include the dependency `bar`of `foo`, you can add `{optimizeDeps.include:['foo > bar']}` to your Vite config
+  If you want to manually re-include the dependency `bar`of `foo`, you can add `{optimizeDeps:{include:['foo > bar']}}` to your Vite config
 
   > This is currently required for hybrid packages like Routify, that export both Node and browser code.
 
