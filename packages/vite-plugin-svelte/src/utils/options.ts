@@ -27,6 +27,7 @@ const knownOptions = new Set([
 	'preprocess',
 	'hot',
 	'ignorePluginPreprocessors',
+	'disableDependencyReinclude',
 	'experimental'
 ]);
 
@@ -184,7 +185,7 @@ export function buildExtraViteConfig(
 	// extra handling for svelte dependencies in the project
 	const svelteDeps = findRootSvelteDependencies(options.root);
 	const extraViteConfig: Partial<UserConfig> = {
-		optimizeDeps: buildOptimizeDepsForSvelte(svelteDeps, config.optimizeDeps),
+		optimizeDeps: buildOptimizeDepsForSvelte(svelteDeps, options, config.optimizeDeps),
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
 			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
@@ -214,6 +215,7 @@ export function buildExtraViteConfig(
 
 function buildOptimizeDepsForSvelte(
 	svelteDeps: SvelteDependency[],
+	options: ResolvedOptions,
 	optimizeDeps?: DepOptimizationOptions
 ): DepOptimizationOptions {
 	// include svelte imports for optimization unless explicitly excluded
@@ -244,18 +246,24 @@ function buildOptimizeDepsForSvelte(
 	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
 	exclude.push(...svelteDepsToExclude.filter((x) => !isExcluded(x)));
 
-	const transitiveDepsToInclude = svelteDeps
-		.filter((dep) => isExcluded(dep.name))
-		.flatMap((dep) =>
-			Object.keys(dep.pkg.dependencies || {})
-				.filter((depOfDep) => !isExcluded(depOfDep))
-				.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '))
+	if (options.disableDependencyReinclude !== true) {
+		const disabledReincludes = options.disableDependencyReinclude || [];
+		if (disabledReincludes.length > 0) {
+			log.debug(`not reincluding transitive dependencies of`, disabledReincludes);
+		}
+		const transitiveDepsToInclude = svelteDeps
+			.filter((dep) => !disabledReincludes.includes(dep.name) && isExcluded(dep.name))
+			.flatMap((dep) =>
+				Object.keys(dep.pkg.dependencies || {})
+					.filter((depOfDep) => !isExcluded(depOfDep))
+					.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '))
+			);
+		log.debug(
+			`reincluding transitive dependencies of excluded svelte dependencies`,
+			transitiveDepsToInclude
 		);
-	log.debug(
-		`reincluding transitive dependencies of excluded svelte dependencies`,
-		transitiveDepsToInclude
-	);
-	include.push(...transitiveDepsToInclude);
+		include.push(...transitiveDepsToInclude);
+	}
 
 	return { include, exclude };
 }
@@ -371,6 +379,19 @@ export interface Options {
 	 * @default false
 	 */
 	ignorePluginPreprocessors?: boolean | string[];
+
+	/**
+	 * vite-plugin-svelte automatically handles excluding svelte libraries and reinclusion of their dependencies
+	 * in vite.optimizeDeps.
+	 *
+	 * `disableDependencyReinclude: true` disables all reincludes
+	 * `disableDependencyReinclude: ['foo','bar']` disables reinclude for dependencies of foo and bar
+	 *
+	 * This should be used for hybrid packages that contain both node and browser dependencies, eg Routify
+	 *
+	 * @default false
+	 */
+	disableDependencyReinclude?: boolean | string[];
 
 	/**
 	 * These options are considered experimental and breaking changes to them can occur in any release

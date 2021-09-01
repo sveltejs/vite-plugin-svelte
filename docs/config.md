@@ -156,6 +156,21 @@ A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns
 
   Some Vite plugins can contribute additional preprocessors by defining [api.sveltePreprocess](./faq.md#how-do-i-add-a-svelte-preprocessor-from-a-vite-plugin). If you don't want to use them, set this to true to ignore them all or use an array of strings with plugin names to specify which.
 
+### disableDependencyReinclude
+
+- **Type:** `boolean | string[]`
+- **Default:** `false`
+
+  vite-plugin-svelte automatically manages [pre-bundling for dependencies](./faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies) that use svelte.
+  To opt-out of this automatic behavior you can use
+
+  - `disableDependencyReinclude: true` to disable all reincludes
+  - `disableDependencyReinclude: ['foo']` to disable reinclude only for dependencies of foo.
+
+  If you want to manually reinclude the dependency `bar`of `foo`, you can add `{optimizeDeps.include:['foo > bar']}` to your vite config
+
+  > This is currently required for hybrid packages like routify, that export both node and browser code.
+
 ## Experimental options
 
 These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.
