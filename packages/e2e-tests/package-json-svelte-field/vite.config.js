@@ -5,7 +5,7 @@ module.exports = defineConfig(({ command, mode }) => {
 	return {
 		plugins: [
 			svelte({
-				disableDependencyReinclude: ['e2e-test-dep-svelte-hybrid']
+				disableDependencyReinclusion: ['e2e-test-dep-svelte-hybrid']
 			})
 		],
 		build: {

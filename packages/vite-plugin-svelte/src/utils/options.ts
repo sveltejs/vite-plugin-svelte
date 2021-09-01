@@ -27,7 +27,7 @@ const knownOptions = new Set([
 	'preprocess',
 	'hot',
 	'ignorePluginPreprocessors',
-	'disableDependencyReinclude',
+	'disableDependencyReinclusion',
 	'experimental'
 ]);
 
@@ -246,13 +246,13 @@ function buildOptimizeDepsForSvelte(
 	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
 	exclude.push(...svelteDepsToExclude.filter((x) => !isExcluded(x)));
 
-	if (options.disableDependencyReinclude !== true) {
-		const disabledReincludes = options.disableDependencyReinclude || [];
-		if (disabledReincludes.length > 0) {
-			log.debug(`not reincluding transitive dependencies of`, disabledReincludes);
+	if (options.disableDependencyReinclusion !== true) {
+		const disabledReinclusions = options.disableDependencyReinclusion || [];
+		if (disabledReinclusions.length > 0) {
+			log.debug(`not reincluding transitive dependencies of`, disabledReinclusions);
 		}
 		const transitiveDepsToInclude = svelteDeps
-			.filter((dep) => !disabledReincludes.includes(dep.name) && isExcluded(dep.name))
+			.filter((dep) => !disabledReinclusions.includes(dep.name) && isExcluded(dep.name))
 			.flatMap((dep) =>
 				Object.keys(dep.pkg.dependencies || {})
 					.filter((depOfDep) => !isExcluded(depOfDep))
@@ -384,14 +384,14 @@ export interface Options {
 	 * vite-plugin-svelte automatically handles excluding svelte libraries and reinclusion of their dependencies
 	 * in vite.optimizeDeps.
 	 *
-	 * `disableDependencyReinclude: true` disables all reincludes
-	 * `disableDependencyReinclude: ['foo','bar']` disables reinclude for dependencies of foo and bar
+	 * `disableDependencyReinclusion: true` disables all reinclusions
+	 * `disableDependencyReinclusion: ['foo','bar']` disables reinclusions for dependencies of foo and bar
 	 *
 	 * This should be used for hybrid packages that contain both node and browser dependencies, eg Routify
 	 *
 	 * @default false
 	 */
-	disableDependencyReinclude?: boolean | string[];
+	disableDependencyReinclusion?: boolean | string[];
 
 	/**
 	 * These options are considered experimental and breaking changes to them can occur in any release
