@@ -91,8 +91,11 @@ const vitePluginCoolCss = {
 
 For reference, check out [windicss](https://github.com/windicss/vite-plugin-windicss/blob/517eca0cebc879d931c6578a08accadfb112157c/packages/vite-plugin-windicss/src/index.ts#L167).
 
-### What is `The requested module 'xxx' does not provide an export named 'yyy'`?
+### What is going on with Vite and `Pre-bundling dependencies:`?
 
-This usually happens when a dependency (e.g. `xxx`) only exports CJS code, but is not optimized by Vite. It's also a common issue among many Svelte libraries because they are [excluded from optimization by default](https://github.com/vitejs/vite/issues/3910#issuecomment-897006012) by `vite-plugin-svelte`.
+Pre-bundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html).
+It is required for CJS dependencies, as Vite's development server only works with ES modules on the client side.
 
-A pending [Vite pull request](https://github.com/vitejs/vite/pull/4634) would help solve this issue soon, but until then, try contacting the `xxx` library authors to also export ESM code.
+Thanks to [a new API in Vite](https://github.com/vitejs/vite/pull/4634), [vite-plugin-svelte](https://github.com/sveltejs/vite-plugin-svelte/pull/157) automatically handles pre-bundling these for you.
+
+In case you still run into errors like `The requested module 'xxx' does not provide an export named 'yyy'`, please check our [open issues](https://github.com/sveltejs/vite-plugin-svelte/issues).
