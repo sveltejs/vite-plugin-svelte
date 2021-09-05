@@ -52,7 +52,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			}
 			options = await resolveOptions(inlineOptions, config, configEnv);
 			// extra vite config
-			const extraViteConfig = buildExtraViteConfig(options, config);
+			const extraViteConfig = buildExtraViteConfig(options, config, configEnv);
 			log.debug('additional vite config', extraViteConfig);
 			return extraViteConfig as Partial<UserConfig>;
 		},

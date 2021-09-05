@@ -3,11 +3,7 @@ const { defineConfig } = require('vite');
 
 module.exports = defineConfig(({ command, mode }) => {
 	return {
-		plugins: [
-			svelte({
-				disableDependencyReinclusion: ['e2e-test-dep-svelte-hybrid']
-			})
-		],
+		plugins: [svelte()],
 		build: {
 			// make build faster by skipping transforms and minification
 			target: 'esnext',

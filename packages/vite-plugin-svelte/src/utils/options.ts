@@ -13,8 +13,9 @@ import {
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
 import path from 'path';
-import { findRootSvelteDependencies, SvelteDependency } from './dependencies';
+import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
 import { DepOptimizationOptions } from 'vite/src/node/optimizer/index';
+import { createRequire } from 'module';
 
 const knownOptions = new Set([
 	'configFile',
@@ -180,12 +181,12 @@ function resolveViteRoot(viteConfig: UserConfig): string | undefined {
 
 export function buildExtraViteConfig(
 	options: ResolvedOptions,
-	config: UserConfig
+	config: UserConfig,
+	configEnv: ConfigEnv
 ): Partial<UserConfig> {
 	// extra handling for svelte dependencies in the project
 	const svelteDeps = findRootSvelteDependencies(options.root);
 	const extraViteConfig: Partial<UserConfig> = {
-		optimizeDeps: buildOptimizeDepsForSvelte(svelteDeps, options, config.optimizeDeps),
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
 			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
@@ -195,6 +196,14 @@ export function buildExtraViteConfig(
 		// @ts-ignore
 		// knownJsSrcExtensions: options.extensions
 	};
+
+	if (configEnv.command === 'serve') {
+		extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
+			svelteDeps,
+			options,
+			config.optimizeDeps
+		);
+	}
 
 	// @ts-ignore
 	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config);
@@ -253,11 +262,12 @@ function buildOptimizeDepsForSvelte(
 		}
 		const transitiveDepsToInclude = svelteDeps
 			.filter((dep) => !disabledReinclusions.includes(dep.name) && isExcluded(dep.name))
-			.flatMap((dep) =>
-				Object.keys(dep.pkg.dependencies || {})
-					.filter((depOfDep) => !isExcluded(depOfDep))
-					.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '))
-			);
+			.flatMap((dep) => {
+				const localRequire = createRequire(`${dep.dir}/package.json`);
+				return Object.keys(dep.pkg.dependencies || {})
+					.filter((depOfDep) => !isExcluded(depOfDep) && needsOptimization(depOfDep, localRequire))
+					.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '));
+			});
 		log.debug(
 			`reincluding transitive dependencies of excluded svelte dependencies`,
 			transitiveDepsToInclude

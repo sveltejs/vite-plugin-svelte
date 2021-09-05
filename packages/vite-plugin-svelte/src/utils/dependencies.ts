@@ -39,8 +39,8 @@ function getSvelteDependencies(
 	const result = [];
 	const localRequire = createRequire(`${pkgDir}/package.json`);
 	const resolvedDeps = deps
-		.map((dep) => resolveSvelteDependency(dep, localRequire))
-		.filter(Boolean);
+		.map((dep) => resolveDependencyData(dep, localRequire))
+		.filter((depData) => !!depData && isSvelte(depData.pkg)) as DependencyData[];
 	// @ts-ignore
 	for (const { pkg, dir } of resolvedDeps) {
 		result.push({ name: pkg.name, pkg, dir, path });
@@ -64,16 +64,10 @@ function getSvelteDependencies(
 	return result;
 }
 
-function resolveSvelteDependency(
-	dep: string,
-	localRequire: NodeRequire
-): { dir: string; pkg: Pkg } | void {
+function resolveDependencyData(dep: string, localRequire: NodeRequire): DependencyData | void {
 	try {
 		const pkgJson = `${dep}/package.json`;
 		const pkg = localRequire(pkgJson);
-		if (!isSvelte(pkg)) {
-			return;
-		}
 		const dir = path.dirname(localRequire.resolve(pkgJson));
 		return { dir, pkg };
 	} catch (e) {
@@ -84,12 +78,6 @@ function resolveSvelteDependency(
 			while (dir) {
 				const pkg = parsePkg(dir, true);
 				if (pkg && pkg.name === dep) {
-					if (!isSvelte(pkg)) {
-						return;
-					}
-					log.warn.once(
-						`package.json of ${dep} has a "svelte" field but does not include itself in exports field. Please ask package maintainer to update`
-					);
 					return { dir, pkg };
 				}
 				const parent = path.dirname(dir);
@@ -172,6 +160,20 @@ function is_common_without_svelte_field(dependency: string): boolean {
 					: dependency.substring(dependency.lastIndexOf('/') + 1).startsWith(prefix) // check prefix omitting @scope/
 		)
 	);
+}
+
+export function needsOptimization(dep: string, localRequire: NodeRequire): boolean {
+	const depData = resolveDependencyData(dep, localRequire);
+	if (!depData) return false;
+	const pkg = depData.pkg;
+	// only optimize if is cjs, using the below as heuristic
+	// see https://github.com/sveltejs/vite-plugin-svelte/issues/162
+	return pkg.main && !pkg.module && !pkg.exports;
+}
+
+interface DependencyData {
+	dir: string;
+	pkg: Pkg;
 }
 
 export interface SvelteDependency {
