@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { builtinModules } from 'module';
 import { ConfigEnv, UserConfig, ViteDevServer, normalizePath } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
@@ -265,7 +266,28 @@ function buildOptimizeDepsForSvelte(
 		include.push(...transitiveDepsToInclude);
 	}
 
-	return { include, exclude };
+	const esbuildOptions: DepOptimizationOptions['esbuildOptions'] = {
+		plugins: [
+			{
+				name: 'vite-plugin-svelte:external-node-builtin',
+				setup(build) {
+					// externalize all node builtins during prebundling
+					// https://github.com/vitejs/vite/blob/f4f0100649220453d961b6c66531c58026885680/packages/vite/src/node/plugins/resolve.ts#L224-L241
+					build.onResolve(
+						{ filter: new RegExp(`^(${builtinModules.join('|')})$`) },
+						({ path: id }) => {
+							return {
+								path: id,
+								external: true
+							};
+						}
+					);
+				}
+			}
+		]
+	};
+
+	return { include, exclude, esbuildOptions };
 }
 
 function buildSSROptionsForSvelte(

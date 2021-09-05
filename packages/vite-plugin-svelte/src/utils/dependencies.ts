@@ -2,6 +2,7 @@ import { log } from './log';
 import path from 'path';
 import fs from 'fs';
 import { createRequire } from 'module';
+import { SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
 
 export function findRootSvelteDependencies(root: string, cwdFallback = true): SvelteDependency[] {
 	log.debug(`findSvelteDependencies: searching svelte dependencies in ${root}`);
@@ -39,12 +40,20 @@ function getSvelteDependencies(
 	const result = [];
 	const localRequire = createRequire(`${pkgDir}/package.json`);
 	const resolvedDeps = deps
-		.map((dep) => resolveSvelteDependency(dep, localRequire))
-		.filter(Boolean);
+		.map((dep) => resolveDependencyData(dep, localRequire))
+		.filter((depData) => !!depData && isSvelte(depData.pkg)) as DependencyData[];
 	// @ts-ignore
 	for (const { pkg, dir } of resolvedDeps) {
 		result.push({ name: pkg.name, pkg, dir, path });
 		if (pkg.dependencies) {
+			// removed unoptimizable dependencies (hacky)
+			for (const dep in pkg.dependencies) {
+				const localRequire = createRequire(`${dir}/package.json`);
+				const depData = resolveDependencyData(dep, localRequire);
+				if (depData && !isDepOptimizable(depData.pkg)) {
+					delete pkg.dependencies[dep];
+				}
+			}
 			let dependencyNames = Object.keys(pkg.dependencies);
 			const circular = dependencyNames.filter((name) => path.includes(name));
 			if (circular.length > 0) {
@@ -64,16 +73,10 @@ function getSvelteDependencies(
 	return result;
 }
 
-function resolveSvelteDependency(
-	dep: string,
-	localRequire: NodeRequire
-): { dir: string; pkg: Pkg } | void {
+function resolveDependencyData(dep: string, localRequire: NodeRequire): DependencyData | void {
 	try {
 		const pkgJson = `${dep}/package.json`;
 		const pkg = localRequire(pkgJson);
-		if (!isSvelte(pkg)) {
-			return;
-		}
 		const dir = path.dirname(localRequire.resolve(pkgJson));
 		return { dir, pkg };
 	} catch (e) {
@@ -84,12 +87,6 @@ function resolveSvelteDependency(
 			while (dir) {
 				const pkg = parsePkg(dir, true);
 				if (pkg && pkg.name === dep) {
-					if (!isSvelte(pkg)) {
-						return;
-					}
-					log.warn.once(
-						`package.json of ${dep} has a "svelte" field but does not include itself in exports field. Please ask package maintainer to update`
-					);
 					return { dir, pkg };
 				}
 				const parent = path.dirname(dir);
@@ -172,6 +169,15 @@ function is_common_without_svelte_field(dependency: string): boolean {
 					: dependency.substring(dependency.lastIndexOf('/') + 1).startsWith(prefix) // check prefix omitting @scope/
 		)
 	);
+}
+
+function isDepOptimizable(pkg: Pkg) {
+	return [...SVELTE_RESOLVE_MAIN_FIELDS, 'main'].some((field) => !!pkg[field]);
+}
+
+interface DependencyData {
+	dir: string;
+	pkg: Pkg;
 }
 
 export interface SvelteDependency {
