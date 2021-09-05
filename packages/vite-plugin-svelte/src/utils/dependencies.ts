@@ -2,7 +2,6 @@ import { log } from './log';
 import path from 'path';
 import fs from 'fs';
 import { createRequire } from 'module';
-import { SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
 
 export function findRootSvelteDependencies(root: string, cwdFallback = true): SvelteDependency[] {
 	log.debug(`findSvelteDependencies: searching svelte dependencies in ${root}`);
@@ -46,14 +45,6 @@ function getSvelteDependencies(
 	for (const { pkg, dir } of resolvedDeps) {
 		result.push({ name: pkg.name, pkg, dir, path });
 		if (pkg.dependencies) {
-			// removed unoptimizable dependencies (hacky)
-			for (const dep in pkg.dependencies) {
-				const localRequire = createRequire(`${dir}/package.json`);
-				const depData = resolveDependencyData(dep, localRequire);
-				if (depData && !isDepOptimizable(depData.pkg)) {
-					delete pkg.dependencies[dep];
-				}
-			}
 			let dependencyNames = Object.keys(pkg.dependencies);
 			const circular = dependencyNames.filter((name) => path.includes(name));
 			if (circular.length > 0) {
@@ -171,8 +162,13 @@ function is_common_without_svelte_field(dependency: string): boolean {
 	);
 }
 
-function isDepOptimizable(pkg: Pkg) {
-	return [...SVELTE_RESOLVE_MAIN_FIELDS, 'main'].some((field) => !!pkg[field]);
+export function needsOptimization(dep: SvelteDependency, depOfDep: string) {
+	const localRequire = createRequire(`${dep.dir}/package.json`);
+	const depData = resolveDependencyData(depOfDep, localRequire);
+	if (!depData) return false;
+	const pkg = depData.pkg;
+	// only optimize if is cjs, using the below as heuristic
+	return pkg.main && !pkg.module && !pkg.exports;
 }
 
 interface DependencyData {

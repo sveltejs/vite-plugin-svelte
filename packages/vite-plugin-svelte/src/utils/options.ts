@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-import { builtinModules } from 'module';
 import { ConfigEnv, UserConfig, ViteDevServer, normalizePath } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
@@ -14,7 +13,7 @@ import {
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
 import path from 'path';
-import { findRootSvelteDependencies, SvelteDependency } from './dependencies';
+import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
 import { DepOptimizationOptions } from 'vite/src/node/optimizer/index';
 
 const knownOptions = new Set([
@@ -256,7 +255,7 @@ function buildOptimizeDepsForSvelte(
 			.filter((dep) => !disabledReinclusions.includes(dep.name) && isExcluded(dep.name))
 			.flatMap((dep) =>
 				Object.keys(dep.pkg.dependencies || {})
-					.filter((depOfDep) => !isExcluded(depOfDep))
+					.filter((depOfDep) => !isExcluded(depOfDep) && needsOptimization(dep, depOfDep))
 					.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '))
 			);
 		log.debug(
@@ -266,28 +265,7 @@ function buildOptimizeDepsForSvelte(
 		include.push(...transitiveDepsToInclude);
 	}
 
-	const esbuildOptions: DepOptimizationOptions['esbuildOptions'] = {
-		plugins: [
-			{
-				name: 'vite-plugin-svelte:external-node-builtin',
-				setup(build) {
-					// externalize all node builtins during prebundling
-					// https://github.com/vitejs/vite/blob/f4f0100649220453d961b6c66531c58026885680/packages/vite/src/node/plugins/resolve.ts#L224-L241
-					build.onResolve(
-						{ filter: new RegExp(`^(${builtinModules.join('|')})$`) },
-						({ path: id }) => {
-							return {
-								path: id,
-								external: true
-							};
-						}
-					);
-				}
-			}
-		]
-	};
-
-	return { include, exclude, esbuildOptions };
+	return { include, exclude };
 }
 
 function buildSSROptionsForSvelte(
