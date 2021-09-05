@@ -162,9 +162,8 @@ function is_common_without_svelte_field(dependency: string): boolean {
 	);
 }
 
-export function needsOptimization(dep: SvelteDependency, depOfDep: string) {
-	const localRequire = createRequire(`${dep.dir}/package.json`);
-	const depData = resolveDependencyData(depOfDep, localRequire);
+export function needsOptimization(dep: string, localRequire: NodeRequire): boolean {
+	const depData = resolveDependencyData(dep, localRequire);
 	if (!depData) return false;
 	const pkg = depData.pkg;
 	// only optimize if is cjs, using the below as heuristic

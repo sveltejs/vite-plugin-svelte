@@ -15,6 +15,7 @@ import {
 import path from 'path';
 import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
 import { DepOptimizationOptions } from 'vite/src/node/optimizer/index';
+import { createRequire } from 'module';
 
 const knownOptions = new Set([
 	'configFile',
@@ -253,11 +254,12 @@ function buildOptimizeDepsForSvelte(
 		}
 		const transitiveDepsToInclude = svelteDeps
 			.filter((dep) => !disabledReinclusions.includes(dep.name) && isExcluded(dep.name))
-			.flatMap((dep) =>
-				Object.keys(dep.pkg.dependencies || {})
-					.filter((depOfDep) => !isExcluded(depOfDep) && needsOptimization(dep, depOfDep))
-					.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '))
-			);
+			.flatMap((dep) => {
+				const localRequire = createRequire(`${dep.dir}/package.json`);
+				return Object.keys(dep.pkg.dependencies || {})
+					.filter((depOfDep) => !isExcluded(depOfDep) && needsOptimization(depOfDep, localRequire))
+					.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '));
+			});
 		log.debug(
 			`reincluding transitive dependencies of excluded svelte dependencies`,
 			transitiveDepsToInclude
