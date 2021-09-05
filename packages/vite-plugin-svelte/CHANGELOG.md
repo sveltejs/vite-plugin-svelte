@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.22
+
+### Patch Changes
+
+- Only optimize nested cjs dependencies ([#163](https://github.com/sveltejs/vite-plugin-svelte/pull/163))
+
 ## 1.0.0-next.21
 
 ### Minor Changes
