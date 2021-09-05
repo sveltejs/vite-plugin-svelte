@@ -167,6 +167,7 @@ export function needsOptimization(dep: string, localRequire: NodeRequire): boole
 	if (!depData) return false;
 	const pkg = depData.pkg;
 	// only optimize if is cjs, using the below as heuristic
+	// see https://github.com/sveltejs/vite-plugin-svelte/issues/162
 	return pkg.main && !pkg.module && !pkg.exports;
 }
 
