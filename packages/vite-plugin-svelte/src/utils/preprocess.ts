@@ -30,7 +30,10 @@ function createViteScriptPreprocessor(): Preprocessor {
 				}
 			}
 		});
-		return transformResult;
+		return {
+			code: transformResult.code,
+			map: transformResult.map
+		};
 	};
 }
 
@@ -55,15 +58,13 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 			content,
 			moduleId
 		)) as TransformResult;
-		// TODO vite:css transform currently returns an empty mapping that would kill svelte compiler.
-		const hasMap = transformResult.map && transformResult.map?.mappings !== '';
+		// patch sourcemap source to point back to original filename
 		if (transformResult.map?.sources?.[0] === moduleId) {
 			transformResult.map.sources[0] = filename;
 		}
 		return {
 			code: transformResult.code,
-			map: hasMap ? (transformResult.map as object) : undefined,
-			dependencies: transformResult.deps
+			map: transformResult.map
 		};
 	};
 }
