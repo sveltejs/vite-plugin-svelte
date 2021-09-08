@@ -93,7 +93,7 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 	const extraPreprocessors = [];
 	if (options.experimental?.useVitePreprocess) {
 		log.debug('adding vite preprocessor');
-		extraPreprocessors.push(createVitePreprocessorGroup(config, options));
+		extraPreprocessors.push(createVitePreprocessorGroup(config));
 	}
 
 	// @ts-ignore
