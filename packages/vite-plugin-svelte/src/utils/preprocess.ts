@@ -1,4 +1,10 @@
-import { transformWithEsbuild, ResolvedConfig, TransformResult, Plugin } from 'vite';
+import {
+	transformWithEsbuild,
+	ESBuildOptions,
+	ResolvedConfig,
+	TransformResult,
+	Plugin
+} from 'vite';
 import MagicString from 'magic-string';
 import { Preprocessor, PreprocessorGroup, Processed, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
@@ -16,8 +22,7 @@ function createViteScriptPreprocessor(): Preprocessor {
 			return { code: content };
 		}
 		const transformResult = await transformWithEsbuild(content, filename, {
-			// vite doesn't export types for esbuild's loader type
-			loader: lang as any,
+			loader: lang as ESBuildOptions['loader'],
 			tsconfigRaw: {
 				compilerOptions: {
 					// svelte typescript needs this flag to work with type imports
