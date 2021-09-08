@@ -10,12 +10,12 @@ const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'p
 const supportedScriptLangs = ['ts'];
 
 function createViteScriptPreprocessor(): Preprocessor {
-	return async ({ attributes, content, filename }) => {
+	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
 		if (!supportedScriptLangs.includes(lang)) {
 			return { code: content };
 		}
-		const transformResult = await transformWithEsbuild(content, filename || '', {
+		const transformResult = await transformWithEsbuild(content, filename, {
 			// vite doesn't export types for esbuild's loader type
 			loader: lang as any,
 			tsconfigRaw: {
@@ -40,7 +40,7 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 	}
 	const pluginTransform = plugin.transform!.bind(null as unknown as TransformPluginContext);
 	// @ts-ignore
-	return async ({ attributes, content, filename }) => {
+	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
 		if (!supportedStyleLangs.includes(lang)) {
 			return { code: content };
@@ -53,7 +53,7 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 		// TODO vite:css transform currently returns an empty mapping that would kill svelte compiler.
 		const hasMap = transformResult.map && transformResult.map?.mappings !== '';
 		if (transformResult.map?.sources?.[0] === moduleId) {
-			transformResult.map.sources[0] = filename as string;
+			transformResult.map.sources[0] = filename;
 		}
 		return {
 			code: transformResult.code,
