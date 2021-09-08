@@ -9,40 +9,27 @@ const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'p
 
 const supportedScriptLangs = ['ts'];
 
-function createViteScriptPreprocessor(options: ResolvedOptions): Preprocessor {
+function createViteScriptPreprocessor(): Preprocessor {
 	return async ({ attributes, content, filename }) => {
 		const lang = attributes.lang as string;
 		if (!supportedScriptLangs.includes(lang)) {
 			return { code: content };
 		}
-		const moduleId = `${filename}.${lang}`;
-		const moduleGraph = options.server?.moduleGraph;
-		if (moduleGraph && !moduleGraph.getModuleById(moduleId)) {
-			await moduleGraph.ensureEntryFromUrl(moduleId);
-		}
-		const transformResult = await transformWithEsbuild(content, moduleId, {
+		const transformResult = await transformWithEsbuild(content, filename || '', {
+			// vite doesn't export types for esbuild's loader type
+			loader: lang as any,
 			tsconfigRaw: {
 				compilerOptions: {
+					// svelte typescript needs this flag to work with type imports
 					importsNotUsedAsValues: 'preserve'
 				}
 			}
 		});
-		// TODO vite:css transform currently returns an empty mapping that would kill svelte compiler.
-		const hasMap = transformResult.map && transformResult.map?.mappings !== '';
-		if (transformResult.map?.sources?.[0] === moduleId) {
-			transformResult.map.sources[0] = filename as string;
-		}
-		return {
-			code: transformResult.code,
-			map: hasMap ? (transformResult.map as object) : undefined
-		};
+		return transformResult;
 	};
 }
 
-function createViteStylePreprocessor(
-	options: ResolvedOptions,
-	config: ResolvedConfig
-): Preprocessor {
+function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 	const pluginName = 'vite:css';
 	const plugin = config.plugins.find((p) => p.name === pluginName);
 	if (!plugin) {
@@ -59,10 +46,6 @@ function createViteStylePreprocessor(
 			return { code: content };
 		}
 		const moduleId = `${filename}.${lang}`;
-		const moduleGraph = options.server?.moduleGraph;
-		if (moduleGraph && !moduleGraph.getModuleById(moduleId)) {
-			await moduleGraph.ensureEntryFromUrl(moduleId);
-		}
 		const transformResult: TransformResult = (await pluginTransform(
 			content,
 			moduleId
@@ -80,13 +63,10 @@ function createViteStylePreprocessor(
 	};
 }
 
-export function createVitePreprocessorGroup(
-	config: ResolvedConfig,
-	options: ResolvedOptions
-): PreprocessorGroup {
+export function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
 	return {
-		script: createViteScriptPreprocessor(options),
-		style: createViteStylePreprocessor(options, config)
+		script: createViteScriptPreprocessor(),
+		style: createViteStylePreprocessor(config)
 	} as PreprocessorGroup;
 }
 
