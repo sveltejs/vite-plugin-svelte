@@ -1,4 +1,4 @@
-import { ResolvedConfig, TransformResult, Plugin } from 'vite';
+import { transformWithEsbuild, ResolvedConfig, TransformResult, Plugin } from 'vite';
 import MagicString from 'magic-string';
 import { Preprocessor, PreprocessorGroup, Processed, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
@@ -9,12 +9,41 @@ const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'p
 
 const supportedScriptLangs = ['ts'];
 
-function createPreprocessorFromVitePlugin(
-	config: ResolvedConfig,
+function createViteScriptPreprocessor(options: ResolvedOptions): Preprocessor {
+	return async ({ attributes, content, filename }) => {
+		const lang = attributes.lang as string;
+		if (!supportedScriptLangs.includes(lang)) {
+			return { code: content };
+		}
+		const moduleId = `${filename}.${lang}`;
+		const moduleGraph = options.server?.moduleGraph;
+		if (moduleGraph && !moduleGraph.getModuleById(moduleId)) {
+			await moduleGraph.ensureEntryFromUrl(moduleId);
+		}
+		const transformResult = await transformWithEsbuild(content, moduleId, {
+			tsconfigRaw: {
+				compilerOptions: {
+					importsNotUsedAsValues: 'preserve'
+				}
+			}
+		});
+		// TODO vite:css transform currently returns an empty mapping that would kill svelte compiler.
+		const hasMap = transformResult.map && transformResult.map?.mappings !== '';
+		if (transformResult.map?.sources?.[0] === moduleId) {
+			transformResult.map.sources[0] = filename as string;
+		}
+		return {
+			code: transformResult.code,
+			map: hasMap ? (transformResult.map as object) : undefined
+		};
+	};
+}
+
+function createViteStylePreprocessor(
 	options: ResolvedOptions,
-	pluginName: string,
-	supportedLangs: string[]
+	config: ResolvedConfig
 ): Preprocessor {
+	const pluginName = 'vite:css';
 	const plugin = config.plugins.find((p) => p.name === pluginName);
 	if (!plugin) {
 		throw new Error(`failed to find plugin ${pluginName}`);
@@ -26,7 +55,7 @@ function createPreprocessorFromVitePlugin(
 	// @ts-ignore
 	return async ({ attributes, content, filename }) => {
 		const lang = attributes.lang as string;
-		if (!supportedLangs.includes(lang)) {
+		if (!supportedStyleLangs.includes(lang)) {
 			return { code: content };
 		}
 		const moduleId = `${filename}.${lang}`;
@@ -56,8 +85,8 @@ export function createVitePreprocessorGroup(
 	options: ResolvedOptions
 ): PreprocessorGroup {
 	return {
-		script: createPreprocessorFromVitePlugin(config, options, 'vite:esbuild', supportedScriptLangs),
-		style: createPreprocessorFromVitePlugin(config, options, 'vite:css', supportedStyleLangs)
+		script: createViteScriptPreprocessor(options),
+		style: createViteStylePreprocessor(options, config)
 	} as PreprocessorGroup;
 }
 
