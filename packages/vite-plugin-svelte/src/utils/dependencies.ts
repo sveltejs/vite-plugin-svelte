@@ -40,11 +40,13 @@ function getSvelteDependencies(
 	const localRequire = createRequire(`${pkgDir}/package.json`);
 	const resolvedDeps = deps
 		.map((dep) => resolveDependencyData(dep, localRequire))
-		.filter((depData) => !!depData && isSvelte(depData.pkg)) as DependencyData[];
-	// @ts-ignore
+		.filter(Boolean) as DependencyData[];
 	for (const { pkg, dir } of resolvedDeps) {
-		result.push({ name: pkg.name, pkg, dir, path });
-		if (pkg.dependencies) {
+		const type = getSvelteDependencyType(pkg);
+		if (!type) continue;
+		result.push({ name: pkg.name, type, pkg, dir, path });
+		// continue crawling for component libraries so we can optimize them, js libraries are fine
+		if (type === 'component-library' && pkg.dependencies) {
 			let dependencyNames = Object.keys(pkg.dependencies);
 			const circular = dependencyNames.filter((name) => path.includes(name));
 			if (circular.length > 0) {
@@ -102,8 +104,25 @@ function parsePkg(dir: string, silent = false): Pkg | void {
 	}
 }
 
-function isSvelte(pkg: Pkg) {
+function getSvelteDependencyType(pkg: Pkg): SvelteDependencyType | undefined {
+	if (isSvelteComponentLib(pkg)) {
+		return 'component-library';
+	} else if (isSvelteLib(pkg)) {
+		return 'js-library';
+	} else {
+		return undefined;
+	}
+}
+
+function isSvelteComponentLib(pkg: Pkg) {
 	return !!pkg.svelte;
+}
+
+function isSvelteLib(pkg: Pkg) {
+	return (
+		Object.keys(pkg.dependencies || {}).includes('svelte') ||
+		Object.keys(pkg.peerDependencies || {}).includes('svelte')
+	);
 }
 
 const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
@@ -178,16 +197,22 @@ interface DependencyData {
 
 export interface SvelteDependency {
 	name: string;
+	type: SvelteDependencyType;
 	dir: string;
 	pkg: Pkg;
 	path: string[];
 }
+
+// component-library => exports svelte components
+// js-library        => only uses svelte api, no components
+export type SvelteDependencyType = 'component-library' | 'js-library';
 
 export interface Pkg {
 	name: string;
 	svelte?: string;
 	dependencies?: DependencyList;
 	devDependencies?: DependencyList;
+	peerDependencies?: DependencyList;
 	[key: string]: any;
 }
 
