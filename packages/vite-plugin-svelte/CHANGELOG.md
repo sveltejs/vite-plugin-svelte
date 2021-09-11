@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.23
+
+### Patch Changes
+
+- Svelte libraries without any Svelte components are also added to ssr.noExternal ([#166](https://github.com/sveltejs/vite-plugin-svelte/pull/166))
+
 ## 1.0.0-next.22
 
 ### Patch Changes
