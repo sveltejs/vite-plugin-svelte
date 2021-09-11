@@ -113,6 +113,9 @@ importers:
   packages/e2e-tests/_test_dependencies/esm-only:
     specifiers: {}
 
+  packages/e2e-tests/_test_dependencies/svelte-api-only:
+    specifiers: {}
+
   packages/e2e-tests/_test_dependencies/svelte-hybrid:
     specifiers:
       '@types/node': ^16.9.0
@@ -213,10 +216,12 @@ importers:
     specifiers:
       '@sveltejs/adapter-node': ^1.0.0-next.46
       '@sveltejs/kit': ^1.0.0-next.165
+      e2e-test-dep-svelte-api-only: workspace:*
       svelte: ^3.42.4
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.46
       '@sveltejs/kit': 1.0.0-next.165_svelte@3.42.4
+      e2e-test-dep-svelte-api-only: link:../_test_dependencies/svelte-api-only
       svelte: 3.42.4
 
   packages/e2e-tests/package-json-svelte-field:

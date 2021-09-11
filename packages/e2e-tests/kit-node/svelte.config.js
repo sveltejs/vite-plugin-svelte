@@ -19,6 +19,9 @@ const config = {
 					usePolling: true,
 					interval: 100
 				}
+			},
+			ssr: {
+				external: ['e2e-test-dep-svelte-api-only']
 			}
 		}
 	}
