@@ -119,10 +119,7 @@ function isSvelteComponentLib(pkg: Pkg) {
 }
 
 function isSvelteLib(pkg: Pkg) {
-	return (
-		Object.keys(pkg.dependencies || {}).includes('svelte') ||
-		Object.keys(pkg.peerDependencies || {}).includes('svelte')
-	);
+	return !!pkg.dependencies?.svelte || !!pkg.peerDependencies?.svelte;
 }
 
 const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
