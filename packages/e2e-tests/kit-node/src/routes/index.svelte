@@ -22,6 +22,7 @@
 	import Counter from '$lib/Counter.svelte';
 	// eslint-disable-next-line node/no-missing-import
 	import Child from '$lib/Child.svelte';
+	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
 	export let load_status = 'NOT_LOADED';
 	let mount_status = 'BEFORE_MOUNT';
 	onMount(async () => {
@@ -29,6 +30,7 @@
 		console.log(`onMount dynamic imported isSSR: ${isSSR}`);
 		mount_status = 'AFTER_MOUNT';
 	});
+	setSomeContext();
 </script>
 
 <main>

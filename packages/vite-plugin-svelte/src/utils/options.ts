@@ -199,7 +199,7 @@ export function buildExtraViteConfig(
 
 	if (configEnv.command === 'serve') {
 		extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
-			svelteDeps,
+			svelteDeps.filter((dep) => dep.type === 'component-library'),
 			options,
 			config.optimizeDeps
 		);
