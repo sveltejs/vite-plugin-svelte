@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.24
+
+### Patch Changes
+
+- Only add all Svelte dependencies to ssr.noExternal in SSR build ([#169](https://github.com/sveltejs/vite-plugin-svelte/pull/169))
+
 ## 1.0.0-next.23
 
 ### Patch Changes
