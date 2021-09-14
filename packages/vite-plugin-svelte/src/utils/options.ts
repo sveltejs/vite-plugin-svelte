@@ -199,7 +199,7 @@ export function buildExtraViteConfig(
 
 	if (configEnv.command === 'serve') {
 		extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
-			svelteDeps.filter((dep) => dep.type === 'component-library'),
+			svelteDeps,
 			options,
 			config.optimizeDeps
 		);
@@ -227,6 +227,8 @@ function buildOptimizeDepsForSvelte(
 	options: ResolvedOptions,
 	optimizeDeps?: DepOptimizationOptions
 ): DepOptimizationOptions {
+	// only svelte component libraries needs to be processed for optimizeDeps, js libraries work fine
+	svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
 	// include svelte imports for optimization unless explicitly excluded
 	const include: string[] = [];
 	const exclude: string[] = ['svelte-hmr'];
@@ -292,6 +294,12 @@ function buildSSROptionsForSvelte(
 		if (!config.ssr?.external?.includes('svelte')) {
 			noExternal.push('svelte');
 		}
+	} else {
+		// for non-ssr build, we exclude svelte js library deps to make development faster
+		// and also because vite doesn't handle them properly.
+		// see https://github.com/sveltejs/vite-plugin-svelte/issues/168
+		// see https://github.com/vitejs/vite/issues/2579
+		svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
 	}
 
 	// add svelte dependencies to ssr.noExternal unless present in ssr.external or optimizeDeps.include

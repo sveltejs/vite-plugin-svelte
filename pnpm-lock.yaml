@@ -218,11 +218,13 @@ importers:
       '@sveltejs/kit': ^1.0.0-next.165
       e2e-test-dep-svelte-api-only: workspace:*
       svelte: ^3.42.4
+      svelte-i18n: ^3.3.10
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.46
       '@sveltejs/kit': 1.0.0-next.165_svelte@3.42.4
       e2e-test-dep-svelte-api-only: link:../_test_dependencies/svelte-api-only
       svelte: 3.42.4
+      svelte-i18n: 3.3.10_svelte@3.42.4
 
   packages/e2e-tests/package-json-svelte-field:
     specifiers:
@@ -950,6 +952,40 @@ packages:
   /@fontsource/fira-mono/4.5.0:
     resolution: {integrity: sha512-KE+d3wmgq/YKM0BqgUF7p2yeBNi805Nfof1lC1wJ7E9i2EWoC363sGdKG+MQBVm+ei3GYZu+Bo8Xha1w1pkB7g==}
     dev: false
+
+  /@formatjs/ecma402-abstract/1.9.8:
+    resolution: {integrity: sha512-2U4n11bLmTij/k4ePCEFKJILPYwdMcJTdnKVBi+JMWBgu5O1N+XhCazlE6QXqVO1Agh2Doh0b/9Jf1mSmSVfhA==}
+    dependencies:
+      '@formatjs/intl-localematcher': 0.2.20
+      tslib: 2.3.1
+    dev: true
+
+  /@formatjs/fast-memoize/1.2.0:
+    resolution: {integrity: sha512-fObitP9Tlc31SKrPHgkPgQpGo4+4yXfQQITTCNH8AZdEqB7Mq4nPrjpUL/tNGN3lEeJcFxDbi0haX8HM7QvQ8w==}
+    dependencies:
+      tslib: 2.3.1
+    dev: true
+
+  /@formatjs/icu-messageformat-parser/2.0.11:
+    resolution: {integrity: sha512-5mWb8U8aulYGwnDZWrr+vdgn5PilvtrqQYQ1pvpgzQes/osi85TwmL2GqTGLlKIvBKD2XNA61kAqXYY95w4LWg==}
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.9.8
+      '@formatjs/icu-skeleton-parser': 1.2.12
+      tslib: 2.3.1
+    dev: true
+
+  /@formatjs/icu-skeleton-parser/1.2.12:
+    resolution: {integrity: sha512-DTFxWmEA02ZNW6fsYjGYSADvtrqqjCYF7DSgCmMfaaE0gLP4pCdAgOPE+lkXXU+jP8iCw/YhMT2Seyk/C5lBWg==}
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.9.8
+      tslib: 2.3.1
+    dev: true
+
+  /@formatjs/intl-localematcher/0.2.20:
+    resolution: {integrity: sha512-/Ro85goRZnCojzxOegANFYL0LaDIpdPjAukR7xMTjOtRx+3yyjR0ifGTOW3/Kjhmab3t6GnyHBYWZSudxEOxPA==}
+    dependencies:
+      tslib: 2.3.1
+    dev: true
 
   /@gar/promisify/1.1.2:
     resolution: {integrity: sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==}
@@ -3179,7 +3215,6 @@ packages:
 
   /estree-walker/2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
-    dev: false
 
   /esutils/2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
@@ -3981,6 +4016,14 @@ packages:
       get-intrinsic: 1.1.1
       has: 1.0.3
       side-channel: 1.0.4
+    dev: true
+
+  /intl-messageformat/9.9.1:
+    resolution: {integrity: sha512-cuzS/XKHn//hvKka77JKU2dseiVY2dofQjIOZv6ZFxFt4Z9sPXnZ7KQ9Ak2r+4XBCjI04MqJ1PhKs/3X22AkfA==}
+    dependencies:
+      '@formatjs/fast-memoize': 1.2.0
+      '@formatjs/icu-messageformat-parser': 2.0.11
+      tslib: 2.3.1
     dev: true
 
   /ip/1.1.5:
@@ -7070,6 +7113,21 @@ packages:
       svelte: 3.42.4
     dev: false
 
+  /svelte-i18n/3.3.10_svelte@3.42.4:
+    resolution: {integrity: sha512-MWoiZOCgX2P57UqjSp2Sly6csSuySoxbmC/e+vak3valteEa0CqHYzPTA6NNNj8pBCpdaMp9sBRkG1eebk0rFg==}
+    engines: {node: '>= 11.15.0'}
+    hasBin: true
+    peerDependencies:
+      svelte: ^3.25.1
+    dependencies:
+      deepmerge: 4.2.2
+      estree-walker: 2.0.2
+      intl-messageformat: 9.9.1
+      sade: 1.7.4
+      svelte: 3.42.4
+      tiny-glob: 0.2.9
+    dev: true
+
   /svelte-preprocess/4.9.4_2a1072f850182c32279df48c7d9c0088:
     resolution: {integrity: sha512-Z0mUQBGtE+ZZSv/HerRSHe7ukJokxjiPeHe7iPOIXseEoRw51H3K/Vh6OMIMstetzZ11vWO9rCsXSD/uUUArmA==}
     engines: {node: '>= 9.11.2'}
@@ -7381,6 +7439,10 @@ packages:
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
+    dev: true
+
+  /tslib/2.3.1:
+    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
     dev: true
 
   /tsup/4.14.0_typescript@4.4.2:

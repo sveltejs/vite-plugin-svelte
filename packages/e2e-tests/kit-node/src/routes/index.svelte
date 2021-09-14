@@ -18,6 +18,7 @@
 
 <script>
 	import { onMount } from 'svelte';
+	import { addMessages, init, _ } from 'svelte-i18n';
 	// eslint-disable-next-line node/no-missing-import
 	import Counter from '$lib/Counter.svelte';
 	// eslint-disable-next-line node/no-missing-import
@@ -31,6 +32,11 @@
 		mount_status = 'AFTER_MOUNT';
 	});
 	setSomeContext();
+	addMessages('en', { welcome: 'hello' });
+	init({
+		fallbackLocale: 'en',
+		initialLocale: 'en'
+	});
 </script>
 
 <main>
@@ -44,6 +50,7 @@
 	<div id="after-child">after-child</div>
 	<div id="load">{load_status}</div>
 	<div id="mount">{mount_status}</div>
+	<div>{$_('welcome')}</div>
 </main>
 
 <!-- HMR-TEMPLATE-INJECT -->
