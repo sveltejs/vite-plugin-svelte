@@ -186,6 +186,7 @@ export function buildExtraViteConfig(
 ): Partial<UserConfig> {
 	// extra handling for svelte dependencies in the project
 	const svelteDeps = findRootSvelteDependencies(options.root);
+	const svelteComponentLibDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
 	const extraViteConfig: Partial<UserConfig> = {
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
@@ -199,14 +200,23 @@ export function buildExtraViteConfig(
 
 	if (configEnv.command === 'serve') {
 		extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
-			svelteDeps.filter((dep) => dep.type === 'component-library'),
+			svelteComponentLibDeps,
 			options,
 			config.optimizeDeps
 		);
 	}
 
+	// for ssr build, we include all svelte deps to resolve `svelte/ssr`.
+	// for other cases, we can ignore `svelte/ssr` as it would make development faster
+	// and also because vite doesn't handle them properly.
+	// see https://github.com/sveltejs/vite-plugin-svelte/issues/168
+	// see https://github.com/vitejs/vite/issues/2579
 	// @ts-ignore
-	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config);
+	extraViteConfig.ssr = buildSSROptionsForSvelte(
+		options.isBuild && config.build?.ssr ? svelteDeps : svelteComponentLibDeps,
+		options,
+		config
+	);
 
 	if (options.experimental?.useVitePreprocess) {
 		// needed to transform svelte files with component imports
