@@ -186,7 +186,6 @@ export function buildExtraViteConfig(
 ): Partial<UserConfig> {
 	// extra handling for svelte dependencies in the project
 	const svelteDeps = findRootSvelteDependencies(options.root);
-	const svelteComponentLibDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
 	const extraViteConfig: Partial<UserConfig> = {
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
@@ -200,23 +199,14 @@ export function buildExtraViteConfig(
 
 	if (configEnv.command === 'serve') {
 		extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
-			svelteComponentLibDeps,
+			svelteDeps,
 			options,
 			config.optimizeDeps
 		);
 	}
 
-	// for ssr build, we include all svelte deps to resolve `svelte/ssr`.
-	// for other cases, we can ignore `svelte/ssr` as it would make development faster
-	// and also because vite doesn't handle them properly.
-	// see https://github.com/sveltejs/vite-plugin-svelte/issues/168
-	// see https://github.com/vitejs/vite/issues/2579
 	// @ts-ignore
-	extraViteConfig.ssr = buildSSROptionsForSvelte(
-		options.isBuild && config.build?.ssr ? svelteDeps : svelteComponentLibDeps,
-		options,
-		config
-	);
+	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config);
 
 	if (options.experimental?.useVitePreprocess) {
 		// needed to transform svelte files with component imports
@@ -237,6 +227,8 @@ function buildOptimizeDepsForSvelte(
 	options: ResolvedOptions,
 	optimizeDeps?: DepOptimizationOptions
 ): DepOptimizationOptions {
+	// only svelte component libraries needs to be processed for optimizeDeps, js libraries work fine
+	svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
 	// include svelte imports for optimization unless explicitly excluded
 	const include: string[] = [];
 	const exclude: string[] = ['svelte-hmr'];
@@ -302,6 +294,12 @@ function buildSSROptionsForSvelte(
 		if (!config.ssr?.external?.includes('svelte')) {
 			noExternal.push('svelte');
 		}
+	} else {
+		// for non-ssr build, we exclude svelte js library deps to make development faster
+		// and also because vite doesn't handle them properly.
+		// see https://github.com/sveltejs/vite-plugin-svelte/issues/168
+		// see https://github.com/vitejs/vite/issues/2579
+		svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
 	}
 
 	// add svelte dependencies to ssr.noExternal unless present in ssr.external or optimizeDeps.include
