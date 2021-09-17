@@ -323,18 +323,18 @@ export interface Options {
 	configFile?: string;
 
 	/**
-	 * A `minimatch` pattern, or array of patterns, which specifies the files the plugin should
+	 * A `picomatch` pattern, or array of patterns, which specifies the files the plugin should
 	 * operate on. By default, all svelte files are included.
 	 *
-	 * @see https://github.com/isaacs/minimatch
+	 * @see https://github.com/micromatch/picomatch
 	 */
 	include?: Arrayable<string>;
 
 	/**
-	 * A `minimatch` pattern, or array of patterns, which specifies the files to be ignored by the
+	 * A `picomatch` pattern, or array of patterns, which specifies the files to be ignored by the
 	 * plugin. By default, no files are ignored.
 	 *
-	 * @see https://github.com/isaacs/minimatch
+	 * @see https://github.com/micromatch/picomatch
 	 */
 	exclude?: Arrayable<string>;
 

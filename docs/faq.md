@@ -93,8 +93,7 @@ For reference, check out [windicss](https://github.com/windicss/vite-plugin-wind
 
 ### What is going on with Vite and `Pre-bundling dependencies:`?
 
-Pre-bundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html).
-It is required for CJS dependencies, as Vite's development server only works with ES modules on the client side.
+Pre-bundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html). It is required for CJS dependencies, as Vite's development server only works with ES modules on the client side.
 
 Thanks to [a new API in Vite](https://github.com/vitejs/vite/pull/4634), [vite-plugin-svelte](https://github.com/sveltejs/vite-plugin-svelte/pull/157) automatically handles pre-bundling these for you.
 
