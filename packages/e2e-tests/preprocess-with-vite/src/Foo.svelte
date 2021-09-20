@@ -3,7 +3,7 @@
 	export let bla: string = 'blub';
 </script>
 
-<h1>Styles with {foo} {bla}</h1>
+<h1 id="foo-title">Styles with {foo} {bla}</h1>
 <p class="note">cool, huh?</p>
 
 <style lang="stylus">

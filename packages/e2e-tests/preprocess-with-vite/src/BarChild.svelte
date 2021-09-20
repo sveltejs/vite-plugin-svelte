@@ -1,0 +1,1 @@
+<p>Bar child</p>
