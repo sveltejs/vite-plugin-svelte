@@ -16,7 +16,6 @@ import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { addExtraPreprocessors } from './utils/preprocess';
-import { PartialResolvedId } from 'rollup';
 
 export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	if (process.env.DEBUG != null) {
@@ -36,8 +35,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		options: Partial<ResolvedOptions>
 	) => Promise<CompileData>;
 	/* eslint-enable no-unused-vars */
-
-	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;
 
 	return {
 		name: 'vite-plugin-svelte',
@@ -102,25 +99,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 				}
 				log.debug(`resolveId resolved ${importee}`);
 				return importee; // query with svelte tag, an id we generated, no need for further analysis
-			}
-
-			if (ssr && importee === 'svelte') {
-				if (!resolvedSvelteSSR) {
-					resolvedSvelteSSR = this.resolve('svelte/ssr', undefined, { skipSelf: true }).then(
-						(svelteSSR) => {
-							log.debug('resolved svelte to svelte/ssr');
-							return svelteSSR;
-						},
-						(err) => {
-							log.debug(
-								'failed to resolve svelte to svelte/ssr. Update svelte to a version that exports it',
-								err
-							);
-							return null; // returning null here leads to svelte getting resolved regularly
-						}
-					);
-				}
-				return resolvedSvelteSSR;
 			}
 
 			try {

@@ -7,7 +7,6 @@ export const SVELTE_IMPORTS = [
 	'svelte/easing',
 	'svelte/internal',
 	'svelte/motion',
-	'svelte/ssr',
 	'svelte/store',
 	'svelte/transition',
 	'svelte'

@@ -242,11 +242,8 @@ function buildOptimizeDepsForSvelte(
 		);
 	};
 	if (!isExcluded('svelte')) {
-		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
-		log.debug(
-			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `
-		);
-		include.push(...svelteImportsToInclude.filter((x) => !isIncluded(x)));
+		log.debug(`adding bare svelte packages to optimizeDeps.include: ${SVELTE_IMPORTS.join(', ')} `);
+		include.push(...SVELTE_IMPORTS.filter((x) => !isIncluded(x)));
 	} else {
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
