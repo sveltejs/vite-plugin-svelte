@@ -58,7 +58,7 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 			content,
 			moduleId
 		)) as TransformResult;
-		// vite returns empty mappings that would kill svelte compiler
+		// vite returns empty mappings that would kill svelte compiler before 3.43.0
 		const hasMap = transformResult.map && transformResult.map.mappings !== '';
 		// patch sourcemap source to point back to original filename
 		if (hasMap && transformResult.map?.sources?.[0] === moduleId) {
