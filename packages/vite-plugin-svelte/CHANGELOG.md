@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.25
+
+### Minor Changes
+
+- Use transformWithEsbuild for vite script preprocessor ([#173](https://github.com/sveltejs/vite-plugin-svelte/pull/173))
+
 ## 1.0.0-next.24
 
 ### Patch Changes
