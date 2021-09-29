@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.26
+
+### Major Changes
+
+- minimum required version of vite is 2.6.0 ([#182](https://github.com/sveltejs/vite-plugin-svelte/pull/182))
+
 ## 1.0.0-next.25
 
 ### Minor Changes
