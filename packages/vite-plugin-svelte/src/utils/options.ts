@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { ConfigEnv, UserConfig, ViteDevServer, normalizePath } from 'vite';
+import { ConfigEnv, DepOptimizationOptions, UserConfig, ViteDevServer, normalizePath } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
@@ -14,7 +14,6 @@ import {
 } from 'svelte/types/compiler/preprocess';
 import path from 'path';
 import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
-import { DepOptimizationOptions } from 'vite/src/node/optimizer/index';
 import { createRequire } from 'module';
 
 const knownOptions = new Set([
