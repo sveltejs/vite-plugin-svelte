@@ -207,17 +207,6 @@ export function buildExtraViteConfig(
 	// @ts-ignore
 	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config);
 
-	if (options.experimental?.useVitePreprocess) {
-		// needed to transform svelte files with component imports
-		// can cause issues with other typescript files, see https://github.com/sveltejs/vite-plugin-svelte/pull/20
-		extraViteConfig.esbuild = {
-			tsconfigRaw: {
-				compilerOptions: {
-					importsNotUsedAsValues: 'preserve'
-				}
-			}
-		};
-	}
 	return extraViteConfig;
 }
 

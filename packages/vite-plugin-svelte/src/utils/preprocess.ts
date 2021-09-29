@@ -1,4 +1,10 @@
-import { ResolvedConfig, TransformResult, Plugin } from 'vite';
+import {
+	transformWithEsbuild,
+	ESBuildOptions,
+	ResolvedConfig,
+	TransformResult,
+	Plugin
+} from 'vite';
 import MagicString from 'magic-string';
 import { Preprocessor, PreprocessorGroup, Processed, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
@@ -9,12 +15,29 @@ const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'p
 
 const supportedScriptLangs = ['ts'];
 
-function createPreprocessorFromVitePlugin(
-	config: ResolvedConfig,
-	options: ResolvedOptions,
-	pluginName: string,
-	supportedLangs: string[]
-): Preprocessor {
+function createViteScriptPreprocessor(): Preprocessor {
+	// @ts-expect-error - allow return void
+	return async ({ attributes, content, filename = '' }) => {
+		const lang = attributes.lang as string;
+		if (!supportedScriptLangs.includes(lang)) return;
+		const transformResult = await transformWithEsbuild(content, filename, {
+			loader: lang as ESBuildOptions['loader'],
+			tsconfigRaw: {
+				compilerOptions: {
+					// svelte typescript needs this flag to work with type imports
+					importsNotUsedAsValues: 'preserve'
+				}
+			}
+		});
+		return {
+			code: transformResult.code,
+			map: transformResult.map
+		};
+	};
+}
+
+function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
+	const pluginName = 'vite:css';
 	const plugin = config.plugins.find((p) => p.name === pluginName);
 	if (!plugin) {
 		throw new Error(`failed to find plugin ${pluginName}`);
@@ -23,41 +46,32 @@ function createPreprocessorFromVitePlugin(
 		throw new Error(`plugin ${pluginName} has no transform`);
 	}
 	const pluginTransform = plugin.transform!.bind(null as unknown as TransformPluginContext);
-	// @ts-ignore
-	return async ({ attributes, content, filename }) => {
+	// @ts-expect-error - allow return void
+	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
-		if (!supportedLangs.includes(lang)) {
-			return { code: content };
-		}
+		if (!supportedStyleLangs.includes(lang)) return;
 		const moduleId = `${filename}.${lang}`;
-		const moduleGraph = options.server?.moduleGraph;
-		if (moduleGraph && !moduleGraph.getModuleById(moduleId)) {
-			await moduleGraph.ensureEntryFromUrl(moduleId);
-		}
 		const transformResult: TransformResult = (await pluginTransform(
 			content,
 			moduleId
 		)) as TransformResult;
-		// TODO vite:css transform currently returns an empty mapping that would kill svelte compiler.
-		const hasMap = transformResult.map && transformResult.map?.mappings !== '';
-		if (transformResult.map?.sources?.[0] === moduleId) {
-			transformResult.map.sources[0] = filename as string;
+		// vite returns empty mappings that would kill svelte compiler before 3.43.0
+		const hasMap = transformResult.map && transformResult.map.mappings !== '';
+		// patch sourcemap source to point back to original filename
+		if (hasMap && transformResult.map?.sources?.[0] === moduleId) {
+			transformResult.map.sources[0] = filename;
 		}
 		return {
 			code: transformResult.code,
-			map: hasMap ? (transformResult.map as object) : undefined,
-			dependencies: transformResult.deps
+			map: hasMap ? transformResult.map : undefined
 		};
 	};
 }
 
-export function createVitePreprocessorGroup(
-	config: ResolvedConfig,
-	options: ResolvedOptions
-): PreprocessorGroup {
+export function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
 	return {
-		script: createPreprocessorFromVitePlugin(config, options, 'vite:esbuild', supportedScriptLangs),
-		style: createPreprocessorFromVitePlugin(config, options, 'vite:css', supportedStyleLangs)
+		script: createViteScriptPreprocessor(),
+		style: createViteStylePreprocessor(config)
 	} as PreprocessorGroup;
 }
 
@@ -84,7 +98,7 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 	const extraPreprocessors = [];
 	if (options.experimental?.useVitePreprocess) {
 		log.debug('adding vite preprocessor');
-		extraPreprocessors.push(createVitePreprocessorGroup(config, options));
+		extraPreprocessors.push(createVitePreprocessorGroup(config));
 	}
 
 	// @ts-ignore
