@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { ConfigEnv, UserConfig, ViteDevServer, normalizePath } from 'vite';
+import { ConfigEnv, DepOptimizationOptions, UserConfig, ViteDevServer, normalizePath } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
@@ -14,7 +14,6 @@ import {
 } from 'svelte/types/compiler/preprocess';
 import path from 'path';
 import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
-import { DepOptimizationOptions } from 'vite/src/node/optimizer/index';
 import { createRequire } from 'module';
 
 const knownOptions = new Set([
@@ -227,7 +226,7 @@ function buildOptimizeDepsForSvelte(
 			exclude.includes(dep) ||
 			// vite optimizeDeps.exclude works for subpackages too
 			// see https://github.com/vitejs/vite/blob/c87763c1418d1ba876eae13d139eba83ac6f28b2/packages/vite/src/node/optimizer/scan.ts#L293
-			optimizeDeps?.exclude?.some((id) => dep === id || id.startsWith(`${dep}/`))
+			optimizeDeps?.exclude?.some((id: string) => dep === id || id.startsWith(`${dep}/`))
 		);
 	};
 	if (!isExcluded('svelte')) {
