@@ -16,11 +16,10 @@ const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'p
 const supportedScriptLangs = ['ts'];
 
 function createViteScriptPreprocessor(): Preprocessor {
+	// @ts-expect-error - allow return void
 	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
-		if (!supportedScriptLangs.includes(lang)) {
-			return { code: content };
-		}
+		if (!supportedScriptLangs.includes(lang)) return;
 		const transformResult = await transformWithEsbuild(content, filename, {
 			loader: lang as ESBuildOptions['loader'],
 			tsconfigRaw: {
@@ -47,12 +46,10 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 		throw new Error(`plugin ${pluginName} has no transform`);
 	}
 	const pluginTransform = plugin.transform!.bind(null as unknown as TransformPluginContext);
-	// @ts-ignore
+	// @ts-expect-error - allow return void
 	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
-		if (!supportedStyleLangs.includes(lang)) {
-			return { code: content };
-		}
+		if (!supportedStyleLangs.includes(lang)) return;
 		const moduleId = `${filename}.${lang}`;
 		const transformResult: TransformResult = (await pluginTransform(
 			content,
