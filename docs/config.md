@@ -193,8 +193,6 @@ export default defineConfig({
 
   Use extra preprocessors that delegate style and TypeScript preprocessing to native Vite plugins. Do not use together with `svelte-preprocess`!
 
-  > Caveat: For TypeScript preprocessing to work, `esbuild.tsconfigRaw.compilerOptions.importsNotUsedAsValues` will be set to `preserve` to safely transpile TypeScript. This requires the entire codebase's Typescript code to only use `import type` when importing types, otherwise the codebase would break.
-
 ### generateMissingPreprocessorSourcemaps
 
 - **Type:** `boolean`
