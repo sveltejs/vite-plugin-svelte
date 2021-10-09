@@ -6,6 +6,7 @@ import {
 	Plugin
 } from 'vite';
 import MagicString from 'magic-string';
+import { preprocess } from 'svelte/compiler';
 import { Preprocessor, PreprocessorGroup, Processed, ResolvedOptions } from './options';
 import { TransformPluginContext } from 'rollup';
 import { log } from './log';
@@ -70,8 +71,16 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 
 export function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
 	return {
-		script: createViteScriptPreprocessor(),
-		style: createViteStylePreprocessor(config)
+		markup({ content, filename }) {
+			return preprocess(
+				content,
+				{
+					script: createViteScriptPreprocessor(),
+					style: createViteStylePreprocessor(config)
+				},
+				{ filename }
+			);
+		}
 	} as PreprocessorGroup;
 }
 
@@ -95,10 +104,12 @@ function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
 }
 
 function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
-	const extraPreprocessors = [];
+	const prependPreprocessors: PreprocessorGroup[] = [];
+	const appendPreprocessors: PreprocessorGroup[] = [];
+
 	if (options.experimental?.useVitePreprocess) {
 		log.debug('adding vite preprocessor');
-		extraPreprocessors.push(createVitePreprocessorGroup(config));
+		prependPreprocessors.push(createVitePreprocessorGroup(config));
 	}
 
 	// @ts-ignore
@@ -152,25 +163,26 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 				.map((p) => p.name)
 				.join(', ')}`
 		);
-		extraPreprocessors.push(...pluginsWithPreprocessors.map((p) => p.api.sveltePreprocess));
+		appendPreprocessors.push(...pluginsWithPreprocessors.map((p) => p.api.sveltePreprocess));
 	}
 
 	if (options.hot && options.emitCss) {
-		extraPreprocessors.push(createInjectScopeEverythingRulePreprocessorGroup());
+		appendPreprocessors.push(createInjectScopeEverythingRulePreprocessorGroup());
 	}
 
-	return extraPreprocessors;
+	return { prependPreprocessors, appendPreprocessors };
 }
 
 export function addExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
-	const extra = buildExtraPreprocessors(options, config);
-	if (extra?.length > 0) {
+	const { prependPreprocessors, appendPreprocessors } = buildExtraPreprocessors(options, config);
+	if (prependPreprocessors.length > 0 || appendPreprocessors.length > 0) {
 		if (!options.preprocess) {
-			options.preprocess = extra;
+			options.preprocess = [...prependPreprocessors, ...appendPreprocessors];
 		} else if (Array.isArray(options.preprocess)) {
-			options.preprocess.push(...extra);
+			options.preprocess.unshift(...prependPreprocessors);
+			options.preprocess.push(...appendPreprocessors);
 		} else {
-			options.preprocess = [options.preprocess, ...extra];
+			options.preprocess = [...prependPreprocessors, options.preprocess, ...appendPreprocessors];
 		}
 	}
 	const generateMissingSourceMaps = !!options.experimental?.generateMissingPreprocessorSourcemaps;
