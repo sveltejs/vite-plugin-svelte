@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.27
+
+### Minor Changes
+
+- Run Vite preprocessors first in markup phase ([#189](https://github.com/sveltejs/vite-plugin-svelte/pull/189))
+
+### Patch Changes
+
+- Handle flexible ssr signature for hooks with ssr argument ([#187](https://github.com/sveltejs/vite-plugin-svelte/pull/187))
+
 ## 1.0.0-next.26
 
 ### Major Changes
