@@ -8,7 +8,7 @@
 			return new Promise((resolve) =>
 				setTimeout(() => {
 					resolve({ props: { load_status: 'CLIENT_LOADED' } });
-				}, 200)
+				}, 500)
 			);
 		} else {
 			return { props: { load_status: 'SERVER_LOADED' } };

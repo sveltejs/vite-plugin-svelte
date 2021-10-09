@@ -36,7 +36,7 @@ describe('kit-node', () => {
 			expect(html).toMatch('BEFORE_MOUNT');
 
 			// wait a bit for hydration to kick in
-			await sleep(250);
+			await sleep(550);
 
 			// check hydrated content
 			expect(await getText('#load')).toBe('CLIENT_LOADED');
