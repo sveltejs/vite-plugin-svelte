@@ -71,7 +71,10 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			setupWatchers(options, cache, requestParser);
 		},
 
-		load(id, ssr) {
+		load(id, opts) {
+			// @ts-expect-error anticipate vite changing second parameter as options object
+			// see https://github.com/vitejs/vite/discussions/5109
+			const ssr: boolean = opts === true || opts?.ssr;
 			const svelteRequest = requestParser(id, !!ssr);
 			if (svelteRequest) {
 				const { filename, query } = svelteRequest;
@@ -91,7 +94,10 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			}
 		},
 
-		async resolveId(importee, importer, customOptions, ssr) {
+		async resolveId(importee, importer, opts, _ssr) {
+			// @ts-expect-error anticipate vite changing second parameter as options object
+			// see https://github.com/vitejs/vite/discussions/5109
+			const ssr: boolean = _ssr === true || opts.ssr;
 			const svelteRequest = requestParser(importee, !!ssr);
 			if (svelteRequest?.query.svelte) {
 				if (svelteRequest.query.type === 'style') {
@@ -142,7 +148,10 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			}
 		},
 
-		async transform(code, id, ssr) {
+		async transform(code, id, opts) {
+			// @ts-expect-error anticipate vite changing second parameter as options object
+			// see https://github.com/vitejs/vite/discussions/5109
+			const ssr: boolean = opts === true || opts?.ssr;
 			const svelteRequest = requestParser(id, !!ssr);
 			if (!svelteRequest) {
 				return;
