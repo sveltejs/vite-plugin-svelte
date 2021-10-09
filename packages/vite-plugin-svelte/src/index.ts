@@ -95,7 +95,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		},
 
 		async resolveId(importee, importer, opts, _ssr) {
-			// @ts-expect-error anticipate vite changing second parameter as options object
+			// @ts-expect-error anticipate vite deprecating forth parameter and rely on `opts.ssr` instead`
 			// see https://github.com/vitejs/vite/discussions/5109
 			const ssr: boolean = _ssr === true || opts.ssr;
 			const svelteRequest = requestParser(importee, !!ssr);
@@ -149,7 +149,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		},
 
 		async transform(code, id, opts) {
-			// @ts-expect-error anticipate vite changing second parameter as options object
+			// @ts-expect-error anticipate vite changing third parameter as options object
 			// see https://github.com/vitejs/vite/discussions/5109
 			const ssr: boolean = opts === true || opts?.ssr;
 			const svelteRequest = requestParser(id, !!ssr);
