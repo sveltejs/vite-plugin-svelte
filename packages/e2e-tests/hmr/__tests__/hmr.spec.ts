@@ -138,6 +138,8 @@ if (!isBuild) {
 		test('should work with emitCss: false in svelte config', async () => {
 			await addFile('svelte.config.cjs', `module.exports = {emitCss:false}`);
 			await sleep(isWin ? 1000 : 500); // adding config restarts server, give it some time
+			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
+			await sleep(50);
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
 			await (await getEl(`#hmr-test-1 .increment`)).click();
