@@ -46,6 +46,7 @@ test('should work with emitCss: false in svelte config', async () => {
 	await sleep(50);
 	expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
 	removeFile('svelte.config.cjs');
+	await sleep(isWin ? 1000 : 500); // adding config restarts server, give it some time
 });
 
 if (!isBuild) {
