@@ -3,7 +3,7 @@ lockfileVersion: 5.3
 overrides:
   //tar@6: see https://npmjs.com/advisories/1770 and https://npmjs.com/advisories/1771
   tar@6: ^6.1.2
-  ansi-regex@>2.1.1 <5.0.1: '>=5.0.1'
+  ansi-regex@>2.1.1 <5.0.1: ^5.0.1
 
 importers:
 
@@ -1705,11 +1705,6 @@ packages:
   /ansi-regex/5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
-    dev: true
-
-  /ansi-regex/6.0.1:
-    resolution: {integrity: sha512-n5M855fKb2SsfMIiFFoVrABHJC8QtHwVx+mHWP3QcEqBHYienj5dHSgjbxtC0WEZXYt4wcD6zrQElDPhFuZgfA==}
-    engines: {node: '>=12'}
     dev: true
 
   /ansi-styles/3.2.1:
@@ -5958,7 +5953,7 @@ packages:
     resolution: {integrity: sha1-qEeQIusaw2iocTibY1JixQXuNo8=}
     engines: {node: '>=4'}
     dependencies:
-      ansi-regex: 6.0.1
+      ansi-regex: 5.0.1
     dev: true
 
   /strip-ansi/6.0.1:
