@@ -32,10 +32,20 @@ test('should render dynamic import', async () => {
 	await dynamicImportButton.click();
 	await untilUpdated(() => getText('#dynamic-import .label'), 'dynamic-import');
 });
+
 test('should not have failed requests', async () => {
 	browserLogs.forEach((msg) => {
 		expect(msg).not.toMatch('404');
 	});
+});
+
+test('should work with emitCss: false in svelte config', async () => {
+	addFile('svelte.config.cjs', `module.exports={emitCss:false}`);
+	await sleep(isWin ? 1000 : 500); // adding config restarts server, give it some time
+	await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
+	await sleep(50);
+	expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
+	removeFile('svelte.config.cjs');
 });
 
 if (!isBuild) {
@@ -123,7 +133,7 @@ if (!isBuild) {
 			expect(await getText(`#hmr-test-3 .counter`)).toBe('0');
 		});
 
-		test('should work with emitCss: false in vite config', async () => {
+		test('should work with emitCss: false', async () => {
 			await editViteConfig((c) => c.replace('svelte()', 'svelte({emitCss:false})'));
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
@@ -133,22 +143,6 @@ if (!isBuild) {
 			await updateHmrTest((content) => content.replace('color: green', 'color: red'));
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
-		});
-
-		test('should work with emitCss: false in svelte config', async () => {
-			await addFile('svelte.config.cjs', `module.exports = {emitCss:false}`);
-			await sleep(isWin ? 1000 : 500); // adding config restarts server, give it some time
-			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
-			await sleep(50);
-			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
-			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
-			await (await getEl(`#hmr-test-1 .increment`)).click();
-			await sleep(50);
-			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
-			await updateHmrTest((content) => content.replace('color: green', 'color: red'));
-			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
-			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
-			await removeFile('svelte.config.cjs');
 		});
 
 		test('should detect changes in svelte config and restart', async () => {
