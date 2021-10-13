@@ -31,13 +31,12 @@ const knownOptions = new Set([
 	'experimental'
 ]);
 
-function buildDefaultOptions(isProduction: boolean, options: Partial<Options>): Partial<Options> {
-	// emit for prod, emit in dev unless css hmr is disabled
-	const emitCss = options?.emitCss != null ? options.emitCss : true;
+function buildDefaultOptions(isProduction: boolean, emitCss = true): Partial<Options> {
 	// no hmr in prod, only inject css in dev if emitCss is false
 	const hot = isProduction
 		? false
 		: {
+				// emit for prod, emit in dev unless css hmr is disabled
 				injectCss: !emitCss
 		  };
 	const defaultOptions: Partial<Options> = {
@@ -156,8 +155,11 @@ export async function resolveOptions(
 		...viteConfig,
 		root: resolveViteRoot(viteConfig)
 	};
-	const defaultOptions = buildDefaultOptions(viteEnv.mode === 'production', inlineOptions);
 	const svelteConfig = (await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions)) || {};
+	const defaultOptions = buildDefaultOptions(
+		viteEnv.mode === 'production',
+		inlineOptions.emitCss ?? svelteConfig.emitCss
+	);
 	const resolvedOptions = mergeOptions(
 		defaultOptions,
 		svelteConfig,
