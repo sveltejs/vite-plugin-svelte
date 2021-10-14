@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.28
+
+### Patch Changes
+
+- Fix emitCss behaviour in a svelte config ([#194](https://github.com/sveltejs/vite-plugin-svelte/pull/194))
+
 ## 1.0.0-next.27
 
 ### Minor Changes
