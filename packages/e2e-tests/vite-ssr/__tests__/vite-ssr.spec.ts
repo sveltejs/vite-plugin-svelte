@@ -31,6 +31,8 @@ test('css', async () => {
 
 test('loaded esm only package', async () => {
 	expect(await page.textContent('#esm')).toMatch('esm');
+	expect(browserLogs).toContain('esm');
+	expect(e2eServer.logs.server.out).toContain('esm\n');
 });
 
 test('asset', async () => {
