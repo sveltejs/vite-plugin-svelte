@@ -15,6 +15,7 @@ import {
 import path from 'path';
 import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
 import { createRequire } from 'module';
+import { esbuildSveltePlugin } from './esbuild';
 
 const knownOptions = new Set([
 	'configFile',
@@ -217,8 +218,6 @@ function buildOptimizeDepsForSvelte(
 	options: ResolvedOptions,
 	optimizeDeps?: DepOptimizationOptions
 ): DepOptimizationOptions {
-	// only svelte component libraries needs to be processed for optimizeDeps, js libraries work fine
-	svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
 	// include svelte imports for optimization unless explicitly excluded
 	const include: string[] = [];
 	const exclude: string[] = ['svelte-hmr'];
@@ -240,6 +239,20 @@ function buildOptimizeDepsForSvelte(
 	} else {
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
+
+	// If we prebundle svelte libraries, we can skip the whole prebundling dance below
+	if (options.experimental.prebundleSvelteLibraries) {
+		return {
+			include,
+			exclude,
+			esbuildOptions: {
+				plugins: [esbuildSveltePlugin(options)]
+			}
+		};
+	}
+
+	// only svelte component libraries needs to be processed for optimizeDeps, js libraries work fine
+	svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
 
 	const svelteDepsToExclude = Array.from(new Set(svelteDeps.map((dep) => dep.name))).filter(
 		(dep) => !isIncluded(dep)
@@ -453,6 +466,13 @@ export interface ExperimentalOptions {
 		code: string;
 		compileOptions: Partial<CompileOptions>;
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
+
+	/**
+	 * Force Vite to pre-bundle Svelte libraries
+	 *
+	 * @default false
+	 */
+	prebundleSvelteLibraries?: boolean;
 }
 
 export interface ResolvedOptions extends Options {
