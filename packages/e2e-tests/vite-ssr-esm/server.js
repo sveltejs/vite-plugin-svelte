@@ -1,6 +1,7 @@
 // @ts-check
 import fs from 'fs';
 import path from 'path';
+import { pathToFileURL } from 'url';
 import express from 'express';
 import compression from 'compression';
 import serveStatic from 'serve-static';
@@ -63,7 +64,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 			} else {
 				template = indexProd;
 				// @ts-ignore
-				render = (await import(resolve('dist/server/entry-server.js'))).render;
+				render = (await import(pathToFileURL(resolve('dist/server/entry-server.js')).href)).render;
 			}
 			const rendered = await render(req.originalUrl, manifest);
 			const appHtml = rendered.html;
