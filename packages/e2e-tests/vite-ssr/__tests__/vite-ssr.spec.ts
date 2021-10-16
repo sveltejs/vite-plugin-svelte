@@ -29,6 +29,10 @@ test('css', async () => {
 	}
 });
 
+test('loaded esm only package', async () => {
+	expect(await page.textContent('#esm')).toMatch('esm');
+});
+
 test('asset', async () => {
 	// should have no 404s
 	browserLogs.forEach((msg) => {

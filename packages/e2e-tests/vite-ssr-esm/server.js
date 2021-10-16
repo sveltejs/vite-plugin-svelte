@@ -4,7 +4,6 @@ import path from 'path';
 import express from 'express';
 import compression from 'compression';
 import serveStatic from 'serve-static';
-import * as module from 'module';
 
 let port = 3000;
 const args = process.argv.slice(2);

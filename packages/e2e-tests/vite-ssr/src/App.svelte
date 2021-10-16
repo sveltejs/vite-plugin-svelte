@@ -1,6 +1,7 @@
 <script>
 	import Foo from './components/Foo.svelte';
 	import logo from './assets/logo.png';
+	import { esm } from 'e2e-test-dep-esm-only';
 	export let world = 'world'; // edit world and save to see hmr update
 	export let foo = 'foo';
 </script>
@@ -10,6 +11,7 @@
 <Foo />
 <img src={logo} alt="logo" width="24" />
 <div id="foo">{foo}</div>
+<div id="esm">{esm()}</div>
 <!-- HMR-TEMPLATE-INJECT -->
 
 <svelte:head>
