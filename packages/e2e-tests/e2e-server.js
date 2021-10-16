@@ -126,9 +126,9 @@ exports.serve = async function serve(root, isBuild, port) {
 				if (e.stderr) {
 					err.push(e.stderr);
 				}
-				if (!isWin) {
+				if (!!process.env.DEBUG && !isWin) {
 					// treekill on windows uses taskkill and that ends up here always
-					console.error(`server process did not exit gracefully. dir: ${root}`, e);
+					console.debug(`e2e server process did not exit gracefully. dir: ${root}`, e);
 				}
 			}
 		}
