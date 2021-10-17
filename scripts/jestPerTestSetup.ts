@@ -19,11 +19,12 @@ declare global {
 		interface Global {
 			page?: Page;
 			viteTestUrl?: string;
+			e2eServer?: E2EServer;
 		}
 	}
 }
 
-interface E2EServer {
+export interface E2EServer {
 	port: number;
 	logs: { server?: { out: string[]; err: string[] }; build?: { out: string[]; err: string[] } };
 	close: () => {};
@@ -116,6 +117,7 @@ beforeAll(async () => {
 			const { serve } = require(hasCustomServer ? customServerScript : defaultServerScript);
 			const port = await getUniqueTestPort(e2eTestsRoot, testName, isBuild);
 			server = await serve(tempDir, isBuild, port);
+			(global as any).e2eServer = server;
 			const url = ((global as any).viteTestUrl = `http://localhost:${port}`);
 			await (isBuild ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
 		}

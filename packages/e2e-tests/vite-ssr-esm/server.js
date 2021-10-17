@@ -1,7 +1,10 @@
 // @ts-check
-const fs = require('fs');
-const path = require('path');
-const express = require('express');
+import fs from 'fs';
+import path from 'path';
+import { pathToFileURL } from 'url';
+import express from 'express';
+import compression from 'compression';
+import serveStatic from 'serve-static';
 
 let port = 3000;
 const args = process.argv.slice(2);
@@ -11,14 +14,14 @@ if (portArgPos > 0) {
 }
 
 async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV === 'production') {
-	const resolve = (p) => path.resolve(__dirname, p);
+	const resolve = (p) => path.resolve(root, p);
 
 	const indexProd = isProd ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8') : '';
 
 	const manifest = isProd
 		? // @ts-ignore
 		  // eslint-disable-next-line node/no-missing-require
-		  require('./dist/client/ssr-manifest.json')
+		  JSON.parse(fs.readFileSync(resolve('dist/client/ssr-manifest.json'), 'utf-8'))
 		: {};
 
 	const app = express();
@@ -36,16 +39,22 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 			}
 		};
 		// @ts-ignore
-		vite = await require('vite').createServer(inlineCfg);
+		vite = await (await import('vite')).createServer(inlineCfg);
 		// use vite's connect instance as middleware
 		app.use(vite.middlewares);
 	} else {
-		app.use(require('compression')());
+		app.use(compression());
 		app.use(
-			require('serve-static')(resolve('dist/client'), {
+			serveStatic(resolve('dist/client'), {
 				index: false
 			})
 		);
+
+		// workaround, dist/server/entry-server.js will be cjs, add a package.json as hint
+		const serverPkg = resolve('dist/server/package.json');
+		if (!fs.existsSync(serverPkg)) {
+			fs.writeFileSync(serverPkg, JSON.stringify({ type: 'commonjs' }), 'utf-8');
+		}
 	}
 
 	app.use('*', async (req, res) => {
@@ -61,8 +70,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 			} else {
 				template = indexProd;
 				// @ts-ignore
-				// eslint-disable-next-line node/no-missing-require
-				render = require('./dist/server/entry-server.js').render;
+				render = (await import(pathToFileURL(resolve('dist/server/entry-server.js')).href)).render;
 			}
 			const rendered = await render(req.originalUrl, manifest);
 			const appHtml = rendered.html;
