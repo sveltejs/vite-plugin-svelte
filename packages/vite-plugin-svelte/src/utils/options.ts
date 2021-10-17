@@ -434,6 +434,13 @@ export interface ExperimentalOptions {
 	useVitePreprocess?: boolean;
 
 	/**
+	 * Force Vite to pre-bundle Svelte libraries
+	 *
+	 * @default false
+	 */
+	prebundleSvelteLibraries?: boolean;
+
+	/**
 	 * If a preprocessor does not provide a sourcemap, a best-effort fallback sourcemap will be provided.
 	 * This option requires `diff-match-patch` to be installed as a peer dependency.
 	 *
@@ -466,13 +473,6 @@ export interface ExperimentalOptions {
 		code: string;
 		compileOptions: Partial<CompileOptions>;
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
-
-	/**
-	 * Force Vite to pre-bundle Svelte libraries
-	 *
-	 * @default false
-	 */
-	prebundleSvelteLibraries?: boolean;
 }
 
 export interface ResolvedOptions extends Options {

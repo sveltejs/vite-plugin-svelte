@@ -193,6 +193,19 @@ export default defineConfig({
 
   Use extra preprocessors that delegate style and TypeScript preprocessing to native Vite plugins. Do not use together with `svelte-preprocess`!
 
+### prebundleSvelteLibraries
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+  Force Vite to pre-bundle Svelte libraries. Currently, `vite-plugin-svelte` implements a complex mechanism to address pre-bundling Svelte libraries, which had an impact on large Svelte component libraries and the initial page load. See the [FAQ](./faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies) for more information.
+
+  Setting this option to `true` will directly pre-bundle Svelte libraries, which should improve initial page load performance. However, please note some caveats:
+
+  1.  Deeply importing Svelte components is not supported. Either import all components from one entrypoint, or always stick to deep imports, otherwise it could cause multiple instance of the Svelte library running.
+
+  2.  When updating the Svelte compiler options in `svelte.config.js` or `vite.config.js`, delete the `node_modules/.vite` folder to trigger pre-bundling in Vite again.
+
 ### generateMissingPreprocessorSourcemaps
 
 - **Type:** `boolean`
