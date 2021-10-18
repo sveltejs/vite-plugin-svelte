@@ -32,7 +32,6 @@ const _createCompileSvelte = (makeHot: Function) =>
 			} else {
 				compileOptions.enableSourcemap = { js: true, css: false };
 			}
-			log.debug(`force css sourcemap false for ${normalizedFilename}`);
 		}
 
 		let preprocessed;
