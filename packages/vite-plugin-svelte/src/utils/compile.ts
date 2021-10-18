@@ -28,13 +28,9 @@ const _createCompileSvelte = (makeHot: Function) =>
 		}
 		if (ssr && compileOptions.enableSourcemap !== false) {
 			if (typeof compileOptions.enableSourcemap === 'object') {
-				if (compileOptions.enableSourcemap.css) {
-					compileOptions.enableSourcemap.css = false;
-					log.debug('forcing css sourcemap to false');
-				}
+				compileOptions.enableSourcemap.css = false;
 			} else {
 				compileOptions.enableSourcemap = { js: true, css: false };
-				log.debug('forcing css sourcemap to false');
 			}
 		}
 
