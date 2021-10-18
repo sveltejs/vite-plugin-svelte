@@ -335,6 +335,18 @@ importers:
       svelte: 3.44.0
       vite: 2.6.7
 
+  packages/playground/big-component-library:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      carbon-components-svelte: ^0.45.1
+      svelte: ^3.43.2
+      vite: ^2.6.7
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      carbon-components-svelte: 0.45.1
+      svelte: 3.43.2
+      vite: 2.6.7
+
   packages/playground/kit-demo-app:
     specifiers:
       '@fontsource/fira-mono': ^4.5.0
@@ -2032,6 +2044,17 @@ packages:
     resolution: {integrity: sha512-UOy8okEVs48MyHYgV+RdW1Oiudl1H6KolybD6ZquD0VcrPSgj25omXO1S7rDydjpqaISCwA8Pyx+jUQKZwWO5w==}
     dev: true
 
+  /carbon-components-svelte/0.45.1:
+    resolution: {integrity: sha512-U01DMtcWyaDt3kYmnVp+D/spT8u3waKbUH4Hjd3ygTbJI1YzZY6JojqFPKu1YxKw1DBbMZUp+y3/6Fx40s6Uig==}
+    dependencies:
+      carbon-icons-svelte: 10.38.0
+      flatpickr: 4.6.9
+    dev: true
+
+  /carbon-icons-svelte/10.38.0:
+    resolution: {integrity: sha512-uEckbbNHFtDzKz+QRx6GxvZcezXXqfDOiaE7mupkiRPkBbALrA9CPJZbI5Q2XW5mpn8lgN3IlTm2u1iJEAlVJw==}
+    dev: true
+
   /chalk/2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
     engines: {node: '>=4'}
@@ -3288,6 +3311,10 @@ packages:
     dependencies:
       flatted: 3.2.2
       rimraf: 3.0.2
+    dev: true
+
+  /flatpickr/4.6.9:
+    resolution: {integrity: sha512-F0azNNi8foVWKSF+8X+ZJzz8r9sE1G4hl06RyceIaLvyltKvDl6vqk9Lm/6AUUCi5HWaIjiUbk7UpeE/fOXOpw==}
     dev: true
 
   /flatted/3.2.2:
