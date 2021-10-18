@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.30
+
+### Major Changes
+
+- Bump svelte peer dependency to ^3.44.0 ([#202](https://github.com/sveltejs/vite-plugin-svelte/pull/202))
+
 ## 1.0.0-next.29
 
 ### Major Changes
