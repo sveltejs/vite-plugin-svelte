@@ -32,7 +32,7 @@
 		mount_status = 'AFTER_MOUNT';
 	});
 	setSomeContext();
-	addMessages('en', { welcome: 'hello' });
+	addMessages('en', { welcome: 'WELCOME' });
 	init({
 		fallbackLocale: 'en',
 		initialLocale: 'en'
@@ -50,7 +50,8 @@
 	<div id="after-child">after-child</div>
 	<div id="load">{load_status}</div>
 	<div id="mount">{mount_status}</div>
-	<div>{$_('welcome')}</div>
+	<div id="i18n">{$_('welcome')}</div>
+	<div id="env">{import.meta.env.VITE_FOO}</div>
 </main>
 
 <!-- HMR-TEMPLATE-INJECT -->
