@@ -28,12 +28,16 @@ describe('kit-node', () => {
 			expect(await getText('h1')).toBe('Hello world!');
 			expect(await getText('#load')).toBe('SERVER_LOADED');
 			expect(await getText('#mount')).toBe('BEFORE_MOUNT');
+			expect(await getText('#i18n')).toBe('WELCOME');
+			expect(await getText('#env')).toBe('FOOBARENV');
 
 			// also get page as text to confirm
 			const html = await (await fetch(page.url())).text();
 			expect(html).toMatch('Hello world!');
 			expect(html).toMatch('SERVER_LOADED');
 			expect(html).toMatch('BEFORE_MOUNT');
+			expect(html).toMatch('WELCOME');
+			expect(html).toMatch('FOOBARENV');
 
 			// wait a bit for hydration to kick in
 			await sleep(550);
