@@ -26,6 +26,13 @@ const _createCompileSvelte = (makeHot: Function) =>
 			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
 			compileOptions.cssHash = () => hash;
 		}
+		if (ssr) {
+			if (compileOptions.enableSourcemap === undefined || compileOptions.enableSourcemap === true) {
+				compileOptions.enableSourcemap = { js: true, css: false };
+			} else if (typeof compileOptions.enableSourcemap === 'object') {
+				compileOptions.enableSourcemap.css = false;
+			}
+		}
 
 		let preprocessed;
 
