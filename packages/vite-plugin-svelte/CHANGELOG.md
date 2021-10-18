@@ -1,5 +1,19 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.29
+
+### Major Changes
+
+- drop support for node12 ([#198](https://github.com/sveltejs/vite-plugin-svelte/pull/198))
+
+### Minor Changes
+
+- Add `experimental.prebundleSvelteLibraries` option ([#200](https://github.com/sveltejs/vite-plugin-svelte/pull/200))
+
+### Patch Changes
+
+- Disable CSS sourcemap in SSR ([#201](https://github.com/sveltejs/vite-plugin-svelte/pull/201))
+
 ## 1.0.0-next.28
 
 ### Patch Changes
