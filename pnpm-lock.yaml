@@ -305,6 +305,7 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       compression: ^1.7.4
       cross-env: ^7.0.3
+      decamelize: ^6.0.0
       e2e-test-dep-esm-only: workspace:*
       express: ^4.17.1
       npm-run-all: ^4.1.5
@@ -315,6 +316,7 @@ importers:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       compression: 1.7.4
       cross-env: 7.0.3
+      decamelize: 6.0.0
       e2e-test-dep-esm-only: link:../_test_dependencies/esm-only
       express: 4.17.1
       npm-run-all: 4.1.5
@@ -2447,6 +2449,11 @@ packages:
   /decamelize/1.2.0:
     resolution: {integrity: sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /decamelize/6.0.0:
+    resolution: {integrity: sha512-Fv96DCsdOgB6mdGl67MT5JaTNKRzrzill5OH5s8bjYJXVlcXyPYGyPsUkWyGV5p1TXI5esYIYMMeDJL0hEIwaA==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     dev: true
 
   /decimal.js/10.3.1:

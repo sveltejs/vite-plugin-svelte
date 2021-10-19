@@ -22,6 +22,10 @@ export default defineConfig(({ command, mode }) => {
 				usePolling: true,
 				interval: 100
 			}
+		},
+		// manually externalize until https://github.com/vitejs/vite/pull/5197 released
+		ssr: {
+			external: ['decamelize']
 		}
 	};
 });
