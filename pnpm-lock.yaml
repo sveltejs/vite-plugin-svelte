@@ -212,13 +212,13 @@ importers:
   packages/e2e-tests/kit-node:
     specifiers:
       '@sveltejs/adapter-node': ^1.0.0-next.55
-      '@sveltejs/kit': ^1.0.0-next.184
+      '@sveltejs/kit': ^1.0.0-next.191
       e2e-test-dep-svelte-api-only: workspace:*
       svelte: ^3.44.0
       svelte-i18n: ^3.3.13
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.55
-      '@sveltejs/kit': 1.0.0-next.184_svelte@3.44.0
+      '@sveltejs/kit': 1.0.0-next.191_svelte@3.44.0
       e2e-test-dep-svelte-api-only: link:../_test_dependencies/svelte-api-only
       svelte: 3.44.0
       svelte-i18n: 3.3.13_svelte@3.44.0
@@ -354,7 +354,7 @@ importers:
       '@fontsource/fira-mono': ^4.5.0
       '@lukeed/uuid': ^2.0.0
       '@sveltejs/adapter-node': ^1.0.0-next.55
-      '@sveltejs/kit': ^1.0.0-next.184
+      '@sveltejs/kit': ^1.0.0-next.191
       cookie: ^0.4.1
       svelte: ^3.44.0
     dependencies:
@@ -363,7 +363,7 @@ importers:
       cookie: 0.4.1
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.55
-      '@sveltejs/kit': 1.0.0-next.184_svelte@3.44.0
+      '@sveltejs/kit': 1.0.0-next.191_svelte@3.44.0
       svelte: 3.44.0
 
   packages/playground/optimizedeps-include:
@@ -1321,18 +1321,18 @@ packages:
       tiny-glob: 0.2.9
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.184_svelte@3.44.0:
-    resolution: {integrity: sha512-bQNka3td/OMmnbDEzUTmb3czPgt/y93WOyYiT14ORq/qPewoMhEtgPikfboejdZMTJESSq06s43YXmF2MzqSSA==}
+  /@sveltejs/kit/1.0.0-next.191_svelte@3.44.0:
+    resolution: {integrity: sha512-ikFKdgr0vcQB5lYqRtj6MUH4yu65le+qNVKxjJOK/Qj7Ev8IjaFKwiX1ppO48X5vJPsW+qAwvk/TqJwSM6VPDA==}
     engines: {node: '>=14.13'}
     hasBin: true
     peerDependencies:
-      svelte: ^3.43.0
+      svelte: ^3.44.0
     dependencies:
       '@sveltejs/vite-plugin-svelte': link:packages/vite-plugin-svelte
       cheap-watch: 1.0.4
       sade: 1.7.4
       svelte: 3.44.0
-      vite: 2.6.13
+      vite: 2.7.0-beta.0
     transitivePeerDependencies:
       - less
       - sass
@@ -6653,7 +6653,7 @@ packages:
   /vite-plugin-windicss/1.4.11_vite@2.7.0-beta.0:
     resolution: {integrity: sha512-0DQN6wM7hVppGN29STJnDg5NYsALTsF1E/FOIYUMxBQg5gCMmk/yAwl95rvf5PTlL7qzjyp7shpy9Sct4fNktQ==}
     peerDependencies:
-      vite: ^2.6.13
+      vite: ^2.7.0-beta.0
     dependencies:
       '@windicss/plugin-utils': 1.4.11
       chalk: 4.1.2
@@ -6662,30 +6662,6 @@ packages:
       windicss: 3.1.9
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /vite/2.6.13:
-    resolution: {integrity: sha512-+tGZ1OxozRirTudl4M3N3UTNJOlxdVo/qBl2IlDEy/ZpTFcskp+k5ncNjayR3bRYTCbqSOFz2JWGN1UmuDMScA==}
-    engines: {node: '>=12.2.0'}
-    hasBin: true
-    peerDependencies:
-      less: '*'
-      sass: '*'
-      stylus: '*'
-    peerDependenciesMeta:
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-    dependencies:
-      esbuild: 0.13.8
-      postcss: 8.3.9
-      resolve: 1.20.0
-      rollup: 2.58.0
-    optionalDependencies:
-      fsevents: 2.3.2
     dev: true
 
   /vite/2.7.0-beta.0:
