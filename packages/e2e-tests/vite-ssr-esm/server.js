@@ -49,12 +49,6 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 				index: false
 			})
 		);
-
-		// workaround, dist/server/entry-server.js will be cjs, add a package.json as hint
-		const serverPkg = resolve('dist/server/package.json');
-		if (!fs.existsSync(serverPkg)) {
-			fs.writeFileSync(serverPkg, JSON.stringify({ type: 'commonjs' }), 'utf-8');
-		}
 	}
 
 	app.use('*', async (req, res) => {
