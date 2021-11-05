@@ -62,8 +62,6 @@ jobs:
         include:
           - node: 14
             os: ubuntu-latest
-          - node: 17
-            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
