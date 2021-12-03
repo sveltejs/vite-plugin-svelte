@@ -1,6 +1,7 @@
 import { RollupError } from 'rollup';
 import { Warning } from './options';
 import { buildExtendedLogMessage } from './log';
+import { PartialMessage } from 'esbuild';
 
 /**
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
@@ -26,4 +27,28 @@ export function toRollupError(
 		};
 	}
 	return rollupError;
+}
+
+/**
+ * convert an error thrown by svelte.compile to an esbuild PartialMessage
+ * @param error
+ * @returns {PartialMessage} the converted error
+ */
+export function toESBuildError(
+	error: Warning & Error // a svelte compiler error is a mix of Warning and an error
+): PartialMessage {
+	const { filename, frame, start } = error;
+	const partialMessage: PartialMessage = {
+		text: buildExtendedLogMessage(error),
+		detail: frame
+	};
+	if (start) {
+		partialMessage.location = {
+			line: start.line,
+			column: start.column,
+			file: filename,
+			suggestion: frame
+		};
+	}
+	return partialMessage;
 }
