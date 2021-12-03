@@ -17,6 +17,7 @@ import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { addExtraPreprocessors } from './utils/preprocess';
 import { PartialResolvedId } from 'rollup';
+import { toRollupError } from './utils/error';
 
 export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	if (process.env.DEBUG != null) {
@@ -169,7 +170,12 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 				log.error('failed to transform tagged svelte request', svelteRequest);
 				throw new Error(`failed to transform tagged svelte request for id ${id}`);
 			}
-			const compileData = await compileSvelte(svelteRequest, code, options);
+			let compileData;
+			try {
+				compileData = await compileSvelte(svelteRequest, code, options);
+			} catch (e) {
+				throw toRollupError(e);
+			}
 			logCompilerWarnings(compileData.compiled.warnings, options);
 			cache.update(compileData);
 			if (compileData.dependencies?.length && options.server) {

@@ -155,7 +155,7 @@ function warnBuild(w: Warning) {
 	log.warn.enabled && log.warn(buildExtendedLogMessage(w), w.frame);
 }
 
-function buildExtendedLogMessage(w: Warning) {
+export function buildExtendedLogMessage(w: Warning) {
 	const parts = [];
 	if (w.filename) {
 		parts.push(w.filename);
