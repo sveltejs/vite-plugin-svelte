@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.31
+
+### Minor Changes
+
+- Improved error reporting for svelte compiler errors ([#220](https://github.com/sveltejs/vite-plugin-svelte/pull/220))
+
 ## 1.0.0-next.30
 
 ### Major Changes
