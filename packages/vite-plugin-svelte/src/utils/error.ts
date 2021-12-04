@@ -15,8 +15,9 @@ export function toRollupError(
 		name, // needed otherwise sveltekit coalesce_to_error turns it into a string
 		id: filename,
 		message: buildExtendedLogMessage(error), // include filename:line:column so that it's clickable
-		frame,
-		code
+		frame: formatFrameForVite(frame),
+		code,
+		stack: ''
 	};
 	if (start) {
 		rollupError.loc = {
@@ -51,6 +52,12 @@ export function toESBuildError(
 	return partialMessage;
 }
 
+/**
+ * extract line with number from codeframe
+ *
+ * @param lineNo
+ * @param frame
+ */
 function lineFromFrame(lineNo: number, frame?: string): string {
 	if (!frame) {
 		return '';
@@ -58,4 +65,36 @@ function lineFromFrame(lineNo: number, frame?: string): string {
 	const lines = frame.split('\n');
 	const errorLine = lines.find((line) => line.trimStart().startsWith(`${lineNo}: `));
 	return errorLine ? errorLine.substring(errorLine.indexOf(': ') + 3) : '';
+}
+
+/**
+ * vite error overlay expects a specific format to show frames
+ * this reformats svelte frame (colon separated, less whitespace)
+ * to one that vite displays on overlay ( pipe separated, more whitespace)
+ * e.g.
+ * ```
+ * 1: foo
+ * 2: bar;
+ *       ^
+ * 3: baz
+ * ```
+ * to
+ * ```
+ *  1 | foo
+ *  2 | bar;
+ *         ^
+ *  3 | baz
+ * ```
+ * @see https://github.com/vitejs/vite/blob/96591bf9989529de839ba89958755eafe4c445ae/packages/vite/src/client/overlay.ts#L116
+ *
+ * @param frame
+ */
+function formatFrameForVite(frame?: string): string {
+	if (!frame) {
+		return '';
+	}
+	return frame
+		.split('\n')
+		.map((line) => (line.match(/^\s+\^/) ? '   ' + line : ' ' + line.replace(':', ' | ')))
+		.join('\n');
 }
