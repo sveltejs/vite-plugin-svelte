@@ -2,14 +2,13 @@ import { RollupError } from 'rollup';
 import { Warning } from './options';
 import { buildExtendedLogMessage } from './log';
 import { PartialMessage } from 'esbuild';
+
 /**
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
- * @param error
+ * @param error a svelte compiler error, which is a mix of Warning and an error
  * @returns {RollupError} the converted error
  */
-export function toRollupError(
-	error: Warning & Error // a svelte compiler error is a mix of Warning and an error
-): RollupError {
+export function toRollupError(error: Warning & Error): RollupError {
 	const { filename, frame, start, code, name } = error;
 	const rollupError: RollupError = {
 		name, // needed otherwise sveltekit coalesce_to_error turns it into a string
@@ -31,12 +30,10 @@ export function toRollupError(
 
 /**
  * convert an error thrown by svelte.compile to an esbuild PartialMessage
- * @param error
+ * @param error a svelte compiler error, which is a mix of Warning and an error
  * @returns {PartialMessage} the converted error
  */
-export function toESBuildError(
-	error: Warning & Error // a svelte compiler error is a mix of Warning and an error
-): PartialMessage {
+export function toESBuildError(error: Warning & Error): PartialMessage {
 	const { filename, frame, start } = error;
 	const partialMessage: PartialMessage = {
 		text: buildExtendedLogMessage(error)
@@ -54,9 +51,6 @@ export function toESBuildError(
 
 /**
  * extract line with number from codeframe
- *
- * @param lineNo
- * @param frame
  */
 function lineFromFrame(lineNo: number, frame?: string): string {
 	if (!frame) {
@@ -86,8 +80,6 @@ function lineFromFrame(lineNo: number, frame?: string): string {
  *  3 | baz
  * ```
  * @see https://github.com/vitejs/vite/blob/96591bf9989529de839ba89958755eafe4c445ae/packages/vite/src/client/overlay.ts#L116
- *
- * @param frame
  */
 function formatFrameForVite(frame?: string): string {
 	if (!frame) {
