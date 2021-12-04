@@ -4,6 +4,7 @@ import { DepOptimizationOptions } from 'vite';
 import { Compiled } from './compile';
 import { log } from './log';
 import { CompileOptions, ResolvedOptions } from './options';
+import { toESBuildError } from './error';
 
 type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
 type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
@@ -20,8 +21,12 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 
 			build.onLoad({ filter: svelteFilter }, async ({ path: filename }) => {
 				const code = await fs.readFile(filename, 'utf8');
-				const contents = await compileSvelte(options, { filename, code });
-				return { contents };
+				try {
+					const contents = await compileSvelte(options, { filename, code });
+					return { contents };
+				} catch (e) {
+					return { errors: [toESBuildError(e)] };
+				}
 			});
 		}
 	};
