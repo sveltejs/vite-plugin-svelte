@@ -2,7 +2,6 @@ import { RollupError } from 'rollup';
 import { Warning } from './options';
 import { buildExtendedLogMessage } from './log';
 import { PartialMessage } from 'esbuild';
-
 /**
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
  * @param error
@@ -39,16 +38,24 @@ export function toESBuildError(
 ): PartialMessage {
 	const { filename, frame, start } = error;
 	const partialMessage: PartialMessage = {
-		text: buildExtendedLogMessage(error),
-		detail: frame
+		text: buildExtendedLogMessage(error)
 	};
 	if (start) {
 		partialMessage.location = {
 			line: start.line,
 			column: start.column,
 			file: filename,
-			suggestion: frame
+			lineText: lineFromFrame(start.line, frame) // needed to get a meaningful error message on cli
 		};
 	}
 	return partialMessage;
+}
+
+function lineFromFrame(lineNo: number, frame?: string): string {
+	if (!frame) {
+		return '';
+	}
+	const lines = frame.split('\n');
+	const errorLine = lines.find((line) => line.trimStart().startsWith(`${lineNo}: `));
+	return errorLine ? errorLine.substring(errorLine.indexOf(': ') + 3) : '';
 }
