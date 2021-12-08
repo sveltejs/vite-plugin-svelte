@@ -13,7 +13,12 @@ export default defineConfig(({ command, mode }) => {
 		build: {
 			target: 'esnext',
 			minify: false,
-			assetsInlineLimit: 0
+			assetsInlineLimit: 0,
+			rollupOptions: {
+				output: {
+					format: 'esm'
+				}
+			}
 		},
 		server: {
 			watch: {
@@ -22,6 +27,10 @@ export default defineConfig(({ command, mode }) => {
 				usePolling: true,
 				interval: 100
 			}
+		},
+		// manually externalize until https://github.com/vitejs/vite/pull/5197 released
+		ssr: {
+			external: ['decamelize']
 		}
 	};
 });
