@@ -17,7 +17,7 @@ export function setupWatchers(
 		return;
 	}
 	const { watcher, ws } = server;
-	const { configFile: viteConfigFile, root, server: serverConfig } = server.config;
+	const { root, server: serverConfig } = server.config;
 
 	const emitChangeEventOnDependants = (filename: string) => {
 		const dependants = cache.getDependants(filename);
@@ -44,9 +44,9 @@ export function setupWatchers(
 	const triggerViteRestart = (filename: string) => {
 		// vite restart is triggered by simulating a change to vite config. This requires that vite config exists
 		// also we do not restart in middleware-mode as it could be risky
-		if (!!viteConfigFile && !serverConfig.middlewareMode) {
+		if (!serverConfig.middlewareMode) {
 			log.info(`svelte config changed: restarting vite server. - file: ${filename}`);
-			watcher.emit('change', viteConfigFile);
+			server.restart(!!options.experimental?.prebundleSvelteLibraries);
 		} else {
 			const message =
 				'Svelte config change detected, restart your dev process to apply the changes.';

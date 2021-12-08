@@ -95,14 +95,9 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			}
 		},
 
-		async resolveId(importee, importer, opts, ...args) {
-			// get _ssr this way to suppress typescript warning
-			const _ssr = (args as any)[0] as boolean | undefined;
-
-			// @ts-expect-error anticipate vite deprecating forth parameter and rely on `opts.ssr` instead`
-			// see https://github.com/vitejs/vite/discussions/5109
-			const ssr: boolean = _ssr === true || opts.ssr;
-			const svelteRequest = requestParser(importee, !!ssr);
+		async resolveId(importee, importer, opts) {
+			const ssr = !!opts?.ssr;
+			const svelteRequest = requestParser(importee, ssr);
 			if (svelteRequest?.query.svelte) {
 				if (svelteRequest.query.type === 'style') {
 					// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
@@ -153,10 +148,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		},
 
 		async transform(code, id, opts) {
-			// @ts-expect-error anticipate vite changing third parameter as options object
-			// see https://github.com/vitejs/vite/discussions/5109
-			const ssr: boolean = opts === true || opts?.ssr;
-			const svelteRequest = requestParser(id, !!ssr);
+			const ssr = !!opts?.ssr;
+			const svelteRequest = requestParser(id, ssr);
 			if (!svelteRequest) {
 				return;
 			}
