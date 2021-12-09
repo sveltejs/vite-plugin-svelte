@@ -121,6 +121,7 @@ function mergeOptions(
 	viteConfig: UserConfig,
 	viteEnv: ConfigEnv
 ): ResolvedOptions {
+	// @ts-ignore
 	const merged = {
 		...defaultOptions,
 		...svelteConfig,
@@ -137,7 +138,9 @@ function mergeOptions(
 		root: viteConfig.root!,
 		isProduction: viteEnv.mode === 'production',
 		isBuild: viteEnv.command === 'build',
-		isServe: viteEnv.command === 'serve'
+		isServe: viteEnv.command === 'serve',
+		// @ts-expect-error we don't declare kit property of svelte config but read it once here to identify kit projects
+		isSvelteKit: !!svelteConfig?.kit
 	};
 	// configFile of svelteConfig contains the absolute path it was loaded from,
 	// prefer it over the possibly relative inline path
@@ -485,6 +488,7 @@ export interface ResolvedOptions extends Options {
 	isBuild: boolean;
 	isServe: boolean;
 	server?: ViteDevServer;
+	isSvelteKit?: boolean;
 }
 
 export type {

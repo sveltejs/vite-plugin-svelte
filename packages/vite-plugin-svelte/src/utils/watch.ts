@@ -42,12 +42,9 @@ export function setupWatchers(
 	};
 
 	const triggerViteRestart = (filename: string) => {
-		// vite restart is triggered by simulating a change to vite config. This requires that vite config exists
-		// also we do not restart in middleware-mode as it could be risky
-		if (!serverConfig.middlewareMode) {
-			log.info(`svelte config changed: restarting vite server. - file: ${filename}`);
-			server.restart(!!options.experimental?.prebundleSvelteLibraries);
-		} else {
+		if (serverConfig.middlewareMode || options.isSvelteKit) {
+			// in middlewareMode or for sveltekit we can't restart the server automatically
+			// show the user an overlay instead
 			const message =
 				'Svelte config change detected, restart your dev process to apply the changes.';
 			log.info(message, filename);
@@ -55,6 +52,9 @@ export function setupWatchers(
 				type: 'error',
 				err: { message, stack: '', plugin: 'vite-plugin-svelte', id: filename }
 			});
+		} else {
+			log.info(`svelte config changed: restarting vite server. - file: ${filename}`);
+			server.restart(!!options.experimental?.prebundleSvelteLibraries);
 		}
 	};
 
