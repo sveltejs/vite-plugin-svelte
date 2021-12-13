@@ -14,7 +14,13 @@ export function resolveViaPackageJsonSvelte(importee: string, importer?: string)
 }
 
 function isBareImport(importee: string): boolean {
-	if (!importee || importee[0] === '.' || importee[0] === '\0' || path.isAbsolute(importee)) {
+	if (
+		!importee ||
+		importee[0] === '.' ||
+		importee[0] === '\0' ||
+		importee.includes(':') ||
+		path.isAbsolute(importee)
+	) {
 		return false;
 	}
 	const parts = importee.split('/');
