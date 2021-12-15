@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.32
+
+### Major Changes
+
+- update vite peerDependency to ^2.7.0 and refactor server restart on change of svelte.config.js ([#223](https://github.com/sveltejs/vite-plugin-svelte/pull/223))
+
+### Patch Changes
+
+- Ignore import protocols like `node:` when resolving the `svelte` field in package.json ([#225](https://github.com/sveltejs/vite-plugin-svelte/pull/225))
+
 ## 1.0.0-next.31
 
 ### Minor Changes
