@@ -321,7 +321,9 @@ export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: Res
 	const facadeEsbuildSveltePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
 		(plugin) => plugin.name === facadeEsbuildSveltePluginName
 	);
-	Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
+	if (facadeEsbuildSveltePlugin) {
+		Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
+	}
 }
 export interface Options {
 	/**

@@ -7,7 +7,7 @@ import { CompileOptions, ResolvedOptions } from './options';
 import { toESBuildError } from './error';
 
 type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
-export type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
+type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
 type EsbuildPluginBuild = Parameters<EsbuildPlugin['setup']>[0];
 
 export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
