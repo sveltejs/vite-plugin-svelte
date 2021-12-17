@@ -10,6 +10,7 @@ import {
 	Options,
 	ResolvedOptions,
 	resolveOptions,
+	patchResolvedViteConfig,
 	preResolveOptions
 } from './utils/options';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
@@ -61,6 +62,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 
 		async configResolved(config) {
 			options = resolveOptions(options, config);
+			patchResolvedViteConfig(config, options);
 			requestParser = buildIdParser(options);
 			compileSvelte = createCompileSvelte(options);
 			viteConfig = config;

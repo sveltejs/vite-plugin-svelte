@@ -3,14 +3,16 @@ import { compile, preprocess } from 'svelte/compiler';
 import { DepOptimizationOptions } from 'vite';
 import { Compiled } from './compile';
 import { log } from './log';
-import { CompileOptions, PreResolvedOptions } from './options';
+import { CompileOptions, ResolvedOptions } from './options';
 import { toESBuildError } from './error';
 
 type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
-type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
+export type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
 type EsbuildPluginBuild = Parameters<EsbuildPlugin['setup']>[0];
 
-export function esbuildSveltePlugin(options: PreResolvedOptions): EsbuildPlugin {
+export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
+
+export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 	return {
 		name: 'vite-plugin-svelte:optimize-svelte',
 		setup(build) {
@@ -57,7 +59,7 @@ function disableVitePrebundleSvelte(build: EsbuildPluginBuild) {
 }
 
 async function compileSvelte(
-	options: PreResolvedOptions,
+	options: ResolvedOptions,
 	{ filename, code }: { filename: string; code: string }
 ): Promise<string> {
 	// NOTE: it is safe to use PreResolvedOptions it is not affected by the resolveConfig function's changes

@@ -22,7 +22,7 @@ import {
 import path from 'path';
 import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
 import { createRequire } from 'module';
-import { esbuildSveltePlugin } from './esbuild';
+import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
 
 const knownOptions = new Set([
@@ -246,7 +246,7 @@ function buildOptimizeDepsForSvelte(
 			include,
 			exclude,
 			esbuildOptions: {
-				plugins: [esbuildSveltePlugin(options)]
+				plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
 			}
 		};
 	}
@@ -317,6 +317,12 @@ function buildSSROptionsForSvelte(
 	};
 }
 
+export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: ResolvedOptions) {
+	const facadeEsbuildSveltePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
+		(plugin) => plugin.name === facadeEsbuildSveltePluginName
+	);
+	Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
+}
 export interface Options {
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
