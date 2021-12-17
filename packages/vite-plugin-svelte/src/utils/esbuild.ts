@@ -62,7 +62,6 @@ async function compileSvelte(
 	options: ResolvedOptions,
 	{ filename, code }: { filename: string; code: string }
 ): Promise<string> {
-	// NOTE: it is safe to use PreResolvedOptions it is not affected by the resolveConfig function's changes
 	const compileOptions: CompileOptions = {
 		...options.compilerOptions,
 		css: true,
