@@ -17,7 +17,6 @@ const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'p
 const supportedScriptLangs = ['ts'];
 
 function createViteScriptPreprocessor(): Preprocessor {
-	// @ts-expect-error - allow return void
 	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
 		if (!supportedScriptLangs.includes(lang)) return;
@@ -47,7 +46,6 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 		throw new Error(`plugin ${pluginName} has no transform`);
 	}
 	const pluginTransform = plugin.transform!.bind(null as unknown as TransformPluginContext);
-	// @ts-expect-error - allow return void
 	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
 		if (!supportedStyleLangs.includes(lang)) return;
@@ -56,20 +54,18 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 			content,
 			moduleId
 		)) as TransformResult;
-		// vite returns empty mappings that would kill svelte compiler before 3.43.0
-		const hasMap = transformResult.map && transformResult.map.mappings !== '';
 		// patch sourcemap source to point back to original filename
-		if (hasMap && transformResult.map?.sources?.[0] === moduleId) {
+		if (transformResult.map?.sources?.[0] === moduleId) {
 			transformResult.map.sources[0] = filename;
 		}
 		return {
 			code: transformResult.code,
-			map: hasMap ? transformResult.map : undefined
+			map: transformResult.map ?? undefined
 		};
 	};
 }
 
-export function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
+function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
 	return {
 		markup({ content, filename }) {
 			return preprocess(

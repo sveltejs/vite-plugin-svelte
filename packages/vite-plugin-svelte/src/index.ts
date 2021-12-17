@@ -9,13 +9,13 @@ import {
 	validateInlineOptions,
 	Options,
 	ResolvedOptions,
-	resolveOptions
+	resolveOptions,
+	preResolveOptions
 } from './utils/options';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 
 import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
-import { addExtraPreprocessors } from './utils/preprocess';
 import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
 
@@ -51,15 +51,16 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			} else if (config.logLevel) {
 				log.setLevel(config.logLevel);
 			}
-			options = await resolveOptions(inlineOptions, config, configEnv);
+			// @ts-expect-error temporarily lend the options variable until fixed in configResolved
+			options = await preResolveOptions(inlineOptions, config, configEnv);
 			// extra vite config
 			const extraViteConfig = buildExtraViteConfig(options, config, configEnv);
 			log.debug('additional vite config', extraViteConfig);
-			return extraViteConfig as Partial<UserConfig>;
+			return extraViteConfig;
 		},
 
 		async configResolved(config) {
-			addExtraPreprocessors(options, config);
+			options = resolveOptions(options, config);
 			requestParser = buildIdParser(options);
 			compileSvelte = createCompileSvelte(options);
 			viteConfig = config;
