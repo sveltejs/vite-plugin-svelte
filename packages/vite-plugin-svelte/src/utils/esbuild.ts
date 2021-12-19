@@ -10,6 +10,8 @@ type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
 type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
 type EsbuildPluginBuild = Parameters<EsbuildPlugin['setup']>[0];
 
+export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
+
 export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 	return {
 		name: 'vite-plugin-svelte:optimize-svelte',
@@ -64,6 +66,7 @@ async function compileSvelte(
 		...options.compilerOptions,
 		css: true,
 		filename,
+		format: 'esm',
 		generate: 'dom'
 	};
 

@@ -1,5 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { ConfigEnv, DepOptimizationOptions, UserConfig, ViteDevServer, normalizePath } from 'vite';
+import {
+	ConfigEnv,
+	DepOptimizationOptions,
+	ResolvedConfig,
+	UserConfig,
+	ViteDevServer,
+	normalizePath
+} from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
@@ -15,7 +22,8 @@ import {
 import path from 'path';
 import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
 import { createRequire } from 'module';
-import { esbuildSveltePlugin } from './esbuild';
+import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
+import { addExtraPreprocessors } from './preprocess';
 
 const knownOptions = new Set([
 	'configFile',
@@ -32,33 +40,86 @@ const knownOptions = new Set([
 	'experimental'
 ]);
 
-function buildDefaultOptions(isProduction: boolean, emitCss = true): Partial<Options> {
-	// no hmr in prod, only inject css in dev if emitCss is false
-	const hot = isProduction
-		? false
-		: {
-				// emit for prod, emit in dev unless css hmr is disabled
-				injectCss: !emitCss
-		  };
-	const defaultOptions: Partial<Options> = {
-		extensions: ['.svelte'],
-		hot,
-		emitCss,
-		compilerOptions: {
-			format: 'esm',
-			css: !emitCss,
-			dev: !isProduction
-		}
-	};
-	log.debug(`default options for ${isProduction ? 'production' : 'development'}`, defaultOptions);
-	return defaultOptions;
-}
-
 export function validateInlineOptions(inlineOptions?: Partial<Options>) {
 	const invalidKeys = Object.keys(inlineOptions || {}).filter((key) => !knownOptions.has(key));
 	if (invalidKeys.length) {
 		log.warn(`invalid plugin options "${invalidKeys.join(', ')}" in config`, inlineOptions);
 	}
+}
+
+// used in config phase, merges the default options, svelte config, and inline options
+export async function preResolveOptions(
+	inlineOptions: Partial<Options> = {},
+	viteUserConfig: UserConfig,
+	viteEnv: ConfigEnv
+): Promise<PreResolvedOptions> {
+	const viteConfigWithResolvedRoot: UserConfig = {
+		...viteUserConfig,
+		root: resolveViteRoot(viteUserConfig)
+	};
+	const defaultOptions: Partial<Options> = {
+		extensions: ['.svelte'],
+		emitCss: true,
+		compilerOptions: {
+			format: 'esm'
+		}
+	};
+	const svelteConfig = await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions);
+	const merged = {
+		...defaultOptions,
+		...svelteConfig,
+		...inlineOptions,
+		compilerOptions: {
+			...defaultOptions?.compilerOptions,
+			...svelteConfig?.compilerOptions,
+			...inlineOptions?.compilerOptions
+		},
+		experimental: {
+			...defaultOptions?.experimental,
+			...svelteConfig?.experimental,
+			...inlineOptions?.experimental
+		},
+		// extras
+		root: viteConfigWithResolvedRoot.root!,
+		isBuild: viteEnv.command === 'build',
+		isServe: viteEnv.command === 'serve',
+		// @ts-expect-error we don't declare kit property of svelte config but read it once here to identify kit projects
+		isSvelteKit: !!svelteConfig?.kit
+	};
+	// configFile of svelteConfig contains the absolute path it was loaded from,
+	// prefer it over the possibly relative inline path
+	if (svelteConfig?.configFile) {
+		merged.configFile = svelteConfig.configFile;
+	}
+	return merged;
+}
+
+// used in configResolved phase, merges a contextual default config, pre-resolved options, and some preprocessors.
+// also validates the final config.
+export function resolveOptions(
+	preResolveOptions: PreResolvedOptions,
+	viteConfig: ResolvedConfig
+): ResolvedOptions {
+	const defaultOptions: Partial<Options> = {
+		hot: viteConfig.isProduction ? false : { injectCss: preResolveOptions.emitCss },
+		compilerOptions: {
+			css: !preResolveOptions.emitCss,
+			dev: !viteConfig.isProduction
+		}
+	};
+	const merged: ResolvedOptions = {
+		...defaultOptions,
+		...preResolveOptions,
+		compilerOptions: {
+			...defaultOptions.compilerOptions,
+			...preResolveOptions.compilerOptions
+		},
+		isProduction: viteConfig.isProduction
+	};
+	addExtraPreprocessors(merged, viteConfig);
+	enforceOptionsForHmr(merged);
+	enforceOptionsForProduction(merged);
+	return merged;
 }
 
 function enforceOptionsForHmr(options: ResolvedOptions) {
@@ -114,69 +175,6 @@ function enforceOptionsForProduction(options: ResolvedOptions) {
 	}
 }
 
-function mergeOptions(
-	defaultOptions: Partial<Options>,
-	svelteConfig: Partial<Options>,
-	inlineOptions: Partial<Options>,
-	viteConfig: UserConfig,
-	viteEnv: ConfigEnv
-): ResolvedOptions {
-	// @ts-ignore
-	const merged = {
-		...defaultOptions,
-		...svelteConfig,
-		...inlineOptions,
-		compilerOptions: {
-			...defaultOptions.compilerOptions,
-			...(svelteConfig?.compilerOptions || {}),
-			...(inlineOptions?.compilerOptions || {})
-		},
-		experimental: {
-			...(svelteConfig?.experimental || {}),
-			...(inlineOptions?.experimental || {})
-		},
-		root: viteConfig.root!,
-		isProduction: viteEnv.mode === 'production',
-		isBuild: viteEnv.command === 'build',
-		isServe: viteEnv.command === 'serve',
-		// @ts-expect-error we don't declare kit property of svelte config but read it once here to identify kit projects
-		isSvelteKit: !!svelteConfig?.kit
-	};
-	// configFile of svelteConfig contains the absolute path it was loaded from,
-	// prefer it over the possibly relative inline path
-	if (svelteConfig?.configFile) {
-		merged.configFile = svelteConfig.configFile;
-	}
-	return merged;
-}
-
-export async function resolveOptions(
-	inlineOptions: Partial<Options> = {},
-	viteConfig: UserConfig,
-	viteEnv: ConfigEnv
-): Promise<ResolvedOptions> {
-	const viteConfigWithResolvedRoot = {
-		...viteConfig,
-		root: resolveViteRoot(viteConfig)
-	};
-	const svelteConfig = (await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions)) || {};
-	const defaultOptions = buildDefaultOptions(
-		viteEnv.mode === 'production',
-		inlineOptions.emitCss ?? svelteConfig.emitCss
-	);
-	const resolvedOptions = mergeOptions(
-		defaultOptions,
-		svelteConfig,
-		inlineOptions,
-		viteConfigWithResolvedRoot,
-		viteEnv
-	);
-
-	enforceOptionsForProduction(resolvedOptions);
-	enforceOptionsForHmr(resolvedOptions);
-	return resolvedOptions;
-}
-
 // vite passes unresolved `root`option to config hook but we need the resolved value, so do it here
 // https://github.com/sveltejs/vite-plugin-svelte/issues/113
 // https://github.com/vitejs/vite/blob/43c957de8a99bb326afd732c962f42127b0a4d1e/packages/vite/src/node/config.ts#L293
@@ -185,7 +183,7 @@ function resolveViteRoot(viteConfig: UserConfig): string | undefined {
 }
 
 export function buildExtraViteConfig(
-	options: ResolvedOptions,
+	options: PreResolvedOptions,
 	config: UserConfig,
 	configEnv: ConfigEnv
 ): Partial<UserConfig> {
@@ -218,7 +216,7 @@ export function buildExtraViteConfig(
 
 function buildOptimizeDepsForSvelte(
 	svelteDeps: SvelteDependency[],
-	options: ResolvedOptions,
+	options: PreResolvedOptions,
 	optimizeDeps?: DepOptimizationOptions
 ): DepOptimizationOptions {
 	// include svelte imports for optimization unless explicitly excluded
@@ -249,7 +247,7 @@ function buildOptimizeDepsForSvelte(
 			include,
 			exclude,
 			esbuildOptions: {
-				plugins: [esbuildSveltePlugin(options)]
+				plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
 			}
 		};
 	}
@@ -320,6 +318,14 @@ function buildSSROptionsForSvelte(
 	};
 }
 
+export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: ResolvedOptions) {
+	const facadeEsbuildSveltePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
+		(plugin) => plugin.name === facadeEsbuildSveltePluginName
+	);
+	if (facadeEsbuildSveltePlugin) {
+		Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
+	}
+}
 export interface Options {
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
@@ -478,17 +484,20 @@ export interface ExperimentalOptions {
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
 }
 
-export interface ResolvedOptions extends Options {
+export interface PreResolvedOptions extends Options {
 	// these options are non-nullable after resolve
 	compilerOptions: CompileOptions;
 	experimental: ExperimentalOptions;
 	// extra options
 	root: string;
-	isProduction: boolean;
 	isBuild: boolean;
 	isServe: boolean;
+	isSvelteKit: boolean;
+}
+
+export interface ResolvedOptions extends PreResolvedOptions {
+	isProduction: boolean;
 	server?: ViteDevServer;
-	isSvelteKit?: boolean;
 }
 
 export type {
