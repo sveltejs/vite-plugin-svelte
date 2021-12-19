@@ -79,7 +79,7 @@ export async function preResolveOptions(
 			...inlineOptions?.experimental
 		},
 		// extras
-		root: viteUserConfig.root!,
+		root: viteConfigWithResolvedRoot.root!,
 		isBuild: viteEnv.command === 'build',
 		isServe: viteEnv.command === 'serve',
 		// @ts-expect-error we don't declare kit property of svelte config but read it once here to identify kit projects
