@@ -59,6 +59,7 @@ export async function preResolveOptions(
 	};
 	const defaultOptions: Partial<Options> = {
 		extensions: ['.svelte'],
+		emitCss: true,
 		compilerOptions: {
 			format: 'esm'
 		}
