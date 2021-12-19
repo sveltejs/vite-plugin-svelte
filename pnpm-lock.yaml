@@ -187,6 +187,16 @@ importers:
       svelte: 3.44.2
       vite: 2.7.0
 
+  packages/e2e-tests/env:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      svelte: ^3.44.2
+      vite: ^2.7.0
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      svelte: 3.44.2
+      vite: 2.7.0
+
   packages/e2e-tests/hmr:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
