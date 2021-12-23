@@ -103,6 +103,9 @@ importers:
   packages/e2e-tests/_test_dependencies/esm-only:
     specifiers: {}
 
+  packages/e2e-tests/_test_dependencies/scss-only:
+    specifiers: {}
+
   packages/e2e-tests/_test_dependencies/svelte-api-only:
     specifiers: {}
 
@@ -117,9 +120,11 @@ importers:
   packages/e2e-tests/_test_dependencies/svelte-nested:
     specifiers:
       e2e-test-dep-cjs-and-esm: workspace:*
+      e2e-test-dep-scss-only: workspace:*
       e2e-test-dep-svelte-simple: workspace:*
     dependencies:
       e2e-test-dep-cjs-and-esm: link:../cjs-and-esm
+      e2e-test-dep-scss-only: link:../scss-only
       e2e-test-dep-svelte-simple: link:../svelte-simple
 
   packages/e2e-tests/_test_dependencies/svelte-simple:
