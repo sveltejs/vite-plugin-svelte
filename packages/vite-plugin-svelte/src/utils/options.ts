@@ -101,7 +101,7 @@ export function resolveOptions(
 	viteConfig: ResolvedConfig
 ): ResolvedOptions {
 	const defaultOptions: Partial<Options> = {
-		hot: viteConfig.isProduction ? false : { injectCss: preResolveOptions.emitCss },
+		hot: viteConfig.isProduction ? false : { injectCss: !preResolveOptions.emitCss },
 		compilerOptions: {
 			css: !preResolveOptions.emitCss,
 			dev: !viteConfig.isProduction
