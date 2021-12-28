@@ -7,7 +7,8 @@ import {
 	isBuild,
 	readFileContent,
 	sleep,
-	untilUpdated
+	untilUpdated,
+	waitForNavigation
 } from '../../testUtils';
 
 import fetch from 'node-fetch';
@@ -237,7 +238,7 @@ describe('kit-node', () => {
 						await button.click();
 						expect(await getText('button')).toBe('Clicks: 1');
 						editFile('svelte.config.js', (config) => config + '\n');
-						await page.waitForNavigation({ waitUntil: 'networkidle' });
+						await waitForNavigation({ waitUntil: 'networkidle' });
 						// clicks should reset, means the browser refreshed
 						expect(await getText('button')).toBe('Clicks: 0');
 					});

@@ -203,3 +203,16 @@ export async function editViteConfig(replacer: (str: string) => string) {
 	await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
 	await sleep(50);
 }
+
+export async function waitForNavigation(opts: Parameters<typeof page.waitForNavigation>[0]) {
+	const timeout = opts.timeout || 30000; // default playwright timeout is 30000
+	let timeoutHandle: NodeJS.Timeout;
+	const timeoutPromise = new Promise((resolve, reject) => {
+		timeoutHandle = setTimeout(
+			() => reject(new Error(`navigation timed out after ${timeout}ms`)),
+			timeout - 50 // have slightly shorter timeout so error is shown before playwright timeout
+		);
+	});
+	await Promise.race([page.waitForNavigation(opts), timeoutPromise]);
+	clearTimeout(timeoutHandle);
+}
