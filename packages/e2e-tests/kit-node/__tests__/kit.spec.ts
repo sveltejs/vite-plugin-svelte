@@ -232,14 +232,14 @@ describe('kit-node', () => {
 					});
 				});
 				describe('config file update', () => {
-					it('should show an overlay', async () => {
-						await editFile('svelte.config.js', (config) => config + '\n');
-						const errorOverlay = await page.waitForSelector('vite-error-overlay');
-						expect(errorOverlay).toBeTruthy();
-						const message = await errorOverlay.$$eval('.message-body', (m) => {
-							return m[0].innerHTML;
-						});
-						expect(message).toContain('Svelte config change detected');
+					it('should auto refresh', async () => {
+						const button = await getEl('button');
+						await button.click();
+						expect(await getText('button')).toBe('Clicks: 1');
+						editFile('svelte.config.js', (config) => config + '\n');
+						await page.waitForNavigation({ waitUntil: 'networkidle' });
+						// clicks should reset, means the browser refreshed
+						expect(await getText('button')).toBe('Clicks: 0');
 					});
 				});
 			});
