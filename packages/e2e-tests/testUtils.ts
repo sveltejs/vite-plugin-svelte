@@ -213,6 +213,7 @@ export async function waitForNavigation(opts: Parameters<typeof page.waitForNavi
 			timeout - 50 // have slightly shorter timeout so error is shown before playwright timeout
 		);
 	});
-	await Promise.race([page.waitForNavigation(opts), timeoutPromise]);
-	clearTimeout(timeoutHandle);
+	await Promise.race([page.waitForNavigation(opts), timeoutPromise]).finally(() => {
+		clearTimeout(timeoutHandle);
+	});
 }
