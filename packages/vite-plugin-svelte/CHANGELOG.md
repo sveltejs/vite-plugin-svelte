@@ -1,5 +1,19 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.33
+
+### Minor Changes
+
+- auto-restart SvelteKit when Svelte config changed ([#237](https://github.com/sveltejs/vite-plugin-svelte/pull/237))
+
+* handle preprocess for prebundleSvelteLibraries ([#229](https://github.com/sveltejs/vite-plugin-svelte/pull/229))
+
+### Patch Changes
+
+- Skip prebundle non-js nested dependencies ([#234](https://github.com/sveltejs/vite-plugin-svelte/pull/234))
+
+* handle production builds for non "production" mode ([#229](https://github.com/sveltejs/vite-plugin-svelte/pull/229))
+
 ## 1.0.0-next.32
 
 ### Major Changes
