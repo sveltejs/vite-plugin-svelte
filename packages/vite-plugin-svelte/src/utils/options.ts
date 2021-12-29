@@ -82,9 +82,7 @@ export async function preResolveOptions(
 		// extras
 		root: viteConfigWithResolvedRoot.root!,
 		isBuild: viteEnv.command === 'build',
-		isServe: viteEnv.command === 'serve',
-		// @ts-expect-error we don't declare kit property of svelte config but read it once here to identify kit projects
-		isSvelteKit: !!svelteConfig?.kit
+		isServe: viteEnv.command === 'serve'
 	};
 	// configFile of svelteConfig contains the absolute path it was loaded from,
 	// prefer it over the possibly relative inline path
@@ -492,7 +490,6 @@ export interface PreResolvedOptions extends Options {
 	root: string;
 	isBuild: boolean;
 	isServe: boolean;
-	isSvelteKit: boolean;
 }
 
 export interface ResolvedOptions extends PreResolvedOptions {

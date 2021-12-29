@@ -42,8 +42,8 @@ export function setupWatchers(
 	};
 
 	const triggerViteRestart = (filename: string) => {
-		if (serverConfig.middlewareMode || options.isSvelteKit) {
-			// in middlewareMode or for sveltekit we can't restart the server automatically
+		if (serverConfig.middlewareMode) {
+			// in middlewareMode we can't restart the server automatically
 			// show the user an overlay instead
 			const message =
 				'Svelte config change detected, restart your dev process to apply the changes.';
