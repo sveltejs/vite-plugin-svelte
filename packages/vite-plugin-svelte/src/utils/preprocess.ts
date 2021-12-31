@@ -25,7 +25,8 @@ function createViteScriptPreprocessor(): Preprocessor {
 			tsconfigRaw: {
 				compilerOptions: {
 					// svelte typescript needs this flag to work with type imports
-					importsNotUsedAsValues: 'preserve'
+					importsNotUsedAsValues: 'preserve',
+					preserveValueImports: true
 				}
 			}
 		});
