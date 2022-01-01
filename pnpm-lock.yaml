@@ -218,13 +218,13 @@ importers:
   packages/e2e-tests/kit-node:
     specifiers:
       '@sveltejs/adapter-node': ^1.0.0-next.58
-      '@sveltejs/kit': ^1.0.0-next.211
+      '@sveltejs/kit': 1.0.0-next.210
       e2e-test-dep-svelte-api-only: workspace:*
       svelte: ^3.44.3
       svelte-i18n: ^3.3.13
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.58
-      '@sveltejs/kit': 1.0.0-next.211_svelte@3.44.3
+      '@sveltejs/kit': 1.0.0-next.210_svelte@3.44.3
       e2e-test-dep-svelte-api-only: link:../_test_dependencies/svelte-api-only
       svelte: 3.44.3
       svelte-i18n: 3.3.13_svelte@3.44.3
@@ -360,7 +360,7 @@ importers:
       '@fontsource/fira-mono': ^4.5.0
       '@lukeed/uuid': ^2.0.0
       '@sveltejs/adapter-node': ^1.0.0-next.58
-      '@sveltejs/kit': ^1.0.0-next.211
+      '@sveltejs/kit': 1.0.0-next.210
       cookie: ^0.4.1
       svelte: ^3.44.3
     dependencies:
@@ -369,7 +369,7 @@ importers:
       cookie: 0.4.1
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.58
-      '@sveltejs/kit': 1.0.0-next.211_svelte@3.44.3
+      '@sveltejs/kit': 1.0.0-next.210_svelte@3.44.3
       svelte: 3.44.3
 
   packages/playground/optimizedeps-include:
@@ -1306,14 +1306,15 @@ packages:
       tiny-glob: 0.2.9
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.211_svelte@3.44.3:
-    resolution: {integrity: sha512-jS28R40H6BypK5rSVUzNmQW3NaBTFijj4fJPEtx8YeSLuzqm7ZGl3wwqF+FRxisP6oyz2GkYSARRxzemDOfn9A==}
+  /@sveltejs/kit/1.0.0-next.210_svelte@3.44.3:
+    resolution: {integrity: sha512-Lf0Kb076njOCy9OU1/BPR1gLKTJ9auSGEjaKpgmueLcuRHmnsCh5tNX738uVPQJyJBdRkCVdCdurpFKSkuSyew==}
     engines: {node: '>=14.13'}
     hasBin: true
     peerDependencies:
       svelte: ^3.44.0
     dependencies:
       '@sveltejs/vite-plugin-svelte': link:packages/vite-plugin-svelte
+      cheap-watch: 1.0.4
       sade: 1.8.0
       svelte: 3.44.3
       vite: 2.7.10
@@ -2100,6 +2101,11 @@ packages:
 
   /chardet/0.7.0:
     resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
+    dev: true
+
+  /cheap-watch/1.0.4:
+    resolution: {integrity: sha512-QR/9FrtRL5fjfUJBhAKCdi0lSRQ3rVRRum3GF9wDKp2TJbEIMGhUEr2yU8lORzm9Isdjx7/k9S0DFDx+z5VGtw==}
+    engines: {node: '>=8'}
     dev: true
 
   /chokidar/3.5.2:
