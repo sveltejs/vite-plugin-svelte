@@ -19,6 +19,7 @@ import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
+import { handleOptimizeDeps } from './utils/optimizer';
 
 export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	if (process.env.DEBUG != null) {
@@ -67,6 +68,10 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			compileSvelte = createCompileSvelte(options);
 			viteConfig = config;
 			log.debug('resolved options', options);
+		},
+
+		async buildStart() {
+			await handleOptimizeDeps(options, viteConfig);
 		},
 
 		configureServer(server) {

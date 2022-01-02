@@ -54,7 +54,7 @@ export function setupWatchers(
 			});
 		} else {
 			log.info(`svelte config changed: restarting vite server. - file: ${filename}`);
-			server.restart(!!options.experimental?.prebundleSvelteLibraries);
+			server.restart();
 		}
 	};
 
