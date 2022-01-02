@@ -21,7 +21,9 @@ export async function handleOptimizeDeps(options: ResolvedOptions, viteConfig: R
 	if (!fs.existsSync(viteMetadataPath)) return;
 
 	const svelteMetadataPath = path.resolve(viteConfig.cacheDir, '_svelte_metadata.json');
-	const currentSvelteMetadata = JSON.stringify(generateSvelteMetadata(options));
+	const currentSvelteMetadata = JSON.stringify(generateSvelteMetadata(options), (_, value) => {
+		return typeof value === 'function' ? value.toString() : value;
+	});
 
 	if (fs.existsSync(svelteMetadataPath)) {
 		const existingSvelteMetadata = fs.readFileSync(svelteMetadataPath, 'utf8');
