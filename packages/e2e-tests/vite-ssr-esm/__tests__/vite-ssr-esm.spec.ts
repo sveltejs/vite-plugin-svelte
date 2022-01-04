@@ -32,11 +32,11 @@ test('css', async () => {
 test('loaded esm only package', async () => {
 	expect(await page.textContent('#esm')).toMatch('esm');
 	expect(browserLogs).toContain('esm');
-	expect(e2eServer.logs.server.out).toContain('esm\n');
+	expect(e2eServer.logs.server.out).toContain('esm');
 });
 
 test('loaded external node esm only package', () => {
-	expect(e2eServer.logs.server.out).toContain('hello_world\n');
+	expect(e2eServer.logs.server.out).toContain('hello_world');
 });
 
 test('asset', async () => {

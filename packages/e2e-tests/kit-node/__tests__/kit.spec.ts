@@ -17,20 +17,15 @@ import path from 'path';
 describe('kit-node', () => {
 	describe('index route', () => {
 		it('should hydrate', async () => {
-			// mark initial nodes
-			await page.$eval('#load', (e) => {
-				e['__initialNode'] = true;
-			});
-			await page.$eval('#mount', (e) => {
-				e['__initialNode'] = true;
-			});
-
 			// check content before hydration
 			expect(await getText('h1')).toBe('Hello world!');
 			expect(await getText('#load')).toBe('SERVER_LOADED');
 			expect(await getText('#mount')).toBe('BEFORE_MOUNT');
 			expect(await getText('#i18n')).toBe('WELCOME');
 			expect(await getText('#env')).toBe('FOOBARENV');
+			// check that inline script added the initial node markers
+			expect(await page.$eval('#load', (e) => e['__initialNode'])).toBe(true);
+			expect(await page.$eval('#mount', (e) => e['__initialNode'])).toBe(true);
 
 			// also get page as text to confirm
 			const html = await (await fetch(page.url())).text();
