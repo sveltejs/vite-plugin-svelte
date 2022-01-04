@@ -46,13 +46,22 @@ exports.serve = async function serve(root, isBuild, port) {
 		server: null,
 		build: null
 	};
+
+	const pushLines = (str, arr) => {
+		arr.push(...str.split(/\r?\n/));
+	};
+	const collectLogs = (proc, { out, err }) => {
+		proc.stdout.on('data', (d) => pushLines(d.toString(), out));
+		proc.stderr.on('data', (d) => pushLines(d.toString(), err));
+	};
+
 	const writeLogs = async (name, result) => {
 		try {
 			if (result.out && result.out.length > 0) {
-				fs.writeFileSync(path.join(logDir, `${name}.log`), result.out.join(''), 'utf-8');
+				fs.writeFileSync(path.join(logDir, `${name}.log`), result.out.join('\n'), 'utf-8');
 			}
 			if (result.err && result.err.length > 0) {
-				fs.writeFileSync(path.join(logDir, `${name}.err.log`), result.err.join(''), 'utf-8');
+				fs.writeFileSync(path.join(logDir, `${name}.err.log`), result.err.join('\n'), 'utf-8');
 			}
 		} catch (e1) {
 			console.error(`failed to write ${name} logs in ${logDir}`, e1);
@@ -72,16 +81,15 @@ exports.serve = async function serve(root, isBuild, port) {
 				stdio: 'pipe'
 			});
 			logs.build = { out, err };
-			buildProcess.stdout.on('data', (d) => out.push(d.toString()));
-			buildProcess.stderr.on('data', (d) => err.push(d.toString()));
+			collectLogs(buildProcess, logs.build);
 			await buildProcess;
 		} catch (e) {
 			buildResult = e;
 			if (buildResult.stdout) {
-				out.push(buildResult.stdout);
+				pushLines(buildResult.stdout, out);
 			}
 			if (buildResult.stderr) {
-				err.push(buildResult.stderr);
+				pushLines(buildResult.stderr, err);
 			}
 			hasErr = true;
 		}
@@ -99,8 +107,7 @@ exports.serve = async function serve(root, isBuild, port) {
 	const out = [],
 		err = [];
 	logs.server = { out, err };
-	serverProcess.stdout.on('data', (d) => out.push(d.toString()));
-	serverProcess.stderr.on('data', (d) => err.push(d.toString()));
+	collectLogs(serverProcess, logs.server);
 
 	const closeServer = async () => {
 		if (serverProcess) {
@@ -121,10 +128,10 @@ exports.serve = async function serve(root, isBuild, port) {
 				await serverProcess;
 			} catch (e) {
 				if (e.stdout) {
-					out.push(e.stdout);
+					pushLines(e.stdout, out);
 				}
 				if (e.stderr) {
-					err.push(e.stderr);
+					pushLines(e.stderr, err);
 				}
 				if (!!process.env.DEBUG && !isWin) {
 					// treekill on windows uses taskkill and that ends up here always
