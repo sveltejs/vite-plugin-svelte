@@ -12,5 +12,5 @@
 <Route fallback><h1>Default route</h1></Route>
 
 <pre>
-	$router: {JSON.stringify($router,null,2)}
+	$router: {JSON.stringify($router, null, 2)}
 </pre>
