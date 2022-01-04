@@ -8,5 +8,15 @@
 	</head>
 	<body>
 		<div id="svelte">%svelte.body%</div>
+		<script>
+			// used for testing hydration
+			function markInitialNode(id) {
+				const el = document.getElementById(id);
+				if (el) {
+					el.__initialNode = true;
+				}
+			}
+			['load', 'mount'].forEach(markInitialNode);
+		</script>
 	</body>
 </html>
