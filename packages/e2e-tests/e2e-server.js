@@ -48,7 +48,11 @@ exports.serve = async function serve(root, isBuild, port) {
 	};
 
 	const pushLines = (str, arr) => {
-		arr.push(...str.split(/\r?\n/));
+		const lines = str.split(/\r?\n/);
+		if (lines[lines.length - 1] === '') {
+			lines.pop(); // last element empty means str ended with \n, remove it or we end up with extra \n when joining again
+		}
+		Array.prototype.push.apply(arr, lines);
 	};
 	const collectLogs = (proc, { out, err }) => {
 		proc.stdout.on('data', (d) => pushLines(d.toString(), out));
