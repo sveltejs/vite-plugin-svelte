@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.34
+
+### Minor Changes
+
+- Automatically re-prebundle when Svelte config changed for `experimental.prebundleSvelteLibraries` ([#245](https://github.com/sveltejs/vite-plugin-svelte/pull/245))
+
+### Patch Changes
+
+- use the resolved vite root to support backend integrations ([#247](https://github.com/sveltejs/vite-plugin-svelte/pull/247))
+
+* fix `experimental.useVitePreprocess` option for Vite 2.8 ([#240](https://github.com/sveltejs/vite-plugin-svelte/pull/240))
+
 ## 1.0.0-next.33
 
 ### Minor Changes
