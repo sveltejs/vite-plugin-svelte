@@ -112,6 +112,7 @@ export function resolveOptions(
 			...defaultOptions.compilerOptions,
 			...preResolveOptions.compilerOptions
 		},
+		root: viteConfig.root,
 		isProduction: viteConfig.isProduction
 	};
 	addExtraPreprocessors(merged, viteConfig);
