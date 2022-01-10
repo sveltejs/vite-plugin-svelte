@@ -1,5 +1,10 @@
 {
-	"extends": ["config:base", "schedule:weekly", "group:allNonMajor"],
+	"extends": [
+		"config:base",
+		"schedule:weekly", // each monday
+		"group:allNonMajor", // batch non-majors into one PR
+		":semanticCommits" //nicer commit messages
+	],
 	"labels": ["dependencies"],
 	"ignorePaths": [
 		"packages/playground/**",
