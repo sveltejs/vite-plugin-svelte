@@ -27,7 +27,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	}
 	validateInlineOptions(inlineOptions);
 	const cache = new VitePluginSvelteCache();
-	const pkg_export_errors = new Set();
+	const pkg_resolve_errors = new Set();
 	// updated in configResolved hook
 	let requestParser: IdParser;
 	let options: ResolvedOptions;
@@ -143,15 +143,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 					return resolved;
 				}
 			} catch (err) {
-				switch (err.code) {
-					case 'ERR_PACKAGE_PATH_NOT_EXPORTED':
-						pkg_export_errors.add(importee);
-						return null;
-					case 'MODULE_NOT_FOUND':
-						return null;
-					default:
-						throw err;
-				}
+				pkg_resolve_errors.add(importee);
 			}
 		},
 
@@ -206,10 +198,11 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		 */
 		// TODO generateBundle isn't called by vite, is buildEnd enough or should it be logged once per violation in resolve
 		buildEnd() {
-			if (pkg_export_errors.size > 0) {
+			if (pkg_resolve_errors.size > 0) {
 				log.warn(
-					`The following packages did not export their \`package.json\` file so we could not check the "svelte" field. If you had difficulties importing svelte components from a package, then please contact the author and ask them to export the package.json file.`,
-					Array.from(pkg_export_errors, (s) => `- ${s}`).join('\n')
+					`vite-plugin-svelte was unable to find package.json of the following packages and wasn't able to resolve via their "svelte" field.
+					If you had difficulties importing svelte components from a package, then please contact the author and ask them to export the package.json file.
+					${Array.from(pkg_resolve_errors, (s) => `- ${s}`).join('\n')}`.replace(/\t/g, '')
 				);
 			}
 		}

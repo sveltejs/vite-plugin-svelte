@@ -1,14 +1,18 @@
 import path from 'path';
-import fs from 'fs';
-// @ts-ignore
-import relative from 'require-relative';
+import { createRequire } from 'module';
+import { is_common_without_svelte_field, resolveDependencyData } from './dependencies';
 
 export function resolveViaPackageJsonSvelte(importee: string, importer?: string): string | void {
-	if (importer && isBareImport(importee)) {
-		const importeePkgFile = relative.resolve(`${importee}/package.json`, path.dirname(importer));
-		const importeePkg = JSON.parse(fs.readFileSync(importeePkgFile, { encoding: 'utf-8' }));
-		if (importeePkg.svelte) {
-			return path.resolve(path.dirname(importeePkgFile), importeePkg.svelte);
+	if (importer && isBareImport(importee) && !is_common_without_svelte_field(importee)) {
+		const localRequire = createRequire(importer);
+		const pkgData = resolveDependencyData(importee, localRequire);
+		if (pkgData) {
+			const { pkg, dir } = pkgData;
+			if (pkg.svelte) {
+				return path.resolve(dir, pkg.svelte);
+			}
+		} else {
+			throw new Error(`failed to resolve package.json of ${importee} imported by ${importer}`);
 		}
 	}
 }
