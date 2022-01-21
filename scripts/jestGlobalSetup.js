@@ -76,16 +76,18 @@ module.exports = async () => {
 		await buildPackagesUnderTest();
 		console.log('preparations done');
 	}
-
+	console.log('Starting playwright server ...');
 	const browserServer = await startPlaywrightServer();
-
+	console.log('Playwright server running');
 	global.__BROWSER_SERVER__ = browserServer;
-
+	console.log('storing wsEndpoint in ' + DIR);
 	await fs.mkdirp(DIR);
 	await fs.writeFile(path.join(DIR, 'wsEndpoint'), browserServer.wsEndpoint());
+	console.log('clearing previous test artifacts');
 	if (!process.env.VITE_PRESERVE_BUILD_ARTIFACTS) {
 		await fs.remove(path.resolve(__dirname, '..', 'temp'));
 	} else {
 		await fs.remove(path.resolve(__dirname, '..', 'temp', isBuildTest ? 'build' : 'serve'));
 	}
+	console.log('jest global setup done');
 };

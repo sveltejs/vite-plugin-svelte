@@ -34,9 +34,7 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
-        run: |
-          pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
-          node node_modules/esbuild/install.js
+        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: build
         id: build
         run: pnpm run build
@@ -74,9 +72,7 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
-        run: |
-          pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
-          node node_modules/esbuild/install.js
+        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: build
         run: pnpm run build:ci
       - name: run tests
