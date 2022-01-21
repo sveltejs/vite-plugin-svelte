@@ -137,7 +137,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			}
 
 			try {
-				const resolved = resolveViaPackageJsonSvelte(importee, importer);
+				const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
 				if (resolved) {
 					log.debug(`resolveId resolved ${resolved} via package.json svelte field of ${importee}`);
 					return resolved;

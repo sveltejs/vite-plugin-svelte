@@ -6,6 +6,7 @@ export class VitePluginSvelteCache {
 	private _js = new Map<string, Code>();
 	private _dependencies = new Map<string, string[]>();
 	private _dependants = new Map<string, Set<string>>();
+	private _resolvedSvelteFields = new Map<string, string>();
 
 	public update(compileData: CompileData) {
 		this.updateCSS(compileData);
@@ -79,5 +80,24 @@ export class VitePluginSvelteCache {
 	public getDependants(path: string): string[] {
 		const dependants = this._dependants.get(path);
 		return dependants ? [...dependants] : [];
+	}
+
+	public getResolvedSvelteField(name: string, importer?: string): string | void {
+		return this._resolvedSvelteFields.get(this._getResolvedSvelteFieldKey(name, importer));
+	}
+
+	public setResolvedSvelteField(
+		importee: string,
+		importer: string | undefined = undefined,
+		resolvedSvelte: string
+	) {
+		this._resolvedSvelteFields.set(
+			this._getResolvedSvelteFieldKey(importee, importer),
+			resolvedSvelte
+		);
+	}
+
+	private _getResolvedSvelteFieldKey(importee: string, importer?: string): string {
+		return importer ? `${importer} > ${importee}` : importee;
 	}
 }

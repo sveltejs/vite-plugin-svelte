@@ -1,15 +1,26 @@
 import path from 'path';
 import { createRequire } from 'module';
 import { is_common_without_svelte_field, resolveDependencyData } from './dependencies';
+import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 
-export function resolveViaPackageJsonSvelte(importee: string, importer?: string): string | void {
+export function resolveViaPackageJsonSvelte(
+	importee: string,
+	importer: string | undefined,
+	cache: VitePluginSvelteCache
+): string | void {
 	if (importer && isBareImport(importee) && !is_common_without_svelte_field(importee)) {
+		const cached = cache.getResolvedSvelteField(importee, importer);
+		if (cached) {
+			return cached;
+		}
 		const localRequire = createRequire(importer);
 		const pkgData = resolveDependencyData(importee, localRequire);
 		if (pkgData) {
 			const { pkg, dir } = pkgData;
 			if (pkg.svelte) {
-				return path.resolve(dir, pkg.svelte);
+				const result = path.resolve(dir, pkg.svelte);
+				cache.setResolvedSvelteField(importee, importer, result);
+				return result;
 			}
 		} else {
 			throw new Error(`failed to resolve package.json of ${importee} imported by ${importer}`);
