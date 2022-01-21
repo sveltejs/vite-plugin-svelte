@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.35
+
+### Patch Changes
+
+- do not use require-relative to resolve svelte field of libraries and cache resolved values (fixes [#244](https://github.com/sveltejs/vite-plugin-svelte/issues/244)) ([#254](https://github.com/sveltejs/vite-plugin-svelte/pull/254))
+
 ## 1.0.0-next.34
 
 ### Minor Changes
