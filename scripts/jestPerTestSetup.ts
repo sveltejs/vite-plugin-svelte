@@ -3,6 +3,8 @@ import * as path from 'path';
 import { Page } from 'playwright-core';
 
 const isBuild = !!process.env.VITE_TEST_BUILD;
+const isWin = process.platform === 'win32';
+const isCI = !!process.env.CI;
 
 function testDir() {
 	const testPath = expect.getState().testPath;
@@ -62,78 +64,81 @@ const getUniqueTestPort = async (testRoot, testName, isBuild) => {
 	return (isBuild ? 5500 : 3500) + idx;
 };
 
-beforeAll(async () => {
-	const page = (global as any).page;
-	if (!page) {
-		return;
-	}
-	const testPath = expect.getState().testPath;
-	const segments = testPath.split(path.sep);
-	const testName = segments.includes('e2e-tests')
-		? segments[segments.indexOf('e2e-tests') + 1]
-		: null;
-	try {
-		// if this is a test placed under e2e-tests/xxx/__tests__
-		// start a vite server in that directory.
-		if (testName) {
-			page.on('console', onConsole);
-			const e2eTestsRoot = path.resolve(__dirname, '../packages/e2e-tests');
-			const srcDir = path.resolve(e2eTestsRoot, testName);
-
-			tempDir = path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
-			const directoriesToIgnore = [
-				'node_modules',
-				'__tests__',
-				'dist',
-				'build',
-				'.svelte',
-				'.svelte-kit'
-			];
-			const isIgnored = (file) => {
-				const segments = file.split(path.sep);
-				return segments.some((segment) => directoriesToIgnore.includes(segment));
-			};
-			await fs.copy(srcDir, tempDir, {
-				dereference: true,
-				filter(file) {
-					return !isIgnored(file);
-				}
-			});
-
-			const e2e_tests_node_modules = path.join(srcDir, 'node_modules');
-			const temp_node_modules = path.join(tempDir, 'node_modules');
-			if (fs.existsSync(temp_node_modules)) {
-				console.error('temp node_modules already exist', temp_node_modules);
-			}
-			await fs.symlink(e2e_tests_node_modules, temp_node_modules, 'dir');
-			const stat = fs.lstatSync(temp_node_modules);
-			if (!stat.isSymbolicLink()) {
-				console.error(`failed to symlink ${e2e_tests_node_modules} to ${temp_node_modules}`);
-			}
-			await fs.mkdir(path.join(tempDir, 'logs'));
-			const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
-			const defaultServerScript = path.resolve(e2eTestsRoot, 'e2e-server.js');
-			const hasCustomServer = fs.existsSync(customServerScript);
-			const { serve } = require(hasCustomServer ? customServerScript : defaultServerScript);
-			const port = await getUniqueTestPort(e2eTestsRoot, testName, isBuild);
-			server = await serve(tempDir, isBuild, port);
-			(global as any).e2eServer = server;
-			const url = ((global as any).viteTestUrl = `http://localhost:${port}`);
-			await (isBuild ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
+beforeAll(
+	async () => {
+		const page = (global as any).page;
+		if (!page) {
+			return;
 		}
-	} catch (e) {
-		// jest doesn't exit if our setup has error here
-		// https://github.com/facebook/jest/issues/2713
-		err = e;
-		console.error(`beforeAll failed for ${testName}.`, e);
-		// tests are still executed so close page to shorten
+		const testPath = expect.getState().testPath;
+		const segments = testPath.split(path.sep);
+		const testName = segments.includes('e2e-tests')
+			? segments[segments.indexOf('e2e-tests') + 1]
+			: null;
 		try {
-			await page.close();
-		} catch (e2) {
-			console.error('failed to close page on error', e2);
+			// if this is a test placed under e2e-tests/xxx/__tests__
+			// start a vite server in that directory.
+			if (testName) {
+				page.on('console', onConsole);
+				const e2eTestsRoot = path.resolve(__dirname, '../packages/e2e-tests');
+				const srcDir = path.resolve(e2eTestsRoot, testName);
+
+				tempDir = path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
+				const directoriesToIgnore = [
+					'node_modules',
+					'__tests__',
+					'dist',
+					'build',
+					'.svelte',
+					'.svelte-kit'
+				];
+				const isIgnored = (file) => {
+					const segments = file.split(path.sep);
+					return segments.some((segment) => directoriesToIgnore.includes(segment));
+				};
+				await fs.copy(srcDir, tempDir, {
+					dereference: true,
+					filter(file) {
+						return !isIgnored(file);
+					}
+				});
+
+				const e2e_tests_node_modules = path.join(srcDir, 'node_modules');
+				const temp_node_modules = path.join(tempDir, 'node_modules');
+				if (fs.existsSync(temp_node_modules)) {
+					console.error('temp node_modules already exist', temp_node_modules);
+				}
+				await fs.symlink(e2e_tests_node_modules, temp_node_modules, 'dir');
+				const stat = fs.lstatSync(temp_node_modules);
+				if (!stat.isSymbolicLink()) {
+					console.error(`failed to symlink ${e2e_tests_node_modules} to ${temp_node_modules}`);
+				}
+				await fs.mkdir(path.join(tempDir, 'logs'));
+				const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
+				const defaultServerScript = path.resolve(e2eTestsRoot, 'e2e-server.js');
+				const hasCustomServer = fs.existsSync(customServerScript);
+				const { serve } = require(hasCustomServer ? customServerScript : defaultServerScript);
+				const port = await getUniqueTestPort(e2eTestsRoot, testName, isBuild);
+				server = await serve(tempDir, isBuild, port);
+				(global as any).e2eServer = server;
+				const url = ((global as any).viteTestUrl = `http://localhost:${port}`);
+				await (isBuild ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
+			}
+		} catch (e) {
+			// jest doesn't exit if our setup has error here
+			// https://github.com/facebook/jest/issues/2713
+			err = e;
+			console.error(`beforeAll failed for ${testName}.`, e);
+			// tests are still executed so close page to shorten
+			try {
+				await page.close();
+			} catch (e2) {
+				console.error('failed to close page on error', e2);
+			}
 		}
-	}
-}, 30000);
+	},
+	isCI ? (isWin ? 60000 : 30000) : 15000
+);
 
 afterAll(async () => {
 	try {
