@@ -1,5 +1,5 @@
 import { RollupError } from 'rollup';
-import { Warning } from './options';
+import { ResolvedOptions, Warning } from './options';
 import { buildExtendedLogMessage } from './log';
 import { PartialMessage } from 'esbuild';
 
@@ -8,15 +8,15 @@ import { PartialMessage } from 'esbuild';
  * @param error a svelte compiler error, which is a mix of Warning and an error
  * @returns {RollupError} the converted error
  */
-export function toRollupError(error: Warning & Error): RollupError {
-	const { filename, frame, start, code, name } = error;
+export function toRollupError(error: Warning & Error, options: ResolvedOptions): RollupError {
+	const { filename, frame, start, code, name, stack } = error;
 	const rollupError: RollupError = {
 		name, // needed otherwise sveltekit coalesce_to_error turns it into a string
 		id: filename,
 		message: buildExtendedLogMessage(error), // include filename:line:column so that it's clickable
 		frame: formatFrameForVite(frame),
 		code,
-		stack: ''
+		stack: options.isBuild || options.isDebug || !frame ? stack : ''
 	};
 	if (start) {
 		rollupError.loc = {
@@ -33,8 +33,8 @@ export function toRollupError(error: Warning & Error): RollupError {
  * @param error a svelte compiler error, which is a mix of Warning and an error
  * @returns {PartialMessage} the converted error
  */
-export function toESBuildError(error: Warning & Error): PartialMessage {
-	const { filename, frame, start } = error;
+export function toESBuildError(error: Warning & Error, options: ResolvedOptions): PartialMessage {
+	const { filename, frame, start, stack } = error;
 	const partialMessage: PartialMessage = {
 		text: buildExtendedLogMessage(error)
 	};
@@ -45,6 +45,9 @@ export function toESBuildError(error: Warning & Error): PartialMessage {
 			file: filename,
 			lineText: lineFromFrame(start.line, frame) // needed to get a meaningful error message on cli
 		};
+	}
+	if (options.isBuild || options.isDebug || !frame) {
+		partialMessage.detail = stack;
 	}
 	return partialMessage;
 }

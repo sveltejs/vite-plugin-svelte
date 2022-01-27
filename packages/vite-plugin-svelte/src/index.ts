@@ -170,7 +170,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			try {
 				compileData = await compileSvelte(svelteRequest, code, options);
 			} catch (e) {
-				throw toRollupError(e);
+				throw toRollupError(e, options);
 			}
 			logCompilerWarnings(compileData.compiled.warnings, options);
 			cache.update(compileData);

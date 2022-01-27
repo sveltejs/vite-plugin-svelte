@@ -82,7 +82,8 @@ export async function preResolveOptions(
 		// extras
 		root: viteConfigWithResolvedRoot.root!,
 		isBuild: viteEnv.command === 'build',
-		isServe: viteEnv.command === 'serve'
+		isServe: viteEnv.command === 'serve',
+		isDebug: process.env.DEBUG != null
 	};
 	// configFile of svelteConfig contains the absolute path it was loaded from,
 	// prefer it over the possibly relative inline path
@@ -491,6 +492,7 @@ export interface PreResolvedOptions extends Options {
 	root: string;
 	isBuild: boolean;
 	isServe: boolean;
+	isDebug: boolean;
 }
 
 export interface ResolvedOptions extends PreResolvedOptions {

@@ -37,7 +37,13 @@ const _createCompileSvelte = (makeHot: Function) =>
 		let preprocessed;
 
 		if (options.preprocess) {
-			preprocessed = await preprocess(code, options.preprocess, { filename });
+			try {
+				preprocessed = await preprocess(code, options.preprocess, { filename });
+			} catch (e) {
+				e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
+				throw e;
+			}
+
 			if (preprocessed.dependencies) dependencies.push(...preprocessed.dependencies);
 			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 		}
