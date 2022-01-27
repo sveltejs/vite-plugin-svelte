@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.36
+
+### Patch Changes
+
+- include stack and filename in error reporting for svelte preprocess errors ([#260](https://github.com/sveltejs/vite-plugin-svelte/pull/260))
+
 ## 1.0.0-next.35
 
 ### Patch Changes
