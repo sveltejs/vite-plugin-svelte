@@ -27,7 +27,7 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 					const contents = await compileSvelte(options, { filename, code });
 					return { contents };
 				} catch (e) {
-					return { errors: [toESBuildError(e)] };
+					return { errors: [toESBuildError(e, options)] };
 				}
 			});
 		}
@@ -73,7 +73,12 @@ async function compileSvelte(
 	let preprocessed;
 
 	if (options.preprocess) {
-		preprocessed = await preprocess(code, options.preprocess, { filename });
+		try {
+			preprocessed = await preprocess(code, options.preprocess, { filename });
+		} catch (e) {
+			e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
+			throw e;
+		}
 		if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 	}
 

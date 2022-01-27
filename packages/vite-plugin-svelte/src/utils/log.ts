@@ -164,7 +164,10 @@ export function buildExtendedLogMessage(w: Warning) {
 		parts.push(':', w.start.line, ':', w.start.column);
 	}
 	if (w.message) {
-		parts.push(' ', w.message);
+		if (parts.length > 0) {
+			parts.push(' ');
+		}
+		parts.push(w.message);
 	}
 	return parts.join('');
 }
