@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "private": true,
+  "name": "e2e-test-dep-cjs-and-esm-exports",
+  "files": [
+    "package.json",
+    "index.mjs",
+    "index.cjs"
+  ],
+  "exports":{
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.cjs"
+    },
+    "./package.json": "./package.json"
+  }
+}

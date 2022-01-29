@@ -95,7 +95,13 @@ importers:
   packages/e2e-tests/_test_dependencies/cjs-and-esm:
     specifiers: {}
 
+  packages/e2e-tests/_test_dependencies/cjs-and-esm-exports:
+    specifiers: {}
+
   packages/e2e-tests/_test_dependencies/cjs-only:
+    specifiers: {}
+
+  packages/e2e-tests/_test_dependencies/cjs-only-exports:
     specifiers: {}
 
   packages/e2e-tests/_test_dependencies/esm-only:
@@ -118,18 +124,22 @@ importers:
   packages/e2e-tests/_test_dependencies/svelte-nested:
     specifiers:
       e2e-test-dep-cjs-and-esm: workspace:*
+      e2e-test-dep-cjs-and-esm-exports: workspace:*
       e2e-test-dep-scss-only: workspace:*
       e2e-test-dep-svelte-simple: workspace:*
     dependencies:
       e2e-test-dep-cjs-and-esm: link:../cjs-and-esm
+      e2e-test-dep-cjs-and-esm-exports: link:../cjs-and-esm-exports
       e2e-test-dep-scss-only: link:../scss-only
       e2e-test-dep-svelte-simple: link:../svelte-simple
 
   packages/e2e-tests/_test_dependencies/svelte-simple:
     specifiers:
       e2e-test-dep-cjs-only: workspace:*
+      e2e-test-dep-cjs-only-exports: workspace:*
     dependencies:
       e2e-test-dep-cjs-only: link:../cjs-only
+      e2e-test-dep-cjs-only-exports: link:../cjs-only-exports
 
   packages/e2e-tests/autoprefixer-browerslist:
     specifiers:

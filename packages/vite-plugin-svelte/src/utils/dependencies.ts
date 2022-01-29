@@ -187,12 +187,23 @@ export function needsOptimization(dep: string, localRequire: NodeRequire): boole
 	const pkg = depData.pkg;
 	// only optimize if is cjs, using the below as heuristic
 	// see https://github.com/sveltejs/vite-plugin-svelte/issues/162
-	const isCjs = pkg.main && !pkg.module && !pkg.exports;
-	if (!isCjs) return false;
-	// ensure entry is js so vite can prebundle it
-	// see https://github.com/sveltejs/vite-plugin-svelte/issues/233
-	const entryExt = path.extname(pkg.main);
-	return !entryExt || entryExt === '.js' || entryExt === '.cjs';
+	if (pkg.type !== 'module' && !pkg.module) {
+		let entry;
+		// if exports is defined it takes precedence over main!
+		if (pkg.exports) {
+			// exports map syntax is too complex to try and find the correct one, let node do it's thing
+			entry = localRequire.resolve(dep);
+		} else if (pkg.main) {
+			entry = pkg.main;
+		}
+		if (entry) {
+			const ext = path.extname(entry);
+			// ensure entry is js so vite can prebundle it
+			// see https://github.com/sveltejs/vite-plugin-svelte/issues/233
+			return !ext || ext === '.js' || ext === '.cjs';
+		}
+	}
+	return false;
 }
 
 interface DependencyData {
