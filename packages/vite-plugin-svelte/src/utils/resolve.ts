@@ -1,8 +1,7 @@
 import path from 'path';
-import { createRequire } from 'module';
+import { builtinModules, createRequire } from 'module';
 import { is_common_without_svelte_field, resolveDependencyData } from './dependencies';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
-import { builtinModules } from 'module';
 
 export function resolveViaPackageJsonSvelte(
 	importee: string,
