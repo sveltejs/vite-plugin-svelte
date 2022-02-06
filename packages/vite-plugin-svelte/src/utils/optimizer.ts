@@ -14,7 +14,13 @@ const PREBUNDLE_SENSITIVE_OPTIONS: (keyof ResolvedOptions)[] = [
 ];
 
 export async function handleOptimizeDeps(options: ResolvedOptions, viteConfig: ResolvedConfig) {
-	if (!options.experimental.prebundleSvelteLibraries || !viteConfig.cacheDir) return;
+	if (
+		!options.experimental.prebundleSvelteLibraries ||
+		viteConfig.server.force ||
+		!viteConfig.cacheDir
+	) {
+		return;
+	}
 
 	const viteMetadataPath = path.resolve(viteConfig.cacheDir, '_metadata.json');
 

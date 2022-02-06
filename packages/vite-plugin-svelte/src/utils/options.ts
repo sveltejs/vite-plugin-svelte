@@ -208,6 +208,21 @@ export function buildExtraViteConfig(
 		);
 	}
 
+	if (options.experimental.prebundleSvelteLibraries) {
+		extraViteConfig.optimizeDeps = {
+			...extraViteConfig.optimizeDeps,
+			// Experimental Vite API to allow these extensions to be scanned and prebundled
+			// @ts-ignore
+			supportedExtensions: options.extensions ?? ['.svelte'],
+			// Add esbuild plugin to prebundle Svelte files.
+			// Currently a placeholder as more information is needed after Vite config is resolved,
+			// the real Svelte plugin is added in `patchResolvedViteConfig()`
+			esbuildOptions: {
+				plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
+			}
+		};
+	}
+
 	// @ts-ignore
 	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config);
 
@@ -243,13 +258,7 @@ function buildOptimizeDepsForSvelte(
 
 	// If we prebundle svelte libraries, we can skip the whole prebundling dance below
 	if (options.experimental.prebundleSvelteLibraries) {
-		return {
-			include,
-			exclude,
-			esbuildOptions: {
-				plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
-			}
-		};
+		return { include, exclude };
 	}
 
 	// only svelte component libraries needs to be processed for optimizeDeps, js libraries work fine
