@@ -8,9 +8,6 @@ const config = {
 		// specifying a different adapter
 		adapter: node(),
 
-		// hydrate the <div id="svelte"> element in src/app.html
-		target: '#svelte',
-
 		vite: {
 			server: {
 				watch: {
