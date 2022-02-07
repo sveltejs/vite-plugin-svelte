@@ -15,6 +15,10 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 	return {
 		name: 'vite-plugin-svelte:optimize-svelte',
 		setup(build) {
+			// Skip in scanning phase as Vite already handles scanning Svelte files.
+			// Otherwise this would heavily slow down the scanning phase.
+			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
+
 			const svelteExtensions = (options.extensions ?? ['.svelte']).map((ext) => ext.slice(1));
 			const svelteFilter = new RegExp(`\\.(` + svelteExtensions.join('|') + `)(\\?.*)?$`);
 
