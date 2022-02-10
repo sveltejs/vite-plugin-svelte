@@ -27,8 +27,6 @@ export function resolveViaPackageJsonSvelte(
 				cache.setResolvedSvelteField(importee, importer, result);
 				return result;
 			}
-		} else {
-			throw new Error(`failed to resolve package.json of ${importee} imported by ${importer}`);
 		}
 	}
 }
