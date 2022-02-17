@@ -27,7 +27,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	}
 	validateInlineOptions(inlineOptions);
 	const cache = new VitePluginSvelteCache();
-	const pkg_resolve_errors = new Set();
 	// updated in configResolved hook
 	let requestParser: IdParser;
 	let options: ResolvedOptions;
@@ -136,14 +135,10 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 				return resolvedSvelteSSR;
 			}
 
-			try {
-				const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
-				if (resolved) {
-					log.debug(`resolveId resolved ${resolved} via package.json svelte field of ${importee}`);
-					return resolved;
-				}
-			} catch (err) {
-				pkg_resolve_errors.add(importee);
+			const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
+			if (resolved) {
+				log.debug(`resolveId resolved ${resolved} via package.json svelte field of ${importee}`);
+				return resolved;
 			}
 		},
 
@@ -190,20 +185,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);
 			if (svelteRequest) {
 				return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
-			}
-		},
-
-		/**
-		 * All resolutions done; display warnings wrt `package.json` access.
-		 */
-		// TODO generateBundle isn't called by vite, is buildEnd enough or should it be logged once per violation in resolve
-		buildEnd() {
-			if (pkg_resolve_errors.size > 0) {
-				log.warn(
-					`vite-plugin-svelte was unable to find package.json of the following packages and wasn't able to resolve via their "svelte" field.
-					If you had difficulties importing svelte components from a package, then please contact the author and ask them to export the package.json file.
-					${Array.from(pkg_resolve_errors, (s) => `- ${s}`).join('\n')}`.replace(/\t/g, '')
-				);
 			}
 		}
 	};

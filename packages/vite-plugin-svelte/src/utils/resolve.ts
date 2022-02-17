@@ -1,5 +1,5 @@
 import path from 'path';
-import { createRequire } from 'module';
+import { builtinModules, createRequire } from 'module';
 import { is_common_without_svelte_field, resolveDependencyData } from './dependencies';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 
@@ -8,7 +8,12 @@ export function resolveViaPackageJsonSvelte(
 	importer: string | undefined,
 	cache: VitePluginSvelteCache
 ): string | void {
-	if (importer && isBareImport(importee) && !is_common_without_svelte_field(importee)) {
+	if (
+		importer &&
+		isBareImport(importee) &&
+		!isNodeInternal(importee) &&
+		!is_common_without_svelte_field(importee)
+	) {
 		const cached = cache.getResolvedSvelteField(importee, importer);
 		if (cached) {
 			return cached;
@@ -22,10 +27,12 @@ export function resolveViaPackageJsonSvelte(
 				cache.setResolvedSvelteField(importee, importer, result);
 				return result;
 			}
-		} else {
-			throw new Error(`failed to resolve package.json of ${importee} imported by ${importer}`);
 		}
 	}
+}
+
+function isNodeInternal(importee: string) {
+	return importee.startsWith('node:') || builtinModules.includes(importee);
 }
 
 function isBareImport(importee: string): boolean {

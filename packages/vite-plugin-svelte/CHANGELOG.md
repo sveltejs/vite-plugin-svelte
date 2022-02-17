@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.37
+
+### Patch Changes
+
+- don't try to resolve node internal modules via package.json svelte field ([#266](https://github.com/sveltejs/vite-plugin-svelte/pull/266))
+
 ## 1.0.0-next.36
 
 ### Patch Changes
