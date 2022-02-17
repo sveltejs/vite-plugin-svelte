@@ -213,7 +213,7 @@ export function buildExtraViteConfig(
 			...extraViteConfig.optimizeDeps,
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
 			// @ts-ignore
-			supportedExtensions: options.extensions ?? ['.svelte'],
+			extensions: options.extensions ?? ['.svelte'],
 			// Add esbuild plugin to prebundle Svelte files.
 			// Currently a placeholder as more information is needed after Vite config is resolved,
 			// the real Svelte plugin is added in `patchResolvedViteConfig()`
