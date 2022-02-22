@@ -16,11 +16,10 @@ const PREBUNDLE_SENSITIVE_OPTIONS: (keyof ResolvedOptions)[] = [
 export async function handleOptimizeDeps(options: ResolvedOptions, viteConfig: ResolvedConfig) {
 	if (!options.experimental.prebundleSvelteLibraries || !viteConfig.cacheDir) return;
 
-	const viteMetadataPath = path.resolve(viteConfig.cacheDir, '_metadata.json');
+	const viteMetadataPath = findViteMetadataPath(viteConfig.cacheDir);
+	if (!viteMetadataPath) return;
 
-	if (!fs.existsSync(viteMetadataPath)) return;
-
-	const svelteMetadataPath = path.resolve(viteConfig.cacheDir, '_svelte_metadata.json');
+	const svelteMetadataPath = path.resolve(viteMetadataPath, '../_svelte_metadata.json');
 	const currentSvelteMetadata = JSON.stringify(generateSvelteMetadata(options), (_, value) => {
 		return typeof value === 'function' ? value.toString() : value;
 	});
@@ -40,4 +39,12 @@ function generateSvelteMetadata(options: ResolvedOptions) {
 		metadata[key] = options[key];
 	}
 	return metadata;
+}
+
+function findViteMetadataPath(cacheDir: string) {
+	const metadataPaths = ['_metadata.json', 'deps/_metadata.json'];
+	for (const metadataPath of metadataPaths) {
+		const viteMetadataPath = path.resolve(cacheDir, metadataPath);
+		if (fs.existsSync(viteMetadataPath)) return viteMetadataPath;
+	}
 }
