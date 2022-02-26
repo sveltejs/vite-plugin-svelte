@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.38
+
+### Patch Changes
+
+- don't warn if dependency doesn't export package.json ([#272](https://github.com/sveltejs/vite-plugin-svelte/pull/272))
+
+* Optimize nested index-only dependencies ([#282](https://github.com/sveltejs/vite-plugin-svelte/pull/282))
+
+- Remove transforming svelte css ([#280](https://github.com/sveltejs/vite-plugin-svelte/pull/280))
+
 ## 1.0.0-next.37
 
 ### Patch Changes
