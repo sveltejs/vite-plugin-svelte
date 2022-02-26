@@ -1,6 +1,6 @@
 const { defineConfig } = require('vite');
 const { svelte } = require('@sveltejs/vite-plugin-svelte');
-const { transformValidation } = require('../vitePlugins');
+const { transformValidation } = require('e2e-test-dep-vite-plugins');
 
 module.exports = defineConfig(({ command, mode }) => {
 	return {

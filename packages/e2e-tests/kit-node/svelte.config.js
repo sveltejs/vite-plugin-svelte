@@ -1,5 +1,5 @@
 import node from '@sveltejs/adapter-node';
-import { transformValidation } from '../vitePlugins.js';
+import { transformValidation } from 'e2e-test-dep-vite-plugins';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
