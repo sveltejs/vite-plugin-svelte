@@ -25,6 +25,7 @@
 	import Child from '$lib/Child.svelte';
 	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
 	export let load_status = 'NOT_LOADED';
+	const jsTransform = '__JS_TRANSFORM_1__';
 	let mount_status = 'BEFORE_MOUNT';
 	onMount(async () => {
 		const isSSR = (await import('../client-only-module.js')).default;
@@ -52,6 +53,10 @@
 	<div id="mount">{mount_status}</div>
 	<div id="i18n">{$_('welcome')}</div>
 	<div id="env">{import.meta.env.VITE_FOO}</div>
+	<!-- to be transformed into "Hello world!" text -->
+	<p id="js-transform">{jsTransform}</p>
+	<!-- to be transformed into "hello-world" class -->
+	<p id="css-transform">Hello world</p>
 </main>
 
 <!-- HMR-TEMPLATE-INJECT -->
@@ -81,6 +86,10 @@
 		max-width: 14rem;
 		margin: 2rem auto;
 		line-height: 1.35;
+	}
+
+	:global(#css-transform) {
+		color: __CSS_TRANSFORM_1__;
 	}
 
 	@media (min-width: 480px) {

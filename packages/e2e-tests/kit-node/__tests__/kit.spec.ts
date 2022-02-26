@@ -82,6 +82,11 @@ describe('kit-node', () => {
 			expect(browserLogs.some((x) => x === 'onMount dynamic imported isSSR: false')).toBe(true);
 		});
 
+		test('should respect transforms', async () => {
+			expect(await getText('#js-transform')).toBe('Hello world');
+			expect(await getColor('#css-transform')).toBe('red');
+		});
+
 		if (isBuild) {
 			it('should not include dynamic import from onmount in ssr output', async () => {
 				const app = readFileContent(path.join('.svelte-kit', 'output', 'server', 'app.js'));

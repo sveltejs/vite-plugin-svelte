@@ -1,4 +1,5 @@
 import node from '@sveltejs/adapter-node';
+import { transformValidation } from '../vitePlugins.js';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -16,7 +17,8 @@ const config = {
 					usePolling: true,
 					interval: 100
 				}
-			}
+			},
+			plugins: [transformValidation()]
 		}
 	}
 };
