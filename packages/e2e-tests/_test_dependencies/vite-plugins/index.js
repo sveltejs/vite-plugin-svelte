@@ -19,7 +19,7 @@ function transformValidation() {
 			name: 'transform-validation:2',
 			transform(code, id) {
 				if (id.endsWith('.svelte')) {
-					return code.replace('__JS_TRANSFORM_2__', 'Hello world');
+					return code.replace('__JS_TRANSFORM_2__', '__JS_TRANSFORM_3__');
 				} else if (id.endsWith('.css')) {
 					return code.replace('__CSS_TRANSFORM_2__', 'red');
 				}
