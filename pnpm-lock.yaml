@@ -99,6 +99,9 @@ importers:
   packages/e2e-tests/_test_dependencies/esm-only:
     specifiers: {}
 
+  packages/e2e-tests/_test_dependencies/index-only:
+    specifiers: {}
+
   packages/e2e-tests/_test_dependencies/scss-only:
     specifiers: {}
 
@@ -128,6 +131,9 @@ importers:
       e2e-test-dep-cjs-only: workspace:*
     dependencies:
       e2e-test-dep-cjs-only: link:../cjs-only
+
+  packages/e2e-tests/_test_dependencies/types-only:
+    specifiers: {}
 
   packages/e2e-tests/autoprefixer-browerslist:
     specifiers:
@@ -187,6 +193,20 @@ importers:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       svelte: 3.46.4
       vite: 2.8.0
+
+  packages/e2e-tests/dependencies:
+    specifiers:
+      e2e-test-dep-cjs-and-esm: workspace:*
+      e2e-test-dep-cjs-only: workspace:*
+      e2e-test-dep-esm-only: workspace:*
+      e2e-test-dep-index-only: workspace:*
+      e2e-test-dep-scss-only: workspace:*
+    dependencies:
+      e2e-test-dep-cjs-and-esm: link:../_test_dependencies/cjs-and-esm
+      e2e-test-dep-cjs-only: link:../_test_dependencies/cjs-only
+      e2e-test-dep-esm-only: link:../_test_dependencies/esm-only
+      e2e-test-dep-index-only: link:../_test_dependencies/index-only
+      e2e-test-dep-scss-only: link:../_test_dependencies/scss-only
 
   packages/e2e-tests/env:
     specifiers:
