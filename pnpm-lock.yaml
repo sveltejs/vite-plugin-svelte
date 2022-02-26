@@ -135,6 +135,9 @@ importers:
   packages/e2e-tests/_test_dependencies/types-only:
     specifiers: {}
 
+  packages/e2e-tests/_test_dependencies/vite-plugins:
+    specifiers: {}
+
   packages/e2e-tests/autoprefixer-browerslist:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
@@ -222,6 +225,7 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-test-dep-svelte-simple: workspace:*
+      e2e-test-dep-vite-plugins: workspace:*
       node-fetch: ^2.6.7
       svelte: ^3.46.4
       vite: ^2.8.0
@@ -229,6 +233,7 @@ importers:
       e2e-test-dep-svelte-simple: link:../_test_dependencies/svelte-simple
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      e2e-test-dep-vite-plugins: link:../_test_dependencies/vite-plugins
       node-fetch: 2.6.7
       svelte: 3.46.4
       vite: 2.8.0
@@ -238,12 +243,14 @@ importers:
       '@sveltejs/adapter-node': ^1.0.0-next.68
       '@sveltejs/kit': ^1.0.0-next.278
       e2e-test-dep-svelte-api-only: workspace:*
+      e2e-test-dep-vite-plugins: workspace:*
       svelte: ^3.46.4
       svelte-i18n: ^3.3.13
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.68
       '@sveltejs/kit': 1.0.0-next.278_svelte@3.46.4
       e2e-test-dep-svelte-api-only: link:../_test_dependencies/svelte-api-only
+      e2e-test-dep-vite-plugins: link:../_test_dependencies/vite-plugins
       svelte: 3.46.4
       svelte-i18n: 3.3.13_svelte@3.46.4
 

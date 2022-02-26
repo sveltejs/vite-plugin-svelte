@@ -145,21 +145,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		async transform(code, id, opts) {
 			const ssr = !!opts?.ssr;
 			const svelteRequest = requestParser(id, ssr);
-			if (!svelteRequest) {
+			if (!svelteRequest || svelteRequest.query.svelte) {
 				return;
-			}
-			const { filename, query } = svelteRequest;
-
-			if (query.svelte) {
-				if (query.type === 'style') {
-					const css = cache.getCSS(svelteRequest);
-					if (css) {
-						log.debug(`transform returns css for ${filename}`);
-						return css; // TODO return code arg instead? it's the code from load hook.
-					}
-				}
-				log.error('failed to transform tagged svelte request', svelteRequest);
-				throw new Error(`failed to transform tagged svelte request for id ${id}`);
 			}
 			let compileData;
 			try {
@@ -174,7 +161,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 					ensureWatchedFile(options.server!.watcher, d, options.root);
 				});
 			}
-			log.debug(`transform returns compiled js for ${filename}`);
+			log.debug(`transform returns compiled js for ${svelteRequest.filename}`);
 			return compileData.compiled.js;
 		},
 

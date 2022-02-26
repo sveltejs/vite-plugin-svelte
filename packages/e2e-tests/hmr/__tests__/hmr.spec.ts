@@ -39,6 +39,11 @@ test('should not have failed requests', async () => {
 	});
 });
 
+test('should respect transforms', async () => {
+	expect(await getText('#js-transform')).toBe('Hello world');
+	expect(await getColor('#css-transform')).toBe('red');
+});
+
 if (!isBuild) {
 	describe('hmr', () => {
 		const updateHmrTest = editFileAndWaitForHmrComplete.bind(null, 'src/components/HmrTest.svelte');
