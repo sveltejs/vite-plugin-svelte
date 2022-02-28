@@ -134,11 +134,19 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 				}
 				return resolvedSvelteSSR;
 			}
-
-			const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
-			if (resolved) {
-				log.debug(`resolveId resolved ${resolved} via package.json svelte field of ${importee}`);
-				return resolved;
+			try {
+				const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
+				if (resolved) {
+					log.debug(`resolveId resolved ${resolved} via package.json svelte field of ${importee}`);
+					return resolved;
+				}
+			} catch (e) {
+				log.debug.once(
+					`error trying to resolve ${importee} from ${importer} via package.json svelte field `,
+					e
+				);
+				// this error most likely happens due to non-svelte related importee/importers so swallow it here
+				// in case it really way a svelte library, users will notice anyway. (lib not working due to failed resolve)
 			}
 		},
 
