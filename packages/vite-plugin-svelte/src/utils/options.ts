@@ -211,6 +211,23 @@ export function buildExtraViteConfig(
 	// @ts-ignore
 	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config);
 
+	if (configEnv.command === 'serve') {
+		// during dev, we have to externalize transitive cjs only dependencies, see https://github.com/sveltejs/vite-plugin-svelte/issues/281
+		const optimizedTransitiveDeps = extraViteConfig.optimizeDeps?.include
+			?.filter((x) => x.includes('>'))
+			.map((x) => x.substring(x.lastIndexOf('>') + 1).trim());
+		if (optimizedTransitiveDeps?.length) {
+			// @ts-ignore
+			if (!extraViteConfig.ssr.external) {
+				// @ts-ignore
+				extraViteConfig.ssr.external = [];
+			}
+			// @ts-ignore
+			extraViteConfig.ssr.external.push(
+				...optimizedTransitiveDeps.filter((x) => !config.ssr?.noExternal?.includes(x))
+			);
+		}
+	}
 	return extraViteConfig;
 }
 
