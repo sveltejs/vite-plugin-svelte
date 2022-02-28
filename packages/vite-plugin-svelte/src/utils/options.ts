@@ -217,13 +217,14 @@ export function buildExtraViteConfig(
 			?.filter((x) => x.includes('>'))
 			.map((x) => x.substring(x.lastIndexOf('>') + 1).trim());
 		if (optimizedTransitiveDeps?.length) {
-			// @ts-ignore
+			// @ts-expect-error ssr still flagge in vite
 			if (!extraViteConfig.ssr.external) {
-				// @ts-ignore
+				// @ts-expect-error ssr still flagge in vite
 				extraViteConfig.ssr.external = [];
 			}
-			// @ts-ignore
+			// @ts-expect-error ssr still flagge in vite
 			extraViteConfig.ssr.external.push(
+				// @ts-expect-error ssr still flagge in vite
 				...optimizedTransitiveDeps.filter((x) => !config.ssr?.noExternal?.includes(x))
 			);
 		}
