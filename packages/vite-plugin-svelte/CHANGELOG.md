@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.39
+
+### Patch Changes
+
+- prevent errors in resolveViaPackageJsonSvelte breaking vite resolve (fixes [#283](https://github.com/sveltejs/vite-plugin-svelte/issues/283)) ([#286](https://github.com/sveltejs/vite-plugin-svelte/pull/286))
+
 ## 1.0.0-next.38
 
 ### Patch Changes
