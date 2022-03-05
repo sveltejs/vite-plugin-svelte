@@ -1,9 +1,10 @@
 const { defineConfig } = require('vite');
 const { svelte } = require('@sveltejs/vite-plugin-svelte');
+const { transformValidation } = require('e2e-test-dep-vite-plugins');
 
 module.exports = defineConfig(({ command, mode }) => {
 	return {
-		plugins: [svelte()],
+		plugins: [transformValidation(), svelte()],
 		build: {
 			minify: false,
 			target: 'esnext',

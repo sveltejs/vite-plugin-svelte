@@ -134,32 +134,27 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 				}
 				return resolvedSvelteSSR;
 			}
-
-			const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
-			if (resolved) {
-				log.debug(`resolveId resolved ${resolved} via package.json svelte field of ${importee}`);
-				return resolved;
+			try {
+				const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
+				if (resolved) {
+					log.debug(`resolveId resolved ${resolved} via package.json svelte field of ${importee}`);
+					return resolved;
+				}
+			} catch (e) {
+				log.debug.once(
+					`error trying to resolve ${importee} from ${importer} via package.json svelte field `,
+					e
+				);
+				// this error most likely happens due to non-svelte related importee/importers so swallow it here
+				// in case it really way a svelte library, users will notice anyway. (lib not working due to failed resolve)
 			}
 		},
 
 		async transform(code, id, opts) {
 			const ssr = !!opts?.ssr;
 			const svelteRequest = requestParser(id, ssr);
-			if (!svelteRequest) {
+			if (!svelteRequest || svelteRequest.query.svelte) {
 				return;
-			}
-			const { filename, query } = svelteRequest;
-
-			if (query.svelte) {
-				if (query.type === 'style') {
-					const css = cache.getCSS(svelteRequest);
-					if (css) {
-						log.debug(`transform returns css for ${filename}`);
-						return css; // TODO return code arg instead? it's the code from load hook.
-					}
-				}
-				log.error('failed to transform tagged svelte request', svelteRequest);
-				throw new Error(`failed to transform tagged svelte request for id ${id}`);
 			}
 			let compileData;
 			try {
@@ -174,7 +169,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 					ensureWatchedFile(options.server!.watcher, d, options.root);
 				});
 			}
-			log.debug(`transform returns compiled js for ${filename}`);
+			log.debug(`transform returns compiled js for ${svelteRequest.filename}`);
 			return compileData.compiled.js;
 		},
 

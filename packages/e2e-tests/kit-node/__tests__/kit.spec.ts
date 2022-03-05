@@ -82,10 +82,29 @@ describe('kit-node', () => {
 			expect(browserLogs.some((x) => x === 'onMount dynamic imported isSSR: false')).toBe(true);
 		});
 
+		test('should respect transforms', async () => {
+			expect(await getText('#js-transform')).toBe('Hello world');
+			expect(await getColor('#css-transform')).toBe('red');
+		});
+
 		if (isBuild) {
 			it('should not include dynamic import from onmount in ssr output', async () => {
-				const app = readFileContent(path.join('.svelte-kit', 'output', 'server', 'app.js'));
-				expect(app.includes('__SHOULD_NOT_BE_IN_SSR_APP_JS')).toBe(false);
+				const serverManifest = JSON.parse(
+					readFileContent(path.join('.svelte-kit', 'output', 'server', 'manifest.json'))
+				);
+				const includesClientOnlyModule = Object.keys(serverManifest).some((key: string) =>
+					key.includes('client-only-module')
+				);
+				expect(includesClientOnlyModule).toBe(false);
+			});
+			it('should include dynamic import from onmount in client output', async () => {
+				const clientManifest = JSON.parse(
+					readFileContent(path.join('.svelte-kit', 'output', 'client', '_app', 'manifest.json'))
+				);
+				const includesClientOnlyModule = Object.keys(clientManifest).some((key: string) =>
+					key.includes('client-only-module')
+				);
+				expect(includesClientOnlyModule).toBe(true);
 			});
 		}
 

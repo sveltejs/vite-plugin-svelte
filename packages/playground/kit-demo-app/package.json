@@ -5,11 +5,12 @@
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
+    "package": "svelte-kit package",
     "preview": "svelte-kit preview"
   },
   "devDependencies": {
-    "@sveltejs/adapter-node": "^1.0.0-next.68",
-    "@sveltejs/kit": "^1.0.0-next.278",
+    "@sveltejs/adapter-auto": "^1.0.0-next.30",
+    "@sveltejs/kit": "^1.0.0-next.291",
     "svelte": "^3.46.4"
   },
   "type": "module",
@@ -17,5 +18,8 @@
     "@fontsource/fira-mono": "^4.5.3",
     "@lukeed/uuid": "^2.0.0",
     "cookie": "^0.4.2"
+  },
+  "engines": {
+    "node": "^14.13.1 || >=16"
   }
 }
