@@ -184,8 +184,7 @@ function resolveViteRoot(viteConfig: UserConfig): string | undefined {
 
 export function buildExtraViteConfig(
 	options: PreResolvedOptions,
-	config: UserConfig,
-	configEnv: ConfigEnv
+	config: UserConfig
 ): Partial<UserConfig> {
 	// extra handling for svelte dependencies in the project
 	const svelteDeps = findRootSvelteDependencies(options.root);
@@ -200,7 +199,7 @@ export function buildExtraViteConfig(
 		// knownJsSrcExtensions: options.extensions
 	};
 
-	if (configEnv.command === 'serve') {
+	if (options.isServe) {
 		extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
 			svelteDeps,
 			options,
@@ -209,26 +208,8 @@ export function buildExtraViteConfig(
 	}
 
 	// @ts-ignore
-	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config);
+	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config, extraViteConfig);
 
-	if (configEnv.command === 'serve') {
-		// during dev, we have to externalize transitive cjs only dependencies, see https://github.com/sveltejs/vite-plugin-svelte/issues/281
-		const optimizedTransitiveDeps = extraViteConfig.optimizeDeps?.include
-			?.filter((x) => x.includes('>'))
-			.map((x) => x.substring(x.lastIndexOf('>') + 1).trim());
-		if (optimizedTransitiveDeps?.length) {
-			// @ts-expect-error ssr still flagge in vite
-			if (!extraViteConfig.ssr.external) {
-				// @ts-expect-error ssr still flagge in vite
-				extraViteConfig.ssr.external = [];
-			}
-			// @ts-expect-error ssr still flagge in vite
-			extraViteConfig.ssr.external.push(
-				// @ts-expect-error ssr still flagge in vite
-				...optimizedTransitiveDeps.filter((x) => !config.ssr?.noExternal?.includes(x))
-			);
-		}
-	}
 	return extraViteConfig;
 }
 
@@ -305,7 +286,8 @@ function buildOptimizeDepsForSvelte(
 function buildSSROptionsForSvelte(
 	svelteDeps: SvelteDependency[],
 	options: ResolvedOptions,
-	config: UserConfig
+	config: UserConfig,
+	extraViteConfig: UserConfig
 ): any {
 	const noExternal: string[] = [];
 
@@ -327,13 +309,26 @@ function buildSSROptionsForSvelte(
 	// add svelte dependencies to ssr.noExternal unless present in ssr.external or optimizeDeps.include
 	noExternal.push(
 		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter((x) => {
-			// @ts-ignore
+			// @ts-expect-error ssr still flagged in vite
 			return !config.ssr?.external?.includes(x) && !config.optimizeDeps?.include?.includes(x);
 		})
 	);
-	return {
+	const ssr = {
 		noExternal
 	};
+
+	if (options.isServe) {
+		// during dev, we have to externalize transitive cjs only dependencies, see https://github.com/sveltejs/vite-plugin-svelte/issues/281
+		const optimizedTransitiveDeps = extraViteConfig.optimizeDeps?.include
+			?.filter((x) => x.includes('>'))
+			.map((x) => x.substring(x.lastIndexOf('>') + 1).trim());
+		if (optimizedTransitiveDeps?.length) {
+			// @ts-expect-error ssr still flagged in vite
+			ssr.external = optimizedTransitiveDeps.filter((x) => !config.ssr?.noExternal?.includes(x));
+		}
+	}
+
+	return ssr;
 }
 
 export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: ResolvedOptions) {
