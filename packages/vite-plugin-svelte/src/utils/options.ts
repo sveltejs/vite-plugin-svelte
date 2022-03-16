@@ -318,9 +318,10 @@ function buildSSROptionsForSvelte(
 
 	if (options.isServe) {
 		// during dev, we have to externalize transitive dependencies, see https://github.com/sveltejs/vite-plugin-svelte/issues/281
-		const transitiveDepsOfSvelteLibs = [
-			...new Set(svelteDeps.flatMap((dep) => Object.keys(dep.pkg.dependencies || {})))
-		].filter(
+		// @ts-expect-error ssr still flagged in vite
+		ssr.external = Array.from(
+			new Set(svelteDeps.flatMap((dep) => Object.keys(dep.pkg.dependencies || {})))
+		).filter(
 			(dep) =>
 				!ssr.noExternal.includes(dep) &&
 				// @ts-expect-error ssr still flagged in vite
@@ -328,8 +329,6 @@ function buildSSROptionsForSvelte(
 				// @ts-expect-error ssr still flagged in vite
 				!config.ssr?.external?.includes(dep)
 		);
-		// @ts-expect-error ssr still flagged in vite
-		ssr.external = transitiveDepsOfSvelteLibs;
 	}
 
 	return ssr;
