@@ -184,8 +184,7 @@ function resolveViteRoot(viteConfig: UserConfig): string | undefined {
 
 export function buildExtraViteConfig(
 	options: PreResolvedOptions,
-	config: UserConfig,
-	configEnv: ConfigEnv
+	config: UserConfig
 ): Partial<UserConfig> {
 	// extra handling for svelte dependencies in the project
 	const svelteDeps = findRootSvelteDependencies(options.root);
@@ -200,7 +199,7 @@ export function buildExtraViteConfig(
 		// knownJsSrcExtensions: options.extensions
 	};
 
-	if (configEnv.command === 'serve') {
+	if (options.isServe) {
 		extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
 			svelteDeps,
 			options,
@@ -209,7 +208,7 @@ export function buildExtraViteConfig(
 	}
 
 	// @ts-ignore
-	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config);
+	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config, extraViteConfig);
 
 	return extraViteConfig;
 }
@@ -294,7 +293,7 @@ function buildSSROptionsForSvelte(
 	// add svelte to ssr.noExternal unless it is present in ssr.external
 	// so we can resolve it with svelte/ssr
 	if (options.isBuild && config.build?.ssr) {
-		// @ts-ignore
+		// @ts-expect-error ssr still flagged in vite
 		if (!config.ssr?.external?.includes('svelte')) {
 			noExternal.push('svelte');
 		}
@@ -309,13 +308,30 @@ function buildSSROptionsForSvelte(
 	// add svelte dependencies to ssr.noExternal unless present in ssr.external or optimizeDeps.include
 	noExternal.push(
 		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter((x) => {
-			// @ts-ignore
+			// @ts-expect-error ssr still flagged in vite
 			return !config.ssr?.external?.includes(x) && !config.optimizeDeps?.include?.includes(x);
 		})
 	);
-	return {
+	const ssr = {
 		noExternal
 	};
+
+	if (options.isServe) {
+		// during dev, we have to externalize transitive dependencies, see https://github.com/sveltejs/vite-plugin-svelte/issues/281
+		// @ts-expect-error ssr still flagged in vite
+		ssr.external = Array.from(
+			new Set(svelteDeps.flatMap((dep) => Object.keys(dep.pkg.dependencies || {})))
+		).filter(
+			(dep) =>
+				!ssr.noExternal.includes(dep) &&
+				// @ts-expect-error ssr still flagged in vite
+				!config.ssr?.noExternal?.includes(dep) &&
+				// @ts-expect-error ssr still flagged in vite
+				!config.ssr?.external?.includes(dep)
+		);
+	}
+
+	return ssr;
 }
 
 export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: ResolvedOptions) {
