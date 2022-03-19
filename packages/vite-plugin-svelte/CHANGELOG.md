@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.40
+
+### Patch Changes
+
+- improve handling of transitive cjs dependencies of svelte libraries during dev ssr ([#289](https://github.com/sveltejs/vite-plugin-svelte/pull/289))
+
 ## 1.0.0-next.39
 
 ### Patch Changes

@@ -81,7 +81,7 @@ jobs:
         if: failure()
         shell: bash
         run: tar -cvf test-temp.tar  --exclude="node_modules"  temp/
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}
@@ -92,7 +92,7 @@ jobs:
             temp/build/jest-results.json
             temp/build/junit.xml
             pnpm-debug.log
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: success()
         with:
           name: test-success-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}

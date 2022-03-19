@@ -55,7 +55,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 			// @ts-expect-error temporarily lend the options variable until fixed in configResolved
 			options = await preResolveOptions(inlineOptions, config, configEnv);
 			// extra vite config
-			const extraViteConfig = buildExtraViteConfig(options, config, configEnv);
+			const extraViteConfig = buildExtraViteConfig(options, config);
 			log.debug('additional vite config', extraViteConfig);
 			return extraViteConfig;
 		},
