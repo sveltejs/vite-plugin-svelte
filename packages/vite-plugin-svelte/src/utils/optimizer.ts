@@ -1,6 +1,5 @@
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
-import { optimizeDeps, ResolvedConfig } from 'vite';
 import { ResolvedOptions } from './options';
 
 // List of options that changes the prebundling result
@@ -13,24 +12,28 @@ const PREBUNDLE_SENSITIVE_OPTIONS: (keyof ResolvedOptions)[] = [
 	'preprocess'
 ];
 
-export async function handleOptimizeDeps(options: ResolvedOptions, viteConfig: ResolvedConfig) {
-	if (!options.experimental.prebundleSvelteLibraries || !viteConfig.cacheDir) return;
+/**
+ * @returns Whether the Svelte metadata has changed
+ */
+export async function saveSvelteMetadata(cacheDir: string, options: ResolvedOptions) {
+	const svelteMetadata = generateSvelteMetadata(options);
+	const svelteMetadataPath = path.resolve(cacheDir, '_svelte_metadata.json');
 
-	const viteMetadataPath = findViteMetadataPath(viteConfig.cacheDir);
-	if (!viteMetadataPath) return;
-
-	const svelteMetadataPath = path.resolve(viteMetadataPath, '../_svelte_metadata.json');
-	const currentSvelteMetadata = JSON.stringify(generateSvelteMetadata(options), (_, value) => {
+	const currentSvelteMetadata = JSON.stringify(svelteMetadata, (_, value) => {
+		// Handle preprocessors
 		return typeof value === 'function' ? value.toString() : value;
 	});
 
-	if (fs.existsSync(svelteMetadataPath)) {
-		const existingSvelteMetadata = fs.readFileSync(svelteMetadataPath, 'utf8');
-		if (existingSvelteMetadata === currentSvelteMetadata) return;
+	let existingSvelteMetadata: string | undefined;
+	try {
+		existingSvelteMetadata = await fs.readFile(svelteMetadataPath, 'utf8');
+	} catch {
+		// ignore
 	}
 
-	await optimizeDeps(viteConfig, true);
-	fs.writeFileSync(svelteMetadataPath, currentSvelteMetadata);
+	await fs.mkdir(cacheDir, { recursive: true });
+	await fs.writeFile(svelteMetadataPath, currentSvelteMetadata);
+	return currentSvelteMetadata !== existingSvelteMetadata;
 }
 
 function generateSvelteMetadata(options: ResolvedOptions) {
@@ -39,12 +42,4 @@ function generateSvelteMetadata(options: ResolvedOptions) {
 		metadata[key] = options[key];
 	}
 	return metadata;
-}
-
-function findViteMetadataPath(cacheDir: string) {
-	const metadataPaths = ['_metadata.json', 'deps/_metadata.json'];
-	for (const metadataPath of metadataPaths) {
-		const viteMetadataPath = path.resolve(cacheDir, metadataPath);
-		if (fs.existsSync(viteMetadataPath)) return viteMetadataPath;
-	}
 }

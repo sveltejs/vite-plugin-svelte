@@ -8,7 +8,6 @@ import { toESBuildError } from './error';
 
 type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
 type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
-type EsbuildPluginBuild = Parameters<EsbuildPlugin['setup']>[0];
 
 export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
 
@@ -16,7 +15,9 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 	return {
 		name: 'vite-plugin-svelte:optimize-svelte',
 		setup(build) {
-			disableVitePrebundleSvelte(build);
+			// Skip in scanning phase as Vite already handles scanning Svelte files.
+			// Otherwise this would heavily slow down the scanning phase.
+			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
 
 			const svelteExtensions = (options.extensions ?? ['.svelte']).map((ext) => ext.slice(1));
 			const svelteFilter = new RegExp(`\\.(` + svelteExtensions.join('|') + `)(\\?.*)?$`);
@@ -31,30 +32,6 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 				}
 			});
 		}
-	};
-}
-
-function disableVitePrebundleSvelte(build: EsbuildPluginBuild) {
-	const viteDepPrebundlePlugin = build.initialOptions.plugins?.find(
-		(v) => v.name === 'vite:dep-pre-bundle'
-	);
-
-	if (!viteDepPrebundlePlugin) return;
-
-	// Prevent vite:dep-pre-bundle from externalizing svelte files
-	const _setup = viteDepPrebundlePlugin.setup.bind(viteDepPrebundlePlugin);
-	viteDepPrebundlePlugin.setup = function (build) {
-		const _onResolve = build.onResolve.bind(build);
-		build.onResolve = function (options, callback) {
-			if (options.filter.source.includes('svelte')) {
-				options.filter = new RegExp(
-					options.filter.source.replace('|svelte', ''),
-					options.filter.flags
-				);
-			}
-			return _onResolve(options, callback);
-		};
-		return _setup(build);
 	};
 }
 

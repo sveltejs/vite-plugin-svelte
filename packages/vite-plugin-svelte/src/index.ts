@@ -19,7 +19,7 @@ import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
-import { handleOptimizeDeps } from './utils/optimizer';
+import { saveSvelteMetadata } from './utils/optimizer';
 
 export function svelte(inlineOptions?: Partial<Options>): Plugin {
 	if (process.env.DEBUG != null) {
@@ -70,7 +70,13 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin {
 		},
 
 		async buildStart() {
-			await handleOptimizeDeps(options, viteConfig);
+			if (!options.experimental.prebundleSvelteLibraries) return;
+			const isSvelteMetadataChanged = await saveSvelteMetadata(viteConfig.cacheDir, options);
+			if (isSvelteMetadataChanged) {
+				// Force Vite to optimize again. Although we mutate the config here, it works because
+				// Vite's optimizer runs after `buildStart()`.
+				viteConfig.server.force = true;
+			}
 		},
 
 		configureServer(server) {
