@@ -11,6 +11,7 @@ import { Preprocessor, PreprocessorGroup, Processed, ResolvedOptions } from './o
 import { TransformPluginContext } from 'rollup';
 import { log } from './log';
 import { buildSourceMap } from './sourcemap';
+import path from 'path';
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss'];
 
@@ -57,7 +58,7 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 		)) as TransformResult;
 		// patch sourcemap source to point back to original filename
 		if (transformResult.map?.sources?.[0] === moduleId) {
-			transformResult.map.sources[0] = filename;
+			transformResult.map.sources[0] = path.basename(filename);
 		}
 		return {
 			code: transformResult.code,
@@ -94,7 +95,10 @@ function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
 			s.append(' *{}');
 			return {
 				code: s.toString(),
-				map: s.generateDecodedMap({ source: filename, hires: true })
+				map: s.generateDecodedMap({
+					source: filename ? path.basename(filename) : undefined,
+					hires: true
+				})
 			};
 		}
 	};
