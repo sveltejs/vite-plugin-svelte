@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.41
+
+### Major Changes
+
+- Update vite peerDependency to ^2.9.0 and handle edge cases for `experimental.prebundleSvelteLibraries` ([#294](https://github.com/sveltejs/vite-plugin-svelte/pull/294))
+
+### Patch Changes
+
+- Improved CSS Source Maps when using vite's `css: { devSourcemap: true }` ([#305](https://github.com/sveltejs/vite-plugin-svelte/pull/305))
+
 ## 1.0.0-next.40
 
 ### Patch Changes
