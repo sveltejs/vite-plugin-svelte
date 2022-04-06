@@ -2,4 +2,4 @@
 '@sveltejs/vite-plugin-svelte': major
 ---
 
-Handle edge cases for `experimental.prebundleSvelteLibraries`
+Update vite peerDependency to ^2.9.0 and handle edge cases for `experimental.prebundleSvelteLibraries`
