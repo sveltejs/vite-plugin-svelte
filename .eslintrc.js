@@ -53,6 +53,10 @@ module.exports = {
 			}
 		],
 		'node/no-deprecated-api': 'off',
+		'no-restricted-properties': [
+			'error',
+			{ property: 'substr', message: 'Use .slice instead of .substr.' }
+		],
 		'node/no-unpublished-import': 'off',
 		'node/no-unpublished-require': 'off',
 		'node/no-unsupported-features/es-syntax': 'off',
