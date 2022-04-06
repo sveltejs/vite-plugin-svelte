@@ -97,6 +97,6 @@ Pre-bundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/
 
 Historically, Svelte components had issues being pre-bundled, causing [deduplication issues](https://github.com/vitejs/vite/issues/3910) and [CJS interoperability issues](https://github.com/vitejs/vite/issues/3024). Since Vite 2.5.2, [a new API in Vite](https://github.com/vitejs/vite/pull/4634) allowed us to [automatically handle Svelte library pre-bundling](https://github.com/sveltejs/vite-plugin-svelte/pull/157) for you.
 
-This feature had served us well, however a caveat remained that large Svelte component libraries often slows down the initial page load. If this affects you, try setting [experimental.prebundleSvelteLibraries](./config.md#prebundleSvelteLibraries) option to `true` to speed things up. (Note that it's an experimental option)
+This feature had served us well, however a caveat remained that large Svelte component libraries often slows down the initial page load. If this affects you, try setting [experimental.prebundleSvelteLibraries](./config.md#prebundleSvelteLibraries) option to `true` to speed things up.
 
 In case you still run into errors like `The requested module 'xxx' does not provide an export named 'yyy'`, please check our [open issues](https://github.com/sveltejs/vite-plugin-svelte/issues).
