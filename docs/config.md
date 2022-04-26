@@ -4,11 +4,11 @@
 
 ```js
 export default defineConfig({
-	plugins: [
-		svelte({
-			/* plugin options */
-		})
-	]
+  plugins: [
+    svelte({
+      /* plugin options */
+    })
+  ]
 });
 ```
 
@@ -28,11 +28,11 @@ To set a specific config file, use the `configFile` inline option. The path can 
 
 ```js
 export default defineConfig({
-	plugins: [
-		svelte({
-			configFile: 'my-svelte.config.js'
-		})
-	]
+  plugins: [
+    svelte({
+      configFile: 'my-svelte.config.js'
+    })
+  ]
 });
 ```
 
@@ -41,7 +41,7 @@ A basic Svelte config looks like this:
 ```js
 // svelte.config.js
 export default {
-	// config options
+  // config options
 };
 ```
 
@@ -78,11 +78,11 @@ These options are specific to the Svelte compiler and are generally shared acros
   import sveltePreprocess from 'svelte-preprocess';
 
   export default defineConfig({
-  	plugins: [
-  		svelte({
-  			preprocess: [sveltePreprocess({ typescript: true })]
-  		})
-  	]
+    plugins: [
+      svelte({
+        preprocess: [sveltePreprocess({ typescript: true })]
+      })
+    ]
   });
   ```
 
@@ -126,17 +126,17 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
   ```js
   export default defineConfig({
-  	plugins: [
-  		svelte({
-  			onwarn(warning, defaultHandler) {
-  				// don't warn on <marquee> elements, cos they're cool
-  				if (warning.code === 'a11y-distracting-elements') return;
+    plugins: [
+      svelte({
+        onwarn(warning, defaultHandler) {
+          // don't warn on <marquee> elements, cos they're cool
+          if (warning.code === 'a11y-distracting-elements') return;
 
-  				// handle all other warnings normally
-  				defaultHandler(warning);
-  			}
-  		})
-  	]
+          // handle all other warnings normally
+          defaultHandler(warning);
+        }
+      })
+    ]
   });
   ```
 
@@ -176,13 +176,13 @@ These options are considered experimental and breaking changes to them can occur
 
 ```js
 export default defineConfig({
-	plugins: [
-		svelte({
-			experimental: {
-				// experimental options
-			}
-		})
-	]
+  plugins: [
+    svelte({
+      experimental: {
+        // experimental options
+      }
+    })
+  ]
 });
 ```
 
@@ -213,9 +213,9 @@ export default defineConfig({
 
   ```ts
   type DynamicCompileOptions = (data: {
-  	filename: string; // The file to be compiled
-  	code: string; // The preprocessed Svelte code
-  	compileOptions: Partial<CompileOptions>; // The current compiler options
+    filename: string; // The file to be compiled
+    code: string; // The preprocessed Svelte code
+    compileOptions: Partial<CompileOptions>; // The current compiler options
   }) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
   ```
 
@@ -225,17 +225,17 @@ export default defineConfig({
 
   ```js
   export default defineConfig({
-  	plugins: [
-  		svelte({
-  			experimental: {
-  				dynamicCompileOptions({ filename, compileOptions }) {
-  					// Dynamically set hydration per Svelte file
-  					if (compileWithHydratable(filename) && !compileOptions.hydratable) {
-  						return { hydratable: true };
-  					}
-  				}
-  			}
-  		})
-  	]
+    plugins: [
+      svelte({
+        experimental: {
+          dynamicCompileOptions({ filename, compileOptions }) {
+            // Dynamically set hydration per Svelte file
+            if (compileWithHydratable(filename) && !compileOptions.hydratable) {
+              return { hydratable: true };
+            }
+          }
+        }
+      })
+    ]
   });
   ```

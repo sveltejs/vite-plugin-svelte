@@ -54,7 +54,7 @@ Good:
 ```scss
 /* global.scss */
 html {
-	color: $text-color;
+  color: $text-color;
 }
 ```
 
@@ -67,9 +67,9 @@ Bad:
 
 ```svelte
 <style lang="scss">
-	:global(html) {
-		color: $text-color;
-	}
+  :global(html) {
+    color: $text-color;
+  }
 </style>
 ```
 
@@ -79,13 +79,13 @@ If you are building a Vite plugin that transforms CSS or JS, you can add a `api.
 
 ```js
 const vitePluginCoolCss = {
-	name: 'vite-plugin-coolcss',
-	api: {
-		sveltePreprocess: {
-			/* your PreprocessorGroup here */
-		}
-	}
-	/*... your cool css plugin implementation here .. */
+  name: 'vite-plugin-coolcss',
+  api: {
+    sveltePreprocess: {
+      /* your PreprocessorGroup here */
+    }
+  }
+  /*... your cool css plugin implementation here .. */
 };
 ```
 
