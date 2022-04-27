@@ -37,7 +37,8 @@ const knownOptions = new Set([
 	'hot',
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
-	'experimental'
+	'experimental',
+	'kit'
 ]);
 
 export function validateInlineOptions(inlineOptions?: Partial<Options>) {
