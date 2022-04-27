@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.42
+
+### Minor Changes
+
+- skip reading default svelte config file with inline option `configFile: false` ([#317](https://github.com/sveltejs/vite-plugin-svelte/pull/317))
+
 ## 1.0.0-next.41
 
 ### Major Changes
