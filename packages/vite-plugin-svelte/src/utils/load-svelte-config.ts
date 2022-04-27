@@ -29,6 +29,9 @@ export async function loadSvelteConfig(
 	viteConfig: UserConfig,
 	inlineOptions: Partial<Options>
 ): Promise<Partial<Options> | undefined> {
+	if (inlineOptions.configFile === false) {
+		return;
+	}
 	const configFile = findConfigToLoad(viteConfig, inlineOptions);
 	if (configFile) {
 		let err;
