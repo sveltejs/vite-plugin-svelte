@@ -36,6 +36,8 @@ export default defineConfig({
 });
 ```
 
+> To prevent reading the default config, use `configFile: false`.
+
 A basic Svelte config looks like this:
 
 ```js

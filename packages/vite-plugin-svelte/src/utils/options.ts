@@ -355,9 +355,11 @@ export interface Options {
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
 	 *
+	 * set to `false` to skip reading config from a file
+	 *
 	 * @see https://vitejs.dev/config/#root
 	 */
-	configFile?: string;
+	configFile?: string | false;
 
 	/**
 	 * A `picomatch` pattern, or array of patterns, which specifies the files the plugin should
