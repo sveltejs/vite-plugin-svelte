@@ -58,30 +58,34 @@ export function setupWatchers(
 		}
 	};
 
-	const possibleSvelteConfigs = knownSvelteConfigNames.map((cfg) => path.join(root, cfg));
-	const restartOnConfigAdd = (filename: string) => {
-		if (possibleSvelteConfigs.includes(filename)) {
-			triggerViteRestart(filename);
-		}
-	};
-
-	const restartOnConfigChange = (filename: string) => {
-		if (filename === svelteConfigFile) {
-			triggerViteRestart(filename);
-		}
-	};
-
 	// collection of watcher listeners by event
 	const listenerCollection = {
 		add: [] as Array<Function>,
 		change: [emitChangeEventOnDependants],
 		unlink: [removeUnlinkedFromCache, emitChangeEventOnDependants]
 	};
-	if (svelteConfigFile) {
-		listenerCollection.change.push(restartOnConfigChange);
-		listenerCollection.unlink.push(restartOnConfigChange);
-	} else {
-		listenerCollection.add.push(restartOnConfigAdd);
+
+	if (svelteConfigFile !== false) {
+		// configFile false means we ignore the file and external process is responsible
+		const possibleSvelteConfigs = knownSvelteConfigNames.map((cfg) => path.join(root, cfg));
+		const restartOnConfigAdd = (filename: string) => {
+			if (possibleSvelteConfigs.includes(filename)) {
+				triggerViteRestart(filename);
+			}
+		};
+
+		const restartOnConfigChange = (filename: string) => {
+			if (filename === svelteConfigFile) {
+				triggerViteRestart(filename);
+			}
+		};
+
+		if (svelteConfigFile) {
+			listenerCollection.change.push(restartOnConfigChange);
+			listenerCollection.unlink.push(restartOnConfigChange);
+		} else {
+			listenerCollection.add.push(restartOnConfigAdd);
+		}
 	}
 
 	Object.entries(listenerCollection).forEach(([evt, listeners]) => {

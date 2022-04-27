@@ -36,8 +36,6 @@ export default defineConfig({
 });
 ```
 
-> To prevent reading the default config, use `configFile: false`.
-
 A basic Svelte config looks like this:
 
 ```js
@@ -55,6 +53,25 @@ Depending on Node's mode, make sure you're using the correct extension and synta
 - If `type: "module"` is not defined, using `.js` only allows CJS code. Use `.mjs` to allows ESM code.
 
 > Try to stick with the `.js` extension whenever possible.
+
+### Disable automatic handling of svelte config
+
+Use `configFile: false` to prevent vite-plugin-svelte from reading the config file or restarting the devserver when it changes.
+
+```js
+export default defineConfig({
+  plugins: [
+    svelte({
+      configFile: false
+      // your svelte config here
+    })
+  ]
+});
+```
+
+> Warning:
+> This option primarily exists for frameworks like SvelteKit that do their own parsing of svelte config and control the devserver
+> You are responsible to provide the complete config inline when used.
 
 ## Svelte options
 
