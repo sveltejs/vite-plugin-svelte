@@ -54,9 +54,9 @@ Depending on Node's mode, make sure you're using the correct extension and synta
 
 > Try to stick with the `.js` extension whenever possible.
 
-### Disable automatic handling of svelte config
+### Disable automatic handling of Svelte config
 
-Use `configFile: false` to prevent vite-plugin-svelte from reading the config file or restarting the devserver when it changes.
+Use `configFile: false` to prevent `vite-plugin-svelte` from reading the config file or restarting the Vite dev server when it changes.
 
 ```js
 export default defineConfig({
@@ -70,8 +70,8 @@ export default defineConfig({
 ```
 
 > Warning:
-> This option primarily exists for frameworks like SvelteKit that do their own parsing of svelte config and control the devserver
-> You are responsible to provide the complete config inline when used.
+> This option primarily exists for frameworks like SvelteKit that do their own parsing of Svelte config and control the Vite dev server.
+> You are responsible to provide the complete inline config when used.
 
 ## Svelte options
 
