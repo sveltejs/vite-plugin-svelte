@@ -37,7 +37,8 @@ const knownOptions = new Set([
 	'hot',
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
-	'experimental'
+	'experimental',
+	'kit'
 ]);
 
 export function validateInlineOptions(inlineOptions?: Partial<Options>) {
@@ -355,7 +356,7 @@ export interface Options {
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
 	 *
-	 * set to `false` to skip reading config from a file
+	 * set to `false` to ignore the svelte config file
 	 *
 	 * @see https://vitejs.dev/config/#root
 	 */
