@@ -19,11 +19,12 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+		"./src/ui/*": "./src/ui/*"
   },
   "scripts": {
     "dev": "pnpm run build:ci -- --sourcemap --watch src",
-    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --target node14",
+    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --target node14.13.1",
     "build": "pnpm run build:ci -- --dts --sourcemap"
   },
   "engines": {
