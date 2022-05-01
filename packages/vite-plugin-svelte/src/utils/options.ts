@@ -24,6 +24,7 @@ import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from 
 import { createRequire } from 'module';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
+import { InspectorOptions } from '../ui/inspector/plugin';
 
 const knownOptions = new Set([
 	'configFile',
@@ -38,7 +39,8 @@ const knownOptions = new Set([
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
 	'experimental',
-	'kit'
+	'kit',
+	'inspector'
 ]);
 
 export function validateInlineOptions(inlineOptions?: Partial<Options>) {
@@ -66,6 +68,7 @@ export async function preResolveOptions(
 		}
 	};
 	const svelteConfig = await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions);
+	// TODO use deep merge util
 	const merged = {
 		...defaultOptions,
 		...svelteConfig,
@@ -455,6 +458,11 @@ export interface Options {
 	 * These options are considered experimental and breaking changes to them can occur in any release
 	 */
 	experimental?: ExperimentalOptions;
+
+	/**
+	 * options for svelte inspector, set to false to disable
+	 */
+	inspector?: InspectorOptions | boolean;
 }
 
 /**

@@ -22,6 +22,11 @@ import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 
+interface PluginAPI {
+	options?: ResolvedOptions;
+	// TODO expose compile cache here so other utility plugins can use it
+}
+
 export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
@@ -41,12 +46,13 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	/* eslint-enable no-unused-vars */
 
 	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;
-
+	const api: PluginAPI = {};
 	const plugins: Plugin[] = [
 		{
 			name: 'vite-plugin-svelte',
 			// make sure our resolver runs before vite internal resolver to resolve svelte field correctly
 			enforce: 'pre',
+			api,
 			async config(config, configEnv): Promise<Partial<UserConfig>> {
 				// setup logger
 				if (process.env.DEBUG) {
@@ -68,6 +74,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				requestParser = buildIdParser(options);
 				compileSvelte = createCompileSvelte(options);
 				viteConfig = config;
+				// TODO deep clone to avoid mutability from outside?
+				api.options = options;
 				log.debug('resolved options', options);
 			},
 
@@ -194,9 +202,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			}
 		}
 	];
-	// TODO option to disable?
 	plugins.push(svelteInspector());
-
 	return plugins.filter(Boolean);
 }
 
