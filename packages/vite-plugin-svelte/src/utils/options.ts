@@ -25,6 +25,7 @@ import { createRequire } from 'module';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
 import { InspectorOptions } from '../ui/inspector/plugin';
+import deepmerge from 'deepmerge';
 
 const knownOptions = new Set([
 	'configFile',
@@ -39,8 +40,7 @@ const knownOptions = new Set([
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
 	'experimental',
-	'kit',
-	'inspector'
+	'kit'
 ]);
 
 export function validateInlineOptions(inlineOptions?: Partial<Options>) {
@@ -68,33 +68,37 @@ export async function preResolveOptions(
 		}
 	};
 	const svelteConfig = await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions);
-	// TODO use deep merge util
-	const merged = {
-		...defaultOptions,
-		...svelteConfig,
-		...inlineOptions,
-		compilerOptions: {
-			...defaultOptions?.compilerOptions,
-			...svelteConfig?.compilerOptions,
-			...inlineOptions?.compilerOptions
-		},
-		experimental: {
-			...defaultOptions?.experimental,
-			...svelteConfig?.experimental,
-			...inlineOptions?.experimental
-		},
-		// extras
+	const extraOptions: Partial<PreResolvedOptions> = {
 		root: viteConfigWithResolvedRoot.root!,
 		isBuild: viteEnv.command === 'build',
 		isServe: viteEnv.command === 'serve',
 		isDebug: process.env.DEBUG != null
 	};
+	const merged = mergeConfigs<Partial<PreResolvedOptions> | undefined>(
+		defaultOptions,
+		svelteConfig,
+		inlineOptions,
+		extraOptions
+	);
+
 	// configFile of svelteConfig contains the absolute path it was loaded from,
 	// prefer it over the possibly relative inline path
 	if (svelteConfig?.configFile) {
 		merged.configFile = svelteConfig.configFile;
 	}
 	return merged;
+}
+
+function mergeConfigs<T>(...configs: T[]): PreResolvedOptions {
+	let result = {};
+	for (const config of configs.filter(Boolean)) {
+		result = deepmerge<T>(result, config, {
+			// deduplicate arrays
+			arrayMerge: (target: any[], source: any[]) =>
+				target.concat(source.filter((x) => !target.includes(x)))
+		});
+	}
+	return result as PreResolvedOptions;
 }
 
 // used in configResolved phase, merges a contextual default config, pre-resolved options, and some preprocessors.
@@ -458,11 +462,6 @@ export interface Options {
 	 * These options are considered experimental and breaking changes to them can occur in any release
 	 */
 	experimental?: ExperimentalOptions;
-
-	/**
-	 * options for svelte inspector, set to false to disable
-	 */
-	inspector?: InspectorOptions | boolean;
 }
 
 /**
@@ -518,6 +517,11 @@ export interface ExperimentalOptions {
 		code: string;
 		compileOptions: Partial<CompileOptions>;
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
+
+	/**
+	 * enable svelte inspector
+	 */
+	inspector?: InspectorOptions | true;
 }
 
 export interface PreResolvedOptions extends Options {

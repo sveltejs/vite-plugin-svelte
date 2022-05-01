@@ -2,9 +2,40 @@ import { createRequire } from 'module';
 import { Plugin } from 'vite';
 import { log } from '../../utils/log';
 export interface InspectorOptions {
+	/**
+	 * key that must be held to keep inspector active
+	 */
+	holdKey?: string;
+	/**
+	 * define a key combo to toggle inspector,
+	 * default: 'alt-s'
+	 *
+	 * must be a valid 2-key combo, eg ctrl-o shift-f alt-x
+	 */
+	toggleKeyCombo?: string;
+	/**
+	 * show button even when inspector is disabled
+	 */
+	showDisabledButton?: boolean;
+	/**
+	 * inject custom styles when inspector is active
+	 */
+	customStyles?: boolean;
+	/**
+	 * append an import to the module id ending with `appendTo` instead of adding a script into body
+	 *
+	 * useful for frameworks that do not support trannsformIndexHtml like SvelteKit
+	 */
 	appendTo?: string;
-	modifierKey?: string;
 }
+
+const defaultInspectorOptions: InspectorOptions = {
+	holdKey: 's',
+	toggleKeyCombo: 'alt-s',
+	showDisabledButton: true,
+	customStyles: true
+};
+
 export function svelteInspector(): Plugin {
 	let require: NodeRequire;
 	let inspectorOptions: InspectorOptions;
@@ -17,16 +48,26 @@ export function svelteInspector(): Plugin {
 
 		configResolved(config) {
 			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
-			if (!vps || vps.api?.options?.inspector === false) {
+			if (vps?.api?.options?.experimental?.inspector) {
+				inspectorOptions = {
+					...defaultInspectorOptions,
+					...vps.api.options.experimental.inspector
+				};
+			}
+			if (!vps || !inspectorOptions) {
 				// disabled, turn all hooks into noops
 				this.resolveId = this.load = this.transformIndexHtml = this.transform = () => {};
 			} else {
 				require = createRequire(config.root || process.cwd());
-				append_to = inspectorOptions?.appendTo;
+				if (vps.api.options.kit && !inspectorOptions.appendTo) {
+					const out_dir = vps.api.options.kit.outDir || '.svelte-kit';
+					inspectorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
+				}
+				append_to = inspectorOptions.appendTo;
 			}
 		},
 
-		resolveId(importee: string, importer, options) {
+		async resolveId(importee: string, importer, options) {
 			if (options?.ssr) {
 				return;
 			}
