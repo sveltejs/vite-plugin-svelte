@@ -88,7 +88,7 @@ export async function preResolveOptions(
 	return merged;
 }
 
-function mergeConfigs<T>(...configs: T[]): PreResolvedOptions {
+function mergeConfigs<T>(...configs: T[]): ResolvedOptions {
 	let result = {};
 	for (const config of configs.filter(Boolean)) {
 		result = deepmerge<T>(result, config, {
@@ -97,7 +97,7 @@ function mergeConfigs<T>(...configs: T[]): PreResolvedOptions {
 				target.concat(source.filter((x) => !target.includes(x)))
 		});
 	}
-	return result as PreResolvedOptions;
+	return result as ResolvedOptions;
 }
 
 // used in configResolved phase, merges a contextual default config, pre-resolved options, and some preprocessors.
@@ -113,16 +113,12 @@ export function resolveOptions(
 			dev: !viteConfig.isProduction
 		}
 	};
-	const merged: ResolvedOptions = {
-		...defaultOptions,
-		...preResolveOptions,
-		compilerOptions: {
-			...defaultOptions.compilerOptions,
-			...preResolveOptions.compilerOptions
-		},
+	const extraOptions: Partial<ResolvedOptions> = {
 		root: viteConfig.root,
 		isProduction: viteConfig.isProduction
 	};
+	const merged: ResolvedOptions = mergeConfigs(defaultOptions, preResolveOptions, extraOptions);
+
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
@@ -214,7 +210,7 @@ export function buildExtraViteConfig(
 		);
 	}
 
-	if (options.experimental.prebundleSvelteLibraries) {
+	if (options.experimental?.prebundleSvelteLibraries) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
@@ -263,7 +259,7 @@ function buildOptimizeDepsForSvelte(
 	}
 
 	// If we prebundle svelte libraries, we can skip the whole prebundling dance below
-	if (options.experimental.prebundleSvelteLibraries) {
+	if (options.experimental?.prebundleSvelteLibraries) {
 		return { include, exclude };
 	}
 
