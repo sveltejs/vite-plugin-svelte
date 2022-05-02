@@ -24,7 +24,7 @@
   },
   "scripts": {
     "dev": "pnpm run build:ci -- --sourcemap --watch src",
-    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --target node14.13.1",
+    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --target node14",
     "build": "pnpm run build:ci -- --dts --sourcemap"
   },
   "engines": {
