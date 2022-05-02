@@ -24,7 +24,6 @@ import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from 
 import { createRequire } from 'module';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
-import { InspectorOptions } from '../ui/inspector/plugin';
 import deepmerge from 'deepmerge';
 
 const knownOptions = new Set([
@@ -521,7 +520,37 @@ export interface ExperimentalOptions {
 	/**
 	 * enable svelte inspector
 	 */
-	inspector?: InspectorOptions | true;
+	inspector?: InspectorOptions | boolean;
+}
+
+export interface InspectorOptions {
+	/**
+	 * key that can be held to keep inspector active
+	 */
+	holdKey?: string;
+	/**
+	 * define a key combo to toggle inspector,
+	 * default: 'alt-s'
+	 *
+	 * must be a valid 2-key combo, eg ctrl-o shift-f alt-x
+	 */
+	toggleKeyCombo?: string;
+	/**
+	 * show toggle button
+	 */
+	showToggleButton?: boolean;
+	/**
+	 * inject custom styles when inspector is active
+	 */
+	customStyles?: boolean;
+	/**
+	 * append an import to the module id ending with `appendTo` instead of adding a script into body
+	 *
+	 * useful for frameworks that do not support trannsformIndexHtml like SvelteKit
+	 *
+	 * WARNING: use a module id that you are sure will be loaded exactly once by the browser
+	 */
+	appendTo?: string;
 }
 
 export interface PreResolvedOptions extends Options {

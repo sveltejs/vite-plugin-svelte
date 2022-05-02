@@ -1,5 +1,3 @@
-# Configuration
-
 `vite-plugin-svelte` accepts inline options that can be used to change its behaviour. An object can be passed to the first argument of the `svelte` plugin:
 
 ```js
@@ -258,3 +256,35 @@ export default defineConfig({
     ]
   });
   ```
+
+### inspector
+
+- **Type:**`InspectorOptions | boolean`
+
+  ```ts
+  interface InspectorOptions {
+    /**
+     * key that can be held to keep inspector active
+     */
+    holdKey?: string;
+    /**
+     * define a key combo to toggle inspector,
+     * default: 'alt-s'
+     *
+     * must be a valid 2-key combo, eg alt-s ctrl-o shift-f
+     */
+    toggleKeyCombo?: string;
+    /**
+     * show toggle button
+     */
+    showToggleBuggon?: boolean;
+    /**
+     * inject custom styles when inspector is active
+     */
+    customStyles?: boolean;
+  }
+  ```
+
+  Set to `true` or customized `InspectorOptions` to enable svelte inspector during development.
+
+  When enabled, inspector mode shows you the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.

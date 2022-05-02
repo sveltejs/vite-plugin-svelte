@@ -1,38 +1,12 @@
 import { createRequire } from 'module';
 import { Plugin } from 'vite';
 import { log } from '../../utils/log';
-export interface InspectorOptions {
-	/**
-	 * key that must be held to keep inspector active
-	 */
-	holdKey?: string;
-	/**
-	 * define a key combo to toggle inspector,
-	 * default: 'alt-s'
-	 *
-	 * must be a valid 2-key combo, eg ctrl-o shift-f alt-x
-	 */
-	toggleKeyCombo?: string;
-	/**
-	 * show button even when inspector is disabled
-	 */
-	showDisabledButton?: boolean;
-	/**
-	 * inject custom styles when inspector is active
-	 */
-	customStyles?: boolean;
-	/**
-	 * append an import to the module id ending with `appendTo` instead of adding a script into body
-	 *
-	 * useful for frameworks that do not support trannsformIndexHtml like SvelteKit
-	 */
-	appendTo?: string;
-}
+import { InspectorOptions } from '../../utils/options';
 
 const defaultInspectorOptions: InspectorOptions = {
 	holdKey: 's',
 	toggleKeyCombo: 'alt-s',
-	showDisabledButton: true,
+	showToggleButton: true,
 	customStyles: true
 };
 

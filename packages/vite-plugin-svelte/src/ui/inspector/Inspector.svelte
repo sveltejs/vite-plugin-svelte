@@ -8,13 +8,16 @@
 	// eslint-disable-next-line node/no-missing-import
 	import options from 'virtual:svelte-inspector-options';
 	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
-	const hold_key = options.holdKey?.substring(0, 1).toLowerCase();
-	let toggleEl;
+	const hold_key = options.holdKey;
+
 	let enabled = false;
-	let open;
-	let x;
-	let y;
-	$: ({ file, line, column } = parse(open));
+
+	// location of code in file
+	let fileLoc;
+	// cursor pos and width for fileLoc overlay positioning
+	let x, y, w;
+
+	let toggleEl;
 
 	function mousemove(event) {
 		x = event.x;
@@ -22,81 +25,86 @@
 	}
 
 	function mouseover(event) {
-		if (options.customStyles && event.target.__svelte_meta) {
-			event.target.classList.add('svelte-inspector-outline');
+		const meta = event.target.__svelte_meta;
+		if (options.customStyles && meta) {
+			event.target.classList.add('svelte-inspector-active-target');
 		}
-		open = event.target !== toggleEl ? event.target.__svelte_meta : undefined;
+		if (meta && event.target !== toggleEl) {
+			const { file, line, column } = meta.loc;
+			fileLoc = `${file}:${line + 1}:${column + 1}`;
+		} else {
+			fileLoc = null;
+		}
 	}
 
 	function mouseout(event) {
-		event.target.classList.remove('svelte-inspector-outline');
+		if (options.customStyles) {
+			event.target.classList.remove('svelte-inspector-active-target');
+		}
 	}
 
 	function click(event) {
-		if (!file) return;
-		fetch(`/__open-in-editor?file=${encodeURIComponent(`${file}:${line}:${column}`)}`);
+		if (!fileLoc) return;
+		fetch(`/__open-in-editor?file=${encodeURIComponent(fileLoc)}`);
 		event.preventDefault();
 		event.stopPropagation();
 		event.stopImmediatePropagation();
 	}
 
+	function is_toggle(event) {
+		return toggle_combo && event.key === toggle_combo[1] && event[toggle_combo[0] + 'Key'];
+	}
+
+	function is_hold(event) {
+		return hold_key && event.key === hold_key && !(event.shiftKey || event.altKey || event.ctrlKey);
+	}
+
 	function keydown(event) {
-		if (toggle_combo && event.key === toggle_combo[1] && event[toggle_combo[0] + 'Key']) {
+		if (is_toggle(event)) {
 			toggle();
-		} else if (hold_key && event.key === hold_key) {
+		} else if (is_hold(event)) {
 			enable();
 		}
 	}
 
 	function keyup(event) {
-		if (
-			!enabled ||
-			(toggle_combo && event.key === toggle_combo[1] && event[toggle_combo[0] + 'Key'])
-		) {
-			return;
-		}
-
-		if (hold_key && event.key === hold_key) {
+		if (enabled && is_hold(event)) {
 			disable();
 		}
-	}
-
-	function parse(open) {
-		if (open) {
-			const {
-				loc: { file, line, column }
-			} = open;
-			if (!file.includes('@sveltejs/vite-plugin-svelte/src/ui')) {
-				return { file, line: line + 1, column: column + 1 };
-			}
-		}
-		return {};
 	}
 
 	function toggle() {
 		enabled ? disable() : enable();
 	}
 
+	function listeners(body, enabled) {
+		const l = enabled ? body.addEventListener : body.removeEventListener;
+		l('mousemove', mousemove);
+		l('mouseover', mouseover);
+		l('mouseout', mouseout);
+		l('click', click, true);
+	}
+
 	function enable() {
 		enabled = true;
+		const b = document.body;
 		if (options.customStyles) {
-			document.body.classList.add('svelte-inspector-enabled');
+			b.classList.add('svelte-inspector-enabled');
+			b.style.setProperty('--svelte-inspector-cursor', `url(${JSON.stringify(icon)})`);
 		}
-		document.body.addEventListener('mousemove', mousemove);
-		document.body.addEventListener('mouseover', mouseover);
-		document.body.addEventListener('mouseout', mouseout);
-		document.body.addEventListener('click', click, true);
+		listeners(b, enabled);
 	}
 	function disable() {
 		enabled = false;
-		document.body.removeEventListener('mousemove', mousemove);
-		document.body.removeEventListener('mouseover', mouseover);
-		document.body.removeEventListener('mouseout', mouseout);
-		document.body.removeEventListener('click', click, true);
-		document.body.classList.remove('svelte-inspector-enabled');
-		document
-			.querySelectorAll('.svelte-inspector-outline')
-			.forEach((e) => e.classList.remove('svelte-inspector-outline'));
+		const b = document.body;
+		listeners(b, enabled);
+		if (options.customStyles) {
+			b.classList.remove('svelte-inspector-enabled');
+			b.style.removeProperty('--svelte-inspector-cursor');
+			b.querySelectorAll('.svelte-inspector-active-target').forEach((el) =>
+				el.classList.remove('svelte-inspector-active-target')
+			);
+		}
 	}
 
 	onMount(() => {
@@ -107,6 +115,7 @@
 			document.body.addEventListener('keyup', keyup);
 		}
 		return () => {
+			// make sure we get rid of everything
 			disable();
 			document.body.removeEventListener('keydown', keydown);
 			document.body.removeEventListener('keyup', keyup);
@@ -114,7 +123,7 @@
 	});
 </script>
 
-{#if options.showDisabledButton || !options.toggleKeyCombo || enabled}
+{#if options.showToggleButton || enabled}
 	<div
 		bind:this={toggleEl}
 		class="toggle"
@@ -123,19 +132,24 @@
 		on:click={() => toggle()}
 	/>
 {/if}
-{#if enabled && file}
-	<div class="overlay" style:left="{x + 10}px" style:top="{y + 10}px">
-		{file}:{line}:{column}
+{#if enabled && fileLoc}
+	<div
+		class="overlay"
+		style:left="{Math.min(x + 3, document.body.clientWidth - w - 10)}px"
+		style:top="{y + 30}px"
+		bind:offsetWidth={w}
+	>
+		{fileLoc}
 	</div>
 {/if}
 
 <style>
 	:global(body.svelte-inspector-enabled) {
-		cursor: crosshair !important;
+		cursor: var(--svelte-inspector-cursor), crosshair !important;
 	}
-	:global(.svelte-inspector-outline) {
+	:global(.svelte-inspector-active-target) {
 		outline: 1px dashed #ff3e00 !important;
-		cursor: crosshair !important;
+		cursor: var(--svelte-inspector-cursor), crosshair !important;
 	}
 
 	.overlay {
@@ -147,16 +161,15 @@
 	}
 
 	.toggle {
-		outline: 1px dashed #ff3e00;
-		border-radius: 50%;
+		border: 1px solid #ff3e00;
+		border-radius: 8px;
 		position: fixed;
 		top: 8px;
 		right: 8px;
 		height: 32px;
 		width: 32px;
 		background-color: white;
-		background-size: 80%;
-		background-position: center center;
+		background-position: 6px 5px;
 		background-repeat: no-repeat;
 		cursor: pointer;
 	}
