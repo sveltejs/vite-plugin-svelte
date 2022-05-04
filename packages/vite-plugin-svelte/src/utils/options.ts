@@ -521,10 +521,6 @@ export interface ExperimentalOptions {
 
 export interface InspectorOptions {
 	/**
-	 * key that can be held to keep inspector active
-	 */
-	holdKey?: string;
-	/**
 	 * define a key combo to toggle inspector,
 	 * default: 'alt-s'
 	 *
@@ -532,7 +528,8 @@ export interface InspectorOptions {
 	 */
 	toggleKeyCombo?: string;
 	/**
-	 * show toggle button
+	 * always show toggle button
+	 * default: false
 	 */
 	showToggleButton?: boolean;
 	/**

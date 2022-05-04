@@ -266,10 +266,6 @@ export default defineConfig({
   ```ts
   interface InspectorOptions {
     /**
-     * key that can be held to keep inspector active
-     */
-    holdKey?: string;
-    /**
      * define a key combo to toggle inspector,
      * default: 'alt-s'
      *

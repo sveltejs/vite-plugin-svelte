@@ -4,14 +4,14 @@ import { log } from '../../utils/log';
 import { InspectorOptions } from '../../utils/options';
 
 const defaultInspectorOptions: InspectorOptions = {
-	holdKey: 's',
 	toggleKeyCombo: 'alt-s',
 	showToggleButton: true,
 	customStyles: true
 };
 
 export function svelteInspector(): Plugin {
-	let require: NodeRequire;
+	let root: string;
+	let rootRequire: NodeRequire;
 	let inspectorOptions: InspectorOptions;
 	let append_to: string | undefined;
 
@@ -32,7 +32,8 @@ export function svelteInspector(): Plugin {
 				// disabled, turn all hooks into noops
 				this.resolveId = this.load = this.transformIndexHtml = this.transform = () => {};
 			} else {
-				require = createRequire(config.root || process.cwd());
+				root = config.root || process.cwd();
+				rootRequire = createRequire(root);
 				if (vps.api.options.kit && !inspectorOptions.appendTo) {
 					const out_dir = vps.api.options.kit.outDir || '.svelte-kit';
 					inspectorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
@@ -54,11 +55,11 @@ export function svelteInspector(): Plugin {
 					'virtual:svelte-inspector:',
 					'@sveltejs/vite-plugin-svelte/src/ui/inspector/'
 				);
-				const path = require.resolve(file);
+				const path = rootRequire.resolve(file);
 				if (path) {
 					return path;
 				} else {
-					log.error.once(`failed to resolve ${file} for ${importee}`);
+					log.error.once(`failed to resolve ${file} for ${importee} from ${root}`);
 				}
 			}
 		},
