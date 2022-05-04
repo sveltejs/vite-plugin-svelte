@@ -99,7 +99,8 @@ module.exports = {
 				'import/first': 'off',
 				'import/no-duplicates': 'off',
 				'import/no-mutable-exports': 'off',
-				'import/no-unresolved': 'off'
+				'import/no-unresolved': 'off',
+				'node/no-missing-import': 'off' // doesn't work with typescript's "import from 'src/foo.js'" for src/foo.ts
 			}
 		},
 		{
