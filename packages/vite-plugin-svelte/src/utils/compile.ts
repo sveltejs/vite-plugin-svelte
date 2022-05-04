@@ -1,5 +1,7 @@
 import { CompileOptions, ResolvedOptions } from './options';
 import { compile, preprocess, walk } from 'svelte/compiler';
+// eslint-disable-next-line node/no-missing-import
+import { Ast } from 'svelte/types/compiler/interfaces';
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr';
 import { SvelteRequest } from './id';
@@ -88,12 +90,27 @@ const _createCompileSvelte = (makeHot: Function) =>
 		return {
 			filename,
 			normalizedFilename,
+			lang: getSvelteLang(code, compiled.ast),
 			// @ts-ignore
 			compiled,
 			ssr,
 			dependencies
 		};
 	};
+
+const scriptLangRE = /^<script\s+lang="(.*?)"/;
+
+function getSvelteLang(code: string, ast: Ast) {
+	if (ast.instance) {
+		const match = code.slice(ast.instance.start).match(scriptLangRE);
+		if (match) return match[1];
+	}
+	if (ast.module) {
+		const match = code.slice(ast.module.start).match(scriptLangRE);
+		if (match) return match[1];
+	}
+	return 'js';
+}
 
 function buildMakeHot(options: ResolvedOptions) {
 	const needsMakeHot = options.hot !== false && options.isServe && !options.isProduction;
@@ -148,6 +165,7 @@ export interface Compiled {
 export interface CompileData {
 	filename: string;
 	normalizedFilename: string;
+	lang: string;
 	compiled: Compiled;
 	ssr: boolean | undefined;
 	dependencies: string[];
