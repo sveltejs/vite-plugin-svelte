@@ -4,8 +4,10 @@ import { log } from '../../utils/log';
 import { InspectorOptions } from '../../utils/options';
 
 const defaultInspectorOptions: InspectorOptions = {
-	toggleKeyCombo: 'alt-s',
-	showToggleButton: true,
+	toggleKeyCombo: 'control-shift',
+	holdMode: false,
+	showToggleButton: 'active',
+	toggleButtonPos: 'top-right',
 	customStyles: true
 };
 

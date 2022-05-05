@@ -267,24 +267,49 @@ export default defineConfig({
   interface InspectorOptions {
     /**
      * define a key combo to toggle inspector,
-     * default: 'alt-s'
+     * @default 'control-shift'
      *
-     * must be a valid 2-key combo, eg alt-s ctrl-o shift-f
+     * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
+     * examples: control-shift, control-o, control-alt-s  meta-x control-meta
+     * Some keys have native behavior (e.g. alt-s opens history menu on firefox).
+     * To avoid conflicts or accidentally typing into inputs, modifier only combinations are recommended.
      */
     toggleKeyCombo?: string;
+
     /**
-     * show toggle button
+     * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
+     * @default false
      */
-    showToggleBuggon?: boolean;
+    holdMode?: boolean;
+
+    /**
+     * when to show the toggle button
+     * @default 'active'
+     */
+    showToggleButton?: 'always' | 'active' | 'never';
+
+    /**
+     * where to display the toggle button
+     * @default top-right
+     */
+    toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+
     /**
      * inject custom styles when inspector is active
      */
     customStyles?: boolean;
+
+    /**
+     * append an import to the module id ending with `appendTo` instead of adding a script into body
+     * useful for frameworks that do not support trannsformIndexHtml hook
+     *
+     * WARNING: only set this if you know exactly what it does.
+     * Regular users of vite-plugin-svelte or SvelteKit do not need it
+     */
+    appendTo?: string;
   }
   ```
 
   Set to `true` or customized `InspectorOptions` to enable svelte inspector during development.
 
   When enabled, inspector mode shows you the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.
-
-  By default, you can toggle the Inspector via the toggle button, pressing `alt-s` or holding down the `s` key

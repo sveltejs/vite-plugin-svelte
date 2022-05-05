@@ -522,26 +522,43 @@ export interface ExperimentalOptions {
 export interface InspectorOptions {
 	/**
 	 * define a key combo to toggle inspector,
-	 * default: 'alt-s'
+	 * @default 'control-shift'
 	 *
-	 * must be a valid 2-key combo, eg ctrl-o shift-f alt-x
+	 * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
+	 * examples: control-shift, control-o, control-alt-s  meta-x control-meta
+	 * Some keys have native behavior (e.g. alt-s opens history menu on firefox).
+	 * To avoid conflicts or accidentally typing into inputs, modifier only combinations are recommended.
 	 */
 	toggleKeyCombo?: string;
+
 	/**
-	 * always show toggle button
-	 * default: false
+	 * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
+	 * @default false
 	 */
-	showToggleButton?: boolean;
+	holdMode?: boolean;
+	/**
+	 * when to show the toggle button
+	 * @default 'active'
+	 */
+	showToggleButton?: 'always' | 'active' | 'never';
+
+	/**
+	 * where to display the toggle button
+	 * @default top-right
+	 */
+	toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+
 	/**
 	 * inject custom styles when inspector is active
 	 */
 	customStyles?: boolean;
+
 	/**
 	 * append an import to the module id ending with `appendTo` instead of adding a script into body
+	 * useful for frameworks that do not support trannsformIndexHtml hook
 	 *
-	 * useful for frameworks that do not support trannsformIndexHtml like SvelteKit
-	 *
-	 * WARNING: use a module id that you are sure will be loaded exactly once by the browser
+	 * WARNING: only set this if you know exactly what it does.
+	 * Regular users of vite-plugin-svelte or SvelteKit do not need it
 	 */
 	appendTo?: string;
 }

@@ -12,11 +12,17 @@
 	let enabled = false;
 
 	// location of code in file
-	let fileLoc;
-	// cursor pos and width for fileLoc overlay positioning
+	let file_loc;
+	// cursor pos and width for file_loc overlay positioning
 	let x, y, w;
 
-	let activeTarget;
+	let active_el;
+	let toggle_el;
+
+	let enabled_ts;
+
+	$: show_toggle =
+		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled);
 
 	function mousemove(event) {
 		x = event.x;
@@ -26,7 +32,7 @@
 	function findMetaEl(el) {
 		while (el) {
 			const file = el.__svelte_meta?.loc?.file;
-			if (file && !file.includes('node_modules/')) {
+			if (el !== toggle_el && file && !file.includes('node_modules/')) {
 				return el;
 			}
 			el = el.parentNode;
@@ -35,9 +41,9 @@
 
 	function mouseover(event) {
 		const el = findMetaEl(event.target);
-		if (options.customStyles && el !== activeTarget) {
-			if (activeTarget) {
-				activeTarget.classList.remove('svelte-inspector-active-target');
+		if (options.customStyles && el !== active_el) {
+			if (active_el) {
+				active_el.classList.remove('svelte-inspector-active-target');
 			}
 			if (el) {
 				el.classList.add('svelte-inspector-active-target');
@@ -45,29 +51,67 @@
 		}
 		if (el) {
 			const { file, line, column } = el.__svelte_meta.loc;
-			fileLoc = `${file}:${line + 1}:${column + 1}`;
+			file_loc = `${file}:${line + 1}:${column + 1}`;
 		} else {
-			fileLoc = null;
+			file_loc = null;
 		}
-		activeTarget = el;
+		active_el = el;
 	}
 
 	function click(event) {
-		if (fileLoc) {
+		if (file_loc) {
 			event.preventDefault();
 			event.stopPropagation();
 			event.stopImmediatePropagation();
-			fetch(`/__open-in-editor?file=${encodeURIComponent(fileLoc)}`);
+			fetch(`/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
+			if (options.holdMode && is_holding()) {
+				disable();
+			}
 		}
 	}
 
-	function is_toggle(event) {
-		return toggle_combo && event.key === toggle_combo[1] && event[toggle_combo[0] + 'Key'];
+	function is_key_active(key, event) {
+		switch (key) {
+			case 'shift':
+			case 'control':
+			case 'alt':
+			case 'meta':
+				return event.getModifierState(key.charAt(0).toUpperCase() + key.slice(1));
+			default:
+				return key === event.key.toLowerCase();
+		}
+	}
+
+	function is_combo(event) {
+		return toggle_combo?.every((key) => is_key_active(key, event));
+	}
+
+	function is_holding() {
+		return enabled_ts && Date.now() - enabled_ts > 250;
 	}
 
 	function keydown(event) {
-		if (!event.repeat && is_toggle(event)) {
+		if (event.repeat) {
+			return;
+		}
+
+		if (is_combo(event)) {
 			toggle();
+			if (options.holdMode && enabled) {
+				enabled_ts = Date.now();
+			}
+		}
+	}
+
+	function keyup(event) {
+		if (event.repeat) {
+			return;
+		}
+		const k = event.key.toLowerCase();
+		if (enabled && is_holding() && toggle_combo.includes(k)) {
+			disable();
+		} else {
+			enabled_ts = null;
 		}
 	}
 
@@ -91,48 +135,59 @@
 		}
 		listeners(b, enabled);
 	}
+
 	function disable() {
 		enabled = false;
+		enabled_ts = null;
 		const b = document.body;
 		listeners(b, enabled);
 		if (options.customStyles) {
 			b.classList.remove('svelte-inspector-enabled');
 			b.style.removeProperty('--svelte-inspector-cursor');
-			activeTarget?.classList.remove('svelte-inspector-active-target');
+			active_el?.classList.remove('svelte-inspector-active-target');
 		}
 	}
 
 	onMount(() => {
 		if (toggle_combo) {
 			document.body.addEventListener('keydown', keydown);
+			if (options.holdMode) {
+				document.body.addEventListener('keyup', keyup);
+			}
 		}
-
 		return () => {
 			// make sure we get rid of everything
 			disable();
 			if (toggle_combo) {
 				document.body.removeEventListener('keydown', keydown);
+				if (options.holdMode) {
+					document.body.addEventListener('keyup', keyup);
+				}
 			}
 		};
 	});
 </script>
 
-{#if options.showToggleButton || enabled}
+{#if show_toggle}
 	<div
 		class="svelte-inspector-toggle"
 		class:enabled
-		style={`background-image:url(${icon})`}
+		style={`background-image:url(${icon});${options.toggleButtonPos
+			.split('-')
+			.map((p) => `${p}: 8px;`)
+			.join('')}`}
 		on:click={() => toggle()}
+		bind:this={toggle_el}
 	/>
 {/if}
-{#if enabled && fileLoc}
+{#if enabled && file_loc}
 	<div
 		class="svelte-inspector-overlay"
 		style:left="{Math.min(x + 3, document.body.clientWidth - w - 10)}px"
 		style:top="{y + 30}px"
 		bind:offsetWidth={w}
 	>
-		{fileLoc}
+		{file_loc}
 	</div>
 {/if}
 
@@ -157,8 +212,6 @@
 		border: 1px solid #ff3e00;
 		border-radius: 8px;
 		position: fixed;
-		top: 8px;
-		right: 8px;
 		height: 32px;
 		width: 32px;
 		background-color: white;
