@@ -92,9 +92,8 @@ function mergeConfigs<T>(...configs: T[]): ResolvedOptions {
 	let result = {};
 	for (const config of configs.filter(Boolean)) {
 		result = deepmerge<T>(result, config, {
-			// deduplicate arrays
-			arrayMerge: (target: any[], source: any[]) =>
-				target.concat(source.filter((x) => !target.includes(x)))
+			// replace arrays
+			arrayMerge: (target: any[], source: any[]) => source ?? target
 		});
 	}
 	return result as ResolvedOptions;
