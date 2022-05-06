@@ -24,6 +24,7 @@ import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from 
 import { createRequire } from 'module';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
+import deepmerge from 'deepmerge';
 
 const knownOptions = new Set([
 	'configFile',
@@ -66,32 +67,36 @@ export async function preResolveOptions(
 		}
 	};
 	const svelteConfig = await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions);
-	const merged = {
-		...defaultOptions,
-		...svelteConfig,
-		...inlineOptions,
-		compilerOptions: {
-			...defaultOptions?.compilerOptions,
-			...svelteConfig?.compilerOptions,
-			...inlineOptions?.compilerOptions
-		},
-		experimental: {
-			...defaultOptions?.experimental,
-			...svelteConfig?.experimental,
-			...inlineOptions?.experimental
-		},
-		// extras
+	const extraOptions: Partial<PreResolvedOptions> = {
 		root: viteConfigWithResolvedRoot.root!,
 		isBuild: viteEnv.command === 'build',
 		isServe: viteEnv.command === 'serve',
 		isDebug: process.env.DEBUG != null
 	};
+	const merged = mergeConfigs<Partial<PreResolvedOptions> | undefined>(
+		defaultOptions,
+		svelteConfig,
+		inlineOptions,
+		extraOptions
+	);
+
 	// configFile of svelteConfig contains the absolute path it was loaded from,
 	// prefer it over the possibly relative inline path
 	if (svelteConfig?.configFile) {
 		merged.configFile = svelteConfig.configFile;
 	}
 	return merged;
+}
+
+function mergeConfigs<T>(...configs: T[]): ResolvedOptions {
+	let result = {};
+	for (const config of configs.filter(Boolean)) {
+		result = deepmerge<T>(result, config, {
+			// replace arrays
+			arrayMerge: (target: any[], source: any[]) => source ?? target
+		});
+	}
+	return result as ResolvedOptions;
 }
 
 // used in configResolved phase, merges a contextual default config, pre-resolved options, and some preprocessors.
@@ -107,16 +112,12 @@ export function resolveOptions(
 			dev: !viteConfig.isProduction
 		}
 	};
-	const merged: ResolvedOptions = {
-		...defaultOptions,
-		...preResolveOptions,
-		compilerOptions: {
-			...defaultOptions.compilerOptions,
-			...preResolveOptions.compilerOptions
-		},
+	const extraOptions: Partial<ResolvedOptions> = {
 		root: viteConfig.root,
 		isProduction: viteConfig.isProduction
 	};
+	const merged: ResolvedOptions = mergeConfigs(defaultOptions, preResolveOptions, extraOptions);
+
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
@@ -208,7 +209,7 @@ export function buildExtraViteConfig(
 		);
 	}
 
-	if (options.experimental.prebundleSvelteLibraries) {
+	if (options.experimental?.prebundleSvelteLibraries) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
@@ -257,7 +258,7 @@ function buildOptimizeDepsForSvelte(
 	}
 
 	// If we prebundle svelte libraries, we can skip the whole prebundling dance below
-	if (options.experimental.prebundleSvelteLibraries) {
+	if (options.experimental?.prebundleSvelteLibraries) {
 		return { include, exclude };
 	}
 
@@ -510,6 +511,55 @@ export interface ExperimentalOptions {
 		code: string;
 		compileOptions: Partial<CompileOptions>;
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
+
+	/**
+	 * enable svelte inspector
+	 */
+	inspector?: InspectorOptions | boolean;
+}
+
+export interface InspectorOptions {
+	/**
+	 * define a key combo to toggle inspector,
+	 * @default 'control-shift' on windows, 'meta-shift' on other os
+	 *
+	 * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
+	 * examples: control-shift, control-o, control-alt-s  meta-x control-meta
+	 * Some keys have native behavior (e.g. alt-s opens history menu on firefox).
+	 * To avoid conflicts or accidentally typing into inputs, modifier only combinations are recommended.
+	 */
+	toggleKeyCombo?: string;
+
+	/**
+	 * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
+	 * @default false
+	 */
+	holdMode?: boolean;
+	/**
+	 * when to show the toggle button
+	 * @default 'active'
+	 */
+	showToggleButton?: 'always' | 'active' | 'never';
+
+	/**
+	 * where to display the toggle button
+	 * @default top-right
+	 */
+	toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+
+	/**
+	 * inject custom styles when inspector is active
+	 */
+	customStyles?: boolean;
+
+	/**
+	 * append an import to the module id ending with `appendTo` instead of adding a script into body
+	 * useful for frameworks that do not support trannsformIndexHtml hook
+	 *
+	 * WARNING: only set this if you know exactly what it does.
+	 * Regular users of vite-plugin-svelte or SvelteKit do not need it
+	 */
+	appendTo?: string;
 }
 
 export interface PreResolvedOptions extends Options {

@@ -19,7 +19,8 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./src/ui/*": "./src/ui/*"
   },
   "scripts": {
     "dev": "pnpm run build:ci -- --sourcemap --watch src",
@@ -47,6 +48,7 @@
   "dependencies": {
     "@rollup/pluginutils": "^4.2.1",
     "debug": "^4.3.4",
+    "deepmerge": "^4.2.2",
     "kleur": "^4.1.4",
     "magic-string": "^0.26.1",
     "svelte-hmr": "^0.14.11"

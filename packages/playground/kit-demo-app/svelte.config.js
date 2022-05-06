@@ -12,6 +12,9 @@ const config = {
 		vite: {
 			css: { devSourcemap: true }
 		}
+	},
+	experimental: {
+		inspector: true
 	}
 };
 
