@@ -2,7 +2,7 @@ import { isBuild, getText, editFileAndWaitForHmrComplete } from '../../testUtils
 
 test('should render App', async () => {
 	expect(await getText('#hello')).toBe('Hello world');
-	expect(await getText('#world')).toBe('world');
+	expect(await getText('#foobar')).toBe('foobar');
 });
 
 if (!isBuild) {
