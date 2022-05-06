@@ -14,11 +14,11 @@
     "test:ci:serve": "cross-env VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/serve/jest-results.json\"",
     "test:ci:build": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/build/jest-results.json\"",
     "lint": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
-    "lint:fix": "pnpm run lint -- --fix",
+    "lint:fix": "pnpm lint --fix",
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
-    "format:fix": "pnpm run format -- --write",
+    "format:fix": "pnpm format --write",
     "fixup": "run-s lint:fix format:fix",
-    "release": "pnpm run build && pnpx --no changeset publish",
+    "release": "pnpm build && pnpx --no changeset publish",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -65,16 +65,14 @@
     ]
   },
   "engines": {
-    "pnpm": "^6.32.0",
+    "pnpm": "^7.0.0",
     "yarn": "forbidden, use pnpm",
     "npm": "forbidden, use pnpm",
     "node": "^14.13.1 || >= 16"
   },
   "pnpm": {
     "overrides": {
-      "@sveltejs/vite-plugin-svelte": "workspace:*",
-      "ansi-regex@>2.1.1 <5.0.1": "^5.0.1",
-      "node-fetch@2": "^2.6.7"
+      "@sveltejs/vite-plugin-svelte": "workspace:*"
     }
   }
 }
