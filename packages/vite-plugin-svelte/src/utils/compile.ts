@@ -1,15 +1,17 @@
 import { CompileOptions, ResolvedOptions } from './options';
 import { compile, preprocess, walk } from 'svelte/compiler';
-// eslint-disable-next-line node/no-missing-import
-import { Ast } from 'svelte/types/compiler/interfaces';
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr';
 import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
+import { createSpyLangPreprocessor } from './preprocess';
 
-const _createCompileSvelte = (makeHot: Function) =>
-	async function compileSvelte(
+const _createCompileSvelte = (makeHot: Function) => {
+	const spyLangMap = new Map<string, string>();
+	const spyLangPreprocessor = createSpyLangPreprocessor(spyLangMap);
+
+	return async function compileSvelte(
 		svelteRequest: SvelteRequest,
 		code: string,
 		options: Partial<ResolvedOptions>
@@ -39,8 +41,12 @@ const _createCompileSvelte = (makeHot: Function) =>
 		let preprocessed;
 
 		if (options.preprocess) {
+			const preprocessors = [
+				spyLangPreprocessor,
+				...(Array.isArray(options.preprocess) ? options.preprocess : [options.preprocess])
+			];
 			try {
-				preprocessed = await preprocess(code, options.preprocess, { filename });
+				preprocessed = await preprocess(code, preprocessors, { filename });
 			} catch (e) {
 				e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
 				throw e;
@@ -90,27 +96,14 @@ const _createCompileSvelte = (makeHot: Function) =>
 		return {
 			filename,
 			normalizedFilename,
-			lang: getSvelteLang(code, compiled.ast),
+			lang: spyLangMap.get(filename) || 'js',
 			// @ts-ignore
 			compiled,
 			ssr,
 			dependencies
 		};
 	};
-
-const scriptLangRE = /^<script\s+lang="(.*?)"/;
-
-function getSvelteLang(code: string, ast: Ast) {
-	if (ast.instance) {
-		const match = code.slice(ast.instance.start).match(scriptLangRE);
-		if (match) return match[1];
-	}
-	if (ast.module) {
-		const match = code.slice(ast.module.start).match(scriptLangRE);
-		if (match) return match[1];
-	}
-	return 'js';
-}
+};
 
 function buildMakeHot(options: ResolvedOptions) {
 	const needsMakeHot = options.hot !== false && options.isServe && !options.isProduction;

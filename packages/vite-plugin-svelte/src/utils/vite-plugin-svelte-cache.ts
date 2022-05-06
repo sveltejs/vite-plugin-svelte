@@ -4,6 +4,7 @@ import { Code, CompileData } from './compile';
 export class VitePluginSvelteCache {
 	private _css = new Map<string, Code>();
 	private _js = new Map<string, Code>();
+	private _langs = new Map<string, string>();
 	private _dependencies = new Map<string, string[]>();
 	private _dependants = new Map<string, Set<string>>();
 	private _resolvedSvelteFields = new Map<string, string>();
@@ -11,6 +12,7 @@ export class VitePluginSvelteCache {
 	public update(compileData: CompileData) {
 		this.updateCSS(compileData);
 		this.updateJS(compileData);
+		this.updateLang(compileData);
 		this.updateDependencies(compileData);
 	}
 
@@ -23,6 +25,10 @@ export class VitePluginSvelteCache {
 			// do not cache SSR js
 			this._js.set(compileData.normalizedFilename, compileData.compiled.js);
 		}
+	}
+
+	private updateLang(compileData: CompileData) {
+		this._langs.set(compileData.normalizedFilename, compileData.lang);
 	}
 
 	private updateDependencies(compileData: CompileData) {
@@ -75,6 +81,10 @@ export class VitePluginSvelteCache {
 			// SSR js isn't cached
 			return this._js.get(svelteRequest.normalizedFilename);
 		}
+	}
+
+	public getLang(svelteRequest: SvelteRequest) {
+		return this._langs.get(svelteRequest.normalizedFilename);
 	}
 
 	public getDependants(path: string): string[] {
