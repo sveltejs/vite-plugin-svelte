@@ -4,7 +4,7 @@ import { log } from '../../utils/log';
 import { InspectorOptions } from '../../utils/options';
 
 const defaultInspectorOptions: InspectorOptions = {
-	toggleKeyCombo: 'control-shift',
+	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
 	holdMode: false,
 	showToggleButton: 'active',
 	toggleButtonPos: 'top-right',

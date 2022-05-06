@@ -267,7 +267,7 @@ export default defineConfig({
   interface InspectorOptions {
     /**
      * define a key combo to toggle inspector,
-     * @default 'control-shift'
+     * @default 'control-shift' on windows, 'meta-shift' on other os
      *
      * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
      * examples: control-shift, control-o, control-alt-s  meta-x control-meta
