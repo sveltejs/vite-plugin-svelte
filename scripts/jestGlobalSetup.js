@@ -27,31 +27,7 @@ const syncNodeModules = async () => {
 	console.log('syncing node_modules done');
 };
 
-const guessChromePath = async () => {
-	const locations = [
-		'/usr/bin/google-chrome',
-		'/usr/bin/chromium-browser',
-		'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-		...[process.env['PROGRAMFILES(X86)'], process.env.PROGRAMFILES, process.env.LOCALAPPDATA]
-			.filter((prefix) => prefix != null && prefix.length > 0)
-			.map((prefix) => prefix + '\\Google\\Chrome\\Application\\chrome.exe')
-	];
-	for (let path of locations) {
-		try {
-			if (await fs.exists(path)) {
-				return path;
-			}
-		} catch (e) {
-			//ignore
-		}
-	}
-};
-
 const startPlaywrightServer = async () => {
-	const executablePath = process.env.CHROME_BIN || (await guessChromePath());
-	if (!executablePath) {
-		throw new Error('failed to identify chrome executable path. set CHROME_BIN env variable');
-	}
 	const headless = !showTestBrowser;
 	const args = ['--disable-gpu', '--single-process', '--no-zygote', '--no-sandbox'];
 	if (isCI) {
@@ -61,8 +37,8 @@ const startPlaywrightServer = async () => {
 		args.push('--headless');
 	}
 	return chromium.launchServer({
+		channel: 'chrome',
 		headless,
-		executablePath,
 		args
 	});
 };
