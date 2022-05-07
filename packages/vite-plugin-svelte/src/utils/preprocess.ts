@@ -194,16 +194,6 @@ export function addExtraPreprocessors(options: ResolvedOptions, config: Resolved
 	}
 }
 
-export function createSpyLangPreprocessor(map: Map<string, string>): PreprocessorGroup {
-	return {
-		script({ attributes, filename }) {
-			if (filename && attributes.lang) {
-				map.set(filename, attributes.lang as string);
-			}
-		}
-	};
-}
-
 function validateSourceMapOutputWrapper(group: PreprocessorGroup, i: number): PreprocessorGroup {
 	const wrapper: PreprocessorGroup = {};
 
