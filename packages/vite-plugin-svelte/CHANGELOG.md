@@ -1,5 +1,21 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.43
+
+### Minor Changes
+
+- Add experimental Svelte Inspector to quickly jump to code from your browser. ([#322](https://github.com/sveltejs/vite-plugin-svelte/pull/322))
+
+### Patch Changes
+
+- use deepmerge utility to merge inline config and svelte.config.js ([#322](https://github.com/sveltejs/vite-plugin-svelte/pull/322))
+
+* do not warn if kit options are passed as inline config ([#319](https://github.com/sveltejs/vite-plugin-svelte/pull/319))
+
+- Support import typescript files with .js extension ([#324](https://github.com/sveltejs/vite-plugin-svelte/pull/324))
+
+* do not restart vite devserver on changes of svelte config when `configFile: false` is set ([#319](https://github.com/sveltejs/vite-plugin-svelte/pull/319))
+
 ## 1.0.0-next.42
 
 ### Minor Changes
