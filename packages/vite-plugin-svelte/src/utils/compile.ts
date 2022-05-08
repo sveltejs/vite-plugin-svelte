@@ -6,7 +6,7 @@ import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
 
-const scriptLangRE = /<script.+lang="(.+)".*>/;
+const scriptLangRE = /<script [^>]*lang=[\"']?([^\"' >]+)[\"']?[^>]*>/;
 
 const _createCompileSvelte = (makeHot: Function) =>
 	async function compileSvelte(
