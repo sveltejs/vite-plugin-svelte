@@ -313,3 +313,22 @@ export default defineConfig({
   Set to `true` or customized `InspectorOptions` to enable svelte inspector during development.
 
   When enabled, inspector mode shows you the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.
+
+  **Example:**
+
+  ```js
+  export default defineConfig({
+    plugins: [
+      svelte({
+        experimental: {
+          inspector: {
+            toggleKeyCombo: 'meta-shift',
+            holdMode: true,
+            showToggleButton: 'always',
+            toggleButtonPos: 'bottom-right'
+          }
+        }
+      })
+    ]
+  });
+  ```
