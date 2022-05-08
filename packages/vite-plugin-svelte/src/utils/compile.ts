@@ -6,6 +6,8 @@ import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
 
+const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
+
 const _createCompileSvelte = (makeHot: Function) =>
 	async function compileSvelte(
 		svelteRequest: SvelteRequest,
@@ -88,6 +90,7 @@ const _createCompileSvelte = (makeHot: Function) =>
 		return {
 			filename,
 			normalizedFilename,
+			lang: code.match(scriptLangRE)?.[1] || 'js',
 			// @ts-ignore
 			compiled,
 			ssr,
@@ -148,6 +151,7 @@ export interface Compiled {
 export interface CompileData {
 	filename: string;
 	normalizedFilename: string;
+	lang: string;
 	compiled: Compiled;
 	ssr: boolean | undefined;
 	dependencies: string[];

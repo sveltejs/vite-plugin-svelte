@@ -193,7 +193,14 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					});
 				}
 				log.debug(`transform returns compiled js for ${svelteRequest.filename}`);
-				return compileData.compiled.js;
+				return {
+					...compileData.compiled.js,
+					meta: {
+						vite: {
+							lang: compileData.lang
+						}
+					}
+				};
 			},
 
 			handleHotUpdate(ctx: HmrContext): void | Promise<Array<ModuleNode> | void> {
