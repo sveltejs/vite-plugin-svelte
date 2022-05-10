@@ -237,6 +237,24 @@ importers:
       svelte: 3.48.0
       vite: 2.9.8
 
+  packages/e2e-tests/inspector-kit:
+    specifiers:
+      '@sveltejs/kit': ^1.0.0-next.326
+      svelte: ^3.48.0
+    devDependencies:
+      '@sveltejs/kit': 1.0.0-next.326_svelte@3.48.0
+      svelte: 3.48.0
+
+  packages/e2e-tests/inspector-vite:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      svelte: ^3.48.0
+      vite: ^2.9.8
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      svelte: 3.48.0
+      vite: 2.9.8
+
   packages/e2e-tests/kit-node:
     specifiers:
       '@sveltejs/adapter-node': ^1.0.0-next.73
