@@ -4,8 +4,10 @@ import { InspectorOptions } from '../../utils/options';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+const isWin = process.platform === 'win32';
+
 const defaultInspectorOptions: InspectorOptions = {
-	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
+	toggleKeyCombo: isWin ? 'control-shift' : 'meta-shift',
 	holdMode: false,
 	showToggleButton: 'active',
 	toggleButtonPos: 'top-right',
@@ -13,9 +15,9 @@ const defaultInspectorOptions: InspectorOptions = {
 };
 
 export function svelteInspector(): Plugin {
-	const inspectorPath = path
-		.dirname(fileURLToPath(import.meta.url))
-		.replace(/\/dist$/, '/src/ui/inspector/');
+	const inspectorPath =
+		(isWin ? '/@fs/' : '') +
+		path.dirname(fileURLToPath(import.meta.url)).replace(/\/dist$/, '/src/ui/inspector/');
 	log.debug.enabled && log.debug(`svelte inspector path: ${inspectorPath}`);
 	let inspectorOptions: InspectorOptions;
 	let appendTo: string | undefined;
