@@ -1,23 +1,24 @@
-import { Plugin } from 'vite';
+import { Plugin, normalizePath } from 'vite';
 import { log } from '../../utils/log';
 import { InspectorOptions } from '../../utils/options';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const isWin = process.platform === 'win32';
-
 const defaultInspectorOptions: InspectorOptions = {
-	toggleKeyCombo: isWin ? 'control-shift' : 'meta-shift',
+	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
 	holdMode: false,
 	showToggleButton: 'active',
 	toggleButtonPos: 'top-right',
 	customStyles: true
 };
 
+function getInspectorPath() {
+	const pluginPath = normalizePath(path.dirname(fileURLToPath(import.meta.url)));
+	return pluginPath.replace(/\/vite-plugin-svelte\/dist$/, '/vite-plugin-svelte/src/ui/inspector/');
+}
+
 export function svelteInspector(): Plugin {
-	const inspectorPath =
-		(isWin ? '/@fs/' : '') +
-		path.dirname(fileURLToPath(import.meta.url)).replace(/\/dist$/, '/src/ui/inspector/');
+	const inspectorPath = getInspectorPath();
 	log.debug.enabled && log.debug(`svelte inspector path: ${inspectorPath}`);
 	let inspectorOptions: InspectorOptions;
 	let appendTo: string | undefined;
