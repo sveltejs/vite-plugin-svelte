@@ -1,6 +1,8 @@
 import { Plugin } from 'vite';
 import { log } from '../../utils/log';
 import { InspectorOptions } from '../../utils/options';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
@@ -11,9 +13,12 @@ const defaultInspectorOptions: InspectorOptions = {
 };
 
 export function svelteInspector(): Plugin {
+	const inspectorPath = path
+		.dirname(fileURLToPath(import.meta.url))
+		.replace(/\/dist$/, '/src/ui/inspector/');
+	log.debug.enabled && log.debug(`svelte inspector path: ${inspectorPath}`);
 	let inspectorOptions: InspectorOptions;
-	let append_to: string | undefined;
-	let inspector_path: string;
+	let appendTo: string | undefined;
 	let disabled = false;
 
 	return {
@@ -30,13 +35,14 @@ export function svelteInspector(): Plugin {
 				};
 			}
 			if (!vps || !inspectorOptions) {
+				log.debug('inspector disabled, could not find config');
 				disabled = true;
 			} else {
 				if (vps.api.options.kit && !inspectorOptions.appendTo) {
 					const out_dir = vps.api.options.kit.outDir || '.svelte-kit';
 					inspectorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
 				}
-				append_to = inspectorOptions.appendTo;
+				appendTo = inspectorOptions.appendTo;
 			}
 		},
 
@@ -44,31 +50,12 @@ export function svelteInspector(): Plugin {
 			if (options?.ssr || disabled) {
 				return;
 			}
-			if (!inspector_path) {
-				try {
-					// @ts-ignore
-					const plugin_path = (
-						await this.resolve('@sveltejs/vite-plugin-svelte/package.json', undefined, {
-							skipSelf: true
-						})
-					).id
-						.replace(/\/package\.json$/, '')
-						.replace(/^\//, '');
-					inspector_path = `/@fs/${plugin_path}/src/ui/inspector/`;
-					log.debug(`resolved inspector path to ${inspector_path}`);
-				} catch (e) {
-					log.error(
-						'failed to resolve @sveltejs/vite-plugin-svelte path, disabling svelte inspector.'
-					);
-					log.debug.enabled && log.debug('resolve @sveltejs/vite-plugin-svelte error', e);
-					disabled = true;
-					return;
-				}
-			}
 			if (importee.startsWith('virtual:svelte-inspector-options')) {
 				return importee;
 			} else if (importee.startsWith('virtual:svelte-inspector-path:')) {
-				return importee.replace('virtual:svelte-inspector-path:', inspector_path);
+				const resolved = importee.replace('virtual:svelte-inspector-path:', inspectorPath);
+				log.debug.enabled && log.debug(`resolved ${importee} with ${resolved}`);
+				return resolved;
 			}
 		},
 
@@ -82,15 +69,15 @@ export function svelteInspector(): Plugin {
 		},
 
 		transform(code: string, id: string, options?: { ssr?: boolean }) {
-			if (options?.ssr || disabled || !append_to) {
+			if (options?.ssr || disabled || !appendTo) {
 				return;
 			}
-			if (id.endsWith(append_to)) {
-				return { code: `${code}\nimport '${inspector_path}load-inspector.js'` };
+			if (id.endsWith(appendTo)) {
+				return { code: `${code}\nimport 'virtual:svelte-inspector-path:load-inspector.js'` };
 			}
 		},
 		transformIndexHtml(html) {
-			if (disabled || append_to) {
+			if (disabled || appendTo) {
 				return;
 			}
 			return {
@@ -101,7 +88,8 @@ export function svelteInspector(): Plugin {
 						injectTo: 'body',
 						attrs: {
 							type: 'module',
-							src: `${inspector_path}load-inspector.js`
+							// /@id/ is needed, otherwise the virtual: is seen as protocol by browser and cors error happens
+							src: '/@id/virtual:svelte-inspector-path:load-inspector.js'
 						}
 					}
 				]
