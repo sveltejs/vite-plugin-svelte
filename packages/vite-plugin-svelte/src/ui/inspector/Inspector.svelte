@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	// @ts-expect-error virtual import is resolved by vite-plugin-svelte-inspector
 	// eslint-disable-next-line node/no-missing-import
-	import icon from 'virtual:svelte-inspector:icon.svg';
+	import icon from 'virtual:svelte-inspector-path:icon.svg';
 	// @ts-expect-error virtual import is resolved by vite-plugin-svelte-inspector
 	// eslint-disable-next-line node/no-missing-import
 	import options from 'virtual:svelte-inspector-options';

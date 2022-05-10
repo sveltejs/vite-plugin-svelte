@@ -1,6 +1,5 @@
-// @ts-expect-error virtual import is resolved by vite-plugin-svelte-inspector
 // eslint-disable-next-line node/no-missing-import
-import Inspector from 'virtual:svelte-inspector:Inspector.svelte';
+import Inspector from 'virtual:svelte-inspector-path:Inspector.svelte';
 
 function create_inspector_host() {
 	const id = 'svelte-inspector-host';
