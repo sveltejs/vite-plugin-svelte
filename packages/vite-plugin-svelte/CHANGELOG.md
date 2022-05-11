@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.44
+
+### Patch Changes
+
+- correctly resolve the experimental svelte inspector (see [#332](https://github.com/sveltejs/vite-plugin-svelte/issues/332)) (fixes [#330](https://github.com/sveltejs/vite-plugin-svelte/issues/330)) ([#333](https://github.com/sveltejs/vite-plugin-svelte/pull/333))
+
 ## 1.0.0-next.43
 
 ### Minor Changes
