@@ -80,7 +80,6 @@ exports.serve = async function serve(root, isBuild, port) {
 
 		try {
 			const buildProcess = execa('pnpm', ['build'], {
-				preferLocal: true,
 				cwd: root,
 				stdio: 'pipe'
 			});
@@ -104,7 +103,6 @@ exports.serve = async function serve(root, isBuild, port) {
 	}
 
 	const serverProcess = execa('pnpm', [isBuild ? 'preview' : 'dev', '--port', port], {
-		preferLocal: true,
 		cwd: root,
 		stdio: 'pipe'
 	});
