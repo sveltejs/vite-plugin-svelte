@@ -3,6 +3,7 @@ import { log } from '../../utils/log';
 import { InspectorOptions } from '../../utils/options';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
@@ -62,12 +63,15 @@ export function svelteInspector(): Plugin {
 			}
 		},
 
-		load(id, options) {
+		async load(id, options) {
 			if (options?.ssr || disabled) {
 				return;
 			}
 			if (id === 'virtual:svelte-inspector-options') {
 				return `export default ${JSON.stringify(inspectorOptions ?? {})}`;
+			} else if (id.startsWith(inspectorPath)) {
+				// read file ourselves to avoid getting shut out by vites fs.allow check
+				return await fs.promises.readFile(id, 'utf-8');
 			}
 		},
 
