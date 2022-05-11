@@ -18,7 +18,7 @@
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
     "format:fix": "pnpm format --write",
     "fixup": "run-s lint:fix format:fix",
-    "release": "pnpm build && pnpx --no changeset publish",
+    "release": "pnpm build && pnpm changeset publish",
     "prepare": "husky install"
   },
   "devDependencies": {
