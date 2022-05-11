@@ -1,7 +1,9 @@
-import { createRequire } from 'module';
-import { Plugin } from 'vite';
+import { Plugin, normalizePath } from 'vite';
 import { log } from '../../utils/log';
 import { InspectorOptions } from '../../utils/options';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
@@ -11,11 +13,17 @@ const defaultInspectorOptions: InspectorOptions = {
 	customStyles: true
 };
 
+function getInspectorPath() {
+	const pluginPath = normalizePath(path.dirname(fileURLToPath(import.meta.url)));
+	return pluginPath.replace(/\/vite-plugin-svelte\/dist$/, '/vite-plugin-svelte/src/ui/inspector/');
+}
+
 export function svelteInspector(): Plugin {
-	let root: string;
-	let rootRequire: NodeRequire;
+	const inspectorPath = getInspectorPath();
+	log.debug.enabled && log.debug(`svelte inspector path: ${inspectorPath}`);
 	let inspectorOptions: InspectorOptions;
-	let append_to: string | undefined;
+	let appendTo: string | undefined;
+	let disabled = false;
 
 	return {
 		name: 'vite-plugin-svelte:inspector',
@@ -31,55 +39,52 @@ export function svelteInspector(): Plugin {
 				};
 			}
 			if (!vps || !inspectorOptions) {
-				// disabled, turn all hooks into noops
-				this.resolveId = this.load = this.transformIndexHtml = this.transform = () => {};
+				log.debug('inspector disabled, could not find config');
+				disabled = true;
 			} else {
-				root = config.root || process.cwd();
-				rootRequire = createRequire(root);
 				if (vps.api.options.kit && !inspectorOptions.appendTo) {
 					const out_dir = vps.api.options.kit.outDir || '.svelte-kit';
 					inspectorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
 				}
-				append_to = inspectorOptions.appendTo;
+				appendTo = inspectorOptions.appendTo;
 			}
 		},
 
 		async resolveId(importee: string, importer, options) {
-			if (options?.ssr) {
+			if (options?.ssr || disabled) {
 				return;
 			}
-			if (importee === 'virtual:svelte-inspector-options') {
+			if (importee.startsWith('virtual:svelte-inspector-options')) {
 				return importee;
-			}
-			if (importee.startsWith('virtual:svelte-inspector:')) {
-				// this is needed because the plugin itself is not a dependency of the app so regular resolve may not find it
-				const file = importee.replace(
-					'virtual:svelte-inspector:',
-					'@sveltejs/vite-plugin-svelte/src/ui/inspector/'
-				);
-				const path = rootRequire.resolve(file);
-				if (path) {
-					return path;
-				} else {
-					log.error.once(`failed to resolve ${file} for ${importee} from ${root}`);
-				}
+			} else if (importee.startsWith('virtual:svelte-inspector-path:')) {
+				const resolved = importee.replace('virtual:svelte-inspector-path:', inspectorPath);
+				log.debug.enabled && log.debug(`resolved ${importee} with ${resolved}`);
+				return resolved;
 			}
 		},
-		load(id) {
+
+		async load(id, options) {
+			if (options?.ssr || disabled) {
+				return;
+			}
 			if (id === 'virtual:svelte-inspector-options') {
 				return `export default ${JSON.stringify(inspectorOptions ?? {})}`;
+			} else if (id.startsWith(inspectorPath)) {
+				// read file ourselves to avoid getting shut out by vites fs.allow check
+				return await fs.promises.readFile(id, 'utf-8');
 			}
 		},
+
 		transform(code: string, id: string, options?: { ssr?: boolean }) {
-			if (options?.ssr || !append_to) {
+			if (options?.ssr || disabled || !appendTo) {
 				return;
 			}
-			if (id.endsWith(append_to)) {
-				return { code: `${code}\nimport 'virtual:svelte-inspector:load-inspector.ts'` };
+			if (id.endsWith(appendTo)) {
+				return { code: `${code}\nimport 'virtual:svelte-inspector-path:load-inspector.js'` };
 			}
 		},
 		transformIndexHtml(html) {
-			if (append_to) {
+			if (disabled || appendTo) {
 				return;
 			}
 			return {
@@ -91,7 +96,7 @@ export function svelteInspector(): Plugin {
 						attrs: {
 							type: 'module',
 							// /@id/ is needed, otherwise the virtual: is seen as protocol by browser and cors error happens
-							src: '/@id/virtual:svelte-inspector:load-inspector.ts'
+							src: '/@id/virtual:svelte-inspector-path:load-inspector.js'
 						}
 					}
 				]

@@ -70,6 +70,12 @@ module.exports = {
 			}
 		},
 		{
+			files: ['packages/vite-plugin-svelte/src/ui/inspector/load-inspector.js'],
+			env: {
+				browser: true
+			}
+		},
+		{
 			files: ['packages/e2e-tests/**', 'packages/playground/**'],
 			rules: {
 				'node/no-extraneous-import': 'off',
