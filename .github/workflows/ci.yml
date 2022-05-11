@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      - run: npm i -g pnpm@6
+      - run: npm i -g pnpm@7
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -37,10 +37,10 @@ jobs:
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: build
         id: build
-        run: pnpm run build
+        run: pnpm build
       - name: lint
         if: (${{ success() }} || ${{ failure() }})
-        run: pnpm run lint
+        run: pnpm lint
       - name: audit
         if: (${{ success() }} || ${{ failure() }})
         run: pnpm audit
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      - run: npm i -g pnpm@6
+      - run: npm i -g pnpm@7
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -74,7 +74,7 @@ jobs:
       - name: install
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: build
-        run: pnpm run build:ci
+        run: pnpm build:ci
       - name: run tests
         run: pnpm test:ci
       - name: archive tests temp directory

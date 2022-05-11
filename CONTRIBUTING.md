@@ -77,8 +77,8 @@ Please make sure the following is done when submitting a pull request:
 
 1. Fork [the repository](https://github.com/sveltejs/vite-plugin-svelte) and create your branch from `main`.
 1. Describe your **test plan** in your pull request description. Make sure to test your changes.
-1. Make sure your code lints (`pnpm run lint`).
-1. Make sure your tests pass (`pnpm run test`).
+1. Make sure your code lints (`pnpm lint`).
+1. Make sure your tests pass (`pnpm test`).
 
 All pull requests should be opened against the `main` branch.
 
@@ -109,7 +109,7 @@ The core Svelte team will be monitoring for pull requests. Do help us by making 
 
 ## Style guide
 
-[Eslint](https://eslint.org) will catch most styling issues that may exist in your code. You can check the status of your code styling by simply running `pnpm run lint`.
+[Eslint](https://eslint.org) will catch most styling issues that may exist in your code. You can check the status of your code styling by simply running `pnpm lint`.
 
 ## License
 

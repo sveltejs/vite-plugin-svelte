@@ -23,9 +23,9 @@
     "./src/ui/*": "./src/ui/*"
   },
   "scripts": {
-    "dev": "pnpm run build:ci -- --sourcemap --watch src",
+    "dev": "pnpm build:ci --sourcemap --watch src",
     "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --target node14",
-    "build": "pnpm run build:ci -- --dts --sourcemap"
+    "build": "pnpm build:ci --dts --sourcemap"
   },
   "engines": {
     "node": "^14.13.1 || >= 16"
