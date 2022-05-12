@@ -87,20 +87,13 @@ All pull requests should be opened against the `main` branch.
 Integration tests for new features or regression tests as part of a bug fix are very welcome.
 Add them to projects in `packages/e2e-tests`.
 
-If tests aren't running properly locally, open [scripts/jestGlobalSetup.js](./scripts/jestGlobalSetup.js) and update `chromium.launchServer` to use the default bundled chromium version:
-
-```js
-// don't pass any options to use bundled chromium
-return chromium.launchServer();
-```
-
 #### Documentation
 
 If you've changed APIs, update the documentation.
 
 #### Changelogs
 
-For changes to be reflected in package changelogs, run `pnpx changeset` and follow the prompts.
+For changes to be reflected in package changelogs, run `pnpm changeset` and follow the prompts.
 You should always select the packages you've changed, Most likely `@sveltejs/vite-plugin-svelte`.
 
 ### What happens next?
