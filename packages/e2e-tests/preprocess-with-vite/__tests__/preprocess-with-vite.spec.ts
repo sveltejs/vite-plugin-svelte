@@ -1,4 +1,4 @@
-import { getColor, getText } from 'testUtils';
+import { getColor, getText } from '~utils';
 
 test('should render App', async () => {
 	expect(await getText('h1.foo')).toBe(`Hello world`);

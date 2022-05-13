@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { getText, isBuild } from '../../testUtils';
+import { getText, isBuild } from '~utils';
 
 test('should render component imported via svelte field in package.json', async () => {
 	expect(await getText('#test-id')).toBe('svelte field works');

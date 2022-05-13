@@ -6,8 +6,10 @@ import {
 	sleep,
 	getColor,
 	addFile,
-	removeFile
-} from '../../testUtils';
+	removeFile,
+	page,
+	browserLogs
+} from '~utils';
 
 test('should render App', async () => {
 	expect(await getText('h1')).toBe(`I'm blue`);

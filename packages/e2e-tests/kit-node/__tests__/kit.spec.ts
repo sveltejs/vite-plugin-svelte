@@ -8,8 +8,10 @@ import {
 	readFileContent,
 	sleep,
 	untilUpdated,
-	waitForNavigation
-} from '../../testUtils';
+	waitForNavigation,
+	page,
+	browserLogs
+} from '~utils';
 
 import fetch from 'node-fetch';
 import path from 'path';

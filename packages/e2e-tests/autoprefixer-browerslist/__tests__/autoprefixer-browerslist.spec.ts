@@ -1,4 +1,5 @@
-import { isBuild, findAssetFile } from '../../testUtils';
+import { expect, test } from 'vitest';
+import { isBuild, findAssetFile, page } from '~utils';
 
 test('should prefix position: sticky for code in source tree', async () => {
 	const stickyStyle = isBuild

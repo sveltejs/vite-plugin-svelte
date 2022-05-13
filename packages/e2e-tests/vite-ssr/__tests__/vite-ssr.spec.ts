@@ -1,11 +1,15 @@
+import { expect, test } from 'vitest';
 import {
 	editFileAndWaitForHmrComplete,
 	getColor,
 	getEl,
 	getText,
 	isBuild,
-	untilUpdated
-} from '../../testUtils';
+	untilUpdated,
+	page,
+	e2eServer,
+	browserLogs
+} from '~utils';
 
 import fetch from 'node-fetch';
 

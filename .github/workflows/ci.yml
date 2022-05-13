@@ -86,7 +86,7 @@ jobs:
       - name: build
         run: pnpm build:ci
       - name: run tests
-        run: pnpm test:ci
+        run: pnpm test
       - name: archive tests temp directory
         if: failure()
         shell: bash
@@ -97,17 +97,4 @@ jobs:
           name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}
           path: |
             test-temp.tar
-            temp/serve/jest-results.json
-            temp/serve/junit.xml
-            temp/build/jest-results.json
-            temp/build/junit.xml
             pnpm-debug.log
-      - uses: actions/upload-artifact@v3
-        if: success()
-        with:
-          name: test-success-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}
-          path: |
-            temp/serve/jest-results.json
-            temp/serve/junit.xml
-            temp/build/jest-results.json
-            temp/build/junit.xml

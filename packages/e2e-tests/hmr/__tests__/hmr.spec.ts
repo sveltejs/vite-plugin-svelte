@@ -10,8 +10,11 @@ import {
 	editFile,
 	addFile,
 	removeFile,
-	editViteConfig
-} from '../../testUtils';
+	editViteConfig,
+	page,
+	browserLogs,
+	viteTestUrl
+} from '~utils';
 
 test('should render App', async () => {
 	expect(await getText('#app-header')).toBe('Test-App');
@@ -178,7 +181,6 @@ if (!isBuild) {
 			await updateHmrTest((content) => content.replace('color: red', 'color: green'));
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
-			await jest.resetModules();
 			await editFile('svelte.config.cjs', (content) =>
 				content
 					.replace('preprocess-inject', 'preprocess-inject-2')
@@ -197,7 +199,6 @@ if (!isBuild) {
 			await updateHmrTest((content) => content.replace('color: green', 'color: red'));
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
-			await jest.resetModules();
 			await removeFile('svelte.config.cjs');
 			await sleep(isWin ? 1000 : 500); // editing config restarts server, give it some time
 			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });

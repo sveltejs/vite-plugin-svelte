@@ -1,14 +1,17 @@
-const os = require('os');
-const fs = require('fs-extra');
-const path = require('path');
-const { chromium } = require('playwright-core');
-const execa = require('execa');
+import os from 'os';
+import fs from 'fs-extra';
+import path from 'path';
+import { chromium } from 'playwright-core';
+import execa from 'execa';
+import { fileURLToPath } from 'url';
+
+const tempTestDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'temp');
 
 const isBuildTest = !!process.env.VITE_TEST_BUILD;
 const isCI = !!process.env.CI;
 const showTestBrowser = !!process.env.TEST_SHOW_BROWSER;
 
-const DIR = path.join(os.tmpdir(), 'jest_playwright_global_setup');
+const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
 
 const buildPackagesUnderTest = async () => {
 	console.log('building packages');
@@ -43,7 +46,7 @@ const startPlaywrightServer = async () => {
 	});
 };
 
-module.exports = async () => {
+export async function setup() {
 	if (!isCI) {
 		// TODO currently this builds twice when running yarn test
 		console.log('');
@@ -55,15 +58,28 @@ module.exports = async () => {
 	console.log('Starting playwright server ...');
 	const browserServer = await startPlaywrightServer();
 	console.log('Playwright server running');
-	global.__BROWSER_SERVER__ = browserServer;
 	console.log('storing wsEndpoint in ' + DIR);
 	await fs.mkdirp(DIR);
 	await fs.writeFile(path.join(DIR, 'wsEndpoint'), browserServer.wsEndpoint());
 	console.log('clearing previous test artifacts');
 	if (!process.env.VITE_PRESERVE_BUILD_ARTIFACTS) {
-		await fs.remove(path.resolve(__dirname, '..', 'temp'));
+		await fs.remove(tempTestDir);
 	} else {
-		await fs.remove(path.resolve(__dirname, '..', 'temp', isBuildTest ? 'build' : 'serve'));
+		await fs.remove(path.join(tempTestDir, isBuildTest ? 'build' : 'serve'));
 	}
-	console.log('jest global setup done');
-};
+	console.log('vitest global setup done');
+	return async () => {
+		if (!process.env.VITE_PRESERVE_BUILD_ARTIFACTS) {
+			try {
+				await fs.remove(tempTestDir);
+			} catch (e) {
+				console.error('failed to clear ' + tempTestDir, e);
+			}
+		}
+		try {
+			await browserServer?.close();
+		} catch (e) {
+			console.error('failed to close browserServer', e);
+		}
+	};
+}

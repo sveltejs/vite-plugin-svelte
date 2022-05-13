@@ -1,4 +1,4 @@
-import { findAssetFile, isBuild } from 'testUtils';
+import { findAssetFile, isBuild } from '~utils';
 
 // can't have no tests for test:serve
 it('dummy', () => {});

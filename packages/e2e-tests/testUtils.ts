@@ -6,16 +6,11 @@ import path from 'path';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 
-export const isBuild = !!process.env.VITE_TEST_BUILD;
-export const isWin = process.platform === 'win32';
-export const isCI = !!process.env.CI;
+import { isBuild, isWin, isCI, page, testDir, viteTestUrl, testName } from './vitestSetup';
+
+export * from './vitestSetup';
 
 export const hmrUpdateTimeout = 10000;
-
-const testPath = expect.getState().testPath;
-const segments = testPath.split(path.sep);
-const testName = segments[segments.indexOf('e2e-tests') + 1];
-export const testDir = path.resolve(__dirname, '../../temp', isBuild ? 'build' : 'serve', testName);
 
 const hexToNameMap: Record<string, string> = {};
 Object.keys(colors).forEach((color) => {
@@ -173,12 +168,9 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 	}
 }
 
-export async function saveScreenshot(name?: string) {
+export async function saveScreenshot(name: string) {
 	if (!page) {
 		return;
-	}
-	if (!name) {
-		name = expect.getState().currentTestName;
 	}
 	const filename = `${new Date().toISOString().replace(/\D/g, '')}_${name
 		.toLowerCase()
