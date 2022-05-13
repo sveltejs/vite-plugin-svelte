@@ -25,7 +25,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      - run: npm i -g pnpm@7
+      - name: install pnpm
+        shell: bash
+        run: |
+          PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
+          echo installing pnpm version $PNPM_VER
+          npm i -g pnpm@$PNPM_VER
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
