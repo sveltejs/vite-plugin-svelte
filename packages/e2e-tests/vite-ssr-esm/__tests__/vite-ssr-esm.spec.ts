@@ -7,15 +7,15 @@ import {
 	untilUpdated,
 	page,
 	e2eServer,
-	browserLogs
+	browserLogs,
+	sleep,
+	fetchPageText
 } from '~utils';
-
-import fetch from 'node-fetch';
 
 test('/', async () => {
 	expect(await page.textContent('h1')).toMatch('Hello svelte world'); // after hydration
 
-	const html = await (await fetch(page.url())).text();
+	const html = await fetchPageText();
 	expect(html).toMatch('Hello world'); // before hydration
 	if (isBuild) {
 		// TODO expect preload links
@@ -69,6 +69,7 @@ if (!isBuild) {
 		test('should apply style update', async () => {
 			expect(await getColor(`h1`)).toBe('green');
 			await updateApp((content) => content.replace('color: green', 'color: red'));
+			await sleep(50); // extra wait to avoid flakiness
 			expect(await getColor(`h1`)).toBe('red');
 		});
 		test('should not preserve state of updated props', async () => {

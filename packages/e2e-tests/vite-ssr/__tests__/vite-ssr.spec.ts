@@ -8,15 +8,14 @@ import {
 	untilUpdated,
 	page,
 	e2eServer,
-	browserLogs
+	browserLogs,
+	fetchPageText
 } from '~utils';
-
-import fetch from 'node-fetch';
 
 test('/', async () => {
 	expect(await page.textContent('h1')).toMatch('Hello svelte world'); // after hydration
 
-	const html = await (await fetch(page.url())).text();
+	const html = await fetchPageText();
 	expect(html).toMatch('Hello world'); // before hydration
 	if (isBuild) {
 		// TODO expect preload links

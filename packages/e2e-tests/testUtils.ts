@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
+import fetch from 'node-fetch';
 
 import { isBuild, isWin, isCI, page, testDir, viteTestUrl } from './vitestSetup';
 
@@ -208,4 +209,15 @@ export async function waitForNavigation(opts: Parameters<typeof page.waitForNavi
 	await Promise.race([page.waitForNavigation(opts), timeoutPromise]).finally(() => {
 		clearTimeout(timeoutHandle);
 	});
+}
+
+export async function fetchPageText() {
+	// force ip v4 for devserver
+	const url = page.url().replace('localhost', isBuild ? 'localhost' : '127.0.0.1');
+	const res = await fetch(url);
+	if (res.ok) {
+		return res.text();
+	} else {
+		throw new Error(`request to ${url} failed with ${res.status} - ${res.statusText}.`);
+	}
 }
