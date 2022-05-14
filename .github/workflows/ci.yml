@@ -1,4 +1,4 @@
-# build and test on linux, windows, mac with node  14, 16, 17
+# build and test on linux, windows, mac with node  14, 16, 18
 name: CI
 
 on:
@@ -50,7 +50,7 @@ jobs:
         if: (${{ success() }} || ${{ failure() }})
         run: pnpm audit
 
-  # this is the test matrix, it runs with node16 on linux,windows,macos + node14,17 on linux
+  # this is the test matrix, it runs with node16 on linux,windows,macos + node14,18 on linux
   # it is skipped if the build step of the checks job wasn't successful (still runs if lint or audit fail)
   test:
     needs: checks
@@ -61,9 +61,11 @@ jobs:
       fail-fast: false
       matrix:
         node: [16]
-        os: [ubuntu-latest, macos-latest, windows-2019]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         include:
           - node: 14
+            os: ubuntu-latest
+          - node: 18
             os: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
