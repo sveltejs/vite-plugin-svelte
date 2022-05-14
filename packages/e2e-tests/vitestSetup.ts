@@ -105,8 +105,8 @@ beforeAll(
 		browser = await chromium.connect(wsEndpoint);
 		page = await browser.newPage();
 
-		const testPath = suite.filepath!;
-		const segments = testPath.split(path.sep);
+		const testPath = suite.filepath;
+		const segments = testPath.split('/');
 		const testName = segments.includes('e2e-tests')
 			? segments[segments.indexOf('e2e-tests') + 1]
 			: null;
