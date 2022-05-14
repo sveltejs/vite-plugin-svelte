@@ -31,7 +31,7 @@ describe('dependencies', () => {
 	});
 	describe('needsOptimization', () => {
 		it('should optimize cjs deps only', () => {
-			const testDepsPath = path.join(e2eTestRoot, 'dependencies');
+			const testDepsPath = path.join(e2eTestRoot, 'dependencies/package.json');
 			const localRequire = createRequire(testDepsPath);
 			expect(needsOptimization('e2e-test-dep-cjs-and-esm', localRequire)).toBe(false);
 			expect(needsOptimization('e2e-test-dep-cjs-only', localRequire)).toBe(true);
