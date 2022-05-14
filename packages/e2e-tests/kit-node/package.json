@@ -5,15 +5,21 @@
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
-    "preview": "svelte-kit preview"
+    "package": "svelte-kit package",
+    "preview": "svelte-kit preview",
+    "prepare": "svelte-kit sync",
+    "check": "svelte-check --tsconfig ./jsconfig.json",
+    "check:watch": "svelte-check --tsconfig ./jsconfig.json --watch"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^1.0.0-next.73",
-    "@sveltejs/kit": "^1.0.0-next.326",
+    "@sveltejs/kit": "^1.0.0-next.330",
     "e2e-test-dep-svelte-api-only": "workspace:*",
     "e2e-test-dep-vite-plugins": "workspace:*",
     "svelte": "^3.48.0",
-    "svelte-i18n": "^3.4.0"
+    "svelte-check": "^2.2.6",
+    "svelte-i18n": "^3.4.0",
+    "typescript": "^4.6.4"
   },
   "type": "module",
   "engines": {

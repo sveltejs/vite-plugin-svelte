@@ -2,7 +2,7 @@ import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
 import { chromium } from 'playwright-core';
-import execa from 'execa';
+import { execa } from 'execa';
 import { fileURLToPath } from 'url';
 
 const tempTestDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'temp');

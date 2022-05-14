@@ -1,7 +1,7 @@
-const { svelte } = require('@sveltejs/vite-plugin-svelte');
-const { defineConfig } = require('vite');
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { defineConfig } from 'vite';
 
-module.exports = defineConfig(() => {
+export default defineConfig(() => {
 	return {
 		plugins: [svelte()],
 		build: {

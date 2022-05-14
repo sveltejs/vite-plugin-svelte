@@ -1,8 +1,8 @@
-const { defineConfig } = require('vite');
-const { svelte } = require('@sveltejs/vite-plugin-svelte');
-const { transformValidation } = require('e2e-test-dep-vite-plugins');
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { defineConfig } from 'vite';
+import { transformValidation } from 'e2e-test-dep-vite-plugins';
 
-module.exports = defineConfig(({ command, mode }) => {
+export default defineConfig(({ command, mode }) => {
 	return {
 		plugins: [transformValidation(), svelte()],
 		build: {

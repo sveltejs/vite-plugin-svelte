@@ -32,7 +32,9 @@ describe('kit-node', () => {
 			expect(await page.$eval('#mount', (e) => e['__initialNode'])).toBe(true);
 
 			// also get page as text to confirm
-			const html = await (await fetch(page.url())).text();
+			// on node17+, localhost defaults to ipv6 and the devserver doesn't like that, fall back to 127.0.0.1 to force v4
+			const url = page.url().replace('localhost', isBuild ? 'localhost' : '127.0.0.1');
+			const html = await (await fetch(url)).text();
 			expect(html).toMatch('Hello world!');
 			expect(html).toMatch('SERVER_LOADED');
 			expect(html).toMatch('BEFORE_MOUNT');

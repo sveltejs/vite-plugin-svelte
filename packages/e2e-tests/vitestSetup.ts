@@ -37,19 +37,6 @@ export function setViteUrl(url: string) {
 	viteTestUrl = url;
 }
 
-// injected by the test env
-declare global {
-	// eslint-disable-next-line no-unused-vars
-	namespace NodeJS {
-		// eslint-disable-next-line no-unused-vars
-		interface Global {
-			page?: Page;
-			viteTestUrl?: string;
-			e2eServer?: E2EServer;
-		}
-	}
-}
-
 export interface E2EServer {
 	port: number;
 	logs: { server?: { out: string[]; err: string[] }; build?: { out: string[]; err: string[] } };
@@ -154,7 +141,8 @@ beforeAll(
 				const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
 				const defaultServerScript = path.resolve(e2eTestsRoot, 'e2e-server.js');
 				const hasCustomServer = fs.existsSync(customServerScript);
-				const { serve } = require(hasCustomServer ? customServerScript : defaultServerScript);
+				const serverScript = hasCustomServer ? customServerScript : defaultServerScript;
+				const { serve } = await import(serverScript);
 				const port = await getUniqueTestPort(e2eTestsRoot, testName, isBuild);
 				server = await serve(tempDir, isBuild, port);
 				e2eServer = server;
