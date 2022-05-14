@@ -6,7 +6,7 @@ import path from 'path';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 
-import { isBuild, isWin, isCI, page, testDir, viteTestUrl, testName } from './vitestSetup';
+import { isBuild, isWin, isCI, page, testDir, viteTestUrl } from './vitestSetup';
 
 export * from './vitestSetup';
 
