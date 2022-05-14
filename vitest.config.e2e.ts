@@ -33,8 +33,9 @@ export default defineConfig({
 		onConsoleLog(log) {
 			if (log.match(/experimental|jit engine|emitted file/i)) return false;
 		},
-		maxThreads: process.env.CI ? 4 : undefined,
-		minThreads: process.env.CI ? 4 : undefined
+		// use 1 thread max on CI to avoid flakiness
+		maxThreads: process.env.CI ? 1 : undefined,
+		minThreads: process.env.CI ? 1 : undefined
 	},
 	esbuild: {
 		target: 'node14'
