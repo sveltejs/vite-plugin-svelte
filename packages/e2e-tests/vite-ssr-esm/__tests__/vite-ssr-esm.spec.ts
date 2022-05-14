@@ -64,7 +64,7 @@ if (!isBuild) {
 					'<div id="hmr-test">foo</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 				)
 			);
-			await expect(await getText(`#hmr-test`)).toBe('foo');
+			expect(await getText(`#hmr-test`)).toBe('foo');
 		});
 		test('should apply style update', async () => {
 			expect(await getColor(`h1`)).toBe('green');
@@ -72,9 +72,9 @@ if (!isBuild) {
 			expect(await getColor(`h1`)).toBe('red');
 		});
 		test('should not preserve state of updated props', async () => {
-			await expect(await getText(`#foo`)).toBe('foo');
+			expect(await getText(`#foo`)).toBe('foo');
 			await updateApp((content) => content.replace("foo = 'foo'", "foo = 'bar'"));
-			await expect(await getText(`#foo`)).toBe('bar');
+			expect(await getText(`#foo`)).toBe('bar');
 		});
 	});
 }

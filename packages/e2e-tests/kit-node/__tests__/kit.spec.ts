@@ -126,7 +126,7 @@ describe('kit-node', () => {
 							'<div id="hmr-test">foo</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 						)
 					);
-					await expect(await getText(`#hmr-test`)).toBe('foo');
+					expect(await getText(`#hmr-test`)).toBe('foo');
 
 					// add div 2
 					expect(await getEl('#hmr-test2')).toBe(null);
@@ -136,14 +136,14 @@ describe('kit-node', () => {
 							'<div id="hmr-test2">bar</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 						)
 					);
-					await expect(await getText(`#hmr-test`)).toBe('foo');
-					await expect(await getText(`#hmr-test2`)).toBe('bar');
+					expect(await getText(`#hmr-test`)).toBe('foo');
+					expect(await getText(`#hmr-test2`)).toBe('bar');
 					// remove div 1
 					await updateIndexSvelte((content) =>
 						content.replace('<div id="hmr-test">foo</div>\n', '')
 					);
-					await expect(await getText(`#hmr-test`)).toBe(null);
-					await expect(await getText(`#hmr-test2`)).toBe('bar');
+					expect(await getText(`#hmr-test`)).toBe(null);
+					expect(await getText(`#hmr-test2`)).toBe('bar');
 				});
 
 				it('should render additional child components', async () => {
@@ -184,7 +184,7 @@ describe('kit-node', () => {
 					expect(await getText(`#hmr-test2`)).toBe('bar');
 					await page.reload({ waitUntil: 'networkidle' });
 					expect(await getColor(`h1`)).toBe('green');
-					await expect(await getText(`#hmr-test2`)).toBe('bar');
+					expect(await getText(`#hmr-test2`)).toBe('bar');
 				});
 
 				describe('child component update', () => {
@@ -214,7 +214,7 @@ describe('kit-node', () => {
 								'<div id="hmr-test3">foo</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 							)
 						);
-						await expect(await getText(`#hmr-test3`)).toBe('foo');
+						expect(await getText(`#hmr-test3`)).toBe('foo');
 
 						// add div 2
 						expect(await getEl('#hmr-test4')).toBe(null);
@@ -224,14 +224,14 @@ describe('kit-node', () => {
 								'<div id="hmr-test4">bar</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 							)
 						);
-						await expect(await getText(`#hmr-test3`)).toBe('foo');
-						await expect(await getText(`#hmr-test4`)).toBe('bar');
+						expect(await getText(`#hmr-test3`)).toBe('foo');
+						expect(await getText(`#hmr-test4`)).toBe('bar');
 						// remove div 1
 						await updateCounter((content) =>
 							content.replace('<div id="hmr-test3">foo</div>\n', '')
 						);
-						await expect(await getText(`#hmr-test3`)).toBe(null);
-						await expect(await getText(`#hmr-test4`)).toBe('bar');
+						expect(await getText(`#hmr-test3`)).toBe(null);
+						expect(await getText(`#hmr-test4`)).toBe('bar');
 					});
 
 					it('should apply changed styles', async () => {
