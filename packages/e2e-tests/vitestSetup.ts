@@ -220,13 +220,13 @@ beforeAll(
 			}
 		};
 	},
-	isCI ? (isWin ? 60000 : 30000) : 15000
+	isCI ? (isWin ? 60000 : 30000) : 20000
 );
 
 async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
 	let timerId;
 	let pageConsoleListener;
-	const timeoutMS = 10000;
+	const timeoutMS = 15000;
 	const timeoutPromise = new Promise(
 		// eslint-disable-next-line no-unused-vars
 		(_, reject) =>
