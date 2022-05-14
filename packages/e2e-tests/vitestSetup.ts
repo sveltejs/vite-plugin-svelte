@@ -7,7 +7,7 @@ import { beforeAll } from 'vitest';
 import os from 'os';
 import { fileURLToPath } from 'url';
 
-export const isBuild = !!process.env.VITE_TEST_BUILD;
+export const isBuild = !!process.env.TEST_BUILD;
 export const isWin = process.platform === 'win32';
 export const isCI = !!process.env.CI;
 

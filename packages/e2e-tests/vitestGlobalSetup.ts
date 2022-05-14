@@ -7,9 +7,10 @@ import { fileURLToPath } from 'url';
 
 const tempTestDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'temp');
 
-const isBuildTest = !!process.env.VITE_TEST_BUILD;
+const isBuildTest = !!process.env.TEST_BUILD;
 const isCI = !!process.env.CI;
 const showTestBrowser = !!process.env.TEST_SHOW_BROWSER;
+const preserveArtifacts = !!process.env.TEST_PRESERVE_ARTIFACTS || isCI;
 
 const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
 
@@ -62,14 +63,14 @@ export async function setup() {
 	await fs.mkdirp(DIR);
 	await fs.writeFile(path.join(DIR, 'wsEndpoint'), browserServer.wsEndpoint());
 	console.log('clearing previous test artifacts');
-	if (!process.env.VITE_PRESERVE_BUILD_ARTIFACTS) {
+	if (!preserveArtifacts) {
 		await fs.remove(tempTestDir);
 	} else {
 		await fs.remove(path.join(tempTestDir, isBuildTest ? 'build' : 'serve'));
 	}
 	console.log('vitest global setup done');
 	return async () => {
-		if (!process.env.VITE_PRESERVE_BUILD_ARTIFACTS) {
+		if (!preserveArtifacts) {
 			try {
 				await fs.remove(tempTestDir);
 			} catch (e) {

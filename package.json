@@ -8,7 +8,7 @@
 		"test": "run-s -c test:unit test:serve test:build",
 		"test:unit": "vitest run",
 		"test:serve": "vitest run -c vitest.config.e2e.ts",
-		"test:build": "cross-env VITE_TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
+		"test:build": "cross-env TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
     "lint": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
     "lint:fix": "pnpm lint --fix",
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",

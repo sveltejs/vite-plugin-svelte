@@ -8,7 +8,7 @@ const timeout = process.env.CI ? 50000 : 30000;
 // @ts-ignore
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const utilsPath = path.resolve(__dir, 'packages/e2e-tests/testUtils');
-export const isBuild = !!process.env.VITE_TEST_BUILD;
+export const isBuild = !!process.env.TEST_BUILD;
 const reportsPath = path.resolve(
 	__dir,
 	'test-reports',
