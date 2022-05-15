@@ -1,11 +1,10 @@
-import { expect, test } from 'vitest';
 import {
 	editFileAndWaitForHmrComplete,
 	getColor,
 	getEl,
 	getText,
 	isBuild,
-	untilUpdated,
+	untilMatches,
 	page,
 	e2eServer,
 	browserLogs,
@@ -28,7 +27,7 @@ test('css', async () => {
 	} else {
 		// During dev, the CSS is loaded from async chunk and we may have to wait
 		// when the test runs concurrently.
-		await untilUpdated(() => getColor('h1'), 'green');
+		await untilMatches(() => getColor('h1'), 'green', 'h1 has color green');
 	}
 });
 

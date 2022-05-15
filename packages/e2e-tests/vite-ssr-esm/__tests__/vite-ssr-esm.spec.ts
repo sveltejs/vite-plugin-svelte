@@ -4,11 +4,10 @@ import {
 	getEl,
 	getText,
 	isBuild,
-	untilUpdated,
+	untilMatches,
 	page,
 	e2eServer,
 	browserLogs,
-	sleep,
 	fetchPageText
 } from '~utils';
 
@@ -28,7 +27,7 @@ test('css', async () => {
 	} else {
 		// During dev, the CSS is loaded from async chunk and we may have to wait
 		// when the test runs concurrently.
-		await untilUpdated(() => getColor('h1'), 'green');
+		await untilMatches(() => getColor('h1'), 'green', 'h1 has color green');
 	}
 });
 
@@ -69,7 +68,6 @@ if (!isBuild) {
 		test('should apply style update', async () => {
 			expect(await getColor(`h1`)).toBe('green');
 			await updateApp((content) => content.replace('color: green', 'color: red'));
-			await sleep(50); // extra wait to avoid flakiness
 			expect(await getColor(`h1`)).toBe('red');
 		});
 		test('should not preserve state of updated props', async () => {

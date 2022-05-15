@@ -1,21 +1,18 @@
 import * as path from 'path';
-import * as fs from 'fs';
+import * as os from 'os';
 // eslint-disable-next-line node/no-missing-import
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'url';
-
 const timeout = process.env.CI ? 50000 : 30000;
 // @ts-ignore
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const utilsPath = path.resolve(__dir, 'packages/e2e-tests/testUtils');
 export const isBuild = !!process.env.TEST_BUILD;
-const reportsPath = path.resolve(
-	__dir,
-	'test-reports',
-	'junit',
-	isBuild ? 'build.xml' : 'serve.xml'
-);
-fs.mkdirSync(path.dirname(reportsPath), { recursive: true });
+
+//too many threads cause vite-ssr tests to fail randomly, limit to at most 33%
+const fractionOfAvailableThreads = (f) => Math.max(1, Math.floor((os.cpus()?.length || 1) * f));
+const num_threads = fractionOfAvailableThreads(1 / 3);
+
 export default defineConfig({
 	resolve: {
 		alias: {
@@ -33,9 +30,8 @@ export default defineConfig({
 		onConsoleLog(log) {
 			if (log.match(/experimental|jit engine|emitted file/i)) return false;
 		},
-		// use 1 thread max on CI to avoid flakiness
-		maxThreads: process.env.CI ? 1 : undefined,
-		minThreads: process.env.CI ? 1 : undefined
+		minThreads: num_threads,
+		maxThreads: num_threads
 	},
 	esbuild: {
 		target: 'node14'

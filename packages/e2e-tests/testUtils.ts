@@ -92,13 +92,21 @@ export function findAssetFile(match: string | RegExp, base = '') {
 /**
  * Poll a getter until the value it returns includes the expected value.
  */
-export async function untilUpdated(poll: () => string | Promise<string>, expected: string) {
+export async function untilMatches(
+	getValue: () => string | Promise<string>,
+	matches: string,
+	msg: string
+) {
 	if (isBuild) return;
+
 	const maxTries = process.env.CI ? 100 : 20;
 	for (let tries = 0; tries < maxTries; tries++) {
-		const actual = (await poll()) || '';
-		if (actual.indexOf(expected) > -1 || tries === maxTries - 1) {
-			expect(actual).toMatch(expected);
+		const current = await getValue();
+		if (current != null && typeof current !== 'string') {
+			throw new Error('getValue must return a string, received: ' + typeof current);
+		}
+		if (current?.includes(matches) || tries === maxTries - 1) {
+			expect(current, msg).toMatch(matches);
 			break;
 		} else {
 			await timeout(50);
@@ -145,7 +153,7 @@ export async function hmrUpdateComplete(file, timeout) {
 }
 
 export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateToWaitFor?) {
-	const newContent = await editFile(file, replacer);
+	const newContent = editFile(file, replacer);
 	if (!fileUpdateToWaitFor) {
 		fileUpdateToWaitFor = file;
 	}
@@ -157,7 +165,7 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 		for (let i = 1; i <= maxTries; i++) {
 			try {
 				console.log(`retry #${i} of hmr update for ${file}`);
-				await editFile(file, () => newContent + '\n'.repeat(i));
+				editFile(file, () => newContent + '\n'.repeat(i));
 				await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
 				return;
 			} catch (e) {

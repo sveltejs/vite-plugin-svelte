@@ -7,7 +7,7 @@ import {
 	isBuild,
 	readFileContent,
 	sleep,
-	untilUpdated,
+	untilMatches,
 	waitForNavigation,
 	page,
 	browserLogs,
@@ -61,7 +61,7 @@ describe('kit-node', () => {
 			} else {
 				// During dev, the CSS is loaded from async chunk and we may have to wait
 				// when the test runs concurrently.
-				await untilUpdated(() => getColor('h1'), 'rgb(255, 62, 0)');
+				await untilMatches(() => getColor('h1'), 'rgb(255, 62, 0)', 'h1 has svelte orange');
 			}
 		});
 

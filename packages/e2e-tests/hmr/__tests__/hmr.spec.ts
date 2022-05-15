@@ -4,7 +4,7 @@ import {
 	getEl,
 	getText,
 	editFileAndWaitForHmrComplete,
-	untilUpdated,
+	untilMatches,
 	sleep,
 	getColor,
 	editFile,
@@ -33,7 +33,11 @@ test('should render dynamic import', async () => {
 	const dynamicImportButton = await getEl('#button-import-dynamic');
 	expect(dynamicImportButton).toBeDefined();
 	await dynamicImportButton.click();
-	await untilUpdated(() => getText('#dynamic-import .label'), 'dynamic-import');
+	await untilMatches(
+		() => getText('#dynamic-import .label'),
+		'dynamic-import',
+		'dynamic import loaded after click'
+	);
 });
 
 test('should not have failed requests', async () => {
