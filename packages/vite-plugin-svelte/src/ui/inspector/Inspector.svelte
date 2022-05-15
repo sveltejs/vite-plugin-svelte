@@ -99,7 +99,7 @@
 	}
 
 	function keydown(event) {
-		if (event.repeat || event.key === undefined) {
+		if (event.repeat || event.key === undefined) {
 			return;
 		}
 
