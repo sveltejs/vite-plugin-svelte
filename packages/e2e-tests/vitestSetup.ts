@@ -1,42 +1,53 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { Page } from 'playwright-core';
+import { chromium } from 'playwright-core';
+import type { Browser, Page } from 'playwright-core';
+import type { File } from 'vitest';
+import { beforeAll } from 'vitest';
+import os from 'os';
+import { fileURLToPath } from 'url';
 
-const isBuild = !!process.env.VITE_TEST_BUILD;
-const isWin = process.platform === 'win32';
-const isCI = !!process.env.CI;
+export const isBuild = !!process.env.TEST_BUILD;
+export const isWin = process.platform === 'win32';
+export const isCI = !!process.env.CI;
 
-function testDir() {
-	const testPath = expect.getState().testPath;
-	const segments = testPath.split(path.sep);
-	const testName = segments[segments.indexOf('e2e-tests') + 1];
-	return path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
-}
+/**
+ * Path to the current test file
+ */
+export let testPath: string;
+/**
+ * Path to the test folder
+ */
+export let testDir: string;
+/**
+ * Test folder name
+ */
+export let testName: string;
 
-// injected by the test env
-declare global {
-	// eslint-disable-next-line no-unused-vars
-	namespace NodeJS {
-		// eslint-disable-next-line no-unused-vars
-		interface Global {
-			page?: Page;
-			viteTestUrl?: string;
-			e2eServer?: E2EServer;
-		}
-	}
+export const serverLogs: string[] = [];
+export const browserLogs: string[] = [];
+export const browserErrors: Error[] = [];
+
+export let page: Page = undefined!;
+export let browser: Browser = undefined!;
+export let viteTestUrl: string = '';
+export let e2eServer: E2EServer;
+
+export function setViteUrl(url: string) {
+	viteTestUrl = url;
 }
 
 export interface E2EServer {
 	port: number;
 	logs: { server?: { out: string[]; err: string[] }; build?: { out: string[]; err: string[] } };
-	close: () => {};
+	close: () => Promise<void>;
 }
 
 let server: E2EServer;
 let tempDir: string;
 let err: Error;
 
-const logs = ((global as any).browserLogs = []);
+const logs = browserLogs;
 const onConsole = (msg) => {
 	logs.push(msg.text());
 };
@@ -64,14 +75,25 @@ const getUniqueTestPort = async (testRoot, testName, isBuild) => {
 	return (isBuild ? 5500 : 3500) + idx;
 };
 
+const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
+
 beforeAll(
-	async () => {
-		const page = (global as any).page;
-		if (!page) {
+	async (s) => {
+		const suite = s as File;
+		if (!suite.filepath.includes('e2e-tests')) {
 			return;
 		}
-		const testPath = expect.getState().testPath;
-		const segments = testPath.split(path.sep);
+
+		const wsEndpoint = fs.readFileSync(path.join(DIR, 'wsEndpoint'), 'utf-8');
+		if (!wsEndpoint) {
+			throw new Error('wsEndpoint not found');
+		}
+
+		browser = await chromium.connect(wsEndpoint);
+		page = await browser.newPage();
+
+		const testPath = suite.filepath;
+		const segments = testPath.split('/');
 		const testName = segments.includes('e2e-tests')
 			? segments[segments.indexOf('e2e-tests') + 1]
 			: null;
@@ -80,10 +102,11 @@ beforeAll(
 			// start a vite server in that directory.
 			if (testName) {
 				page.on('console', onConsole);
-				const e2eTestsRoot = path.resolve(__dirname, '../packages/e2e-tests');
+				const e2eTestsRoot = path.dirname(fileURLToPath(import.meta.url));
+
 				const srcDir = path.resolve(e2eTestsRoot, testName);
 
-				tempDir = path.resolve(__dirname, '../temp', isBuild ? 'build' : 'serve', testName);
+				tempDir = path.resolve(e2eTestsRoot, '../../temp', isBuild ? 'build' : 'serve', testName);
 				const directoriesToIgnore = [
 					'node_modules',
 					'__tests__',
@@ -92,6 +115,7 @@ beforeAll(
 					'.svelte',
 					'.svelte-kit'
 				];
+				testDir = tempDir;
 				const isIgnored = (file) => {
 					const segments = file.split(path.sep);
 					return segments.some((segment) => directoriesToIgnore.includes(segment));
@@ -117,17 +141,15 @@ beforeAll(
 				const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
 				const defaultServerScript = path.resolve(e2eTestsRoot, 'e2e-server.js');
 				const hasCustomServer = fs.existsSync(customServerScript);
-				const { serve } = require(hasCustomServer ? customServerScript : defaultServerScript);
+				const serverScript = hasCustomServer ? customServerScript : defaultServerScript;
+				const { serve } = await import(serverScript);
 				const port = await getUniqueTestPort(e2eTestsRoot, testName, isBuild);
 				server = await serve(tempDir, isBuild, port);
-				(global as any).e2eServer = server;
-				const url = ((global as any).viteTestUrl = `http://localhost:${port}`);
+				e2eServer = server;
+				const url = (viteTestUrl = `http://localhost:${port}`);
 				await (isBuild ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
 			}
 		} catch (e) {
-			// jest doesn't exit if our setup has error here
-			// https://github.com/facebook/jest/issues/2713
-			err = e;
 			console.error(`beforeAll failed for ${testName}.`, e);
 			// tests are still executed so close page to shorten
 			try {
@@ -135,64 +157,64 @@ beforeAll(
 			} catch (e2) {
 				console.error('failed to close page on error', e2);
 			}
+			throw e;
 		}
+
+		return async () => {
+			try {
+				if (page) {
+					page.off('console', onConsole);
+					await page.close();
+				}
+			} catch (e) {
+				console.error('failed to close test page', e);
+				if (!err) {
+					err = e;
+				}
+			}
+			try {
+				await e2eServer?.close();
+			} catch (e) {
+				console.error('failed to close test server', e);
+				if (!err) {
+					err = e;
+				}
+			}
+			if (tempDir) {
+				// unlink node modules to prevent removal of linked modules on cleanup
+				const temp_node_modules = path.join(tempDir, 'node_modules');
+				try {
+					await fs.unlink(temp_node_modules);
+				} catch (e) {
+					console.error(`failed to unlink ${temp_node_modules}`);
+					if (!err) {
+						err = e;
+					}
+				}
+				const logDir = path.join(tempDir, 'logs');
+				const logFile = path.join(logDir, 'browser.log');
+				try {
+					await fs.writeFile(logFile, logs.join('\n'));
+				} catch (e) {
+					console.error(`failed to write browserlogs in ${logFile}`, e);
+					if (!err) {
+						err = e;
+					}
+				}
+			}
+
+			if (err) {
+				throw err;
+			}
+		};
 	},
-	isCI ? (isWin ? 60000 : 30000) : 15000
+	isCI ? (isWin ? 60000 : 30000) : 20000
 );
-
-afterAll(async () => {
-	try {
-		const page = (global as any).page;
-		if (page) {
-			page.off('console', onConsole);
-			await page.close();
-		}
-	} catch (e) {
-		console.error('failed to close test page', e);
-		if (!err) {
-			err = e;
-		}
-	}
-	try {
-		await server?.close();
-	} catch (e) {
-		console.error('failed to close test server', e);
-		if (!err) {
-			err = e;
-		}
-	}
-	if (tempDir) {
-		// unlink node modules to prevent removal of linked modules on cleanup
-		const temp_node_modules = path.join(tempDir, 'node_modules');
-		try {
-			await fs.unlink(temp_node_modules);
-		} catch (e) {
-			console.error(`failed to unlink ${temp_node_modules}`);
-			if (!err) {
-				err = e;
-			}
-		}
-		const logDir = path.join(testDir(), 'logs');
-		const logFile = path.join(logDir, 'browser.log');
-		try {
-			await fs.writeFile(logFile, logs.join('\n'));
-		} catch (e) {
-			console.error(`failed to write browserlogs in ${logFile}`, e);
-			if (!err) {
-				err = e;
-			}
-		}
-	}
-
-	if (err) {
-		throw err;
-	}
-});
 
 async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
 	let timerId;
 	let pageConsoleListener;
-	const timeoutMS = 10000;
+	const timeoutMS = 15000;
 	const timeoutPromise = new Promise(
 		// eslint-disable-next-line no-unused-vars
 		(_, reject) =>

@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { buildMagicString, buildSourceMap } from '../sourcemap';
 
 describe('sourcemap', () => {

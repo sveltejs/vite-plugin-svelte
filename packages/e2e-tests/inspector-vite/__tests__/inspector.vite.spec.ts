@@ -1,4 +1,4 @@
-import { getEl, getText, isBuild } from '../../testUtils';
+import { getEl, getText, isBuild } from '~utils';
 
 describe('inspector-vite', () => {
 	it('should render page', async () => {

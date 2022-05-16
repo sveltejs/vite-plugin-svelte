@@ -1,4 +1,5 @@
-import { editViteConfig } from 'testUtils';
+import { it, expect } from 'vitest';
+import { editViteConfig, page } from '~utils';
 
 it('should load default config and work', async () => {
 	expect(await page.textContent('h1')).toMatch('Hello world!');

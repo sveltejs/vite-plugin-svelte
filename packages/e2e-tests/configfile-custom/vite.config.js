@@ -1,7 +1,7 @@
-const { svelte } = require('@sveltejs/vite-plugin-svelte');
-const { defineConfig } = require('vite');
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { defineConfig } from 'vite';
 
-module.exports = defineConfig(() => {
+export default defineConfig(() => {
 	return {
 		root: './', // ensure custom root works, see https://github.com/sveltejs/vite-plugin-svelte/issues/113
 		plugins: [svelte()],

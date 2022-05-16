@@ -1,9 +1,10 @@
 // script to start package.json dev/build/preview scripts with execa for e2e tests
-const execa = require('execa');
-const treeKill = require('tree-kill');
-const fs = require('fs');
-const path = require('path');
+import { execa } from 'execa';
+import treeKill from 'tree-kill';
+import fs from 'fs';
+import path from 'path';
 const isWin = process.platform === 'win32';
+
 async function startedOnPort(serverProcess, port, timeout) {
 	let id;
 	let stdoutListener;
@@ -40,7 +41,7 @@ async function startedOnPort(serverProcess, port, timeout) {
 	});
 }
 
-exports.serve = async function serve(root, isBuild, port) {
+export async function serve(root, isBuild, port) {
 	const logDir = path.join(root, 'logs');
 	const logs = {
 		server: null,
@@ -157,4 +158,4 @@ exports.serve = async function serve(root, isBuild, port) {
 			console.error('failed to close server process', e1);
 		}
 	}
-};
+}

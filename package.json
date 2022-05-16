@@ -5,14 +5,10 @@
     "dev": "pnpm --dir packages/vite-plugin-svelte dev",
     "build:ci": "pnpm --dir packages/vite-plugin-svelte build:ci",
     "build": "pnpm --dir packages/vite-plugin-svelte build",
-    "test": "run-s test:serve test:build",
-    "test:serve": "jest",
-    "test:serve:debug": "cross-env DEBUG=pw:api VITE_DEBUG_SERVE=1 node --inspect-brk ./node_modules/jest/bin/jest --runInBand",
-    "test:build": "cross-env VITE_TEST_BUILD=1 jest",
-    "test:build:debug": "cross-env DEBUG=pw:api VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 node --inspect-brk ./node_modules/jest/bin/jest --runInBand",
-    "test:ci": "run-s test:ci:serve test:ci:build",
-    "test:ci:serve": "cross-env VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/serve/jest-results.json\"",
-    "test:ci:build": "cross-env VITE_TEST_BUILD=1 VITE_PRESERVE_BUILD_ARTIFACTS=1 jest --verbose --no-cache --runInBand --force-exit --ci --json --outputFile=\"temp/build/jest-results.json\"",
+		"test": "run-s -c test:unit test:build test:serve",
+		"test:unit": "vitest run",
+		"test:serve": "vitest run -c vitest.config.e2e.ts",
+		"test:build": "cross-env TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
     "lint": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
     "lint:fix": "pnpm lint --fix",
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
@@ -25,7 +21,6 @@
     "@changesets/cli": "^2.22.0",
     "@svitejs/changesets-changelog-github-compact": "^0.1.1",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^27.5.0",
     "@types/node": "^17.0.21",
     "@types/semver": "^7.3.9",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
@@ -35,28 +30,24 @@
     "eslint": "^8.15.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-html": "^6.2.0",
-    "eslint-plugin-jest": "^26.1.5",
     "eslint-plugin-markdown": "^2.2.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-svelte3": "^4.0.0",
-    "execa": "^5.1.1",
+    "execa": "^6.1.0",
     "fs-extra": "^10.1.0",
     "husky": "^7.0.4",
-    "jest": "^27.5.1",
-    "jest-environment-node": "^27.5.1",
-    "jest-junit": "^13.2.0",
     "lint-staged": "^12.4.1",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.2.4",
     "npm-run-all": "^4.1.5",
     "playwright-core": "^1.21.1",
     "prettier": "^2.6.2",
     "prettier-plugin-svelte": "^2.7.0",
     "rimraf": "^3.0.2",
     "svelte": "^3.48.0",
-    "ts-jest": "^27.1.4",
     "typescript": "^4.6.4",
-    "vite": "^2.9.8"
+    "vite": "^2.9.8",
+    "vitest": "^0.12.6"
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --fix",
@@ -64,7 +55,7 @@
       "prettier --write"
     ]
   },
-	"packageManager": "pnpm@7.1.0",
+  "packageManager": "pnpm@7.1.0",
   "engines": {
     "pnpm": "^7.1.0",
     "yarn": "forbidden, use pnpm",
@@ -73,7 +64,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@sveltejs/vite-plugin-svelte": "workspace:*"
+      "@sveltejs/vite-plugin-svelte": "workspace:*",
+      "glob@^7": "^7.2.3"
     }
   }
 }

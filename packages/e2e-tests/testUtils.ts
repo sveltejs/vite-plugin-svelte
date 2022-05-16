@@ -5,17 +5,13 @@ import fs from 'fs';
 import path from 'path';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
+import fetch from 'node-fetch';
 
-export const isBuild = !!process.env.VITE_TEST_BUILD;
-export const isWin = process.platform === 'win32';
-export const isCI = !!process.env.CI;
+import { isBuild, isWin, isCI, page, testDir, viteTestUrl } from './vitestSetup';
+
+export * from './vitestSetup';
 
 export const hmrUpdateTimeout = 10000;
-
-const testPath = expect.getState().testPath;
-const segments = testPath.split(path.sep);
-const testName = segments[segments.indexOf('e2e-tests') + 1];
-export const testDir = path.resolve(__dirname, '../../temp', isBuild ? 'build' : 'serve', testName);
 
 const hexToNameMap: Record<string, string> = {};
 Object.keys(colors).forEach((color) => {
@@ -96,13 +92,21 @@ export function findAssetFile(match: string | RegExp, base = '') {
 /**
  * Poll a getter until the value it returns includes the expected value.
  */
-export async function untilUpdated(poll: () => string | Promise<string>, expected: string) {
+export async function untilMatches(
+	getValue: () => string | Promise<string>,
+	matches: string,
+	msg: string
+) {
 	if (isBuild) return;
+
 	const maxTries = process.env.CI ? 100 : 20;
 	for (let tries = 0; tries < maxTries; tries++) {
-		const actual = (await poll()) || '';
-		if (actual.indexOf(expected) > -1 || tries === maxTries - 1) {
-			expect(actual).toMatch(expected);
+		const current = await getValue();
+		if (current != null && typeof current !== 'string') {
+			throw new Error('getValue must return a string, received: ' + typeof current);
+		}
+		if (current?.includes(matches) || tries === maxTries - 1) {
+			expect(current, msg).toMatch(matches);
 			break;
 		} else {
 			await timeout(50);
@@ -149,7 +153,7 @@ export async function hmrUpdateComplete(file, timeout) {
 }
 
 export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateToWaitFor?) {
-	const newContent = await editFile(file, replacer);
+	const newContent = editFile(file, replacer);
 	if (!fileUpdateToWaitFor) {
 		fileUpdateToWaitFor = file;
 	}
@@ -161,7 +165,7 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 		for (let i = 1; i <= maxTries; i++) {
 			try {
 				console.log(`retry #${i} of hmr update for ${file}`);
-				await editFile(file, () => newContent + '\n'.repeat(i));
+				editFile(file, () => newContent + '\n'.repeat(i));
 				await hmrUpdateComplete(fileUpdateToWaitFor, hmrUpdateTimeout);
 				return;
 			} catch (e) {
@@ -173,12 +177,9 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 	}
 }
 
-export async function saveScreenshot(name?: string) {
+export async function saveScreenshot(name: string) {
 	if (!page) {
 		return;
-	}
-	if (!name) {
-		name = expect.getState().currentTestName;
 	}
 	const filename = `${new Date().toISOString().replace(/\D/g, '')}_${name
 		.toLowerCase()
@@ -216,4 +217,16 @@ export async function waitForNavigation(opts: Parameters<typeof page.waitForNavi
 	await Promise.race([page.waitForNavigation(opts), timeoutPromise]).finally(() => {
 		clearTimeout(timeoutHandle);
 	});
+}
+
+export async function fetchPageText() {
+	// force ip v4 in dev as Vite also forces it.
+	// this will be fixed in Vite 3 when we can removed this trick.
+	const url = page.url().replace('localhost', isBuild ? 'localhost' : '127.0.0.1');
+	const res = await fetch(url);
+	if (res.ok) {
+		return res.text();
+	} else {
+		throw new Error(`request to ${url} failed with ${res.status} - ${res.statusText}.`);
+	}
 }

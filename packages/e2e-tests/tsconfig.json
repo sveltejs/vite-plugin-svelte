@@ -1,14 +1,21 @@
 {
-  "include": ["."],
-  "exclude": ["**/dist/**"],
-  "compilerOptions": {
-    "target": "es2019",
-    "outDir": "dist",
-    "allowJs": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "baseUrl": ".",
-    "jsx": "preserve",
-    "types": ["vite/client", "jest", "node"]
-  }
+	"include": ["."],
+	"exclude": ["**/dist/**","**/build/**","**/node_modules/**"],
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"outDir": "dist",
+		"baseUrl": ".",
+		"allowJs": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"moduleResolution": "node",
+		"skipLibCheck": true,
+		"noUnusedLocals": true,
+		"jsx": "preserve",
+		"types": ["vite/client", "vitest/globals", "node"],
+		"paths": {
+			"~utils": ["./testUtils.ts"]
+		}
+	}
 }

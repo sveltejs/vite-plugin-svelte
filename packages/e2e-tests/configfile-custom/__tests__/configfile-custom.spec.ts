@@ -1,4 +1,5 @@
-import { editViteConfig, isBuild } from '../../testUtils';
+import { it, expect } from 'vitest';
+import { editViteConfig, isBuild, page, e2eServer } from '~utils';
 
 it('should load default config and work', async () => {
 	expect(e2eServer.logs.server.out).toContain('default svelte config loaded');
