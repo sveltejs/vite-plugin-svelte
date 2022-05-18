@@ -14,7 +14,8 @@ const config = {
 		}
 	},
 	experimental: {
-		inspector: true
+		inspector: true,
+		inlineEditor: true
 	}
 };
 

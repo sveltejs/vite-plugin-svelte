@@ -21,6 +21,7 @@ import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
+import { svelteInlineEditor } from './ui/inline-editor/plugin';
 
 interface PluginAPI {
 	/**
@@ -215,6 +216,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 		}
 	];
 	plugins.push(svelteInspector());
+	plugins.push(svelteInlineEditor());
 	return plugins.filter(Boolean);
 }
 

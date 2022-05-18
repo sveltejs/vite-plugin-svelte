@@ -70,7 +70,10 @@ module.exports = {
 			}
 		},
 		{
-			files: ['packages/vite-plugin-svelte/src/ui/inspector/load-inspector.js'],
+			files: [
+				'packages/vite-plugin-svelte/src/ui/inspector/load-inspector.js',
+				'packages/vite-plugin-svelte/src/ui/inline-editor/load-inline-editor.js'
+			],
 			env: {
 				browser: true
 			}
