@@ -23,15 +23,26 @@ import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 import { svelteInlineEditor } from './ui/inline-editor/plugin';
 
-interface PluginAPI {
-	/**
-	 * must not be modified, should not be used outside of vite-plugin-svelte repo
-	 * @internal
-	 * @experimental
-	 */
-	options?: ResolvedOptions;
-	// TODO expose compile cache here so other utility plugins can use it
+/**
+ * must not be modified, should not be used outside of vite-plugin-svelte repo
+ * @internal
+ * @experimental
+ */
+export interface VitePluginSvelteAPI {
+	options: ResolvedOptions;
+	cache: VitePluginSvelteCache;
+	compileSvelte: CompileSvelte;
+	requestParser: IdParser;
 }
+
+export type CompileSvelte = (
+	// eslint-disable-next-line no-unused-vars
+	svelteRequest: SvelteRequest,
+	// eslint-disable-next-line no-unused-vars
+	code: string,
+	// eslint-disable-next-line no-unused-vars
+	options: Partial<ResolvedOptions>
+) => Promise<CompileData>;
 
 export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	if (process.env.DEBUG != null) {
@@ -44,15 +55,11 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	let options: ResolvedOptions;
 	let viteConfig: ResolvedConfig;
 	/* eslint-disable no-unused-vars */
-	let compileSvelte: (
-		svelteRequest: SvelteRequest,
-		code: string,
-		options: Partial<ResolvedOptions>
-	) => Promise<CompileData>;
+	let compileSvelte: CompileSvelte;
 	/* eslint-enable no-unused-vars */
 
 	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;
-	const api: PluginAPI = {};
+	const api: Partial<VitePluginSvelteAPI> = {};
 	const plugins: Plugin[] = [
 		{
 			name: 'vite-plugin-svelte',
@@ -82,6 +89,9 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				viteConfig = config;
 				// TODO deep clone to avoid mutability from outside?
 				api.options = options;
+				api.requestParser = requestParser;
+				api.compileSvelte = compileSvelte;
+				api.cache = cache;
 				log.debug('resolved options', options);
 			},
 

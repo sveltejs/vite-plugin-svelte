@@ -4,6 +4,7 @@ import { InlineEditorOptions, InspectorOptions } from '../../utils/options';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { VitePluginSvelteAPI } from '../../index';
 
 const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-<' : 'meta-<',
@@ -27,6 +28,7 @@ export function svelteInlineEditor(): Plugin {
 	let inlineEditorOptions: InlineEditorOptions;
 	let appendTo: string | undefined;
 	let disabled = false;
+	let api: VitePluginSvelteAPI;
 
 	return {
 		name: 'vite-plugin-svelte:inline-editor',
@@ -35,22 +37,28 @@ export function svelteInlineEditor(): Plugin {
 
 		configResolved(config) {
 			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
-			if (vps?.api?.options?.experimental?.inlineEditor) {
-				inlineEditorOptions = {
-					...defaultInspectorOptions,
-					...vps.api.options.experimental.inlineEditor
-				};
-			}
-			if (!vps || !inlineEditorOptions) {
+			if (!vps?.api?.options?.experimental?.inlineEditor) {
 				log.debug('inlineEditor disabled, could not find config');
 				disabled = true;
-			} else {
-				if (vps.api.options.kit && !inlineEditorOptions.appendTo) {
-					const out_dir = vps.api.options.kit.outDir || '.svelte-kit';
-					inlineEditorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
-				}
-				appendTo = inlineEditorOptions.appendTo;
+				return;
 			}
+			api = vps.api;
+			const opts = api.options.experimental.inlineEditor;
+			if (opts === true) {
+				inlineEditorOptions = {
+					...defaultInspectorOptions
+				};
+			} else {
+				inlineEditorOptions = {
+					...defaultInspectorOptions,
+					...inlineEditorOptions
+				};
+			}
+			if (vps.api.options.kit && !inlineEditorOptions.appendTo) {
+				const out_dir = vps.api.options.kit.outDir || '.svelte-kit';
+				inlineEditorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
+			}
+			appendTo = inlineEditorOptions.appendTo;
 		},
 
 		configureServer(server) {
@@ -65,6 +73,7 @@ export function svelteInlineEditor(): Plugin {
 					log.error(`failed to send content of ${meta.loc.file} to browser via ws`, e);
 				}
 			});
+			const { compileSvelte, requestParser, options } = api;
 			server.ws.on('svelte-inline-editor:save', ({ code, content, file }) => {
 				try {
 					const filePath = path.resolve(root, file);
@@ -72,7 +81,17 @@ export function svelteInlineEditor(): Plugin {
 					const diskContent = fs.readFileSync(filePath, 'utf-8');
 					if (content === diskContent) {
 						// file has not changed
-						fs.writeFileSync(file, code, 'utf-8');
+						// try to compile the new code
+						compileSvelte(requestParser(file, false)!, code, options)
+							.then(() => {
+								// did compile, write to disk
+								fs.writeFileSync(file, code, 'utf-8');
+								server.ws.send('svelte-inline-editor:saved', { file, code });
+							})
+							.catch((error) => {
+								log.error(`failed to compile ${file}`, error);
+								server.ws.send('svelte-inline-editor:error', { file, error, code, content });
+							});
 					} else {
 						log.warn(
 							`${file} has changed on disk between starting edit in browser and now, aborting save`

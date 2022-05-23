@@ -1,7 +1,7 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 	export let data;
-	let code = data.content; // TODO update when data changes
+	let code = data.content;
 	const dispatch = createEventDispatcher();
 
 	function save() {
