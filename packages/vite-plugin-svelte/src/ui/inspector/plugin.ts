@@ -43,7 +43,7 @@ export function svelteInspector(): Plugin {
 				disabled = true;
 			} else {
 				if (vps.api.options.kit && !inspectorOptions.appendTo) {
-					const out_dir = vps.api.options.kit.outDir || '.svelte-kit';
+					const out_dir = path.basename(vps.api.options.kit.outDir || '.svelte-kit');
 					inspectorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
 				}
 				appendTo = inspectorOptions.appendTo;
