@@ -181,7 +181,7 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 	const passedIgnored = passedCompilerOptions.filter((o) => ignoredCompilerOptions.includes(o));
 	if (passedIgnored.length) {
 		log.warn(
-			`The following svelte compilerOptions are controlled by vite-plugin-svelte and essential to it's functionality. User-Set values are ignored. Please remove them from your configuration: ${passedIgnored.join(
+			`The following Svelte compilerOptions are controlled by vite-plugin-svelte and essential to its functionality. User-specified values are ignored. Please remove them from your configuration: ${passedIgnored.join(
 				', '
 			)}`
 		);
