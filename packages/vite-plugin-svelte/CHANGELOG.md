@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.45
+
+### Patch Changes
+
+- Handle inspector autocomplete keydown event ([#338](https://github.com/sveltejs/vite-plugin-svelte/pull/338))
+
+* Remove user-specified values for essential compilerOptions generate, format, cssHash and filename and log a warning ([#346](https://github.com/sveltejs/vite-plugin-svelte/pull/346))
+
+- fix inspector not initializing correctly for sveltekit on windows (see [#342](https://github.com/sveltejs/vite-plugin-svelte/issues/342)) ([#344](https://github.com/sveltejs/vite-plugin-svelte/pull/344))
+
 ## 1.0.0-next.44
 
 ### Patch Changes
