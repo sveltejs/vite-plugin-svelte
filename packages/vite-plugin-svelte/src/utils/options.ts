@@ -61,10 +61,7 @@ export async function preResolveOptions(
 	};
 	const defaultOptions: Partial<Options> = {
 		extensions: ['.svelte'],
-		emitCss: true,
-		compilerOptions: {
-			format: 'esm'
-		}
+		emitCss: true
 	};
 	const svelteConfig = await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions);
 	const extraOptions: Partial<PreResolvedOptions> = {
@@ -118,6 +115,7 @@ export function resolveOptions(
 	};
 	const merged: ResolvedOptions = mergeConfigs(defaultOptions, preResolveOptions, extraOptions);
 
+	removeIgnoredOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
@@ -174,6 +172,23 @@ function enforceOptionsForProduction(options: ResolvedOptions) {
 			);
 			options.compilerOptions.dev = false;
 		}
+	}
+}
+
+function removeIgnoredOptions(options: ResolvedOptions) {
+	const ignoredCompilerOptions = ['generate', 'cssHash', 'format', 'filename'];
+	const passedCompilerOptions = Object.keys(options.compilerOptions || {});
+	const passedIgnored = passedCompilerOptions.filter((o) => ignoredCompilerOptions.includes(o));
+	if (passedIgnored.length) {
+		log.warn(
+			`The following svelte compilerOptions are controlled by vite-plugin-svelte and essential to it's functionality. User-Set values are ignored. Please remove them from your configuration: ${passedIgnored.join(
+				', '
+			)}`
+		);
+		passedIgnored.forEach((ignored) => {
+			// @ts-expect-error string access
+			delete options.compilerOptions[ignored];
+		});
 	}
 }
 

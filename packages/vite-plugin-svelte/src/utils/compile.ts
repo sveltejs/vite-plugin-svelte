@@ -21,7 +21,8 @@ const _createCompileSvelte = (makeHot: Function) =>
 		const compileOptions: CompileOptions = {
 			...options.compilerOptions,
 			filename,
-			generate: ssr ? 'ssr' : 'dom'
+			generate: ssr ? 'ssr' : 'dom',
+			format: 'esm'
 		};
 		if (options.hot && options.emitCss) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
