@@ -176,7 +176,10 @@ function enforceOptionsForProduction(options: ResolvedOptions) {
 }
 
 function removeIgnoredOptions(options: ResolvedOptions) {
-	const ignoredCompilerOptions = ['generate', 'cssHash', 'format', 'filename'];
+	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
+	if (options.hot && options.emitCss) {
+		ignoredCompilerOptions.push('cssHash');
+	}
 	const passedCompilerOptions = Object.keys(options.compilerOptions || {});
 	const passedIgnored = passedCompilerOptions.filter((o) => ignoredCompilerOptions.includes(o));
 	if (passedIgnored.length) {
@@ -416,11 +419,13 @@ export interface Options {
 	emitCss?: boolean;
 
 	/**
-	 * The options to be passed to the Svelte compiler
+	 * The options to be passed to the Svelte compiler. A few options are set by default,
+	 * including `dev` and `css`. However, some options are non-configurable, like
+	 * `filename`, `format`, `generate`, and `cssHash` (in dev).
 	 *
 	 * @see https://svelte.dev/docs#svelte_compile
 	 */
-	compilerOptions?: CompileOptions;
+	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
 
 	/**
 	 * Handles warning emitted from the Svelte compiler
