@@ -42,6 +42,8 @@ A basic Svelte config looks like this:
 // svelte.config.js
 export default {
   // config options
+  compilerOptions: {},
+  preprocess: []
 };
 ```
 
@@ -77,13 +79,11 @@ export default defineConfig({
 
 These options are specific to the Svelte compiler and are generally shared across many bundler integrations.
 
-<!-- TODO: Also note where these options can be placed in svelte.config.js -->
-
 ### compilerOptions
 
 - **Type:** `CompileOptions` - See [svelte.compile](https://svelte.dev/docs#svelte_compile)
 
-  The options to be passed to the Svelte compiler. A few options are set by default, including `dev`, `format` and `css`. However, some options are non-configurable, like `filename`, `generate`, and `cssHash`.
+  The options to be passed to the Svelte compiler. A few options are set by default, including `dev` and `css`. However, some options are non-configurable, like `filename`, `format`, `generate`, and `cssHash` (in dev).
 
 ### preprocess
 
