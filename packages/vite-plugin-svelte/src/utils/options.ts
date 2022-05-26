@@ -61,10 +61,7 @@ export async function preResolveOptions(
 	};
 	const defaultOptions: Partial<Options> = {
 		extensions: ['.svelte'],
-		emitCss: true,
-		compilerOptions: {
-			format: 'esm'
-		}
+		emitCss: true
 	};
 	const svelteConfig = await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions);
 	const extraOptions: Partial<PreResolvedOptions> = {
@@ -118,6 +115,7 @@ export function resolveOptions(
 	};
 	const merged: ResolvedOptions = mergeConfigs(defaultOptions, preResolveOptions, extraOptions);
 
+	removeIgnoredOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
@@ -174,6 +172,26 @@ function enforceOptionsForProduction(options: ResolvedOptions) {
 			);
 			options.compilerOptions.dev = false;
 		}
+	}
+}
+
+function removeIgnoredOptions(options: ResolvedOptions) {
+	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
+	if (options.hot && options.emitCss) {
+		ignoredCompilerOptions.push('cssHash');
+	}
+	const passedCompilerOptions = Object.keys(options.compilerOptions || {});
+	const passedIgnored = passedCompilerOptions.filter((o) => ignoredCompilerOptions.includes(o));
+	if (passedIgnored.length) {
+		log.warn(
+			`The following Svelte compilerOptions are controlled by vite-plugin-svelte and essential to its functionality. User-specified values are ignored. Please remove them from your configuration: ${passedIgnored.join(
+				', '
+			)}`
+		);
+		passedIgnored.forEach((ignored) => {
+			// @ts-expect-error string access
+			delete options.compilerOptions[ignored];
+		});
 	}
 }
 
@@ -401,11 +419,13 @@ export interface Options {
 	emitCss?: boolean;
 
 	/**
-	 * The options to be passed to the Svelte compiler
+	 * The options to be passed to the Svelte compiler. A few options are set by default,
+	 * including `dev` and `css`. However, some options are non-configurable, like
+	 * `filename`, `format`, `generate`, and `cssHash` (in dev).
 	 *
 	 * @see https://svelte.dev/docs#svelte_compile
 	 */
-	compilerOptions?: CompileOptions;
+	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
 
 	/**
 	 * Handles warning emitted from the Svelte compiler
