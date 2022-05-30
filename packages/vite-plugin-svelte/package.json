@@ -24,7 +24,7 @@
   },
   "scripts": {
     "dev": "pnpm build:ci --sourcemap --watch src",
-    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --target node14",
+    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --shims",
     "build": "pnpm build:ci --dts --sourcemap"
   },
   "engines": {
@@ -67,10 +67,10 @@
     "@types/debug": "^4.1.7",
     "@types/diff-match-patch": "^1.0.32",
     "diff-match-patch": "^1.0.5",
-    "esbuild": "^0.14.39",
-    "rollup": "^2.74.1",
+    "esbuild": "^0.14.42",
+    "rollup": "^2.75.3",
     "svelte": "^3.48.0",
-    "tsup": "^5.12.8",
+    "tsup": "^6.0.1",
     "vite": "^2.9.9"
   }
 }
