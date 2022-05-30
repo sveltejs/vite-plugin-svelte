@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.46
+
+### Patch Changes
+
+- Bump svelte-hmr version ([#349](https://github.com/sveltejs/vite-plugin-svelte/pull/349))
+
 ## 1.0.0-next.45
 
 ### Patch Changes
