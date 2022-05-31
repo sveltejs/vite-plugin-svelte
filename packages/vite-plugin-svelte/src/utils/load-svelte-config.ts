@@ -27,10 +27,10 @@ const dynamicImportDefault = new Function(
 );
 
 export async function loadSvelteConfig(
-	viteConfig: UserConfig,
-	inlineOptions: Partial<Options>
+	viteConfig?: UserConfig,
+	inlineOptions?: Partial<Options>
 ): Promise<Partial<Options> | undefined> {
-	if (inlineOptions.configFile === false) {
+	if (inlineOptions?.configFile === false) {
 		return;
 	}
 	const configFile = findConfigToLoad(viteConfig, inlineOptions);
@@ -87,9 +87,9 @@ export async function loadSvelteConfig(
 	}
 }
 
-function findConfigToLoad(viteConfig: UserConfig, inlineOptions: Partial<Options>) {
-	const root = viteConfig.root || process.cwd();
-	if (inlineOptions.configFile) {
+function findConfigToLoad(viteConfig?: UserConfig, inlineOptions?: Partial<Options>) {
+	const root = viteConfig?.root || process.cwd();
+	if (inlineOptions?.configFile) {
 		const abolutePath = path.isAbsolute(inlineOptions.configFile)
 			? inlineOptions.configFile
 			: path.resolve(root, inlineOptions.configFile);

@@ -218,6 +218,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	return plugins.filter(Boolean);
 }
 
+export { loadSvelteConfig } from './utils/load-svelte-config';
+
 export {
 	Options,
 	Preprocessor,
