@@ -22,7 +22,8 @@ export const knownSvelteConfigNames = [
 // also use timestamp query to avoid caching on reload
 const dynamicImportDefault = new Function(
 	'path',
-	'return import(path + "?t=" + Date.now()).then(m => m.default)'
+	'timestamp',
+	'return import(path + "?t=" + timestamp).then(m => m.default)'
 );
 
 export async function loadSvelteConfig(
@@ -38,7 +39,10 @@ export async function loadSvelteConfig(
 		// try to use dynamic import for svelte.config.js first
 		if (configFile.endsWith('.js') || configFile.endsWith('.mjs')) {
 			try {
-				const result = await dynamicImportDefault(pathToFileURL(configFile).href);
+				const result = await dynamicImportDefault(
+					pathToFileURL(configFile).href,
+					fs.statSync(configFile).mtimeMs
+				);
 				if (result != null) {
 					return {
 						...result,
