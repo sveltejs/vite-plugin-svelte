@@ -90,6 +90,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				if (isSvelteMetadataChanged) {
 					// Force Vite to optimize again. Although we mutate the config here, it works because
 					// Vite's optimizer runs after `buildStart()`.
+					// TODO vite3 tagged force as experimental
+					// @ts-expect-error experimental
 					viteConfig.server.force = true;
 				}
 			},
