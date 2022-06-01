@@ -22,14 +22,15 @@ export const knownSvelteConfigNames = [
 // also use timestamp query to avoid caching on reload
 const dynamicImportDefault = new Function(
 	'path',
-	'return import(path + "?t=" + Date.now()).then(m => m.default)'
+	'timestamp',
+	'return import(path + "?t=" + timestamp).then(m => m.default)'
 );
 
 export async function loadSvelteConfig(
-	viteConfig: UserConfig,
-	inlineOptions: Partial<Options>
+	viteConfig?: UserConfig,
+	inlineOptions?: Partial<Options>
 ): Promise<Partial<Options> | undefined> {
-	if (inlineOptions.configFile === false) {
+	if (inlineOptions?.configFile === false) {
 		return;
 	}
 	const configFile = findConfigToLoad(viteConfig, inlineOptions);
@@ -38,7 +39,10 @@ export async function loadSvelteConfig(
 		// try to use dynamic import for svelte.config.js first
 		if (configFile.endsWith('.js') || configFile.endsWith('.mjs')) {
 			try {
-				const result = await dynamicImportDefault(pathToFileURL(configFile).href);
+				const result = await dynamicImportDefault(
+					pathToFileURL(configFile).href,
+					fs.statSync(configFile).mtimeMs
+				);
 				if (result != null) {
 					return {
 						...result,
@@ -83,9 +87,9 @@ export async function loadSvelteConfig(
 	}
 }
 
-function findConfigToLoad(viteConfig: UserConfig, inlineOptions: Partial<Options>) {
-	const root = viteConfig.root || process.cwd();
-	if (inlineOptions.configFile) {
+function findConfigToLoad(viteConfig?: UserConfig, inlineOptions?: Partial<Options>) {
+	const root = viteConfig?.root || process.cwd();
+	if (inlineOptions?.configFile) {
 		const abolutePath = path.isAbsolute(inlineOptions.configFile)
 			? inlineOptions.configFile
 			: path.resolve(root, inlineOptions.configFile);
