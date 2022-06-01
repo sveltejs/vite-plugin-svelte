@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.47
+
+### Patch Changes
+
+- Use last modified time as cache busting parameter ([#356](https://github.com/sveltejs/vite-plugin-svelte/pull/356))
+
+* Export loadSvelteConfig ([#356](https://github.com/sveltejs/vite-plugin-svelte/pull/356))
+
 ## 1.0.0-next.46
 
 ### Patch Changes
