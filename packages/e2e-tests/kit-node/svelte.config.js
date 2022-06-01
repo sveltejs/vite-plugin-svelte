@@ -10,6 +10,10 @@ const config = {
 		adapter: node(),
 
 		vite: {
+			ssr: {
+				// TODO this is needed otherwise tests fail. investigate
+				noExternal: ['e2e-test-dep-svelte-api-only']
+			},
 			server: {
 				watch: {
 					// During tests we edit the files too fast and sometimes chokidar

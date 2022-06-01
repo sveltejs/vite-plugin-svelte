@@ -334,14 +334,14 @@ function buildSSROptionsForSvelte(
 	options: ResolvedOptions,
 	config: UserConfig
 ): any {
-	const noExternal: string[] = [];
+	const noExternal: (string | RegExp)[] = [];
 
 	// add svelte to ssr.noExternal unless it is present in ssr.external
 	// so we can resolve it with svelte/ssr
 	if (options.isBuild && config.build?.ssr) {
 		// TODO remove this comment if ssr stays stable // @ts-expect-error ssr still flagged in vite
 		if (!config.ssr?.external?.includes('svelte')) {
-			noExternal.push('svelte');
+			noExternal.push('svelte', /^svelte\//);
 		}
 	} else {
 		// for non-ssr build, we exclude svelte js library deps to make development faster

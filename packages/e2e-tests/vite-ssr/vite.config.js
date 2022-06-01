@@ -10,6 +10,9 @@ module.exports = defineConfig(({ command, mode }) => {
 				}
 			})
 		],
+		ssr: {
+			format: 'cjs'
+		},
 		build: {
 			target: 'esnext',
 			minify: false,
