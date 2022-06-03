@@ -144,7 +144,8 @@ const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'svelte-preprocess',
 	'tslib',
 	'typescript',
-	'vite'
+	'vite',
+	'__vite-browser-external' // see https://github.com/sveltejs/vite-plugin-svelte/issues/362
 ];
 const COMMON_PREFIXES_WITHOUT_SVELTE_FIELD = [
 	'@fontsource/',
