@@ -127,6 +127,7 @@ function isSvelteLib(pkg: Pkg) {
 
 const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'@lukeed/uuid',
+	'@playwright/test',
 	'@sveltejs/vite-plugin-svelte',
 	'@sveltejs/kit',
 	'autoprefixer',
@@ -136,6 +137,7 @@ const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'eslint',
 	'jest',
 	'mdsvex',
+	'playwright',
 	'postcss',
 	'prettier',
 	'svelte',
@@ -145,6 +147,7 @@ const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'tslib',
 	'typescript',
 	'vite',
+	'vitest',
 	'__vite-browser-external' // see https://github.com/sveltejs/vite-plugin-svelte/issues/362
 ];
 const COMMON_PREFIXES_WITHOUT_SVELTE_FIELD = [
