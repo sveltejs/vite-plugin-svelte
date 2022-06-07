@@ -248,7 +248,7 @@ importers:
   packages/e2e-tests/kit-node:
     specifiers:
       '@sveltejs/adapter-node': ^1.0.0-next.78
-      '@sveltejs/kit': ^1.0.0-next.348
+      '@sveltejs/kit': ^1.0.0-next.350
       e2e-test-dep-svelte-api-only: workspace:*
       e2e-test-dep-vite-plugins: workspace:*
       svelte: ^3.48.0
@@ -257,7 +257,7 @@ importers:
       typescript: ^4.7.3
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.78
-      '@sveltejs/kit': 1.0.0-next.348_svelte@3.48.0
+      '@sveltejs/kit': 1.0.0-next.350_svelte@3.48.0
       e2e-test-dep-svelte-api-only: link:../_test_dependencies/svelte-api-only
       e2e-test-dep-vite-plugins: link:../_test_dependencies/vite-plugins
       svelte: 3.48.0
@@ -445,6 +445,7 @@ importers:
   packages/vite-plugin-svelte:
     specifiers:
       '@rollup/pluginutils': ^4.2.1
+      '@sveltejs/kit': ^1.0.0-next.350
       '@types/debug': ^4.1.7
       '@types/diff-match-patch': ^1.0.32
       debug: ^4.3.4
@@ -466,6 +467,7 @@ importers:
       magic-string: 0.26.2
       svelte-hmr: 0.14.12_svelte@3.48.0
     devDependencies:
+      '@sveltejs/kit': 1.0.0-next.350_svelte@3.48.0
       '@types/debug': 4.1.7
       '@types/diff-match-patch': 1.0.32
       diff-match-patch: 1.0.5
@@ -914,6 +916,24 @@ packages:
 
   /@sveltejs/kit/1.0.0-next.348_svelte@3.48.0:
     resolution: {integrity: sha512-K9dfgzIbotWmbcdCsQ6ROGs9R+bsGWwmSdN6l6km1QV5esQehqg1UYHGD9q0VJsg4rJg/zmKVBYo0oBquSHPZw==}
+    engines: {node: '>=16.7'}
+    hasBin: true
+    peerDependencies:
+      svelte: ^3.44.0
+    dependencies:
+      '@sveltejs/vite-plugin-svelte': link:packages/vite-plugin-svelte
+      chokidar: 3.5.3
+      sade: 1.8.1
+      svelte: 3.48.0
+      vite: 2.9.10
+    transitivePeerDependencies:
+      - less
+      - sass
+      - stylus
+    dev: true
+
+  /@sveltejs/kit/1.0.0-next.350_svelte@3.48.0:
+    resolution: {integrity: sha512-qkZNjp7yIj6t91+wMhmMtGJH0Lb89OaKdVXUDy92CS5/4OHRTKcQPdfOKs4no/upkS3RiFb+rEpOkYqTMcPUXg==}
     engines: {node: '>=16.7'}
     hasBin: true
     peerDependencies:
