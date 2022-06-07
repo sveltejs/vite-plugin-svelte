@@ -117,7 +117,7 @@ export function resolveOptions(
 	const merged: ResolvedOptions = mergeConfigs(defaultOptions, preResolveOptions, extraOptions);
 
 	removeIgnoredOptions(merged);
-	setKitOptions(merged);
+	addSvelteKitOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
@@ -197,7 +197,8 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 	}
 }
 
-function setKitOptions(options: ResolvedOptions) {
+// some SvelteKit options need compilerOptions to work, so set them here.
+function addSvelteKitOptions(options: ResolvedOptions) {
 	if (options?.kit != null) {
 		const hydratable = options.kit.browser?.hydrate !== false;
 		if (
