@@ -497,7 +497,7 @@ export interface Options {
 	experimental?: ExperimentalOptions;
 
 	/**
-	 * Options for sveltekit
+	 * Options for SvelteKit
 	 */
 	kit?: KitConfig;
 }
