@@ -11,14 +11,16 @@ import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
 // eslint-disable-next-line node/no-missing-import
-import { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
-import {
+import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
+import type {
 	MarkupPreprocessor,
 	Preprocessor,
 	PreprocessorGroup,
 	Processed
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
+// eslint-disable-next-line node/no-missing-import
+import type { KitConfig } from '@sveltejs/kit';
 import path from 'path';
 import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
 import { createRequire } from 'module';
@@ -76,7 +78,6 @@ export async function preResolveOptions(
 		inlineOptions,
 		extraOptions
 	);
-
 	// configFile of svelteConfig contains the absolute path it was loaded from,
 	// prefer it over the possibly relative inline path
 	if (svelteConfig?.configFile) {
@@ -116,6 +117,7 @@ export function resolveOptions(
 	const merged: ResolvedOptions = mergeConfigs(defaultOptions, preResolveOptions, extraOptions);
 
 	removeIgnoredOptions(merged);
+	addSvelteKitOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
@@ -192,6 +194,23 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 			// @ts-expect-error string access
 			delete options.compilerOptions[ignored];
 		});
+	}
+}
+
+// some SvelteKit options need compilerOptions to work, so set them here.
+function addSvelteKitOptions(options: ResolvedOptions) {
+	if (options?.kit != null) {
+		const hydratable = options.kit.browser?.hydrate !== false;
+		if (
+			options.compilerOptions.hydratable != null &&
+			options.compilerOptions.hydratable !== hydratable
+		) {
+			log.warn(
+				`Conflicting values "compilerOptions.hydratable: ${options.compilerOptions.hydratable}" and "kit.browser.hydrate: ${options.kit.browser?.hydrate}" in your svelte config. You should remove "compilerOptions.hydratable".`
+			);
+		}
+		log.debug(`Setting compilerOptions.hydratable: ${hydratable} for SvelteKit`);
+		options.compilerOptions.hydratable = hydratable;
 	}
 }
 
@@ -476,6 +495,11 @@ export interface Options {
 	 * These options are considered experimental and breaking changes to them can occur in any release
 	 */
 	experimental?: ExperimentalOptions;
+
+	/**
+	 * Options for SvelteKit
+	 */
+	kit?: KitConfig;
 }
 
 /**
