@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.48
+
+### Minor Changes
+
+- Automate setting of compilerOptions.hydratable from kit.browser.hydrate option ([#368](https://github.com/sveltejs/vite-plugin-svelte/pull/368))
+
+### Patch Changes
+
+- Do not try to resolve svelte field in \_\_vite-browser-external, see (#362)" ([#363](https://github.com/sveltejs/vite-plugin-svelte/pull/363))
+
 ## 1.0.0-next.47
 
 ### Patch Changes
