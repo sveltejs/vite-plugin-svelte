@@ -83,7 +83,7 @@ These options are specific to the Svelte compiler and are generally shared acros
 
 - **Type:** `CompileOptions` - See [svelte.compile](https://svelte.dev/docs#svelte_compile)
 
-  The options to be passed to the Svelte compiler. A few options are set by default, including `dev` and `css`. However, some options are non-configurable, like `filename`, `format`, `generate`, and `cssHash` (in dev).
+  The options to be passed to the Svelte compiler. A few options are set by default, including `dev` and `css`. However, some options are non-configurable, like `filename`, `format`, `generate`, and `cssHash` ([in dev](./faq.md#why-cant-csshash-be-set-in-development-mode)).
 
 ### preprocess
 
