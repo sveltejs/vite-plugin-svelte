@@ -73,6 +73,12 @@ Bad:
 </style>
 ```
 
+### Why can't `cssHash` be set in development mode?
+
+`cssHash` is fixed in development for CSS HMR in Svelte components, ensuring that the hash value is stable based on the file name so that styles are only updated when changed.
+
+However, `cssHash` is respected in production builds as HMR is a dev-only feature.
+
 ### How do I add a Svelte preprocessor from a Vite plugin?
 
 If you are building a Vite plugin that transforms CSS or JS, you can add a `api.sveltePreprocess: PreprocessorGroup` to your Vite plugin definition and it will be added to the list of Svelte preprocessors used at runtime.
