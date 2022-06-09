@@ -185,7 +185,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				} catch (e) {
 					throw toRollupError(e, options);
 				}
-				logCompilerWarnings(compileData.compiled.warnings, options);
+				logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
 				cache.update(compileData);
 				if (compileData.dependencies?.length && options.server) {
 					compileData.dependencies.forEach((d) => {
