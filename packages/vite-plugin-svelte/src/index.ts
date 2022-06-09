@@ -183,6 +183,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				try {
 					compileData = await compileSvelte(svelteRequest, code, options);
 				} catch (e) {
+					cache.setError(svelteRequest, e);
 					throw toRollupError(e, options);
 				}
 				logCompilerWarnings(compileData.compiled.warnings, options);
@@ -209,7 +210,11 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				}
 				const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);
 				if (svelteRequest) {
-					return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
+					try {
+						return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
+					} catch (e) {
+						throw toRollupError(e, options);
+					}
 				}
 			}
 		}
