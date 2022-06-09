@@ -104,13 +104,17 @@ export function logCompilerWarnings(warnings: Warning[], options: ResolvedOption
 	const warn = isBuild ? warnBuild : warnDev;
 	const notIgnoredWarnings = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
 	const extraWarnings = buildExtraWarnings(warnings, isBuild);
-	[...notIgnoredWarnings, ...extraWarnings].forEach((warning) => {
+	const warningsToSend = [...notIgnoredWarnings, ...extraWarnings];
+	warningsToSend.forEach((warning) => {
 		if (onwarn) {
 			onwarn(warning, warn);
 		} else {
 			warn(warning);
 		}
 	});
+	if (!isBuild && options.experimental.sendWarningsToBrowser) {
+		options.server?.ws?.send('svelte:warnings', warningsToSend);
+	}
 }
 
 function ignoreCompilerWarning(

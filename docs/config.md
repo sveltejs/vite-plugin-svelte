@@ -332,3 +332,18 @@ export default defineConfig({
     ]
   });
   ```
+
+### sendWarningsToBrowser
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+Sends a websocket message `svelte:warnings` with the warnings that are passed to `onwarn`. This is only useful if you build a custom browser based integration where you want to display these.
+
+**Example**
+
+```js
+import.meta.hot.on('svelte:warnings', (warnings) =>
+  console.log('received svelte warnings', warnings)
+);
+```

@@ -560,6 +560,12 @@ export interface ExperimentalOptions {
 	 * enable svelte inspector
 	 */
 	inspector?: InspectorOptions | boolean;
+
+	/**
+	 * send a websocket message with svelte compiler warnings during dev
+	 *
+	 */
+	sendWarningsToBrowser?: boolean;
 }
 
 export interface InspectorOptions {
