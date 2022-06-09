@@ -112,7 +112,7 @@ export function logCompilerWarnings(warnings: Warning[], options: ResolvedOption
 			warn(warning);
 		}
 	});
-	if (!isBuild && options.experimental.sendWarningsToBrowser) {
+	if (!isBuild && options.experimental?.sendWarningsToBrowser) {
 		options.server?.ws?.send('svelte:warnings', warningsToSend);
 	}
 }

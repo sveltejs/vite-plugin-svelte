@@ -615,7 +615,7 @@ export interface InspectorOptions {
 export interface PreResolvedOptions extends Options {
 	// these options are non-nullable after resolve
 	compilerOptions: CompileOptions;
-	experimental: ExperimentalOptions;
+	experimental?: ExperimentalOptions;
 	// extra options
 	root: string;
 	isBuild: boolean;
