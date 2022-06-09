@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0-next.49
+
+### Minor Changes
+
+- New experimental option sendWarningsToBrowser ([#372](https://github.com/sveltejs/vite-plugin-svelte/pull/372))
+
+### Patch Changes
+
+- fix hmr not updating a component when returning to the last working state from an error state ([#371](https://github.com/sveltejs/vite-plugin-svelte/pull/371))
+
 ## 1.0.0-next.48
 
 ### Minor Changes
