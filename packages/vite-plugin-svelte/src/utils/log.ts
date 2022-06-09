@@ -123,9 +123,10 @@ export function logCompilerWarnings(
 	const extra = buildExtraWarnings(warnings, isBuild);
 	const allWarnings = [...notIgnored, ...extra];
 	if (sendViaWS) {
+		const _warn = warn;
 		warn = (w: Warning) => {
 			handledByDefaultWarn.push(w);
-			warn(w);
+			_warn(w);
 		};
 	}
 	allWarnings.forEach((warning) => {
