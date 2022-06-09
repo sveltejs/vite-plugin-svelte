@@ -560,6 +560,12 @@ export interface ExperimentalOptions {
 	 * enable svelte inspector
 	 */
 	inspector?: InspectorOptions | boolean;
+
+	/**
+	 * send a websocket message with svelte compiler warnings during dev
+	 *
+	 */
+	sendWarningsToBrowser?: boolean;
 }
 
 export interface InspectorOptions {
@@ -609,7 +615,7 @@ export interface InspectorOptions {
 export interface PreResolvedOptions extends Options {
 	// these options are non-nullable after resolve
 	compilerOptions: CompileOptions;
-	experimental: ExperimentalOptions;
+	experimental?: ExperimentalOptions;
 	// extra options
 	root: string;
 	isBuild: boolean;

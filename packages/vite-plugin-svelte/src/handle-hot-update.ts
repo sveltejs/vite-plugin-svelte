@@ -53,7 +53,7 @@ export async function handleHotUpdate(
 
 	if (!jsUpdated) {
 		// transform won't be called, log warnings here
-		logCompilerWarnings(compileData.compiled.warnings, options);
+		logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
 	}
 
 	const result = [...affectedModules].filter(Boolean) as ModuleNode[];
