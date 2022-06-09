@@ -100,6 +100,16 @@ export const log = {
 	setLevel
 };
 
+export type SvelteWarningsMessage = {
+	id: string;
+	filename: string;
+	normalizedFilename: string;
+	timestamp: number;
+	warnings: Warning[]; // allWarnings filtered by warnings where onwarn did not call the default handler
+	allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite plugin svelte warnings
+	rawWarnings: Warning[]; // raw compiler output
+};
+
 export function logCompilerWarnings(
 	svelteRequest: SvelteRequest,
 	warnings: Warning[],
@@ -126,7 +136,7 @@ export function logCompilerWarnings(
 		}
 	});
 	if (sendViaWS) {
-		options.server?.ws?.send('svelte:warnings', {
+		const message: SvelteWarningsMessage = {
 			id: svelteRequest.id,
 			filename: svelteRequest.filename,
 			normalizedFilename: svelteRequest.normalizedFilename,
@@ -134,7 +144,9 @@ export function logCompilerWarnings(
 			warnings: handledByDefaultWarn, // allWarnings filtered by warnings where onwarn did not call the default handler
 			allWarnings, // includes warnings filtered by onwarn and our extra vite plugin svelte warnings
 			rawWarnings: warnings // raw compiler output
-		});
+		};
+		log.debug(`sending svelte:warnings message for ${svelteRequest.normalizedFilename}`);
+		options.server?.ws?.send('svelte:warnings', message);
 	}
 }
 

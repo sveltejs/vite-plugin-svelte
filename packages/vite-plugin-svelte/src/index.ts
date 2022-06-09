@@ -232,3 +232,5 @@ export {
 	Processed,
 	Warning
 } from './utils/options';
+
+export { SvelteWarningsMessage } from './utils/log';

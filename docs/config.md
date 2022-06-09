@@ -338,12 +338,27 @@ export default defineConfig({
 - **Type:** `boolean`
 - **Default:** `false`
 
-Sends a websocket message `svelte:warnings` with the warnings that are passed to `onwarn`. This is only useful if you build a custom browser based integration where you want to display these.
+  Sends a websocket message `svelte:warnings` with the warnings that are passed to `onwarn`. This is only useful if you build a custom browser based integration where you want to display these.
 
-**Example**
+  **Example**
 
-```js
-import.meta.hot.on('svelte:warnings', (warnings) =>
-  console.log('received svelte warnings', warnings)
-);
-```
+  ```js
+  import.meta.hot.on('svelte:warnings', (message) => {
+    // handle warnings message, eg log to console
+    console.warn(`Warnings for ${message.filename}`, message.warnings);
+  });
+  ```
+
+  **Message format**
+
+  ```ts
+  type SvelteWarningsMessage = {
+    id: string;
+    filename: string;
+    normalizedFilename: string;
+    timestamp: number;
+    warnings: Warning[]; // allWarnings filtered by warnings where onwarn did not call the default handler
+    allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite plugin svelte warnings
+    rawWarnings: Warning[]; // raw compiler output
+  };
+  ```
