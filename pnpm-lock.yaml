@@ -298,16 +298,18 @@ importers:
   packages/e2e-tests/svelte-preprocess:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
+      sass: ^1.52.3
       svelte: ^3.48.0
       svelte-preprocess: ^4.10.7
       typescript: ^4.7.4
       vite: ^3.0.0-beta.1
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      sass: 1.52.3
       svelte: 3.48.0
-      svelte-preprocess: 4.10.7_lvfi2wesz6u4l5rfbnetbucfmm
+      svelte-preprocess: 4.10.7_sc43riijdtfngmrjyiflxnlxxa
       typescript: 4.7.4
-      vite: 3.0.0-beta.1
+      vite: 3.0.0-beta.1_sass@1.52.3
 
   packages/e2e-tests/ts-type-import:
     specifiers:
@@ -5369,6 +5371,58 @@ packages:
       typescript: 4.7.4
     dev: true
 
+  /svelte-preprocess/4.10.7_sc43riijdtfngmrjyiflxnlxxa:
+    resolution: {integrity: sha512-sNPBnqYD6FnmdBrUmBCaqS00RyCsCpj2BG58A1JBswNF7b0OKviwxqVrOL/CKyJrLSClrSeqQv5BXNg2RUbPOw==}
+    engines: {node: '>= 9.11.2'}
+    requiresBuild: true
+    peerDependencies:
+      '@babel/core': ^7.10.2
+      coffeescript: ^2.5.1
+      less: ^3.11.3 || ^4.0.0
+      node-sass: '*'
+      postcss: ^7 || ^8
+      postcss-load-config: ^2.1.0 || ^3.0.0 || ^4.0.0
+      pug: ^3.0.0
+      sass: ^1.26.8
+      stylus: ^0.55.0 || ^0.58.0
+      sugarss: ^2.0.0
+      svelte: ^3.23.0
+      typescript: ^3.9.5 || ^4.0.0
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      coffeescript:
+        optional: true
+      less:
+        optional: true
+      node-sass:
+        optional: true
+      postcss:
+        optional: true
+      postcss-load-config:
+        optional: true
+      pug:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      '@types/pug': 2.0.6
+      '@types/sass': 1.43.1
+      detect-indent: 6.1.0
+      magic-string: 0.25.9
+      sass: 1.52.3
+      sorcery: 0.10.0
+      strip-indent: 3.0.0
+      svelte: 3.48.0
+      typescript: 4.7.4
+    dev: true
+
   /svelte-preprocess/4.10.7_svelte@3.48.0:
     resolution: {integrity: sha512-sNPBnqYD6FnmdBrUmBCaqS00RyCsCpj2BG58A1JBswNF7b0OKviwxqVrOL/CKyJrLSClrSeqQv5BXNg2RUbPOw==}
     engines: {node: '>= 9.11.2'}
@@ -5806,6 +5860,34 @@ packages:
       postcss: 8.4.14
       resolve: 1.22.1
       rollup: 2.75.7
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /vite/3.0.0-beta.1_sass@1.52.3:
+    resolution: {integrity: sha512-7p9hoj4vHQdPWbWIkP33Y1vxD8JbPRHUl5IhO9xs5uuwFwzUiYC27z9bVnmB9VAj170fmI9VNhAJIvC/Kb9unA==}
+    engines: {node: '>=14.18.0'}
+    hasBin: true
+    peerDependencies:
+      less: '*'
+      sass: '*'
+      stylus: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      esbuild: 0.14.47
+      postcss: 8.4.14
+      resolve: 1.22.1
+      rollup: 2.75.7
+      sass: 1.52.3
     optionalDependencies:
       fsevents: 2.3.2
     dev: true

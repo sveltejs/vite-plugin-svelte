@@ -338,16 +338,16 @@ function buildSSROptionsForSvelte(
 
 	// add svelte to ssr.noExternal unless it is present in ssr.external
 	// so we can resolve it with svelte/ssr
-	if (options.isBuild && config.build?.ssr) {
-		// TODO remove this comment if ssr stays stable // @ts-expect-error ssr still flagged in vite
-		if (!config.ssr?.external?.includes('svelte')) {
-			noExternal.push('svelte', /^svelte\//);
-		}
-	} else {
-		// for non-ssr build, we exclude svelte js library deps to make development faster
-		// and also because vite doesn't handle them properly.
-		// see https://github.com/sveltejs/vite-plugin-svelte/issues/168
-		// see https://github.com/vitejs/vite/issues/2579
+	// TODO remove this comment if ssr stays stable // @ts-expect-error ssr still flagged in vite
+	if (!config.ssr?.external?.includes('svelte')) {
+		noExternal.push('svelte', /^svelte\//);
+	}
+
+	// exclude svelte js library deps to make development faster
+	// and also because vite doesn't handle potentially CJS library
+	// see https://github.com/sveltejs/vite-plugin-svelte/issues/168
+	// see https://github.com/vitejs/vite/issues/2579
+	if (options.isServe) {
 		svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
 	}
 
