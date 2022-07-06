@@ -338,9 +338,7 @@ function buildSSROptionsForSvelte(
 
 	// add svelte to ssr.noExternal unless it is present in ssr.external
 	// so we can resolve it with svelte/ssr
-	// TODO remove this comment if ssr stays stable // @ts-expect-error ssr still flagged in vite
 	if (options.isBuild && config.build?.ssr) {
-		// TODO remove this comment if ssr stays stable // @ts-expect-error ssr still flagged in vite
 		if (!config.ssr?.external?.includes('svelte')) {
 			noExternal.push('svelte', /^svelte\//);
 		}
@@ -355,7 +353,6 @@ function buildSSROptionsForSvelte(
 	// add svelte dependencies to ssr.noExternal unless present in ssr.external or optimizeDeps.include
 	noExternal.push(
 		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter((x) => {
-			// TODO remove this comment if ssr stays stable // @ts-expect-error ssr still flagged in vite
 			return !config.ssr?.external?.includes(x) && !config.optimizeDeps?.include?.includes(x);
 		})
 	);
@@ -366,16 +363,13 @@ function buildSSROptionsForSvelte(
 
 	if (options.isServe) {
 		// during dev, we have to externalize transitive dependencies, see https://github.com/sveltejs/vite-plugin-svelte/issues/281
-		// TODO remove this comment if ssr stays stable // @ts-expect-error ssr still flagged in vite
 		ssr.external = Array.from(
 			new Set(svelteDeps.flatMap((dep) => Object.keys(dep.pkg.dependencies || {})))
 		).filter(
 			(dep) =>
 				!ssr.noExternal.includes(dep) &&
-				// TODO remove this comment if ssr stays stable // @ts-expect-error ssr still flagged in vite
 				// TODO noExternal can be something different than a string array
 				//!config.ssr?.noExternal?.includes(dep) &&
-				// TODO remove this comment if ssr stays stable // @ts-expect-error ssr still flagged in vite
 				!config.ssr?.external?.includes(dep)
 		);
 	}
