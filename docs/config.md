@@ -41,9 +41,13 @@ A basic Svelte config looks like this:
 ```js
 // svelte.config.js
 export default {
-  // config options
+  // svelte options
   compilerOptions: {},
-  preprocess: []
+  preprocess: [],
+  // plugin options
+  onwarn: (warning, handler) => handler(warning),
+  // experimental options
+  experimental: {}
 };
 ```
 
