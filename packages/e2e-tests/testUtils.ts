@@ -219,10 +219,10 @@ export async function waitForNavigation(opts: Parameters<typeof page.waitForNavi
 	});
 }
 
-export async function fetchPageText() {
+export async function fetchPageText(forceIpv4 = false) {
 	// force ip v4 in dev as Vite also forces it.
 	// this will be fixed in Vite 3 when we can removed this trick.
-	const url = page.url().replace('localhost', isBuild ? 'localhost' : '127.0.0.1');
+	const url = page.url().replace('localhost', forceIpv4 ? '127.0.0.1' : 'localhost');
 	const res = await fetch(url);
 	if (res.ok) {
 		return res.text();

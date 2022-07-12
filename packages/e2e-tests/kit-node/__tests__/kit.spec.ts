@@ -32,7 +32,7 @@ describe('kit-node', () => {
 			expect(await page.$eval('#mount', (e) => e['__initialNode'])).toBe(true);
 
 			// also get page as text to confirm
-			const html = await fetchPageText();
+			const html = await fetchPageText(true);
 			expect(html).toMatch('Hello world!');
 			expect(html).toMatch('SERVER_LOADED');
 			expect(html).toMatch('BEFORE_MOUNT');
