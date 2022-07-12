@@ -101,9 +101,7 @@ describe('kit-node', () => {
 			});
 			it('should include dynamic import from onmount in client output', async () => {
 				const clientManifest = JSON.parse(
-					readFileContent(
-						path.join('.svelte-kit', 'output', 'client', '_app', 'immutable', 'manifest.json')
-					)
+					readFileContent(path.join('.svelte-kit', 'output', 'client', '_app', 'manifest.json'))
 				);
 				const includesClientOnlyModule = Object.keys(clientManifest).some((key: string) =>
 					key.includes('client-only-module')
