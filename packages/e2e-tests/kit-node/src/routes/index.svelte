@@ -3,7 +3,8 @@
 	 * @type {import('@sveltejs/kit').Load}
 	 */
 	export async function load() {
-		if (globalThis.window) {
+		// eslint-disable-next-line node/no-unsupported-features/es-builtins
+		if (globalThis?.window) {
 			// delay load on client so we can test hydration with playwright
 			return new Promise((resolve) =>
 				setTimeout(() => {
