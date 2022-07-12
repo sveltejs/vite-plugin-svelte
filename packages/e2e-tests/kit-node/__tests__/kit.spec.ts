@@ -32,7 +32,7 @@ describe('kit-node', () => {
 			expect(await page.$eval('#mount', (e) => e['__initialNode'])).toBe(true);
 
 			// also get page as text to confirm
-			const html = await fetchPageText();
+			const html = await fetchPageText(true);
 			expect(html).toMatch('Hello world!');
 			expect(html).toMatch('SERVER_LOADED');
 			expect(html).toMatch('BEFORE_MOUNT');
@@ -101,9 +101,7 @@ describe('kit-node', () => {
 			});
 			it('should include dynamic import from onmount in client output', async () => {
 				const clientManifest = JSON.parse(
-					readFileContent(
-						path.join('.svelte-kit', 'output', 'client', '_app', 'immutable', 'manifest.json')
-					)
+					readFileContent(path.join('.svelte-kit', 'output', 'client', '_app', 'manifest.json'))
 				);
 				const includesClientOnlyModule = Object.keys(clientManifest).some((key: string) =>
 					key.includes('client-only-module')
