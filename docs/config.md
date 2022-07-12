@@ -3,6 +3,7 @@
 `vite-plugin-svelte` accepts inline options that can be used to change its behaviour. An object can be passed to the first argument of the `svelte` plugin:
 
 ```js
+// vite.config.js
 export default defineConfig({
   plugins: [
     svelte({
@@ -18,7 +19,7 @@ Explore the various options below!
 
 ### Config file resolving
 
-Besides inline options, `vite-plugin-svelte` will also automatically resolve options from a Svelte config file if one exists. The default search paths are:
+Besides inline options in Vite config, `vite-plugin-svelte` will also automatically resolve options from a Svelte config file if one exists. The default search paths are:
 
 - `svelte.config.js`
 - `svelte.config.mjs`
@@ -27,6 +28,7 @@ Besides inline options, `vite-plugin-svelte` will also automatically resolve opt
 To set a specific config file, use the `configFile` inline option. The path can be absolute or relative to the [Vite root](https://vitejs.dev/config/#root). For example:
 
 ```js
+// vite.config.js
 export default defineConfig({
   plugins: [
     svelte({
@@ -42,12 +44,15 @@ A basic Svelte config looks like this:
 // svelte.config.js
 export default {
   // svelte options
+  extensions: ['.svelte'],
   compilerOptions: {},
   preprocess: [],
   // plugin options
-  onwarn: (warning, handler) => handler(warning),
-  // experimental options
-  experimental: {}
+  vitePlugin: {
+    onwarn: (warning, handler) => handler(warning),
+    // experimental options
+    experimental: {}
+  }
 };
 ```
 
@@ -65,6 +70,7 @@ Depending on Node's mode, make sure you're using the correct extension and synta
 Use `configFile: false` to prevent `vite-plugin-svelte` from reading the config file or restarting the Vite dev server when it changes.
 
 ```js
+// vite.config.js
 export default defineConfig({
   plugins: [
     svelte({
@@ -98,6 +104,7 @@ These options are specific to the Svelte compiler and are generally shared acros
   **Example:**
 
   ```js
+  // vite.config.js
   import sveltePreprocess from 'svelte-preprocess';
 
   export default defineConfig({
@@ -197,7 +204,10 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
 These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.
 
+Either in Vite config
+
 ```js
+// vite.config.js
 export default defineConfig({
   plugins: [
     svelte({
@@ -207,6 +217,19 @@ export default defineConfig({
     })
   ]
 });
+```
+
+or in svelte config
+
+```js
+// svelte.config.js
+export default {
+  vitePlugin: {
+    experimental: {
+      // experimental options
+    }
+  }
+};
 ```
 
 ### useVitePreprocess
@@ -247,6 +270,7 @@ export default defineConfig({
   **Example:**
 
   ```js
+  // vite.config.js
   export default defineConfig({
     plugins: [
       svelte({
@@ -321,6 +345,7 @@ export default defineConfig({
   **Example:**
 
   ```js
+  // vite.config.js
   export default defineConfig({
     plugins: [
       svelte({

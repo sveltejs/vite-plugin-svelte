@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { pathToFileURL } from 'url';
 import { log } from './log';
-import { Options } from './options';
+import { Options, SvelteOptions } from './options';
 import { UserConfig } from 'vite';
 
 // used to require cjs config in esm.
@@ -29,7 +29,7 @@ const dynamicImportDefault = new Function(
 export async function loadSvelteConfig(
 	viteConfig?: UserConfig,
 	inlineOptions?: Partial<Options>
-): Promise<Partial<Options> | undefined> {
+): Promise<Partial<SvelteOptions> | undefined> {
 	if (inlineOptions?.configFile === false) {
 		return;
 	}
