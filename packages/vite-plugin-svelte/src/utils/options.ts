@@ -19,8 +19,7 @@ import type {
 	Processed
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
-// eslint-disable-next-line node/no-missing-import
-import type { KitConfig } from '@sveltejs/kit';
+
 import path from 'path';
 import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
 import { createRequire } from 'module';
@@ -266,14 +265,17 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 
 // some SvelteKit options need compilerOptions to work, so set them here.
 function addSvelteKitOptions(options: ResolvedOptions) {
+	// @ts-expect-error kit is not typed to avoid dependency on sveltekit
 	if (options?.kit != null) {
-		const hydratable = options.kit.browser?.hydrate !== false;
+		// @ts-expect-error kit is not typed to avoid dependency on sveltekit
+		const kit_browser_hydrate = options.kit.browser?.hydrate;
+		const hydratable = kit_browser_hydrate !== false;
 		if (
 			options.compilerOptions.hydratable != null &&
 			options.compilerOptions.hydratable !== hydratable
 		) {
 			log.warn(
-				`Conflicting values "compilerOptions.hydratable: ${options.compilerOptions.hydratable}" and "kit.browser.hydrate: ${options.kit.browser?.hydrate}" in your svelte config. You should remove "compilerOptions.hydratable".`
+				`Conflicting values "compilerOptions.hydratable: ${options.compilerOptions.hydratable}" and "kit.browser.hydrate: ${kit_browser_hydrate}" in your svelte config. You should remove "compilerOptions.hydratable".`
 			);
 		}
 		log.debug(`Setting compilerOptions.hydratable: ${hydratable} for SvelteKit`);
@@ -569,14 +571,6 @@ export interface SvelteOptions {
 	 * Handles warning emitted from the Svelte compiler
 	 */
 	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
-
-	/**
-	 * Options for SvelteKit
-	 * @internal
-	 *
-	 * users should always use svelte.config.js or kit() in vite.config.js to set this
-	 */
-	kit?: KitConfig;
 
 	/**
 	 * Options for vite-plugin-svelte
