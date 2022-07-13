@@ -255,8 +255,8 @@ importers:
     specifiers:
       '@sveltejs/adapter-node': ^1.0.0-next.79
       '@sveltejs/kit': ^1.0.0-next.370
-      e2e-test-dep-svelte-api-only: workspace:*
-      e2e-test-dep-vite-plugins: workspace:*
+      e2e-test-dep-svelte-api-only: file:../_test_dependencies/svelte-api-only
+      e2e-test-dep-vite-plugins: file:../_test_dependencies/vite-plugins
       svelte: ^3.49.0
       svelte-check: ^2.8.0
       svelte-i18n: ^3.4.0
@@ -265,8 +265,8 @@ importers:
     devDependencies:
       '@sveltejs/adapter-node': 1.0.0-next.79
       '@sveltejs/kit': 1.0.0-next.370_ispq3zputikndn4hjsxxqirqve
-      e2e-test-dep-svelte-api-only: link:../_test_dependencies/svelte-api-only
-      e2e-test-dep-vite-plugins: link:../_test_dependencies/vite-plugins
+      e2e-test-dep-svelte-api-only: file:packages/e2e-tests/_test_dependencies/svelte-api-only
+      e2e-test-dep-vite-plugins: file:packages/e2e-tests/_test_dependencies/vite-plugins
       svelte: 3.49.0
       svelte-check: 2.8.0_svelte@3.49.0
       svelte-i18n: 3.4.0_svelte@3.49.0
@@ -5952,4 +5952,18 @@ packages:
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+    dev: true
+
+  file:packages/e2e-tests/_test_dependencies/svelte-api-only:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-api-only, type: directory}
+    name: e2e-test-dep-svelte-api-only
+    version: 1.0.0
+    dependencies:
+      svelte: 3.49.0
+    dev: true
+
+  file:packages/e2e-tests/_test_dependencies/vite-plugins:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/vite-plugins, type: directory}
+    name: e2e-test-dep-vite-plugins
+    version: 1.0.0
     dev: true

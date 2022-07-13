@@ -12,10 +12,6 @@ const config = {
 			interval: 100
 		}
 	},
-	ssr: {
-		// TODO this is needed otherwise tests fail. investigate
-		noExternal: ['e2e-test-dep-svelte-api-only']
-	},
 	plugins: [transformValidation(), sveltekit()]
 };
 

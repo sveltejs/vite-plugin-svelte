@@ -407,23 +407,15 @@ function buildSSROptionsForSvelte(
 
 	// add svelte to ssr.noExternal unless it is present in ssr.external
 	// so we can resolve it with svelte/ssr
-	if (options.isBuild && config.build?.ssr) {
-		if (!config.ssr?.external?.includes('svelte')) {
-			noExternal.push('svelte', /^svelte\//);
-		}
-	} else {
-		// for non-ssr build, we exclude svelte js library deps to make development faster
-		// and also because vite doesn't handle them properly.
-		// see https://github.com/sveltejs/vite-plugin-svelte/issues/168
-		// see https://github.com/vitejs/vite/issues/2579
-		svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
+	if (!config.ssr?.external?.includes('svelte')) {
+		noExternal.push('svelte', /^svelte\//);
 	}
 
-	// add svelte dependencies to ssr.noExternal unless present in ssr.external or optimizeDeps.include
+	// add svelte dependencies to ssr.noExternal unless present in ssr.external
 	noExternal.push(
-		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter((x) => {
-			return !config.ssr?.external?.includes(x) && !config.optimizeDeps?.include?.includes(x);
-		})
+		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter(
+			(x) => !config.ssr?.external?.includes(x)
+		)
 	);
 	const ssr = {
 		noExternal,
