@@ -1,9 +1,11 @@
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {},
-	experimental: {
-		inspector: {
-			showToggleButton: 'always'
+	vitePlugin: {
+		experimental: {
+			inspector: {
+				showToggleButton: 'always'
+			}
 		}
 	}
 };
