@@ -1,6 +1,6 @@
 console.log('custom svelte config loaded cjs')
 module.exports = {
-	vitePlugin:{
+	vitePlugin: {
 		emitCss: false
 	}
 };

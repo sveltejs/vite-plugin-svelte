@@ -9,10 +9,10 @@ update your svelte.config.js and wrap [plugin options](https://github.com/svelte
 ```diff
 // svelte.config.js
 
-  compilerOptions:{...},
-  preprocess:{...},
-  extensions:[...],
-  kit:{},
+  compilerOptions: {...},
+  preprocess: {...},
+  extensions: [...],
+  kit: {},
 + vitePlugin: {
    // include, exclude, emitCss, onwarn, hot, ignorePluginPreprocessors, disableDependencyReinclusion, experimental
 + }

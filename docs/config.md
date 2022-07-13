@@ -219,7 +219,7 @@ export default defineConfig({
 });
 ```
 
-or in svelte config
+or in Svelte config:
 
 ```js
 // svelte.config.js
