@@ -1,5 +1,34 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0
+
+### Major Changes
+
+- update to vite3 ([#359](https://github.com/sveltejs/vite-plugin-svelte/pull/359))
+
+* bump minimum required node version to 14.18.0 to align with vite 3 ([#359](https://github.com/sveltejs/vite-plugin-svelte/pull/359))
+
+- move plugin options in svelte.config.js into "vitePlugin" ([#389](https://github.com/sveltejs/vite-plugin-svelte/pull/389))
+
+  update your svelte.config.js and wrap [plugin options](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/config.md#plugin-options) with `vitePlugin`
+
+  ```diff
+  // svelte.config.js
+
+    compilerOptions: {...},
+    preprocess: {...},
+    extensions: [...],
+    onwarn: () => {...},
+    kit: {},
+  + vitePlugin: {
+     // include, exclude, emitCss, hot, ignorePluginPreprocessors, disableDependencyReinclusion, experimental
+  + }
+  ```
+
+### Patch Changes
+
+- Always add dependencies using svelte to ssr.noExternal in vite config ([#359](https://github.com/sveltejs/vite-plugin-svelte/pull/359))
+
 ## 1.0.0-next.49
 
 ### Minor Changes
