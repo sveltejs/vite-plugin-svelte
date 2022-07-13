@@ -204,7 +204,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
 These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.
 
-Either in Vite config
+Either in Vite config:
 
 ```js
 // vite.config.js
