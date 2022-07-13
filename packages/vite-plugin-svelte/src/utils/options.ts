@@ -458,9 +458,9 @@ export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: Res
 	}
 }
 
-export type Options = Omit<SvelteOptions & PluginOptions, 'vitePlugin'>;
+export type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
 
-export interface PluginOptions {
+interface PluginOptionsInline extends PluginOptions {
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
 	 *
@@ -469,7 +469,9 @@ export interface PluginOptions {
 	 * @see https://vitejs.dev/config/#root
 	 */
 	configFile?: string | false;
+}
 
+export interface PluginOptions {
 	/**
 	 * A `picomatch` pattern, or array of patterns, which specifies the files the plugin should
 	 * operate on. By default, all svelte files are included.
@@ -579,7 +581,7 @@ export interface SvelteOptions {
 	/**
 	 * Options for vite-plugin-svelte
 	 */
-	vitePlugin?: Options;
+	vitePlugin?: PluginOptions;
 }
 
 /**

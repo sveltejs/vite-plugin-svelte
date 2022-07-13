@@ -227,6 +227,8 @@ export { loadSvelteConfig } from './utils/load-svelte-config';
 
 export {
 	Options,
+	PluginOptions,
+	SvelteOptions,
 	Preprocessor,
 	PreprocessorGroup,
 	CompileOptions,
