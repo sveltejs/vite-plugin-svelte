@@ -47,9 +47,10 @@ export default {
   extensions: ['.svelte'],
   compilerOptions: {},
   preprocess: [],
+  onwarn: (warning, handler) => handler(warning),
   // plugin options
   vitePlugin: {
-    onwarn: (warning, handler) => handler(warning),
+    exclude: [],
     // experimental options
     experimental: {}
   }
@@ -116,35 +117,12 @@ These options are specific to the Svelte compiler and are generally shared acros
   });
   ```
 
-## Plugin options
-
-These options are specific to the Vite plugin itself.
-
-### include
-
-- **Type:** `string | string[]`
-
-A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files the plugin should operate on. By default, all svelte files are included.
-
-### exclude
-
-- **Type:** `string | string[]`
-
-A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files to be ignored by the plugin. By default, no files are ignored.
-
 ### extensions
 
 - **Type:** `string[]`
 - **Default:** `['.svelte']`
 
   A list of file extensions to be compiled by Svelte. Useful for custom extensions like `.svg` and `.svx`.
-
-### emitCss
-
-- **Type:** `boolean`
-- **Default:** `true`
-
-  Emit Svelte styles as virtual CSS files for Vite and other plugins to process.
 
 ### onwarn
 
@@ -169,6 +147,29 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
     ]
   });
   ```
+
+## Plugin options
+
+These options are specific to the Vite plugin itself.
+
+### include
+
+- **Type:** `string | string[]`
+
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files the plugin should operate on. By default, all svelte files are included.
+
+### exclude
+
+- **Type:** `string | string[]`
+
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files to be ignored by the plugin. By default, no files are ignored.
+
+### emitCss
+
+- **Type:** `boolean`
+- **Default:** `true`
+
+  Emit Svelte styles as virtual CSS files for Vite and other plugins to process.
 
 ### hot
 
