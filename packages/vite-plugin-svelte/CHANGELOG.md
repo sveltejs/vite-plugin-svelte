@@ -1,5 +1,312 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.0
+
+### Major Changes
+
+- change default value of compilerOptions.hydratable to false ([#122](https://github.com/sveltejs/vite-plugin-svelte/pull/122))
+
+  This is done to align with svelte compiler defaults and improve output in non-ssr scenarios.
+
+  Add `{compilerOptions: {hydratable: true}}` to vite-plugin-svelte config if you need hydration (eg. for ssr)
+
+* Bump svelte peer dependency to ^3.44.0 ([#202](https://github.com/sveltejs/vite-plugin-svelte/pull/202))
+
+- Enable optimization for nested dependencies of excluded svelte dependencies ([#157](https://github.com/sveltejs/vite-plugin-svelte/pull/157))
+
+  Vite 2.5.3 and above is needed to support this feature.
+
+* minimum required version of vite is 2.6.0 ([#182](https://github.com/sveltejs/vite-plugin-svelte/pull/182))
+
+- feat: convert to es module with cjs fallback, use named export instead of default ([#54](https://github.com/sveltejs/vite-plugin-svelte/pull/54))
+
+  If you are using vite-plugin-svelte with require, you should switch to esm and import the named export "svelte".
+  An example can be found in the usage section of the [readme](README.md)
+
+  For existing esm configs update your import to use the new named export.
+
+  ```diff
+  - import svelte from '@sveltejs/vite-plugin-svelte';
+  + import { svelte } from '@sveltejs/vite-plugin-svelte';
+  ```
+
+  continuing with cjs/require is discouraged but if you must use it, update your require statement to use the named export
+
+  ```diff
+  - const svelte = require('@sveltejs/vite-plugin-svelte');
+  + const { svelte } = require('@sveltejs/vite-plugin-svelte');
+  ```
+
+* move plugin options in svelte.config.js into "vitePlugin" ([#389](https://github.com/sveltejs/vite-plugin-svelte/pull/389))
+
+  update your svelte.config.js and wrap [plugin options](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/config.md#plugin-options) with `vitePlugin`
+
+  ```diff
+  // svelte.config.js
+
+    compilerOptions: {...},
+    preprocess: {...},
+    extensions: [...],
+    onwarn: () => {...},
+    kit: {},
+  + vitePlugin: {
+     // include, exclude, emitCss, hot, ignorePluginPreprocessors, disableDependencyReinclusion, experimental
+  + }
+  ```
+
+- update to vite3 ([#359](https://github.com/sveltejs/vite-plugin-svelte/pull/359))
+
+* bump minimum required node version to 14.18.0 to align with vite 3 ([#359](https://github.com/sveltejs/vite-plugin-svelte/pull/359))
+
+- automatically include svelte in vite config optimizeDeps.include ([#137](https://github.com/sveltejs/vite-plugin-svelte/pull/137))
+
+  Previously, svelte was automatically excluded. We include it now by default to improve deduplication.
+
+  As a result, svelte is pre-bundled by vite during dev, which it logs when starting the devserver
+
+  ```shell
+  Pre-bundling dependencies:
+    svelte/animate
+    svelte/easing
+    svelte/internal
+    svelte/motion
+    svelte/store
+    (...and 2 more)
+  (this will be run only when your dependencies or config have changed)
+  ```
+
+  And it's also visible in the browsers network tab, where requests for svelte imports now start with `node_modules/.vite/` during dev.
+
+  Check out the [vite pre-bundling documentation](https://vitejs.dev/guide/dep-pre-bundling.html) for more information.
+
+  To get the old behavior back, add the following to your vite config
+
+  ```js
+  optimizeDeps: {
+  	exclude: ['svelte'];
+  }
+  ```
+
+* update vite peerDependency to ^2.7.0 and refactor server restart on change of svelte.config.js ([#223](https://github.com/sveltejs/vite-plugin-svelte/pull/223))
+
+- drop support for node12 ([#198](https://github.com/sveltejs/vite-plugin-svelte/pull/198))
+
+* Update vite peerDependency to ^2.9.0 and handle edge cases for `experimental.prebundleSvelteLibraries` ([#294](https://github.com/sveltejs/vite-plugin-svelte/pull/294))
+
+### Minor Changes
+
+- resolve svelte to svelte/ssr when building for ssr (see [#74](https://github.com/sveltejs/vite-plugin-svelte/issues/74)) ([#75](https://github.com/sveltejs/vite-plugin-svelte/pull/75))
+
+* Add `experimental` section to options and move `useVitePreprocess` there ([#99](https://github.com/sveltejs/vite-plugin-svelte/pull/99))
+
+  Experimental options are not ready for production use and breaking changes to them can occur in any release
+
+  If you already had `useVitePreprocess` enabled, update you config:
+
+  ```diff
+  - svelte({useVitePreprocess: true})
+  + svelte({experimental: {useVitePreprocess: true}})
+  ```
+
+- Feature: Support esm in svelte.config.js and svelte.config.mjs ([#35](https://github.com/sveltejs/vite-plugin-svelte/pull/35))
+
+* Support svg extension ([#78](https://github.com/sveltejs/vite-plugin-svelte/pull/78))
+
+- add config option `experimental.dynamicCompileOptions` for finegrained control over compileOptions ([#122](https://github.com/sveltejs/vite-plugin-svelte/pull/122))
+
+* Reduced cache usage, share css cache between SSR and client ([#32](https://github.com/sveltejs/vite-plugin-svelte/pull/32))
+
+- Improved error reporting for svelte compiler errors ([#220](https://github.com/sveltejs/vite-plugin-svelte/pull/220))
+
+* Add option to ignore svelte preprocessors of other vite plugins ([#98](https://github.com/sveltejs/vite-plugin-svelte/pull/98))
+
+  - ignore them all: `ignorePluginPreprocessors: true`
+  - ignore by name: `ignorePluginPreprocessors: ['<name of plugin>',...]`
+
+- Automate setting of compilerOptions.hydratable from kit.browser.hydrate option ([#368](https://github.com/sveltejs/vite-plugin-svelte/pull/368))
+
+* improved css hmr ([#26](https://github.com/sveltejs/vite-plugin-svelte/pull/26))
+
+- Move plugin preprocessor definition to api namespace ([#98](https://github.com/sveltejs/vite-plugin-svelte/pull/98))
+
+  Plugins that provide `myplugin.sveltePreprocess`, should move it to `myplugin.api.sveltePreprocess`, as suggested by [rollup](https://rollupjs.org/guide/en/#direct-plugin-communication)
+
+* auto-restart SvelteKit when Svelte config changed ([#237](https://github.com/sveltejs/vite-plugin-svelte/pull/237))
+
+- automatically exclude svelte dependencies in vite.optimizeDeps ([#145](https://github.com/sveltejs/vite-plugin-svelte/pull/145))
+
+* Allow other vite plugins to define preprocessors ([#13](https://github.com/sveltejs/vite-plugin-svelte/pull/13))
+
+- Add option disableDependencyReinclusion to offer users a way out of automatic optimization for hybrid packages ([#161](https://github.com/sveltejs/vite-plugin-svelte/pull/161))
+
+* skip reading default svelte config file with inline option `configFile: false` ([#317](https://github.com/sveltejs/vite-plugin-svelte/pull/317))
+
+- handle preprocess for prebundleSvelteLibraries ([#229](https://github.com/sveltejs/vite-plugin-svelte/pull/229))
+
+* - Restart dev server when svelte config file changes ([#72](https://github.com/sveltejs/vite-plugin-svelte/pull/72))
+  - Refactored e2e-tests to use package.json scripts
+  - Updated dependencies
+
+- Use transformWithEsbuild for vite script preprocessor ([#173](https://github.com/sveltejs/vite-plugin-svelte/pull/173))
+
+* Feature: add configFile option ([#35](https://github.com/sveltejs/vite-plugin-svelte/pull/35))
+
+- Add `experimental.prebundleSvelteLibraries` option ([#200](https://github.com/sveltejs/vite-plugin-svelte/pull/200))
+
+* Run Vite preprocessors first in markup phase ([#189](https://github.com/sveltejs/vite-plugin-svelte/pull/189))
+
+- feat: Allow svelte imports to be added to optimizeDeps.include and don't exclude svelte from optimizeDeps then ([#68](https://github.com/sveltejs/vite-plugin-svelte/pull/68))
+
+* Experimental: Generate sourcemaps for preprocessors that lack them ([#101](https://github.com/sveltejs/vite-plugin-svelte/pull/101))
+
+  enable option `experimental.generateMissingPreprocessorSourcemaps` to use it
+
+- Automatically re-prebundle when Svelte config changed for `experimental.prebundleSvelteLibraries` ([#245](https://github.com/sveltejs/vite-plugin-svelte/pull/245))
+
+* New experimental option sendWarningsToBrowser ([#372](https://github.com/sveltejs/vite-plugin-svelte/pull/372))
+
+- Allow emitCss: false for production builds and customizable compilerOptions.css and hydratable - fixes #9 ([#41](https://github.com/sveltejs/vite-plugin-svelte/pull/41))
+
+* Improve dev warning message for components including only unscoped styles (fixes [#153](https://github.com/sveltejs/vite-plugin-svelte/issues/153)) ([#154](https://github.com/sveltejs/vite-plugin-svelte/pull/154))
+
+- Add experimental Svelte Inspector to quickly jump to code from your browser. ([#322](https://github.com/sveltejs/vite-plugin-svelte/pull/322))
+
+* feat: vite config can be updated based on values in svelte config, provide knownJsSrcExtensions (see [#60](https://github.com/sveltejs/vite-plugin-svelte/issues/60)) ([#64](https://github.com/sveltejs/vite-plugin-svelte/pull/64))
+
+- Feature: log svelte compiler warnings to console. use options.onwarn to customize logging ([#45](https://github.com/sveltejs/vite-plugin-svelte/pull/45))
+
+### Patch Changes
+
+- customize changelog format ([#90](https://github.com/sveltejs/vite-plugin-svelte/pull/90))
+
+* correctly resolve the experimental svelte inspector (see [#332](https://github.com/sveltejs/vite-plugin-svelte/issues/332)) (fixes [#330](https://github.com/sveltejs/vite-plugin-svelte/issues/330)) ([#333](https://github.com/sveltejs/vite-plugin-svelte/pull/333))
+
+- fix: ensure esm config loading works on windows ([#38](https://github.com/sveltejs/vite-plugin-svelte/pull/38))
+
+* Only add all Svelte dependencies to ssr.noExternal in SSR build ([#169](https://github.com/sveltejs/vite-plugin-svelte/pull/169))
+
+- relax svelte peer dependency to 3.34.0 ([#70](https://github.com/sveltejs/vite-plugin-svelte/pull/70))
+
+* do not transform imports tagged with ?url or ?raw (fixes [#87](https://github.com/sveltejs/vite-plugin-svelte/issues/87)) ([#88](https://github.com/sveltejs/vite-plugin-svelte/pull/88))
+
+- replace querystring with URLSearchParams ([#107](https://github.com/sveltejs/vite-plugin-svelte/pull/107))
+
+* Bump svelte-hmr version ([#349](https://github.com/sveltejs/vite-plugin-svelte/pull/349))
+
+- update to esbuild 0.12 and vite 2.3.6 ([#44](https://github.com/sveltejs/vite-plugin-svelte/pull/44))
+
+* don't try to resolve node internal modules via package.json svelte field ([#266](https://github.com/sveltejs/vite-plugin-svelte/pull/266))
+
+- Ignore import protocols like `node:` when resolving the `svelte` field in package.json ([#225](https://github.com/sveltejs/vite-plugin-svelte/pull/225))
+
+* improve handling of transitive cjs dependencies of svelte libraries during dev ssr ([#289](https://github.com/sveltejs/vite-plugin-svelte/pull/289))
+
+- update svelte-hmr to ^0.14.5 to fix hmr reordering issue introduced by a change in svelte 3.38.3 ([#92](https://github.com/sveltejs/vite-plugin-svelte/pull/92))
+
+* removed redundant `disableCssHmr` option ([#99](https://github.com/sveltejs/vite-plugin-svelte/pull/99))
+
+  You can use `emitCss: false` or `emitCss: !!isProduction` instead
+
+- fix: do not preserve types unless useVitePreprocess option is true ([#20](https://github.com/sveltejs/vite-plugin-svelte/pull/20))
+
+* import svelte types instead of duplicating them ([#105](https://github.com/sveltejs/vite-plugin-svelte/pull/105))
+
+- don't warn if dependency doesn't export package.json ([#272](https://github.com/sveltejs/vite-plugin-svelte/pull/272))
+
+* do not use require-relative to resolve svelte field of libraries and cache resolved values (fixes [#244](https://github.com/sveltejs/vite-plugin-svelte/issues/244)) ([#254](https://github.com/sveltejs/vite-plugin-svelte/pull/254))
+
+- Always add dependencies using svelte to ssr.noExternal in vite config ([#359](https://github.com/sveltejs/vite-plugin-svelte/pull/359))
+
+* prepare for a change in vite 2.5.0 that would lead to errors in preprocessor dependency handling (fixes [#130](https://github.com/sveltejs/vite-plugin-svelte/issues/130)) ([`5ea82cb`](https://github.com/sveltejs/vite-plugin-svelte/commit/5ea82cb8351c8d9a8765ecc27b793582a9845c13))
+
+- update svelte-hmr to 0.14.7 to fix issue with svelte 3.40 ([#112](https://github.com/sveltejs/vite-plugin-svelte/pull/112))
+
+* don't add svelte/ssr to vite.optimizeDeps.include (fixes [#138](https://github.com/sveltejs/vite-plugin-svelte/issues/138)) ([#139](https://github.com/sveltejs/vite-plugin-svelte/pull/139))
+
+- resolve vite.root option correctly (fixes [#113](https://github.com/sveltejs/vite-plugin-svelte/issues/113)) ([#115](https://github.com/sveltejs/vite-plugin-svelte/pull/115))
+
+* use createRequire to load svelte.config.cjs in esm projects (fixes [#141](https://github.com/sveltejs/vite-plugin-svelte/issues/141)) ([#142](https://github.com/sveltejs/vite-plugin-svelte/pull/142))
+
+- Optimize nested index-only dependencies ([#282](https://github.com/sveltejs/vite-plugin-svelte/pull/282))
+
+* update engines.node to "^12.20 || ^14.13.1 || >= 16" ([#44](https://github.com/sveltejs/vite-plugin-svelte/pull/44))
+
+- use deepmerge utility to merge inline config and svelte.config.js ([#322](https://github.com/sveltejs/vite-plugin-svelte/pull/322))
+
+* further improvements to changelog (see [#93](https://github.com/sveltejs/vite-plugin-svelte/issues/93)) ([#94](https://github.com/sveltejs/vite-plugin-svelte/pull/94))
+
+- Handle inspector autocomplete keydown event ([#338](https://github.com/sveltejs/vite-plugin-svelte/pull/338))
+
+* Skip prebundle non-js nested dependencies ([#234](https://github.com/sveltejs/vite-plugin-svelte/pull/234))
+
+- disable svelte-hmr overlay by default ([#22](https://github.com/sveltejs/vite-plugin-svelte/pull/22))
+
+* initial release ([#4](https://github.com/sveltejs/vite-plugin-svelte/pull/4))
+
+- improve virtual css module path (fixes [#14](https://github.com/sveltejs/vite-plugin-svelte/issues/14)) ([#24](https://github.com/sveltejs/vite-plugin-svelte/pull/24))
+
+* Svelte libraries without any Svelte components are also added to ssr.noExternal ([#166](https://github.com/sveltejs/vite-plugin-svelte/pull/166))
+
+- fix: watch preprocessor dependencies and trigger hmr on change ([#34](https://github.com/sveltejs/vite-plugin-svelte/pull/34))
+
+* fix: turn diff-match-patch into an optional peer dependency to reduce footprint ([#110](https://github.com/sveltejs/vite-plugin-svelte/pull/110))
+
+- add automatically excluded svelte dependencies to ssr.noExternal ([#147](https://github.com/sveltejs/vite-plugin-svelte/pull/147))
+
+* fix hmr not updating a component when returning to the last working state from an error state ([#371](https://github.com/sveltejs/vite-plugin-svelte/pull/371))
+
+- handle production builds for non "production" mode ([#229](https://github.com/sveltejs/vite-plugin-svelte/pull/229))
+
+* reduce log output with log.once function to filter repetetive messages ([#101](https://github.com/sveltejs/vite-plugin-svelte/pull/101))
+
+- Disable CSS sourcemap in SSR ([#201](https://github.com/sveltejs/vite-plugin-svelte/pull/201))
+
+* use the resolved vite root to support backend integrations ([#247](https://github.com/sveltejs/vite-plugin-svelte/pull/247))
+
+- include stack and filename in error reporting for svelte preprocess errors ([#260](https://github.com/sveltejs/vite-plugin-svelte/pull/260))
+
+* remove transitive peer dependency on rollup (fixes [#57](https://github.com/sveltejs/vite-plugin-svelte/issues/57)) ([#103](https://github.com/sveltejs/vite-plugin-svelte/pull/103))
+
+- Fix emitCss behaviour in a svelte config ([#194](https://github.com/sveltejs/vite-plugin-svelte/pull/194))
+
+* enable logging for compiler warnings ([#45](https://github.com/sveltejs/vite-plugin-svelte/pull/45))
+
+- fix kit-node tests ([#55](https://github.com/sveltejs/vite-plugin-svelte/pull/55))
+
+* do not warn if kit options are passed as inline config ([#319](https://github.com/sveltejs/vite-plugin-svelte/pull/319))
+
+- Remove transforming svelte css ([#280](https://github.com/sveltejs/vite-plugin-svelte/pull/280))
+
+* Support import typescript files with .js extension ([#324](https://github.com/sveltejs/vite-plugin-svelte/pull/324))
+
+- prevent errors in resolveViaPackageJsonSvelte breaking vite resolve (fixes [#283](https://github.com/sveltejs/vite-plugin-svelte/issues/283)) ([#286](https://github.com/sveltejs/vite-plugin-svelte/pull/286))
+
+* fix `experimental.useVitePreprocess` option for Vite 2.8 ([#240](https://github.com/sveltejs/vite-plugin-svelte/pull/240))
+
+- Improve automatic dependency pre-bundling by not reincluding dependencies that are already present in optimizeDeps.exclude ([#159](https://github.com/sveltejs/vite-plugin-svelte/pull/159))
+
+* Do not try to resolve svelte field in \_\_vite-browser-external, see (#362)" ([#363](https://github.com/sveltejs/vite-plugin-svelte/pull/363))
+
+- Handle flexible ssr signature for hooks with ssr argument ([#187](https://github.com/sveltejs/vite-plugin-svelte/pull/187))
+
+* Improved CSS Source Maps when using vite's `css: { devSourcemap: true }` ([#305](https://github.com/sveltejs/vite-plugin-svelte/pull/305))
+
+- Remove user-specified values for essential compilerOptions generate, format, cssHash and filename and log a warning ([#346](https://github.com/sveltejs/vite-plugin-svelte/pull/346))
+
+* Use last modified time as cache busting parameter ([#356](https://github.com/sveltejs/vite-plugin-svelte/pull/356))
+
+- Only optimize nested cjs dependencies ([#163](https://github.com/sveltejs/vite-plugin-svelte/pull/163))
+
+* Export loadSvelteConfig ([#356](https://github.com/sveltejs/vite-plugin-svelte/pull/356))
+
+- output sourcemap in hmr helper preprocessor ([#71](https://github.com/sveltejs/vite-plugin-svelte/pull/71))
+
+* fix inspector not initializing correctly for sveltekit on windows (see [#342](https://github.com/sveltejs/vite-plugin-svelte/issues/342)) ([#344](https://github.com/sveltejs/vite-plugin-svelte/pull/344))
+
+- reduced debug output ([#83](https://github.com/sveltejs/vite-plugin-svelte/pull/83))
+
+* do not restart vite devserver on changes of svelte config when `configFile: false` is set ([#319](https://github.com/sveltejs/vite-plugin-svelte/pull/319))
+
 ## 1.0.0-next.49
 
 ### Minor Changes
