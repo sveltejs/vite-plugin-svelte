@@ -90,7 +90,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				if (isSvelteMetadataChanged) {
 					// Force Vite to optimize again. Although we mutate the config here, it works because
 					// Vite's optimizer runs after `buildStart()`.
-					viteConfig.server.force = true;
+					// TODO: verify this works in vite3
+					viteConfig.optimizeDeps.force = true;
 				}
 			},
 
@@ -101,9 +102,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 
 			load(id, opts) {
-				// @ts-expect-error anticipate vite changing second parameter as options object
-				// see https://github.com/vitejs/vite/discussions/5109
-				const ssr: boolean = opts === true || opts?.ssr;
+				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, !!ssr);
 				if (svelteRequest) {
 					const { filename, query } = svelteRequest;

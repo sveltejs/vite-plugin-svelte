@@ -33,6 +33,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 	if (!isProd) {
 		const inlineCfg = {
 			root,
+			appType: 'custom',
 			server: {
 				middlewareMode: true,
 				port

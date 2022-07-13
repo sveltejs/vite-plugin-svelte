@@ -307,13 +307,11 @@ export function buildExtraViteConfig(
 		// knownJsSrcExtensions: options.extensions
 	};
 
-	if (options.isServe) {
-		extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
-			svelteDeps,
-			options,
-			config.optimizeDeps
-		);
-	}
+	extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
+		svelteDeps,
+		options,
+		config.optimizeDeps
+	);
 
 	if (options.experimental?.prebundleSvelteLibraries) {
 		extraViteConfig.optimizeDeps = {
@@ -405,45 +403,34 @@ function buildSSROptionsForSvelte(
 	options: ResolvedOptions,
 	config: UserConfig
 ): any {
-	const noExternal: string[] = [];
+	const noExternal: (string | RegExp)[] = [];
 
 	// add svelte to ssr.noExternal unless it is present in ssr.external
 	// so we can resolve it with svelte/ssr
-	if (options.isBuild && config.build?.ssr) {
-		// @ts-expect-error ssr still flagged in vite
-		if (!config.ssr?.external?.includes('svelte')) {
-			noExternal.push('svelte');
-		}
-	} else {
-		// for non-ssr build, we exclude svelte js library deps to make development faster
-		// and also because vite doesn't handle them properly.
-		// see https://github.com/sveltejs/vite-plugin-svelte/issues/168
-		// see https://github.com/vitejs/vite/issues/2579
-		svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
+	if (!config.ssr?.external?.includes('svelte')) {
+		noExternal.push('svelte', /^svelte\//);
 	}
 
-	// add svelte dependencies to ssr.noExternal unless present in ssr.external or optimizeDeps.include
+	// add svelte dependencies to ssr.noExternal unless present in ssr.external
 	noExternal.push(
-		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter((x) => {
-			// @ts-expect-error ssr still flagged in vite
-			return !config.ssr?.external?.includes(x) && !config.optimizeDeps?.include?.includes(x);
-		})
+		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter(
+			(x) => !config.ssr?.external?.includes(x)
+		)
 	);
 	const ssr = {
-		noExternal
+		noExternal,
+		external: [] as string[]
 	};
 
 	if (options.isServe) {
 		// during dev, we have to externalize transitive dependencies, see https://github.com/sveltejs/vite-plugin-svelte/issues/281
-		// @ts-expect-error ssr still flagged in vite
 		ssr.external = Array.from(
 			new Set(svelteDeps.flatMap((dep) => Object.keys(dep.pkg.dependencies || {})))
 		).filter(
 			(dep) =>
 				!ssr.noExternal.includes(dep) &&
-				// @ts-expect-error ssr still flagged in vite
-				!config.ssr?.noExternal?.includes(dep) &&
-				// @ts-expect-error ssr still flagged in vite
+				// TODO noExternal can be something different than a string array
+				//!config.ssr?.noExternal?.includes(dep) &&
 				!config.ssr?.external?.includes(dep)
 		);
 	}
