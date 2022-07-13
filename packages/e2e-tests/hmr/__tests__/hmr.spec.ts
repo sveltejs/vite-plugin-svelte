@@ -149,7 +149,7 @@ if (!isBuild) {
 		});
 
 		test('should work with emitCss: false in svelte config', async () => {
-			addFile('svelte.config.cjs', `module.exports={emitCss:false}`);
+			addFile('svelte.config.cjs', `module.exports={vitePlugin:{emitCss:false}}`);
 			await sleep(isWin ? 1000 : 500); // adding config restarts server, give it some time
 			await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
 			await sleep(50);
