@@ -32,14 +32,13 @@ const allowedPluginOptions = new Set([
 	'include',
 	'exclude',
 	'emitCss',
-	'onwarn',
 	'hot',
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
 	'experimental'
 ]);
 
-const knownRootOptions = new Set(['extensions', 'compilerOptions', 'preprocess']);
+const knownRootOptions = new Set(['extensions', 'compilerOptions', 'preprocess', 'onwarn']);
 
 const allowedInlineOptions = new Set([
 	'configFile',
@@ -495,11 +494,6 @@ export interface PluginOptions {
 	emitCss?: boolean;
 
 	/**
-	 * Handles warning emitted from the Svelte compiler
-	 */
-	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
-
-	/**
 	 * Enable or disable Hot Module Replacement.
 	 *
 	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -568,6 +562,11 @@ export interface SvelteOptions {
 	 * @see https://svelte.dev/docs#svelte_compile
 	 */
 	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
+
+	/**
+	 * Handles warning emitted from the Svelte compiler
+	 */
+	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
 
 	/**
 	 * Options for SvelteKit
