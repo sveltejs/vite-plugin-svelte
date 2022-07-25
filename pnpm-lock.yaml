@@ -19,7 +19,7 @@ importers:
       esbuild: ^0.14.49
       eslint: ^8.20.0
       eslint-config-prettier: ^8.5.0
-      eslint-plugin-html: ^6.2.0
+      eslint-plugin-html: ^7.0.0
       eslint-plugin-markdown: ^3.0.0
       eslint-plugin-node: ^11.1.0
       eslint-plugin-prettier: ^4.2.1
@@ -50,7 +50,7 @@ importers:
       esbuild: 0.14.49
       eslint: 8.20.0
       eslint-config-prettier: 8.5.0_eslint@8.20.0
-      eslint-plugin-html: 6.2.0
+      eslint-plugin-html: 7.0.0
       eslint-plugin-markdown: 3.0.0_eslint@8.20.0
       eslint-plugin-node: 11.1.0_eslint@8.20.0
       eslint-plugin-prettier: 4.2.1_g4fztgbwjyq2fvmcscny2sj6fy
@@ -1990,31 +1990,31 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /dom-serializer/1.4.1:
-    resolution: {integrity: sha512-VHwB3KfrcOOkelEG2ZOfxqLZdfkil8PtJi4P8N2MMXucZq2yLp75ClViUlOVwyoHEDjYU433Aq+5zWP61+RGag==}
+  /dom-serializer/2.0.0:
+    resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
     dependencies:
       domelementtype: 2.3.0
-      domhandler: 4.3.1
-      entities: 2.2.0
+      domhandler: 5.0.3
+      entities: 4.3.1
     dev: true
 
   /domelementtype/2.3.0:
     resolution: {integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==}
     dev: true
 
-  /domhandler/4.3.1:
-    resolution: {integrity: sha512-GrwoxYN+uWlzO8uhUXRl0P+kHE4GtVPfYzVLcUxPL7KNdHKj66vvlhiweIHqYYXWlw+T8iLMp42Lm67ghw4WMQ==}
+  /domhandler/5.0.3:
+    resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
     dependencies:
       domelementtype: 2.3.0
     dev: true
 
-  /domutils/2.8.0:
-    resolution: {integrity: sha512-w96Cjofp72M5IIhpjgobBimYEfoPjx1Vx0BSX9P30WBdZW2WIKU0T1Bd0kz2eNZ9ikjKgHbEyKx8BB6H1L3h3A==}
+  /domutils/3.0.1:
+    resolution: {integrity: sha512-z08c1l761iKhDFtfXO04C7kTdPBLi41zwOZl00WS8b5eiaebNpY00HKbztwBq+e3vyqWNwWF3mP9YLUeqIrF+Q==}
     dependencies:
-      dom-serializer: 1.4.1
+      dom-serializer: 2.0.0
       domelementtype: 2.3.0
-      domhandler: 4.3.1
+      domhandler: 5.0.3
     dev: true
 
   /dotenv/16.0.1:
@@ -2054,12 +2054,8 @@ packages:
       ansi-colors: 4.1.3
     dev: true
 
-  /entities/2.2.0:
-    resolution: {integrity: sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==}
-    dev: true
-
-  /entities/3.0.1:
-    resolution: {integrity: sha512-WiyBqoomrwMdFG1e0kqvASYfnlb0lp8M5o5Fw2OFq1hNZxxcNk8Ik0Xm7LxzBhuidnZB/UtBqVCgUz3kBOP51Q==}
+  /entities/4.3.1:
+    resolution: {integrity: sha512-o4q/dYJlmyjP2zfnaWDUC6A3BQFmVTX+tZPezK7k0GLSU9QYCauscf5Y+qcEPzKL+EixVouYDgLQK5H9GrLpkg==}
     engines: {node: '>=0.12'}
     dev: true
 
@@ -2364,10 +2360,10 @@ packages:
       regexpp: 3.2.0
     dev: true
 
-  /eslint-plugin-html/6.2.0:
-    resolution: {integrity: sha512-vi3NW0E8AJombTvt8beMwkL1R/fdRWl4QSNRNMhVQKWm36/X0KF0unGNAY4mqUF06mnwVWZcIcerrCnfn9025g==}
+  /eslint-plugin-html/7.0.0:
+    resolution: {integrity: sha512-pp/teAJClEnv6GJs2QG6FGZKg9mojn6h0IvZZlTNrbQOyDlYqb0GK4kjjsoH2SEGoH2Ub8EhPUpOxXEcnfO8JQ==}
     dependencies:
-      htmlparser2: 7.2.0
+      htmlparser2: 8.0.1
     dev: true
 
   /eslint-plugin-markdown/3.0.0_eslint@8.20.0:
@@ -3043,13 +3039,13 @@ packages:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
     dev: true
 
-  /htmlparser2/7.2.0:
-    resolution: {integrity: sha512-H7MImA4MS6cw7nbyURtLPO1Tms7C5H602LRETv95z1MxO/7CP7rDVROehUYeYBUYEON94NXXDEPmZuq+hX4sog==}
+  /htmlparser2/8.0.1:
+    resolution: {integrity: sha512-4lVbmc1diZC7GUJQtRQ5yBAeUCL1exyMwmForWkRLnwyzWBFxN633SALPMGYaWZvKe9j1pRZJpauvmxENSp/EA==}
     dependencies:
       domelementtype: 2.3.0
-      domhandler: 4.3.1
-      domutils: 2.8.0
-      entities: 3.0.1
+      domhandler: 5.0.3
+      domutils: 3.0.1
+      entities: 4.3.1
     dev: true
 
   /http-errors/2.0.0:
