@@ -18,15 +18,15 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.24.1",
+    "@changesets/cli": "^2.24.2",
     "@svitejs/changesets-changelog-github-compact": "^0.1.1",
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^17.0.36",
     "@types/semver": "^7.3.10",
-    "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.14.51",
+    "esbuild": "^0.14.53",
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-html": "^7.1.0",
@@ -47,7 +47,7 @@
     "svelte": "^3.49.0",
     "typescript": "^4.7.4",
     "vite": "^3.0.4",
-    "vitest": "^0.20.2"
+    "vitest": "^0.21.0"
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --fix",
@@ -55,9 +55,9 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@7.8.0",
+  "packageManager": "pnpm@7.9.0",
   "engines": {
-    "pnpm": "^7.8.0",
+    "pnpm": "^7.9.0",
     "yarn": "forbidden, use pnpm",
     "npm": "forbidden, use pnpm",
     "node": "^14.18.0 || >= 16"
