@@ -32,7 +32,7 @@ describe('kit-node', () => {
 			expect(await page.$eval('#mount', (e) => e['__initialNode'])).toBe(true);
 
 			// also get page as text to confirm
-			const html = await fetchPageText(true);
+			const html = await fetchPageText();
 			expect(html).toMatch('Hello world!');
 			expect(html).toMatch('SERVER_LOADED');
 			expect(html).toMatch('BEFORE_MOUNT');
@@ -42,9 +42,9 @@ describe('kit-node', () => {
 			// wait a bit for hydration to kick in
 			await sleep(550);
 
-			// check hydrated content
-			expect(await getText('#load')).toBe('CLIENT_LOADED');
-			expect(await getText('#mount')).toBe('AFTER_MOUNT');
+			// poll for hydrated content
+			await untilMatches(() => getText('#mount'), 'AFTER_MOUNT', 'failed to hydrate');
+			await untilMatches(() => getText('#load'), 'CLIENT_LOADED', 'failed to hydrate');
 
 			// check that it did not replace the dom elements with new ones
 			expect(await page.$eval('#load', (e) => e['__initialNode'])).toBe(true);

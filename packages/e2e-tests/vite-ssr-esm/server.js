@@ -36,7 +36,11 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 			appType: 'custom',
 			server: {
 				middlewareMode: true,
-				port
+				port,
+				strictPort: true,
+				hmr: {
+					port: port + 25000
+				}
 			}
 		};
 		// @ts-ignore
