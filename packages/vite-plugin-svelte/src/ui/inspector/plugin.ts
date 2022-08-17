@@ -44,7 +44,7 @@ export function svelteInspector(): Plugin {
 			} else {
 				if (vps.api.options.kit && !inspectorOptions.appendTo) {
 					const out_dir = path.basename(vps.api.options.kit.outDir || '.svelte-kit');
-					inspectorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
+					inspectorOptions.appendTo = `${out_dir}/generated/root.svelte`;
 				}
 				appendTo = inspectorOptions.appendTo;
 			}

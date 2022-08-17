@@ -55,7 +55,6 @@ export function enhance(form, { pending, error, result } = {}) {
 			if (response.ok) {
 				if (result) result({ data, form, response });
 
-				// eslint-disable-next-line node/no-unsupported-features/node-builtins
 				const url = new URL(form.action);
 				url.search = url.hash = '';
 				invalidate(url.href);
