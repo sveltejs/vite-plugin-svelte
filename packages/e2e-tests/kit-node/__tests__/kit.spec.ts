@@ -92,7 +92,7 @@ describe('kit-node', () => {
 		if (isBuild) {
 			it('should not include dynamic import from onmount in ssr output', async () => {
 				const serverManifest = JSON.parse(
-					readFileContent(path.join('.svelte-kit', 'output', 'server', 'manifest.json'))
+					readFileContent(path.join('build', 'server', 'vite-manifest.json'))
 				);
 				const includesClientOnlyModule = Object.keys(serverManifest).some((key: string) =>
 					key.includes('client-only-module')
@@ -101,7 +101,7 @@ describe('kit-node', () => {
 			});
 			it('should include dynamic import from onmount in client output', async () => {
 				const clientManifest = JSON.parse(
-					readFileContent(path.join('.svelte-kit', 'output', 'client', 'manifest.json'))
+					readFileContent(path.join('build', 'client', 'vite-manifest.json'))
 				);
 				const includesClientOnlyModule = Object.keys(clientManifest).some((key: string) =>
 					key.includes('client-only-module')
@@ -112,15 +112,12 @@ describe('kit-node', () => {
 
 		if (!isBuild) {
 			describe('hmr', () => {
-				const updateIndexSvelte = editFileAndWaitForHmrComplete.bind(
-					null,
-					'src/routes/index.svelte'
-				);
+				const updatePage = editFileAndWaitForHmrComplete.bind(null, 'src/routes/+page.svelte');
 
 				it('should render additional html', async () => {
 					// add div 1
 					expect(await getEl('#hmr-test')).toBe(null);
-					await updateIndexSvelte((content) =>
+					await updatePage((content) =>
 						content.replace(
 							'<!-- HMR-TEMPLATE-INJECT -->',
 							'<div id="hmr-test">foo</div>\n<!-- HMR-TEMPLATE-INJECT -->'
@@ -130,7 +127,7 @@ describe('kit-node', () => {
 
 					// add div 2
 					expect(await getEl('#hmr-test2')).toBe(null);
-					await updateIndexSvelte((content) =>
+					await updatePage((content) =>
 						content.replace(
 							'<!-- HMR-TEMPLATE-INJECT -->',
 							'<div id="hmr-test2">bar</div>\n<!-- HMR-TEMPLATE-INJECT -->'
@@ -139,9 +136,7 @@ describe('kit-node', () => {
 					expect(await getText(`#hmr-test`)).toBe('foo');
 					expect(await getText(`#hmr-test2`)).toBe('bar');
 					// remove div 1
-					await updateIndexSvelte((content) =>
-						content.replace('<div id="hmr-test">foo</div>\n', '')
-					);
+					await updatePage((content) => content.replace('<div id="hmr-test">foo</div>\n', ''));
 					expect(await getText(`#hmr-test`)).toBe(null);
 					expect(await getText(`#hmr-test2`)).toBe('bar');
 				});
@@ -150,7 +145,7 @@ describe('kit-node', () => {
 					let buttons = await page.$$('button');
 					expect(buttons).toHaveLength(1);
 					expect(await getText(buttons[0])).toBe('Clicks: 0');
-					await updateIndexSvelte((content) =>
+					await updatePage((content) =>
 						content.replace(
 							'<!-- HMR-TEMPLATE-INJECT -->',
 							'<Counter id="hmr-test-counter"/>\n<!-- HMR-TEMPLATE-INJECT -->'
@@ -163,9 +158,7 @@ describe('kit-node', () => {
 					await buttons[1].click();
 					expect(await getText(buttons[0])).toBe('Clicks: 0');
 					expect(await getText(buttons[1])).toBe('Clicks: 1');
-					await updateIndexSvelte((content) =>
-						content.replace('<Counter id="hmr-test-counter"/>\n', '')
-					);
+					await updatePage((content) => content.replace('<Counter id="hmr-test-counter"/>\n', ''));
 					buttons = await page.$$('button');
 					expect(buttons).toHaveLength(1);
 					expect(await getText(buttons[0])).toBe('Clicks: 0');
@@ -173,9 +166,9 @@ describe('kit-node', () => {
 
 				it('should apply changed styles', async () => {
 					expect(await getColor(`h1`)).toBe('rgb(255, 62, 0)');
-					await updateIndexSvelte((content) => content.replace('color: #ff3e00', 'color: blue'));
+					await updatePage((content) => content.replace('color: #ff3e00', 'color: blue'));
 					expect(await getColor(`h1`)).toBe('blue');
-					await updateIndexSvelte((content) => content.replace('color: blue', 'color: green'));
+					await updatePage((content) => content.replace('color: blue', 'color: green'));
 					expect(await getColor(`h1`)).toBe('green');
 				});
 

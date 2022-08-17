@@ -1,22 +1,3 @@
-<script context="module">
-	/**
-	 * @type {import('@sveltejs/kit').Load}
-	 */
-	export async function load() {
-		// eslint-disable-next-line node/no-unsupported-features/es-builtins
-		if (globalThis?.window) {
-			// delay load on client so we can test hydration with playwright
-			return new Promise((resolve) =>
-				setTimeout(() => {
-					resolve({ props: { load_status: 'CLIENT_LOADED' } });
-				}, 500)
-			);
-		} else {
-			return { props: { load_status: 'SERVER_LOADED' } };
-		}
-	}
-</script>
-
 <script>
 	import { onMount } from 'svelte';
 	import { addMessages, init, _ } from 'svelte-i18n';
@@ -25,7 +6,8 @@
 	// eslint-disable-next-line node/no-missing-import
 	import Child from '$lib/Child.svelte';
 	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
-	export let load_status = 'NOT_LOADED';
+	export let data = {};
+	$: load_status = data?.load_status ?? 'NOT_LOADED';
 	const jsTransform = '__JS_TRANSFORM_1__';
 	let mount_status = 'BEFORE_MOUNT';
 	onMount(async () => {
