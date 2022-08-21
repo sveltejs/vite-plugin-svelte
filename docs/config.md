@@ -173,10 +173,10 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
 ### hot
 
-- **Type:** `boolean | SvelteHotOptions` - See [svelte-hmr](https://github.com/sveltejs/svelte-hmr#options)
+- **Type:** `boolean | SvelteHotOptions` - See [svelte-hmr](https://github.com/sveltejs/svelte-hmr/blob/master/packages/svelte-hmr#options)
 - **Default:** `true` for development, always `false` for production
 
-  Enable or disable Hot Module Replacement ([HMR](https://github.com/sveltejs/svelte-hmr#whats-hmr-by-the-way)).
+  Enable or disable Hot Module Replacement ([HMR](https://github.com/sveltejs/svelte-hmr/blob/master/packages/svelte-hmr#whats-hmr-by-the-way)).
 
   > Do not customize the options unless you know exactly what you are doing.
 
