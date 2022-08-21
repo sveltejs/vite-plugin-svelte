@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.2
+
+### Patch Changes
+
+- update svelte-inspector inject code to be compatible with @sveltejs/kit > 1.0.0-next.405 ([#411](https://github.com/sveltejs/vite-plugin-svelte/pull/411))
+
 ## 1.0.1
 
 ### Major Changes
