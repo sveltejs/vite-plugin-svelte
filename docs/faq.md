@@ -2,7 +2,7 @@
 
 ### Why is component state reset on HMR update?
 
-Preservation of local component state after JS updates is disabled to avoid unpredictable and error-prone behavior. You can read more about it [here](https://github.com/rixo/svelte-hmr#preservation-of-local-state).
+Preservation of local component state after JS updates is disabled to avoid unpredictable and error-prone behavior. You can read more about it [here](https://github.com/sveltejs/svelte-hmr/blob/master/packages/svelte-hmr#preservation-of-local-state).
 
 Please note that if you only edit the `<style>` node, a separate CSS update can be applied where component state is 100% preserved.
 
