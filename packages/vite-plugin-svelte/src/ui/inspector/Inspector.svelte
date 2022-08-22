@@ -99,7 +99,7 @@
 	}
 
 	function keydown(event) {
-		if (event.repeat || event.key === undefined) {
+		if (event.repeat || event.key == null) {
 			return;
 		}
 
@@ -112,7 +112,7 @@
 	}
 
 	function keyup(event) {
-		if (event.repeat) {
+		if (event.repeat || event.key == null) {
 			return;
 		}
 		const k = event.key.toLowerCase();
