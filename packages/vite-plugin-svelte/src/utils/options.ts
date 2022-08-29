@@ -153,7 +153,7 @@ export async function preResolveOptions(
 }
 
 function mergeConfigs<T>(...configs: T[]): ResolvedOptions {
-	let result = {};
+	let result = {} as T;
 	for (const config of configs.filter(Boolean)) {
 		result = deepmerge<T>(result, config, {
 			// replace arrays
