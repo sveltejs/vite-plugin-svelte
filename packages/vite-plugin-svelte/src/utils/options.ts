@@ -138,7 +138,7 @@ export async function preResolveOptions(
 		isServe: viteEnv.command === 'serve',
 		isDebug: process.env.DEBUG != null
 	};
-	const merged = mergeConfigs<Partial<PreResolvedOptions> | undefined>(
+	const merged = mergeConfigs<PreResolvedOptions>(
 		defaultOptions,
 		svelteConfig,
 		inlineOptions,
@@ -152,15 +152,15 @@ export async function preResolveOptions(
 	return merged;
 }
 
-function mergeConfigs<T>(...configs: T[]): ResolvedOptions {
-	let result = {} as T;
-	for (const config of configs.filter(Boolean)) {
-		result = deepmerge<T>(result, config, {
+function mergeConfigs<T>(...configs: (Partial<T> | undefined)[]): T {
+	let result: Partial<T> = {};
+	for (const config of configs.filter((x) => x != null)) {
+		result = deepmerge<T>(result, config!, {
 			// replace arrays
 			arrayMerge: (target: any[], source: any[]) => source ?? target
 		});
 	}
-	return result as ResolvedOptions;
+	return result as T;
 }
 
 // used in configResolved phase, merges a contextual default config, pre-resolved options, and some preprocessors.
@@ -180,7 +180,7 @@ export function resolveOptions(
 		root: viteConfig.root,
 		isProduction: viteConfig.isProduction
 	};
-	const merged: ResolvedOptions = mergeConfigs(defaultOptions, preResolveOptions, extraOptions);
+	const merged = mergeConfigs<ResolvedOptions>(defaultOptions, preResolveOptions, extraOptions);
 
 	removeIgnoredOptions(merged);
 	addSvelteKitOptions(merged);
