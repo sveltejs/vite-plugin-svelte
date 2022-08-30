@@ -74,7 +74,7 @@ export function svelteInspector(): Plugin {
 				// read file ourselves to avoid getting shut out by vites fs.allow check
 				const file = idToFile(id);
 				if (fs.existsSync(file)) {
-					return await fs.promises.readFile(idToFile(id), 'utf-8');
+					return await fs.promises.readFile(file, 'utf-8');
 				} else {
 					log.error(`failed to find file for svelte-inspector: ${file}, referenced by id ${id}.`);
 				}
