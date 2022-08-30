@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.3
+
+### Patch Changes
+
+- ignore keyup events without key in inspector ([#417](https://github.com/sveltejs/vite-plugin-svelte/pull/417))
+
+* fix svelte-inspector import for vite 3.1 ([#423](https://github.com/sveltejs/vite-plugin-svelte/pull/423))
+
 ## 1.0.2
 
 ### Patch Changes
