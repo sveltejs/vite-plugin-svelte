@@ -1,6 +1,3 @@
-/**
- * Prefix for resolved fs paths, since windows paths may not be valid as URLs.
- */
 const FS_PREFIX = `/@fs/`;
 const IS_WINDOWS = process.platform === 'win32';
 const queryRE = /\?.*$/s;
