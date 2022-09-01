@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.4
+
+### Patch Changes
+
+- temporarily add vite 3.1 beta to peer dependencies rule to avoid warning on kit projects using it ([#427](https://github.com/sveltejs/vite-plugin-svelte/pull/427))
+
+  **warning:** this is going to be changed back to `^3.0.0` in a future patch
+
 ## 1.0.3
 
 ### Patch Changes
