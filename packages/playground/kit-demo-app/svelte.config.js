@@ -13,9 +13,11 @@ const config = {
 			css: { devSourcemap: true }
 		}
 	},
-	experimental: {
-		inspector: true,
-		inlineEditor: true
+	vitePlugin: {
+		experimental: {
+			inspector: true,
+			inlineEditor: true
+		}
 	}
 };
 

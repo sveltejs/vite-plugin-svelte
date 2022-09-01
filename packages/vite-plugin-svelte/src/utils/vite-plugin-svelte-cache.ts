@@ -7,11 +7,25 @@ export class VitePluginSvelteCache {
 	private _dependencies = new Map<string, string[]>();
 	private _dependants = new Map<string, Set<string>>();
 	private _resolvedSvelteFields = new Map<string, string>();
+	private _errors = new Map<string, any>();
 
 	public update(compileData: CompileData) {
+		this._errors.delete(compileData.normalizedFilename);
 		this.updateCSS(compileData);
 		this.updateJS(compileData);
 		this.updateDependencies(compileData);
+	}
+
+	public has(svelteRequest: SvelteRequest) {
+		const id = svelteRequest.normalizedFilename;
+		return this._errors.has(id) || this._js.has(id) || this._css.has(id);
+	}
+
+	public setError(svelteRequest: SvelteRequest, error: any) {
+		// keep dependency info, otherwise errors in dependants would not trigger an update after fixing
+		// because they are no longer watched
+		this.remove(svelteRequest, true);
+		this._errors.set(svelteRequest.normalizedFilename, error);
 	}
 
 	private updateCSS(compileData: CompileData) {
@@ -43,26 +57,32 @@ export class VitePluginSvelteCache {
 		});
 	}
 
-	public remove(svelteRequest: SvelteRequest): boolean {
+	public remove(svelteRequest: SvelteRequest, keepDependencies: boolean = false): boolean {
 		const id = svelteRequest.normalizedFilename;
 		let removed = false;
+		if (this._errors.delete(id)) {
+			removed = true;
+		}
 		if (this._js.delete(id)) {
 			removed = true;
 		}
 		if (this._css.delete(id)) {
 			removed = true;
 		}
-		const dependencies = this._dependencies.get(id);
-		if (dependencies) {
-			removed = true;
-			dependencies.forEach((d) => {
-				const dependants = this._dependants.get(d);
-				if (dependants && dependants.has(svelteRequest.filename)) {
-					dependants.delete(svelteRequest.filename);
-				}
-			});
-			this._dependencies.delete(id);
+		if (!keepDependencies) {
+			const dependencies = this._dependencies.get(id);
+			if (dependencies) {
+				removed = true;
+				dependencies.forEach((d) => {
+					const dependants = this._dependants.get(d);
+					if (dependants && dependants.has(svelteRequest.filename)) {
+						dependants.delete(svelteRequest.filename);
+					}
+				});
+				this._dependencies.delete(id);
+			}
 		}
+
 		return removed;
 	}
 
@@ -75,6 +95,10 @@ export class VitePluginSvelteCache {
 			// SSR js isn't cached
 			return this._js.get(svelteRequest.normalizedFilename);
 		}
+	}
+
+	public getError(svelteRequest: SvelteRequest) {
+		return this._errors.get(svelteRequest.normalizedFilename);
 	}
 
 	public getDependants(path: string): string[] {

@@ -4,6 +4,7 @@ import { InspectorOptions } from '../../utils/options';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { idToFile } from './utils';
 
 const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
@@ -43,8 +44,8 @@ export function svelteInspector(): Plugin {
 				disabled = true;
 			} else {
 				if (vps.api.options.kit && !inspectorOptions.appendTo) {
-					const out_dir = vps.api.options.kit.outDir || '.svelte-kit';
-					inspectorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
+					const out_dir = path.basename(vps.api.options.kit.outDir || '.svelte-kit');
+					inspectorOptions.appendTo = `${out_dir}/generated/root.svelte`;
 				}
 				appendTo = inspectorOptions.appendTo;
 			}
@@ -71,7 +72,12 @@ export function svelteInspector(): Plugin {
 				return `export default ${JSON.stringify(inspectorOptions ?? {})}`;
 			} else if (id.startsWith(inspectorPath)) {
 				// read file ourselves to avoid getting shut out by vites fs.allow check
-				return await fs.promises.readFile(id, 'utf-8');
+				const file = idToFile(id);
+				if (fs.existsSync(file)) {
+					return await fs.promises.readFile(file, 'utf-8');
+				} else {
+					log.error(`failed to find file for svelte-inspector: ${file}, referenced by id ${id}.`);
+				}
 			}
 		},
 

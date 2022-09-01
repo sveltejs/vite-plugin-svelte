@@ -162,10 +162,12 @@ module.exports = {
 			}
 		},
 		{
-			/* required because $app and $lib are not known */
 			files: ['packages/playground/kit-demo-app/src/**'],
 			rules: {
-				'node/no-missing-import': 'off'
+				/* required because $app and $lib are not known */
+				'node/no-missing-import': 'off',
+				/* required because URL wasn't in node8 */
+				'node/no-unsupported-features/node-builtins': 'off'
 			}
 		}
 	]

@@ -15,19 +15,25 @@ export async function handleHotUpdate(
 	cache: VitePluginSvelteCache,
 	options: ResolvedOptions
 ): Promise<ModuleNode[] | void> {
+	if (!cache.has(svelteRequest)) {
+		// file hasn't been requested yet (e.g. async component)
+		log.debug(`handleHotUpdate called before initial transform for ${svelteRequest.id}`);
+		return;
+	}
 	const { read, server } = ctx;
 
 	const cachedJS = cache.getJS(svelteRequest);
-	if (!cachedJS) {
-		// file hasn't been requested yet (e.g. async component)
-		log.debug(`handleHotUpdate first call ${svelteRequest.id}`);
-		return;
-	}
 	const cachedCss = cache.getCSS(svelteRequest);
 
 	const content = await read();
-	const compileData: CompileData = await compileSvelte(svelteRequest, content, options);
-	cache.update(compileData);
+	let compileData: CompileData;
+	try {
+		compileData = await compileSvelte(svelteRequest, content, options);
+		cache.update(compileData);
+	} catch (e) {
+		cache.setError(svelteRequest, e);
+		throw e;
+	}
 
 	const affectedModules = new Set<ModuleNode | undefined>();
 
@@ -35,19 +41,19 @@ export async function handleHotUpdate(
 	const mainModule = server.moduleGraph.getModuleById(svelteRequest.id);
 	const cssUpdated = cssModule && cssChanged(cachedCss, compileData.compiled.css);
 	if (cssUpdated) {
-		log.debug('handleHotUpdate css changed');
+		log.debug(`handleHotUpdate css changed for ${svelteRequest.cssId}`);
 		affectedModules.add(cssModule);
 	}
 	const jsUpdated =
 		mainModule && jsChanged(cachedJS, compileData.compiled.js, svelteRequest.filename);
 	if (jsUpdated) {
-		log.debug('handleHotUpdate js changed');
+		log.debug(`handleHotUpdate js changed for ${svelteRequest.id}`);
 		affectedModules.add(mainModule);
 	}
 
 	if (!jsUpdated) {
 		// transform won't be called, log warnings here
-		logCompilerWarnings(compileData.compiled.warnings, options);
+		logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
 	}
 
 	const result = [...affectedModules].filter(Boolean) as ModuleNode[];
@@ -99,7 +105,7 @@ function isCodeEqual(prev?: string, next?: string): boolean {
 /**
  * remove code that only changes metadata and does not require a js update for the component to keep working
  *
- * 1) add_location() calls. These add location metadata to elements, only useful for tooling like sapper studio
+ * 1) add_location() calls. These add location metadata to elements, only used by some dev tools
  * 2) ... maybe more (or less) in the future
  * @param code
  */

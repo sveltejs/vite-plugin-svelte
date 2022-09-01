@@ -2,7 +2,7 @@
 
 ### Why is component state reset on HMR update?
 
-Preservation of local component state after JS updates is disabled to avoid unpredictable and error-prone behavior. You can read more about it [here](https://github.com/rixo/svelte-hmr#preservation-of-local-state).
+Preservation of local component state after JS updates is disabled to avoid unpredictable and error-prone behavior. You can read more about it [here](https://github.com/sveltejs/svelte-hmr/blob/master/packages/svelte-hmr#preservation-of-local-state).
 
 Please note that if you only edit the `<style>` node, a separate CSS update can be applied where component state is 100% preserved.
 
@@ -72,6 +72,12 @@ Bad:
   }
 </style>
 ```
+
+### Why can't `cssHash` be set in development mode?
+
+`cssHash` is fixed in development for CSS HMR in Svelte components, ensuring that the hash value is stable based on the file name so that styles are only updated when changed.
+
+However, `cssHash` is respected in production builds as HMR is a dev-only feature.
 
 ### How do I add a Svelte preprocessor from a Vite plugin?
 

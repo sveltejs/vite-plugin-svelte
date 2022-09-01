@@ -1,5 +1,100 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.4
+
+### Patch Changes
+
+- temporarily add vite 3.1 beta to peer dependencies rule to avoid warning on kit projects using it ([#427](https://github.com/sveltejs/vite-plugin-svelte/pull/427))
+
+  **warning:** this is going to be changed back to `^3.0.0` in a future patch
+
+## 1.0.3
+
+### Patch Changes
+
+- ignore keyup events without key in inspector ([#417](https://github.com/sveltejs/vite-plugin-svelte/pull/417))
+
+* fix svelte-inspector import for vite 3.1 ([#423](https://github.com/sveltejs/vite-plugin-svelte/pull/423))
+
+## 1.0.2
+
+### Patch Changes
+
+- update svelte-inspector inject code to be compatible with @sveltejs/kit > 1.0.0-next.405 ([#411](https://github.com/sveltejs/vite-plugin-svelte/pull/411))
+
+## 1.0.1
+
+### Major Changes
+
+- update to vite3 ([#359](https://github.com/sveltejs/vite-plugin-svelte/pull/359))
+
+* bump minimum required node version to 14.18.0 to align with vite 3 ([#359](https://github.com/sveltejs/vite-plugin-svelte/pull/359))
+
+- move plugin options in svelte.config.js into "vitePlugin" ([#389](https://github.com/sveltejs/vite-plugin-svelte/pull/389))
+
+  update your svelte.config.js and wrap [plugin options](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/config.md#plugin-options) with `vitePlugin`
+
+  ```diff
+  // svelte.config.js
+
+    compilerOptions: {...},
+    preprocess: {...},
+    extensions: [...],
+    onwarn: () => {...},
+    kit: {},
+  + vitePlugin: {
+     // include, exclude, emitCss, hot, ignorePluginPreprocessors, disableDependencyReinclusion, experimental
+  + }
+  ```
+
+### Patch Changes
+
+- Always add dependencies using svelte to ssr.noExternal in vite config ([#359](https://github.com/sveltejs/vite-plugin-svelte/pull/359))
+
+## 1.0.0-next.49
+
+### Minor Changes
+
+- New experimental option sendWarningsToBrowser ([#372](https://github.com/sveltejs/vite-plugin-svelte/pull/372))
+
+### Patch Changes
+
+- fix hmr not updating a component when returning to the last working state from an error state ([#371](https://github.com/sveltejs/vite-plugin-svelte/pull/371))
+
+## 1.0.0-next.48
+
+### Minor Changes
+
+- Automate setting of compilerOptions.hydratable from kit.browser.hydrate option ([#368](https://github.com/sveltejs/vite-plugin-svelte/pull/368))
+
+### Patch Changes
+
+- Do not try to resolve svelte field in \_\_vite-browser-external, see (#362)" ([#363](https://github.com/sveltejs/vite-plugin-svelte/pull/363))
+
+## 1.0.0-next.47
+
+### Patch Changes
+
+- Use last modified time as cache busting parameter ([#356](https://github.com/sveltejs/vite-plugin-svelte/pull/356))
+
+* Export loadSvelteConfig ([#356](https://github.com/sveltejs/vite-plugin-svelte/pull/356))
+
+## 1.0.0-next.46
+
+### Patch Changes
+
+- Bump svelte-hmr version ([#349](https://github.com/sveltejs/vite-plugin-svelte/pull/349))
+
+## 1.0.0-next.45
+
+### Patch Changes
+
+- Handle inspector autocomplete keydown event ([#338](https://github.com/sveltejs/vite-plugin-svelte/pull/338))
+
+* Remove user-specified values for essential compilerOptions generate, format, cssHash and filename and log a warning ([#346](https://github.com/sveltejs/vite-plugin-svelte/pull/346))
+
+- fix inspector not initializing correctly for sveltekit on windows (see [#342](https://github.com/sveltejs/vite-plugin-svelte/issues/342)) ([#344](https://github.com/sveltejs/vite-plugin-svelte/pull/344))
+
 ## 1.0.0-next.44
 
 ### Patch Changes

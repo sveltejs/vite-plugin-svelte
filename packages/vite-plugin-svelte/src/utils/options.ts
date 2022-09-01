@@ -11,14 +11,15 @@ import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
 // eslint-disable-next-line node/no-missing-import
-import { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
-import {
+import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
+import type {
 	MarkupPreprocessor,
 	Preprocessor,
 	PreprocessorGroup,
 	Processed
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
+
 import path from 'path';
 import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
 import { createRequire } from 'module';
@@ -26,27 +27,91 @@ import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
 import deepmerge from 'deepmerge';
 
-const knownOptions = new Set([
-	'configFile',
+const allowedPluginOptions = new Set([
 	'include',
 	'exclude',
-	'extensions',
 	'emitCss',
-	'compilerOptions',
-	'onwarn',
-	'preprocess',
 	'hot',
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
-	'experimental',
-	'kit'
+	'experimental'
+]);
+
+const knownRootOptions = new Set(['extensions', 'compilerOptions', 'preprocess', 'onwarn']);
+
+const allowedInlineOptions = new Set([
+	'configFile',
+	'kit', // only for internal use by sveltekit
+	...allowedPluginOptions,
+	...knownRootOptions
 ]);
 
 export function validateInlineOptions(inlineOptions?: Partial<Options>) {
-	const invalidKeys = Object.keys(inlineOptions || {}).filter((key) => !knownOptions.has(key));
+	const invalidKeys = Object.keys(inlineOptions || {}).filter(
+		(key) => !allowedInlineOptions.has(key)
+	);
 	if (invalidKeys.length) {
-		log.warn(`invalid plugin options "${invalidKeys.join(', ')}" in config`, inlineOptions);
+		log.warn(`invalid plugin options "${invalidKeys.join(', ')}" in inline config`, inlineOptions);
 	}
+}
+
+function convertPluginOptions(config?: Partial<SvelteOptions>): Partial<Options> | undefined {
+	if (!config) {
+		return;
+	}
+	const invalidRootOptions = Object.keys(config).filter((key) => allowedPluginOptions.has(key));
+	if (invalidRootOptions.length > 0) {
+		throw new Error(
+			`Invalid options in svelte config. Move the following options into 'vitePlugin:{...}': ${invalidRootOptions.join(
+				', '
+			)}`
+		);
+	}
+	if (!config.vitePlugin) {
+		return config;
+	}
+	const pluginOptions = config.vitePlugin;
+	const pluginOptionKeys = Object.keys(pluginOptions);
+
+	const rootOptionsInPluginOptions = pluginOptionKeys.filter((key) => knownRootOptions.has(key));
+	if (rootOptionsInPluginOptions.length > 0) {
+		throw new Error(
+			`Invalid options in svelte config under vitePlugin:{...}', move them to the config root : ${rootOptionsInPluginOptions.join(
+				', '
+			)}`
+		);
+	}
+	const duplicateOptions = pluginOptionKeys.filter((key) =>
+		Object.prototype.hasOwnProperty.call(config, key)
+	);
+	if (duplicateOptions.length > 0) {
+		throw new Error(
+			`Invalid duplicate options in svelte config under vitePlugin:{...}', they are defined in root too and must only exist once: ${duplicateOptions.join(
+				', '
+			)}`
+		);
+	}
+	const unknownPluginOptions = pluginOptionKeys.filter((key) => !allowedPluginOptions.has(key));
+	if (unknownPluginOptions.length > 0) {
+		log.warn(
+			`ignoring unknown plugin options in svelte config under vitePlugin:{...}: ${unknownPluginOptions.join(
+				', '
+			)}`
+		);
+		unknownPluginOptions.forEach((unkownOption) => {
+			// @ts-ignore
+			delete pluginOptions[unkownOption];
+		});
+	}
+
+	const result: Options = {
+		...config,
+		...pluginOptions
+	};
+	// @ts-expect-error it exists
+	delete result.vitePlugin;
+
+	return result;
 }
 
 // used in config phase, merges the default options, svelte config, and inline options
@@ -61,25 +126,24 @@ export async function preResolveOptions(
 	};
 	const defaultOptions: Partial<Options> = {
 		extensions: ['.svelte'],
-		emitCss: true,
-		compilerOptions: {
-			format: 'esm'
-		}
+		emitCss: true
 	};
-	const svelteConfig = await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions);
+	const svelteConfig = convertPluginOptions(
+		await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions)
+	);
+
 	const extraOptions: Partial<PreResolvedOptions> = {
 		root: viteConfigWithResolvedRoot.root!,
 		isBuild: viteEnv.command === 'build',
 		isServe: viteEnv.command === 'serve',
 		isDebug: process.env.DEBUG != null
 	};
-	const merged = mergeConfigs<Partial<PreResolvedOptions> | undefined>(
+	const merged = mergeConfigs<PreResolvedOptions>(
 		defaultOptions,
 		svelteConfig,
 		inlineOptions,
 		extraOptions
 	);
-
 	// configFile of svelteConfig contains the absolute path it was loaded from,
 	// prefer it over the possibly relative inline path
 	if (svelteConfig?.configFile) {
@@ -88,15 +152,15 @@ export async function preResolveOptions(
 	return merged;
 }
 
-function mergeConfigs<T>(...configs: T[]): ResolvedOptions {
-	let result = {};
-	for (const config of configs.filter(Boolean)) {
-		result = deepmerge<T>(result, config, {
+function mergeConfigs<T>(...configs: (Partial<T> | undefined)[]): T {
+	let result: Partial<T> = {};
+	for (const config of configs.filter((x) => x != null)) {
+		result = deepmerge<T>(result, config!, {
 			// replace arrays
 			arrayMerge: (target: any[], source: any[]) => source ?? target
 		});
 	}
-	return result as ResolvedOptions;
+	return result as T;
 }
 
 // used in configResolved phase, merges a contextual default config, pre-resolved options, and some preprocessors.
@@ -116,8 +180,10 @@ export function resolveOptions(
 		root: viteConfig.root,
 		isProduction: viteConfig.isProduction
 	};
-	const merged: ResolvedOptions = mergeConfigs(defaultOptions, preResolveOptions, extraOptions);
+	const merged = mergeConfigs<ResolvedOptions>(defaultOptions, preResolveOptions, extraOptions);
 
+	removeIgnoredOptions(merged);
+	addSvelteKitOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
@@ -177,6 +243,46 @@ function enforceOptionsForProduction(options: ResolvedOptions) {
 	}
 }
 
+function removeIgnoredOptions(options: ResolvedOptions) {
+	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
+	if (options.hot && options.emitCss) {
+		ignoredCompilerOptions.push('cssHash');
+	}
+	const passedCompilerOptions = Object.keys(options.compilerOptions || {});
+	const passedIgnored = passedCompilerOptions.filter((o) => ignoredCompilerOptions.includes(o));
+	if (passedIgnored.length) {
+		log.warn(
+			`The following Svelte compilerOptions are controlled by vite-plugin-svelte and essential to its functionality. User-specified values are ignored. Please remove them from your configuration: ${passedIgnored.join(
+				', '
+			)}`
+		);
+		passedIgnored.forEach((ignored) => {
+			// @ts-expect-error string access
+			delete options.compilerOptions[ignored];
+		});
+	}
+}
+
+// some SvelteKit options need compilerOptions to work, so set them here.
+function addSvelteKitOptions(options: ResolvedOptions) {
+	// @ts-expect-error kit is not typed to avoid dependency on sveltekit
+	if (options?.kit != null) {
+		// @ts-expect-error kit is not typed to avoid dependency on sveltekit
+		const kit_browser_hydrate = options.kit.browser?.hydrate;
+		const hydratable = kit_browser_hydrate !== false;
+		if (
+			options.compilerOptions.hydratable != null &&
+			options.compilerOptions.hydratable !== hydratable
+		) {
+			log.warn(
+				`Conflicting values "compilerOptions.hydratable: ${options.compilerOptions.hydratable}" and "kit.browser.hydrate: ${kit_browser_hydrate}" in your svelte config. You should remove "compilerOptions.hydratable".`
+			);
+		}
+		log.debug(`Setting compilerOptions.hydratable: ${hydratable} for SvelteKit`);
+		options.compilerOptions.hydratable = hydratable;
+	}
+}
+
 // vite passes unresolved `root`option to config hook but we need the resolved value, so do it here
 // https://github.com/sveltejs/vite-plugin-svelte/issues/113
 // https://github.com/vitejs/vite/blob/43c957de8a99bb326afd732c962f42127b0a4d1e/packages/vite/src/node/config.ts#L293
@@ -201,13 +307,11 @@ export function buildExtraViteConfig(
 		// knownJsSrcExtensions: options.extensions
 	};
 
-	if (options.isServe) {
-		extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
-			svelteDeps,
-			options,
-			config.optimizeDeps
-		);
-	}
+	extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
+		svelteDeps,
+		options,
+		config.optimizeDeps
+	);
 
 	if (options.experimental?.prebundleSvelteLibraries) {
 		extraViteConfig.optimizeDeps = {
@@ -299,45 +403,34 @@ function buildSSROptionsForSvelte(
 	options: ResolvedOptions,
 	config: UserConfig
 ): any {
-	const noExternal: string[] = [];
+	const noExternal: (string | RegExp)[] = [];
 
 	// add svelte to ssr.noExternal unless it is present in ssr.external
 	// so we can resolve it with svelte/ssr
-	if (options.isBuild && config.build?.ssr) {
-		// @ts-expect-error ssr still flagged in vite
-		if (!config.ssr?.external?.includes('svelte')) {
-			noExternal.push('svelte');
-		}
-	} else {
-		// for non-ssr build, we exclude svelte js library deps to make development faster
-		// and also because vite doesn't handle them properly.
-		// see https://github.com/sveltejs/vite-plugin-svelte/issues/168
-		// see https://github.com/vitejs/vite/issues/2579
-		svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
+	if (!config.ssr?.external?.includes('svelte')) {
+		noExternal.push('svelte', /^svelte\//);
 	}
 
-	// add svelte dependencies to ssr.noExternal unless present in ssr.external or optimizeDeps.include
+	// add svelte dependencies to ssr.noExternal unless present in ssr.external
 	noExternal.push(
-		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter((x) => {
-			// @ts-expect-error ssr still flagged in vite
-			return !config.ssr?.external?.includes(x) && !config.optimizeDeps?.include?.includes(x);
-		})
+		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter(
+			(x) => !config.ssr?.external?.includes(x)
+		)
 	);
 	const ssr = {
-		noExternal
+		noExternal,
+		external: [] as string[]
 	};
 
 	if (options.isServe) {
 		// during dev, we have to externalize transitive dependencies, see https://github.com/sveltejs/vite-plugin-svelte/issues/281
-		// @ts-expect-error ssr still flagged in vite
 		ssr.external = Array.from(
 			new Set(svelteDeps.flatMap((dep) => Object.keys(dep.pkg.dependencies || {})))
 		).filter(
 			(dep) =>
 				!ssr.noExternal.includes(dep) &&
-				// @ts-expect-error ssr still flagged in vite
-				!config.ssr?.noExternal?.includes(dep) &&
-				// @ts-expect-error ssr still flagged in vite
+				// TODO noExternal can be something different than a string array
+				//!config.ssr?.noExternal?.includes(dep) &&
 				!config.ssr?.external?.includes(dep)
 		);
 	}
@@ -353,7 +446,10 @@ export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: Res
 		Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
 	}
 }
-export interface Options {
+
+export type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
+
+interface PluginOptionsInline extends PluginOptions {
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
 	 *
@@ -362,7 +458,9 @@ export interface Options {
 	 * @see https://vitejs.dev/config/#root
 	 */
 	configFile?: string | false;
+}
 
+export interface PluginOptions {
 	/**
 	 * A `picomatch` pattern, or array of patterns, which specifies the files the plugin should
 	 * operate on. By default, all svelte files are included.
@@ -380,37 +478,11 @@ export interface Options {
 	exclude?: Arrayable<string>;
 
 	/**
-	 * A list of file extensions to be compiled by Svelte
-	 *
-	 * @default ['.svelte']
-	 */
-	extensions?: string[];
-
-	/**
-	 * An array of preprocessors to transform the Svelte source code before compilation
-	 *
-	 * @see https://svelte.dev/docs#svelte_preprocess
-	 */
-	preprocess?: Arrayable<PreprocessorGroup>;
-
-	/**
 	 * Emit Svelte styles as virtual CSS files for Vite and other plugins to process
 	 *
 	 * @default true
 	 */
 	emitCss?: boolean;
-
-	/**
-	 * The options to be passed to the Svelte compiler
-	 *
-	 * @see https://svelte.dev/docs#svelte_compile
-	 */
-	compilerOptions?: CompileOptions;
-
-	/**
-	 * Handles warning emitted from the Svelte compiler
-	 */
-	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
 
 	/**
 	 * Enable or disable Hot Module Replacement.
@@ -456,6 +528,41 @@ export interface Options {
 	 * These options are considered experimental and breaking changes to them can occur in any release
 	 */
 	experimental?: ExperimentalOptions;
+}
+
+export interface SvelteOptions {
+	/**
+	 * A list of file extensions to be compiled by Svelte
+	 *
+	 * @default ['.svelte']
+	 */
+	extensions?: string[];
+
+	/**
+	 * An array of preprocessors to transform the Svelte source code before compilation
+	 *
+	 * @see https://svelte.dev/docs#svelte_preprocess
+	 */
+	preprocess?: Arrayable<PreprocessorGroup>;
+
+	/**
+	 * The options to be passed to the Svelte compiler. A few options are set by default,
+	 * including `dev` and `css`. However, some options are non-configurable, like
+	 * `filename`, `format`, `generate`, and `cssHash` (in dev).
+	 *
+	 * @see https://svelte.dev/docs#svelte_compile
+	 */
+	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
+
+	/**
+	 * Handles warning emitted from the Svelte compiler
+	 */
+	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
+
+	/**
+	 * Options for vite-plugin-svelte
+	 */
+	vitePlugin?: PluginOptions;
 }
 
 /**
@@ -516,6 +623,12 @@ export interface ExperimentalOptions {
 	 * enable svelte inspector
 	 */
 	inspector?: InspectorOptions | boolean;
+
+	/**
+	 * send a websocket message with svelte compiler warnings during dev
+	 *
+	 */
+	sendWarningsToBrowser?: boolean;
 
 	/**
 	 * enable svelte inline editor
@@ -615,7 +728,7 @@ export interface InlineEditorOptions {
 export interface PreResolvedOptions extends Options {
 	// these options are non-nullable after resolve
 	compilerOptions: CompileOptions;
-	experimental: ExperimentalOptions;
+	experimental?: ExperimentalOptions;
 	// extra options
 	root: string;
 	isBuild: boolean;

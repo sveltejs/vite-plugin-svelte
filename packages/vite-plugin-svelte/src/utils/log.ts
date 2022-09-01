@@ -2,6 +2,7 @@
 import { cyan, yellow, red } from 'kleur/colors';
 import debug from 'debug';
 import { ResolvedOptions, Warning } from './options';
+import { SvelteRequest } from './id';
 
 const levels: string[] = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
@@ -99,18 +100,55 @@ export const log = {
 	setLevel
 };
 
-export function logCompilerWarnings(warnings: Warning[], options: ResolvedOptions) {
+export type SvelteWarningsMessage = {
+	id: string;
+	filename: string;
+	normalizedFilename: string;
+	timestamp: number;
+	warnings: Warning[]; // allWarnings filtered by warnings where onwarn did not call the default handler
+	allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite plugin svelte warnings
+	rawWarnings: Warning[]; // raw compiler output
+};
+
+export function logCompilerWarnings(
+	svelteRequest: SvelteRequest,
+	warnings: Warning[],
+	options: ResolvedOptions
+) {
 	const { emitCss, onwarn, isBuild } = options;
-	const warn = isBuild ? warnBuild : warnDev;
-	const notIgnoredWarnings = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
-	const extraWarnings = buildExtraWarnings(warnings, isBuild);
-	[...notIgnoredWarnings, ...extraWarnings].forEach((warning) => {
+	const sendViaWS = !isBuild && options.experimental?.sendWarningsToBrowser;
+	let warn = isBuild ? warnBuild : warnDev;
+	const handledByDefaultWarn: Warning[] = [];
+	const notIgnored = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
+	const extra = buildExtraWarnings(warnings, isBuild);
+	const allWarnings = [...notIgnored, ...extra];
+	if (sendViaWS) {
+		const _warn = warn;
+		warn = (w: Warning) => {
+			handledByDefaultWarn.push(w);
+			_warn(w);
+		};
+	}
+	allWarnings.forEach((warning) => {
 		if (onwarn) {
 			onwarn(warning, warn);
 		} else {
 			warn(warning);
 		}
 	});
+	if (sendViaWS) {
+		const message: SvelteWarningsMessage = {
+			id: svelteRequest.id,
+			filename: svelteRequest.filename,
+			normalizedFilename: svelteRequest.normalizedFilename,
+			timestamp: svelteRequest.timestamp,
+			warnings: handledByDefaultWarn, // allWarnings filtered by warnings where onwarn did not call the default handler
+			allWarnings, // includes warnings filtered by onwarn and our extra vite plugin svelte warnings
+			rawWarnings: warnings // raw compiler output
+		};
+		log.debug(`sending svelte:warnings message for ${svelteRequest.normalizedFilename}`);
+		options.server?.ws?.send('svelte:warnings', message);
+	}
 }
 
 function ignoreCompilerWarning(

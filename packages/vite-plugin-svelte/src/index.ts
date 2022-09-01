@@ -101,7 +101,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				if (isSvelteMetadataChanged) {
 					// Force Vite to optimize again. Although we mutate the config here, it works because
 					// Vite's optimizer runs after `buildStart()`.
-					viteConfig.server.force = true;
+					// TODO: verify this works in vite3
+					viteConfig.optimizeDeps.force = true;
 				}
 			},
 
@@ -112,9 +113,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 
 			load(id, opts) {
-				// @ts-expect-error anticipate vite changing second parameter as options object
-				// see https://github.com/vitejs/vite/discussions/5109
-				const ssr: boolean = opts === true || opts?.ssr;
+				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, !!ssr);
 				if (svelteRequest) {
 					const { filename, query } = svelteRequest;
@@ -194,9 +193,10 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				try {
 					compileData = await compileSvelte(svelteRequest, code, options);
 				} catch (e) {
+					cache.setError(svelteRequest, e);
 					throw toRollupError(e, options);
 				}
-				logCompilerWarnings(compileData.compiled.warnings, options);
+				logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
 				cache.update(compileData);
 				if (compileData.dependencies?.length && options.server) {
 					compileData.dependencies.forEach((d) => {
@@ -220,7 +220,11 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				}
 				const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);
 				if (svelteRequest) {
-					return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
+					try {
+						return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
+					} catch (e) {
+						throw toRollupError(e, options);
+					}
 				}
 			}
 		}
@@ -230,8 +234,12 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	return plugins.filter(Boolean);
 }
 
+export { loadSvelteConfig } from './utils/load-svelte-config';
+
 export {
 	Options,
+	PluginOptions,
+	SvelteOptions,
 	Preprocessor,
 	PreprocessorGroup,
 	CompileOptions,
@@ -242,3 +250,5 @@ export {
 	Processed,
 	Warning
 } from './utils/options';
+
+export { SvelteWarningsMessage } from './utils/log';
