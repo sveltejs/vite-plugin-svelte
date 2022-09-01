@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { idToFile } from '../inspector/utils';
-import { VitePluginSvelteAPI } from '../../index';
+import type { VitePluginSvelteAPI } from '../../index';
 
 const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-<' : 'meta-<',
@@ -75,7 +75,8 @@ export function svelteInlineEditor(): Plugin {
 				}
 			});
 			const { compileSvelte, requestParser, options } = api;
-			server.ws.on('svelte-inline-editor:save', ({ code, content, file }) => {
+			server.ws.on('svelte-inline-editor:save', (data) => {
+				const { code, content, file } = data;
 				try {
 					const filePath = path.resolve(root, file);
 					// TODO ensure it is inside vite root or fs.allow to prevent data loss/inject on accessible dev servers

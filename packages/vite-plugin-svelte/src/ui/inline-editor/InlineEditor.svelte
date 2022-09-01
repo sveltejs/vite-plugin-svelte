@@ -193,6 +193,7 @@
 				el: active_el
 			};
 		});
+
 		return () => {
 			// make sure we get rid of everything
 			disable();
@@ -238,9 +239,9 @@
 
 <style>
 	:global(body.svelte-inline-editor-enabled *) {
-		cursor: var(--svelte-inline-editor-icon), text !important;
 	}
 	:global(.svelte-inline-editor-active-target) {
+		cursor: var(--svelte-inline-editor-icon), text !important;
 		outline: 2px dashed #ff3e00 !important;
 	}
 

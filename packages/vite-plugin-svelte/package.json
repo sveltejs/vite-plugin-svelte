@@ -61,8 +61,20 @@
   "peerDependenciesMeta": {
     "diff-match-patch": {
       "optional": true
-    }
-  },
+    },
+		"codemirror": {
+			"optional": true
+		},
+		"svelte-codemirror-editor": {
+			"optional": true
+		},
+		"@codemirror/lang-html": {
+			"optional": true
+		},
+		"@codemirror/theme-one-dark": {
+			"optional": true
+		}
+	},
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/diff-match-patch": "^1.0.32",
@@ -71,6 +83,10 @@
     "rollup": "^2.78.1",
     "svelte": "^3.49.0",
     "tsup": "^6.2.3",
-    "vite": "^3.1.0-beta.1"
+    "vite": "^3.1.0-beta.1",
+		"svelte-codemirror-editor": "^1.1.0",
+		"codemirror": "^6.0.1",
+		"@codemirror/lang-html": "^6.1.0",
+		"@codemirror/theme-one-dark": "^6.0.0"
   }
 }
