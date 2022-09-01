@@ -4,6 +4,7 @@ import { InlineEditorOptions, InspectorOptions } from '../../utils/options';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { idToFile } from '../inspector/utils';
 import { VitePluginSvelteAPI } from '../../index';
 
 const defaultInspectorOptions: InspectorOptions = {
@@ -43,7 +44,7 @@ export function svelteInlineEditor(): Plugin {
 				return;
 			}
 			api = vps.api;
-			const opts = api.options.experimental.inlineEditor;
+			const opts = api.options.experimental!.inlineEditor!;
 			if (opts === true) {
 				inlineEditorOptions = {
 					...defaultInspectorOptions
@@ -56,7 +57,7 @@ export function svelteInlineEditor(): Plugin {
 			}
 			if (vps.api.options.kit && !inlineEditorOptions.appendTo) {
 				const out_dir = vps.api.options.kit.outDir || '.svelte-kit';
-				inlineEditorOptions.appendTo = `${out_dir}/runtime/client/start.js`;
+				inlineEditorOptions.appendTo = `${out_dir}/generated/root.svelte`;
 			}
 			appendTo = inlineEditorOptions.appendTo;
 		},
@@ -124,7 +125,12 @@ export function svelteInlineEditor(): Plugin {
 				return `export default ${JSON.stringify(inlineEditorOptions ?? {})}`;
 			} else if (id.startsWith(inlineEditorPath)) {
 				// read file ourselves to avoid getting shut out by vites fs.allow check
-				return await fs.promises.readFile(id, 'utf-8');
+				const file = idToFile(id);
+				if (fs.existsSync(file)) {
+					return await fs.promises.readFile(file, 'utf-8');
+				} else {
+					log.error(`failed to find file for svelte-inspector: ${file}, referenced by id ${id}.`);
+				}
 			}
 		},
 
