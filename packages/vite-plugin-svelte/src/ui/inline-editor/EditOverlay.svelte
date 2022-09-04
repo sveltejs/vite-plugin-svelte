@@ -29,6 +29,18 @@
 			code = data?.content ?? '';
 		}
 	});
+
+	function editorKeyDown(e) {
+		if (e.key === 's' && e.ctrlKey) {
+			e.preventDefault();
+			e.stopPropagation();
+			save();
+		} else if (e.key === 'Escape') {
+			e.preventDefault();
+			e.stopPropagation();
+			close();
+		}
+	}
 </script>
 
 <div class="svelte-inline-editor">
@@ -37,7 +49,7 @@
 		<button class="action" on:click={save}>save</button>
 		<button class="action" on:click={close}>&times;</button>
 	</div>
-	<div class="edit-pane">
+	<div class="edit-pane" on:keydown={editorKeyDown}>
 		<CodeMirror bind:value={code} on:change={update} lang={html()} theme={oneDark} />
 	</div>
 </div>

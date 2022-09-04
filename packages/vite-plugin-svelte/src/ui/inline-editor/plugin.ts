@@ -36,6 +36,20 @@ export function svelteInlineEditor(): Plugin {
 		apply: 'serve',
 		enforce: 'pre',
 
+		config() {
+			return {
+				optimizeDeps: {
+					exclude: [
+						'codemirror',
+						'@codemirror/lang-html',
+						'@codemirror/theme-one-dark',
+						'@codemirror/view',
+						'@codemirror/state'
+					]
+				}
+			};
+		},
+
 		configResolved(config) {
 			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
 			if (!vps?.api?.options?.experimental?.inlineEditor) {
@@ -74,8 +88,9 @@ export function svelteInlineEditor(): Plugin {
 					log.error(`failed to send content of ${meta.loc.file} to browser via ws`, e);
 				}
 			});
-			const { compileSvelte, requestParser, options } = api;
+
 			server.ws.on('svelte-inline-editor:save', (data) => {
+				const { compileSvelte, requestParser, options } = api;
 				const { code, content, file } = data;
 				try {
 					const filePath = path.resolve(root, file);
