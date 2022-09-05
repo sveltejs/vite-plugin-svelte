@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.5
+
+### Patch Changes
+
+- removed peerDependency for vite 3.1.0-beta as vite 3.1.0 final has been released ([#431](https://github.com/sveltejs/vite-plugin-svelte/pull/431))
+
 ## 1.0.4
 
 ### Patch Changes
