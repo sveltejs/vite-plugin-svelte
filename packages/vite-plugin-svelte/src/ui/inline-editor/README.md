@@ -3,7 +3,7 @@
 This code is highly experimental and may never make it into an official plugin.
 It explores what we envisioned on svelte radio https://www.svelteradio.com/episodes/inspecting-svelte-code-with-dominik-g
 
-The goal is to provide inline editing directly in your dev page without context switching out of the browser into an editor
+The goal is to provide inline editing directly in your dev page without context switching out of the browser into an external editor
 
 # What is working
 
@@ -13,10 +13,7 @@ The goal is to provide inline editing directly in your dev page without context 
 # TODO
 
 - reduce code that can be edited to location (+- a few lines or enclosing tags?)
-- update editor content on change of node clicked
 - maybe keep editor open after save
-- ctrl-s, esc handling in editor pane
-- use a minimal nice code editor with highlighting etc (not monaco et al)
 - nicer ux/ui in general. colors, animations, feedback on save etc
 - true "inline" mode for static/raw text nodes (needs help from svelte ast to determine, use cache and loc to find it)
 - add "open file in external editor" action button if user is unhappy with the provided snippet as an escape hatch
