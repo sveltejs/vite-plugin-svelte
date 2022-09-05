@@ -18,7 +18,7 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.24.3",
+    "@changesets/cli": "^2.24.4",
     "@svitejs/changesets-changelog-github-compact": "^0.1.1",
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^18.7.14",
@@ -26,7 +26,7 @@
     "@typescript-eslint/eslint-plugin": "^5.36.1",
     "@typescript-eslint/parser": "^5.36.1",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.15.5",
+    "esbuild": "^0.15.7",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-html": "^7.1.0",
@@ -44,10 +44,10 @@
     "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.7.0",
     "rimraf": "^3.0.2",
-    "svelte": "^3.49.0",
+    "svelte": "^3.50.0",
     "typescript": "^4.8.2",
-    "vite": "^3.1.0-beta.1",
-    "vitest": "^0.22.1"
+    "vite": "^3.1.0",
+    "vitest": "^0.23.0"
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --fix",
@@ -55,9 +55,9 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@7.9.5",
+  "packageManager": "pnpm@7.11.0",
   "engines": {
-    "pnpm": "^7.9.5",
+    "pnpm": "^7.11.0",
     "yarn": "forbidden, use pnpm",
     "npm": "forbidden, use pnpm",
     "node": "^14.18.0 || >= 16"
@@ -65,13 +65,13 @@
   "pnpm": {
     "overrides": {
       "@sveltejs/vite-plugin-svelte": "workspace:*",
-      "vite": "3.1.0-beta.1"
+      "vite": "^3.1.0"
     },
     "peerDependencyRules": {
       "allowedVersions": {
         "stylus": "^0.58.0",
         "postcss-load-config": "^4.0.0",
-        "vite": "^3.1.0-beta.1"
+        "vite": "^3.1.0"
       }
     }
   }

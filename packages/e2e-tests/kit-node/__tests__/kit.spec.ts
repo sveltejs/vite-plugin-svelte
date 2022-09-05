@@ -5,7 +5,7 @@ import {
 	getEl,
 	getText,
 	isBuild,
-	readFileContent,
+	testDir,
 	sleep,
 	untilMatches,
 	waitForNavigation,
@@ -15,6 +15,7 @@ import {
 } from '~utils';
 
 import path from 'path';
+import glob from 'tiny-glob';
 
 describe('kit-node', () => {
 	describe('index route', () => {
@@ -91,20 +92,16 @@ describe('kit-node', () => {
 
 		if (isBuild) {
 			it('should not include dynamic import from onmount in ssr output', async () => {
-				const serverManifest = JSON.parse(
-					readFileContent(path.join('build', 'server', 'vite-manifest.json'))
-				);
-				const includesClientOnlyModule = Object.keys(serverManifest).some((key: string) =>
-					key.includes('client-only-module')
+				const serverFiles = await glob('.svelte-kit/output/server/**/*.js', { cwd: testDir });
+				const includesClientOnlyModule = serverFiles.some((file: string) =>
+					file.includes('client-only-module')
 				);
 				expect(includesClientOnlyModule).toBe(false);
 			});
 			it('should include dynamic import from onmount in client output', async () => {
-				const clientManifest = JSON.parse(
-					readFileContent(path.join('build', 'client', 'vite-manifest.json'))
-				);
-				const includesClientOnlyModule = Object.keys(clientManifest).some((key: string) =>
-					key.includes('client-only-module')
+				const clientFiles = await glob('.svelte-kit/output/client/**/*.js', { cwd: testDir });
+				const includesClientOnlyModule = clientFiles.some((file: string) =>
+					file.includes('client-only-module')
 				);
 				expect(includesClientOnlyModule).toBe(true);
 			});
