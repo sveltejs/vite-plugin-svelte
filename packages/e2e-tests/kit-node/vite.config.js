@@ -12,6 +12,9 @@ const config = {
 			interval: 100
 		}
 	},
+	build: {
+		minify: false
+	},
 	plugins: [transformValidation(), sveltekit()]
 };
 
