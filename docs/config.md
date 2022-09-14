@@ -306,6 +306,14 @@ export default {
     toggleKeyCombo?: string;
 
     /**
+     * define keys to drill from the active element (up selects parent, down selects child).
+     * @default {up: 'ArrowUp',down: 'ArrowDown'}
+     *
+     * This is useful when components wrap another one without providing any hoverable area between them
+     */
+    drillKeys?: { up: string; down: string };
+
+    /**
      * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
      * @default false
      */

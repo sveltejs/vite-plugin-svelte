@@ -37,18 +37,30 @@
 		y = event.y;
 	}
 
-	function findMetaEl(el) {
+	function find_parent_with_meta(el) {
 		while (el) {
-			const file = el.__svelte_meta?.loc?.file;
-			if (el !== toggle_el && file && !file.includes('node_modules/')) {
+			if (has_meta(el)) {
 				return el;
 			}
 			el = el.parentNode;
 		}
 	}
 
+	function find_child_with_meta(el) {
+		return [...el.querySelectorAll('*')].find(has_meta);
+	}
+
+	function has_meta(el) {
+		const file = el.__svelte_meta?.loc?.file;
+		return el !== toggle_el && file && !file.includes('node_modules/');
+	}
+
 	function mouseover(event) {
-		const el = findMetaEl(event.target);
+		const el = find_parent_with_meta(event.target);
+		activate(el);
+	}
+
+	function activate(el) {
 		if (options.customStyles && el !== active_el) {
 			if (active_el) {
 				active_el.classList.remove('svelte-inspector-active-target');
@@ -68,9 +80,7 @@
 
 	function click(event) {
 		if (file_loc) {
-			event.preventDefault();
-			event.stopPropagation();
-			event.stopImmediatePropagation();
+			stop(event);
 			fetch(`/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
 			if (options.holdMode && is_holding()) {
 				disable();
@@ -98,6 +108,12 @@
 		return enabled_ts && Date.now() - enabled_ts > 250;
 	}
 
+	function stop(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		event.stopImmediatePropagation();
+	}
+
 	function keydown(event) {
 		if (event.repeat || event.key == null) {
 			return;
@@ -107,6 +123,18 @@
 			toggle();
 			if (options.holdMode && enabled) {
 				enabled_ts = Date.now();
+			}
+		} else if (event.key === options.drillKeys.up && active_el) {
+			const el = find_parent_with_meta(active_el.parentNode);
+			if (el) {
+				activate(el);
+				stop(event);
+			}
+		} else if (event.key === options.drillKeys.down && active_el) {
+			const el = find_child_with_meta(active_el);
+			if (el) {
+				activate(el);
+				stop(event);
 			}
 		}
 	}
@@ -203,7 +231,7 @@
 		style:top="{y + 30}px"
 		bind:offsetWidth={w}
 	>
-		{file_loc}
+		&lt;{active_el.tagName.toLowerCase()}&gt;&nbsp;{file_loc}
 	</div>
 {/if}
 
