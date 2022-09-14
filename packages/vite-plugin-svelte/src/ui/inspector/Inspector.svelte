@@ -80,9 +80,7 @@
 
 	function click(event) {
 		if (file_loc) {
-			event.preventDefault();
-			event.stopPropagation();
-			event.stopImmediatePropagation();
+			stop(event);
 			fetch(`/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
 			if (options.holdMode && is_holding()) {
 				disable();
@@ -110,6 +108,12 @@
 		return enabled_ts && Date.now() - enabled_ts > 250;
 	}
 
+	function stop(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		event.stopImmediatePropagation();
+	}
+
 	function keydown(event) {
 		if (event.repeat || event.key == null) {
 			return;
@@ -120,15 +124,17 @@
 			if (options.holdMode && enabled) {
 				enabled_ts = Date.now();
 			}
-		} else if (event.key === 'ArrowUp' && active_el) {
+		} else if (event.key === options.drillKeys.up && active_el) {
 			const el = find_parent_with_meta(active_el.parentNode);
 			if (el) {
 				activate(el);
+				stop(event);
 			}
-		} else if (event.key === 'ArrowDown' && active_el) {
+		} else if (event.key === options.drillKeys.down && active_el) {
 			const el = find_child_with_meta(active_el);
 			if (el) {
 				activate(el);
+				stop(event);
 			}
 		}
 	}
