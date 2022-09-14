@@ -37,18 +37,30 @@
 		y = event.y;
 	}
 
-	function findMetaEl(el) {
+	function find_parent_with_meta(el) {
 		while (el) {
-			const file = el.__svelte_meta?.loc?.file;
-			if (el !== toggle_el && file && !file.includes('node_modules/')) {
+			if (has_meta(el)) {
 				return el;
 			}
 			el = el.parentNode;
 		}
 	}
 
+	function find_child_with_meta(el) {
+		return [...el.querySelectorAll('*')].find(has_meta);
+	}
+
+	function has_meta(el) {
+		const file = el.__svelte_meta?.loc?.file;
+		return el !== toggle_el && file && !file.includes('node_modules/');
+	}
+
 	function mouseover(event) {
-		const el = findMetaEl(event.target);
+		const el = find_parent_with_meta(event.target);
+		activate(el);
+	}
+
+	function activate(el) {
 		if (options.customStyles && el !== active_el) {
 			if (active_el) {
 				active_el.classList.remove('svelte-inspector-active-target');
@@ -107,6 +119,16 @@
 			toggle();
 			if (options.holdMode && enabled) {
 				enabled_ts = Date.now();
+			}
+		} else if (event.key === 'ArrowUp' && active_el) {
+			const el = find_parent_with_meta(active_el.parentNode);
+			if (el) {
+				activate(el);
+			}
+		} else if (event.key === 'ArrowDown' && active_el) {
+			const el = find_child_with_meta(active_el);
+			if (el) {
+				activate(el);
 			}
 		}
 	}
@@ -203,7 +225,7 @@
 		style:top="{y + 30}px"
 		bind:offsetWidth={w}
 	>
-		{file_loc}
+		&lt;{active_el.tagName.toLowerCase()}&gt;&nbsp;{file_loc}
 	</div>
 {/if}
 

@@ -9,6 +9,11 @@ const config = {
 		methodOverride: {
 			allowed: ['PATCH', 'DELETE']
 		}
+	},
+	vitePlugin: {
+		experimental: {
+			inspector: true
+		}
 	}
 };
 
