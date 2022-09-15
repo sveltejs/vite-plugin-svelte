@@ -8,7 +8,7 @@ import { idToFile } from './utils';
 
 const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
-	drillKeys: { up: 'ArrowUp', down: 'ArrowDown' },
+	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
 	holdMode: false,
 	showToggleButton: 'active',
 	toggleButtonPos: 'top-right',
