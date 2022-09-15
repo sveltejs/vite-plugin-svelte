@@ -79,16 +79,17 @@
 	}
 
 	function is_selectable(el) {
+		if (el === toggle_el) {
+			return false; // toggle is our own
+		}
 		const file = el?.__svelte_meta?.loc?.file;
-		// files in node_modules belong to 3rd party component libraries
-		// toggle_el must be clickable to disable, no spying
-		// svelte-announcer is internal
-		return (
-			file &&
-			!file.includes('node_modules/') &&
-			el !== toggle_el &&
-			el.getAttribute('id') !== 'svelte-announcer'
-		);
+		if (!file || file.includes('node_modules/')) {
+			return false; // no file or 3rd party
+		}
+		if (['svelte-announcer', 'svelte-inspector-announcer'].includes(el.getAttribute('id'))) {
+			return false; // ignore some elements by id that would be selectable from keyboard nav otherwise
+		}
+		return true;
 	}
 
 	function mouseover(event) {
