@@ -320,6 +320,13 @@ export default {
     navKeys?: { parent: string; child: string; next: string; prev: string };
 
     /**
+     * define key to open the editor for the currently selected dom node
+     *
+     * @default 'Enter'
+     */
+    openKey?: string;
+
+    /**
      * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
      * @default false
      */

@@ -115,7 +115,7 @@
 		active_el = el;
 	}
 
-	function click(event) {
+	function open_editor(event) {
 		if (file_loc) {
 			stop(event);
 			fetch(`/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
@@ -145,6 +145,10 @@
 		return nav_keys?.some((key) => is_key_active(key, event));
 	}
 
+	function is_open(event) {
+		return options.openKey && options.openKey.toLowerCase() === event.key.toLowerCase();
+	}
+
 	function is_holding() {
 		return enabled_ts && Date.now() - enabled_ts > 250;
 	}
@@ -169,8 +173,13 @@
 			const el = find_selectable_for_nav(event.key);
 			if (el) {
 				activate(el);
+				const pos = el.getBoundingClientRect();
+				x = Math.ceil(pos.left);
+				y = Math.ceil(pos.bottom - 20);
 				stop(event);
 			}
+		} else if (is_open(event)) {
+			open_editor(event);
 		}
 	}
 
@@ -194,7 +203,7 @@
 		const l = enabled ? body.addEventListener : body.removeEventListener;
 		l('mousemove', mousemove);
 		l('mouseover', mouseover);
-		l('click', click, true);
+		l('click', open_editor, true);
 	}
 
 	function enable() {
@@ -248,7 +257,7 @@
 </script>
 
 {#if show_toggle}
-	<div
+	<button
 		class="svelte-inspector-toggle"
 		class:enabled
 		style={`background-image: var(--svelte-inspector-icon);${options.toggleButtonPos
@@ -264,8 +273,8 @@
 	{@const loc = active_el.__svelte_meta.loc}
 	<div
 		class="svelte-inspector-overlay"
-		style:left="{Math.min(x + 3, document.body.clientWidth - w - 10)}px"
-		style:top="{y + 30}px"
+		style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
+		style:top="{document.documentElement.clientHeight < y + 50 ? y - 30 : y + 30}px"
 		bind:offsetWidth={w}
 	>
 		&lt;{active_el.tagName.toLowerCase()}&gt;&nbsp;{file_loc}
@@ -293,6 +302,7 @@
 	}
 
 	.svelte-inspector-toggle {
+		all: unset;
 		border: 1px solid #ff3e00;
 		border-radius: 8px;
 		position: fixed;
