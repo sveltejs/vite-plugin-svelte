@@ -234,7 +234,7 @@
 	}
 
 	function innermost_hover_el() {
-		let e = document.body;
+		let e = document.body.querySelector(':hover');
 		let result;
 		while (e) {
 			result = e;
