@@ -170,7 +170,12 @@ export function resolveOptions(
 	viteConfig: ResolvedConfig
 ): ResolvedOptions {
 	const defaultOptions: Partial<Options> = {
-		hot: viteConfig.isProduction ? false : { injectCss: !preResolveOptions.emitCss },
+		hot: viteConfig.isProduction
+			? false
+			: {
+					injectCss: !preResolveOptions.emitCss,
+					partialAccept: !!viteConfig.experimental?.hmrPartialAccept
+			  },
 		compilerOptions: {
 			css: !preResolveOptions.emitCss,
 			dev: !viteConfig.isProduction
@@ -330,6 +335,17 @@ export function buildExtraViteConfig(
 
 	// @ts-ignore
 	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config, extraViteConfig);
+
+	// enable hmrPartialAccept if not explicitly disabled
+	if (
+		(options.hot == null ||
+			options.hot === true ||
+			(options.hot && options.hot.partialAccept !== false)) && // deviate from svelte-hmr, default to true
+		config.experimental?.hmrPartialAccept !== false
+	) {
+		log.debug('enabling "experimental.hmrPartialAccept" in vite config');
+		extraViteConfig.experimental = { hmrPartialAccept: true };
+	}
 
 	return extraViteConfig;
 }
@@ -500,7 +516,7 @@ export interface PluginOptions {
 	 * @see https://github.com/rixo/svelte-hmr#options
 	 * @default true for development, always false for production
 	 */
-	hot?: boolean | { injectCss?: boolean; [key: string]: any };
+	hot?: boolean | { injectCss?: boolean; partialAccept?: boolean; [key: string]: any };
 
 	/**
 	 * Some Vite plugins can contribute additional preprocessors by defining `api.sveltePreprocess`.
