@@ -1,6 +1,7 @@
 <script>
-	import ModuleContext, { y } from './ModuleContext.svelte';
+	import UsingNamed from './UsingNamed.svelte';
+	import UsingOnlyDefault from './UsingOnlyDefault.svelte';
 </script>
 
-<ModuleContext id="hmr-with-context">{y}</ModuleContext>
-<ModuleContext id="hmr-without-context" />
+<UsingNamed />
+<UsingOnlyDefault />
