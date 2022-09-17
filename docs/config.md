@@ -98,7 +98,7 @@ These options are specific to the Svelte compiler and are generally shared acros
 
 ### preprocess
 
-- **Type:** `PreprocessorGroup | PreprocessorGroup[]` - See [svelte.preprocess](https://svelte.dev/docs#svelte_preprocess)
+- **Type:** `PreprocessorGroup | PreprocessorGroup[]` - See [svelte.preprocess](https://svelte.dev/docs#compile-time-svelte-preprocess)
 
   An array of preprocessors to transform the Svelte source code before compilation.
 
