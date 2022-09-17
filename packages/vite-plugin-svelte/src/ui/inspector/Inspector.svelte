@@ -4,7 +4,7 @@
 	// eslint-disable-next-line node/no-missing-import
 	import options from 'virtual:svelte-inspector-options';
 	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
-
+	const nav_keys = Object.values(options.navKeys).map((k) => k.toLowerCase());
 	let enabled = false;
 
 	const icon = `data:image/svg+xml;base64,${btoa(
@@ -37,30 +37,67 @@
 		y = event.y;
 	}
 
-	function find_parent_with_meta(el) {
-		while (el) {
-			if (has_meta(el)) {
+	function find_selectable_parent(el) {
+		do {
+			el = el.parentNode;
+			if (is_selectable(el)) {
 				return el;
 			}
-			el = el.parentNode;
+		} while (el);
+	}
+
+	function find_selectable_child(el) {
+		return [...el.querySelectorAll('*')].find(is_selectable);
+	}
+
+	function find_selectable_sibling(el, prev = false) {
+		do {
+			el = prev ? el.previousElementSibling : el.nextElementSibling;
+			if (is_selectable(el)) {
+				return el;
+			}
+		} while (el);
+	}
+
+	function find_selectable_for_nav(key) {
+		const el = active_el;
+		if (!el) {
+			return find_selectable_child(document?.body);
+		}
+		switch (key) {
+			case options.navKeys.parent:
+				return find_selectable_parent(el);
+			case options.navKeys.child:
+				return find_selectable_child(el);
+			case options.navKeys.next:
+				return find_selectable_sibling(el) || find_selectable_parent(el);
+			case options.navKeys.prev:
+				return find_selectable_sibling(el, true) || find_selectable_parent(el);
+			default:
+				return;
 		}
 	}
 
-	function find_child_with_meta(el) {
-		return [...el.querySelectorAll('*')].find(has_meta);
-	}
-
-	function has_meta(el) {
-		const file = el.__svelte_meta?.loc?.file;
-		return el !== toggle_el && file && !file.includes('node_modules/');
+	function is_selectable(el) {
+		if (el === toggle_el) {
+			return false; // toggle is our own
+		}
+		const file = el?.__svelte_meta?.loc?.file;
+		if (!file || file.includes('node_modules/')) {
+			return false; // no file or 3rd party
+		}
+		if (['svelte-announcer', 'svelte-inspector-announcer'].includes(el.getAttribute('id'))) {
+			return false; // ignore some elements by id that would be selectable from keyboard nav otherwise
+		}
+		return true;
 	}
 
 	function mouseover(event) {
-		const el = find_parent_with_meta(event.target);
-		activate(el);
+		const el = find_selectable_parent(event.target);
+		activate(el, false);
 	}
 
-	function activate(el) {
+	function activate(el, set_bubble_pos = true) {
 		if (options.customStyles && el !== active_el) {
 			if (active_el) {
 				active_el.classList.remove('svelte-inspector-active-target');
@@ -76,9 +113,14 @@
 			file_loc = null;
 		}
 		active_el = el;
+		if (set_bubble_pos) {
+			const pos = el.getBoundingClientRect();
+			x = Math.ceil(pos.left);
+			y = Math.ceil(pos.bottom - 20);
+		}
 	}
 
-	function click(event) {
+	function open_editor(event) {
 		if (file_loc) {
 			stop(event);
 			fetch(`/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
@@ -104,6 +146,14 @@
 		return toggle_combo?.every((key) => is_key_active(key, event));
 	}
 
+	function is_nav(event) {
+		return nav_keys?.some((key) => is_key_active(key, event));
+	}
+
+	function is_open(event) {
+		return options.openKey && options.openKey.toLowerCase() === event.key.toLowerCase();
+	}
+
 	function is_holding() {
 		return enabled_ts && Date.now() - enabled_ts > 250;
 	}
@@ -124,18 +174,14 @@
 			if (options.holdMode && enabled) {
 				enabled_ts = Date.now();
 			}
-		} else if (event.key === options.drillKeys.up && active_el) {
-			const el = find_parent_with_meta(active_el.parentNode);
+		} else if (is_nav(event)) {
+			const el = find_selectable_for_nav(event.key);
 			if (el) {
 				activate(el);
 				stop(event);
 			}
-		} else if (event.key === options.drillKeys.down && active_el) {
-			const el = find_child_with_meta(active_el);
-			if (el) {
-				activate(el);
-				stop(event);
-			}
+		} else if (is_open(event)) {
+			open_editor(event);
 		}
 	}
 
@@ -159,7 +205,7 @@
 		const l = enabled ? body.addEventListener : body.removeEventListener;
 		l('mousemove', mousemove);
 		l('mouseover', mouseover);
-		l('click', click, true);
+		l('click', open_editor, true);
 	}
 
 	function enable() {
@@ -169,6 +215,32 @@
 			b.classList.add('svelte-inspector-enabled');
 		}
 		listeners(b, enabled);
+		activate_initial_el();
+	}
+
+	function activate_initial_el() {
+		const hov = innermost_hover_el();
+		let el = is_selectable(hov) ? hov : find_selectable_parent(hov);
+		if (!el) {
+			const act = document.activeElement;
+			el = is_selectable(act) ? act : find_selectable_parent(act);
+		}
+		if (!el) {
+			el = find_selectable_child(document.body);
+		}
+		if (el) {
+			activate(el);
+		}
+	}
+
+	function innermost_hover_el() {
+		let e = document.body.querySelector(':hover');
+		let result;
+		while (e) {
+			result = e;
+			e = e.querySelector(':hover');
+		}
+		return result;
 	}
 
 	function disable() {
@@ -213,7 +285,7 @@
 </script>
 
 {#if show_toggle}
-	<div
+	<button
 		class="svelte-inspector-toggle"
 		class:enabled
 		style={`background-image: var(--svelte-inspector-icon);${options.toggleButtonPos
@@ -222,16 +294,21 @@
 			.join('')}`}
 		on:click={() => toggle()}
 		bind:this={toggle_el}
+		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
 	/>
 {/if}
-{#if enabled && file_loc}
+{#if enabled && active_el && file_loc}
+	{@const loc = active_el.__svelte_meta.loc}
 	<div
 		class="svelte-inspector-overlay"
-		style:left="{Math.min(x + 3, document.body.clientWidth - w - 10)}px"
-		style:top="{y + 30}px"
+		style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
+		style:top="{document.documentElement.clientHeight < y + 50 ? y - 30 : y + 30}px"
 		bind:offsetWidth={w}
 	>
 		&lt;{active_el.tagName.toLowerCase()}&gt;&nbsp;{file_loc}
+	</div>
+	<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
+		{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column}
 	</div>
 {/if}
 
@@ -253,6 +330,7 @@
 	}
 
 	.svelte-inspector-toggle {
+		all: unset;
 		border: 1px solid #ff3e00;
 		border-radius: 8px;
 		position: fixed;
@@ -262,6 +340,18 @@
 		background-position: center;
 		background-repeat: no-repeat;
 		cursor: pointer;
+	}
+
+	#svelte-inspector-announcer {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		clip: rect(0px, 0px, 0px, 0px);
+		clip-path: inset(50%);
+		overflow: hidden;
+		white-space: nowrap;
+		width: 1px;
+		height: 1px;
 	}
 
 	.svelte-inspector-toggle:not(.enabled) {

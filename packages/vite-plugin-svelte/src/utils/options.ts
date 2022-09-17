@@ -660,12 +660,30 @@ export interface InspectorOptions {
 	toggleKeyCombo?: string;
 
 	/**
-	 * define keys to drill from the active element (up selects parent, down selects child).
-	 * @default {up: 'ArrowUp',down: 'ArrowDown'}
+	 * define keys to select elements with via keyboard
+	 * @default {parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' }
 	 *
-	 * This is useful when components wrap another one without providing any hoverable area between them
+	 * improves accessibility and also helps when you want to select elements that do not have a hoverable surface area
+	 * due to tight wrapping
+	 *
+	 * A note for users of screen-readers:
+	 * If you are using arrow keys to navigate the page itself, change the navKeys to avoid conflicts.
+	 * e.g. navKeys: {parent: 'w', prev: 'a', child: 's', next: 'd'}
+	 *
+	 *
+	 * parent: select closest parent
+	 * child: select first child (or grandchild)
+	 * next: next sibling (or parent if no next sibling exists)
+	 * prev: previous sibling (or parent if no prev sibling exists)
 	 */
-	drillKeys?: { up: string; down: string };
+	navKeys?: { parent: string; child: string; next: string; prev: string };
+
+	/**
+	 * define key to open the editor for the currently selected dom node
+	 *
+	 * @default 'Enter'
+	 */
+	openKey?: string;
 
 	/**
 	 * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
