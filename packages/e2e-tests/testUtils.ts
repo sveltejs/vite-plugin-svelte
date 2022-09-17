@@ -7,7 +7,7 @@ import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 import fetch from 'node-fetch';
 
-import { isBuild, isWin, isCI, page, testDir, viteTestUrl } from './vitestSetup';
+import { isBuild, isWin, isCI, page, testDir, viteTestUrl, browserLogs } from './vitestSetup';
 
 export * from './vitestSetup';
 
@@ -175,6 +175,10 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 		await saveScreenshot(`failed_update_${file}`);
 		throw lastErr;
 	}
+}
+
+export function hmrCount(file) {
+	return browserLogs.filter((line) => line.includes('hot updated') && line.includes(file)).length;
 }
 
 export async function saveScreenshot(name: string) {

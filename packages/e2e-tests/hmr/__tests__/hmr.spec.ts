@@ -4,6 +4,7 @@ import {
 	getEl,
 	getText,
 	editFileAndWaitForHmrComplete,
+	hmrCount,
 	untilMatches,
 	sleep,
 	getColor,
@@ -143,15 +144,13 @@ if (!isBuild) {
 		test('should work when editing script context="module"', async () => {
 			expect(await getText(`#hmr-with-context`)).toContain('x=0 y=1 slot=1');
 			expect(await getText(`#hmr-without-context`)).toContain('x=0 y=1 slot=');
+			expect(hmrCount('UsingNamed.svelte'), 'updates for UsingNamed.svelte').toBe(0);
+			expect(hmrCount('UsingDefault.svelte'), 'updates for UsingDefault.svelte').toBe(0);
 			await updateModuleContext((content) => content.replace('y = 1', 'y = 2'));
 			expect(await getText(`#hmr-with-context`)).toContain('x=0 y=2 slot=2');
 			expect(await getText(`#hmr-without-context`)).toContain('x=0 y=2 slot=');
-			expect(browserLogs).toEqual(
-				expect.arrayContaining([expect.stringMatching(/hot updated:.*UsingNamed.svelte/)])
-			);
-			expect(browserLogs).not.toEqual(
-				expect.arrayContaining([expect.stringMatching(/hot updated:.*UsingOnlyDefault.svelte/)])
-			);
+			expect(hmrCount('UsingNamed.svelte'), 'updates for UsingNamed.svelte').toBe(1);
+			expect(hmrCount('UsingDefault.svelte'), 'updates for UsingDefault.svelte').toBe(0);
 		});
 
 		test('should work with emitCss: false in vite config', async () => {
