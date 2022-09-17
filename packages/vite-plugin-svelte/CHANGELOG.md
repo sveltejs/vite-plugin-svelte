@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.6
+
+### Patch Changes
+
+- update svelte-hmr and enable partial hmr accept by default (fixes [#134](https://github.com/sveltejs/vite-plugin-svelte/issues/134)) ([#440](https://github.com/sveltejs/vite-plugin-svelte/pull/440))
+
+- svelte-inspector: add keyboard navigation, select element on activation, improve a11y and info bubble position/content ([#438](https://github.com/sveltejs/vite-plugin-svelte/pull/438))
+
 ## 1.0.5
 
 ### Patch Changes
