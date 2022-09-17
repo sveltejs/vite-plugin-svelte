@@ -94,10 +94,10 @@
 
 	function mouseover(event) {
 		const el = find_selectable_parent(event.target);
-		activate(el);
+		activate(el, false);
 	}
 
-	function activate(el) {
+	function activate(el, set_bubble_pos = true) {
 		if (options.customStyles && el !== active_el) {
 			if (active_el) {
 				active_el.classList.remove('svelte-inspector-active-target');
@@ -113,6 +113,11 @@
 			file_loc = null;
 		}
 		active_el = el;
+		if (set_bubble_pos) {
+			const pos = el.getBoundingClientRect();
+			x = Math.ceil(pos.left);
+			y = Math.ceil(pos.bottom - 20);
+		}
 	}
 
 	function open_editor(event) {
@@ -173,9 +178,6 @@
 			const el = find_selectable_for_nav(event.key);
 			if (el) {
 				activate(el);
-				const pos = el.getBoundingClientRect();
-				x = Math.ceil(pos.left);
-				y = Math.ceil(pos.bottom - 20);
 				stop(event);
 			}
 		} else if (is_open(event)) {
@@ -213,6 +215,32 @@
 			b.classList.add('svelte-inspector-enabled');
 		}
 		listeners(b, enabled);
+		activate_initial_el();
+	}
+
+	function activate_initial_el() {
+		const hov = innermost_hover_el();
+		let el = is_selectable(hov) ? hov : find_selectable_parent(hov);
+		if (!el) {
+			const act = document.activeElement;
+			el = is_selectable(act) ? act : find_selectable_parent(act);
+		}
+		if (!el) {
+			el = find_selectable_child(document.body);
+		}
+		if (el) {
+			activate(el);
+		}
+	}
+
+	function innermost_hover_el() {
+		let e = document.body;
+		let result;
+		while (e) {
+			result = e;
+			e = e.querySelector(':hover');
+		}
+		return result;
 	}
 
 	function disable() {
