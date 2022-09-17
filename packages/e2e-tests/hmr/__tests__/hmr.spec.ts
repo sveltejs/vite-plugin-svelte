@@ -146,6 +146,12 @@ if (!isBuild) {
 			await updateModuleContext((content) => content.replace('y = 1', 'y = 2'));
 			expect(await getText(`#hmr-with-context`)).toContain('x=0 y=2 slot=2');
 			expect(await getText(`#hmr-without-context`)).toContain('x=0 y=2 slot=');
+			expect(browserLogs).toEqual(
+				expect.arrayContaining([expect.stringMatching(/hot updated:.*UsingNamed.svelte/)])
+			);
+			expect(browserLogs).not.toEqual(
+				expect.arrayContaining([expect.stringMatching(/hot updated:.*UsingOnlyDefault.svelte/)])
+			);
 		});
 
 		test('should work with emitCss: false in vite config', async () => {
