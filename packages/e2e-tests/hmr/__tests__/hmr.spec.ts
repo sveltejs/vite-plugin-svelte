@@ -54,6 +54,10 @@ test('should respect transforms', async () => {
 if (!isBuild) {
 	describe('hmr', () => {
 		const updateHmrTest = editFileAndWaitForHmrComplete.bind(null, 'src/components/HmrTest.svelte');
+		const updateModuleContext = editFileAndWaitForHmrComplete.bind(
+			null,
+			'src/components/partial-hmr/ModuleContext.svelte'
+		);
 		const updateApp = editFileAndWaitForHmrComplete.bind(null, 'src/App.svelte');
 		const updateStore = editFileAndWaitForHmrComplete.bind(null, 'src/stores/hmr-stores.js');
 
@@ -134,6 +138,14 @@ if (!isBuild) {
 			expect(await getText(`#hmr-test-2 .counter`)).toBe('1');
 			// a third instance has been added
 			expect(await getText(`#hmr-test-3 .counter`)).toBe('0');
+		});
+
+		test('should work when editing script context="module"', async () => {
+			expect(await getText(`#hmr-with-context`)).toContain('x=0 y=1 slot=1');
+			expect(await getText(`#hmr-without-context`)).toContain('x=0 y=1 slot=');
+			await updateModuleContext((content) => content.replace('y = 1', 'y = 2'));
+			expect(await getText(`#hmr-with-context`)).toContain('x=0 y=2 slot=2');
+			expect(await getText(`#hmr-without-context`)).toContain('x=0 y=2 slot=');
 		});
 
 		test('should work with emitCss: false in vite config', async () => {

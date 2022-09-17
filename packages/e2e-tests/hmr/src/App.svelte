@@ -2,6 +2,7 @@
 	import StaticImport from './components/StaticImport.svelte';
 	import Dependency from 'e2e-test-dep-svelte-simple';
 	import HmrTest from './components/HmrTest.svelte';
+	import PartialHmr from './components/partial-hmr/PartialHmr.svelte';
 	const jsTransform = '__JS_TRANSFORM_1__';
 	let dynamicImportComponent;
 	function importDynamic() {
@@ -25,6 +26,9 @@
 <HmrTest id="hmr-test-2" />
 
 <!-- HMR-TEMPLATE-INJECT -->
+
+<PartialHmr />
+
 <style>
 	h1 {
 		color: #111111;
