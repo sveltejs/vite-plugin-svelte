@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.7
+
+### Patch Changes
+
+- svelte-inspector: prevent info-bubble select ([#445](https://github.com/sveltejs/vite-plugin-svelte/pull/445))
+
 ## 1.0.6
 
 ### Patch Changes
