@@ -6,11 +6,11 @@ describe('inspector-vite', () => {
 	});
 	if (!isBuild) {
 		it('should show inspector toggle during dev', async () => {
-			expect(await getEl('.svelte-inspector-toggle')).not.toBe(null);
+			expect(await getEl('#svelte-inspector-toggle')).not.toBe(null);
 		});
 	} else {
 		it('should not show inspector toggle during preview', async () => {
-			expect(await getEl('.svelte-inspector-toggle')).toBe(null);
+			expect(await getEl('#svelte-inspector-toggle')).toBe(null);
 		});
 	}
 });
