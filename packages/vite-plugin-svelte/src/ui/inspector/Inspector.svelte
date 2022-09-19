@@ -25,7 +25,6 @@
 	let x, y, w;
 
 	let active_el;
-	let toggle_el;
 
 	let enabled_ts;
 
@@ -79,14 +78,12 @@
 	}
 
 	function is_selectable(el) {
-		if (el === toggle_el) {
-			return false; // toggle is our own
-		}
 		const file = el?.__svelte_meta?.loc?.file;
 		if (!file || file.includes('node_modules/')) {
 			return false; // no file or 3rd party
 		}
-		if (['svelte-announcer', 'svelte-inspector-announcer'].includes(el.getAttribute('id'))) {
+		const id = el.getAttribute('id');
+		if (id === 'svelte-announcer' || id?.startsWith('svelte-inspector-')) {
 			return false; // ignore some elements by id that would be selectable from keyboard nav otherwise
 		}
 		return true;
@@ -286,21 +283,20 @@
 
 {#if show_toggle}
 	<button
-		class="svelte-inspector-toggle"
+		id="svelte-inspector-toggle"
 		class:enabled
 		style={`background-image: var(--svelte-inspector-icon);${options.toggleButtonPos
 			.split('-')
 			.map((p) => `${p}: 8px;`)
 			.join('')}`}
 		on:click={() => toggle()}
-		bind:this={toggle_el}
 		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
 	/>
 {/if}
 {#if enabled && active_el && file_loc}
 	{@const loc = active_el.__svelte_meta.loc}
 	<div
-		class="svelte-inspector-overlay"
+		id="svelte-inspector-overlay"
 		style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
 		style:top="{document.documentElement.clientHeight < y + 50 ? y - 30 : y + 30}px"
 		bind:offsetWidth={w}
@@ -320,16 +316,17 @@
 		outline: 2px dashed #ff3e00 !important;
 	}
 
-	.svelte-inspector-overlay {
+	#svelte-inspector-overlay {
 		position: fixed;
 		background-color: rgba(0, 0, 0, 0.8);
 		color: #fff;
 		padding: 2px 4px;
 		border-radius: 5px;
 		z-index: 999999;
+		pointer-events: none;
 	}
 
-	.svelte-inspector-toggle {
+	#svelte-inspector-toggle {
 		all: unset;
 		border: 1px solid #ff3e00;
 		border-radius: 8px;
@@ -354,10 +351,10 @@
 		height: 1px;
 	}
 
-	.svelte-inspector-toggle:not(.enabled) {
+	#svelte-inspector-toggle:not(.enabled) {
 		filter: grayscale(1);
 	}
-	.svelte-inspector-toggle:hover {
+	#svelte-inspector-toggle:hover {
 		background-color: #facece;
 	}
 </style>
