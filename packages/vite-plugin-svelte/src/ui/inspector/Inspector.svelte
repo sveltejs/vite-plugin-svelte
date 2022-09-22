@@ -171,14 +171,16 @@
 			if (options.holdMode && enabled) {
 				enabled_ts = Date.now();
 			}
-		} else if (is_nav(event)) {
-			const el = find_selectable_for_nav(event.key);
-			if (el) {
-				activate(el);
-				stop(event);
+		} else if (enabled) {
+			if (is_nav(event)) {
+				const el = find_selectable_for_nav(event.key);
+				if (el) {
+					activate(el);
+					stop(event);
+				}
+			} else if (is_open(event)) {
+				open_editor(event);
 			}
-		} else if (is_open(event)) {
-			open_editor(event);
 		}
 	}
 
