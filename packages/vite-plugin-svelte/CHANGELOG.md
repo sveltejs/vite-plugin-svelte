@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.8
+
+### Patch Changes
+
+- svelte-inspector: select hovered element instead of parent on mousemouse ([#449](https://github.com/sveltejs/vite-plugin-svelte/pull/449))
+
+- svelte-inspector: ignore navigation keys while not enabled ([#449](https://github.com/sveltejs/vite-plugin-svelte/pull/449))
+
 ## 1.0.7
 
 ### Patch Changes
