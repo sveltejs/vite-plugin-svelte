@@ -36,13 +36,16 @@
 		y = event.y;
 	}
 
-	function find_selectable_parent(el) {
-		do {
+	function find_selectable_parent(el, include_self = false) {
+		if (!include_self) {
 			el = el.parentNode;
+		}
+		while (el) {
 			if (is_selectable(el)) {
 				return el;
 			}
-		} while (el);
+			el = el.parentNode;
+		}
 	}
 
 	function find_selectable_child(el) {
@@ -89,8 +92,8 @@
 		return true;
 	}
 
-	function mouseover(event) {
-		const el = find_selectable_parent(event.target);
+	function mouseover({ target }) {
+		const el = find_selectable_parent(target, true);
 		activate(el, false);
 	}
 
@@ -171,14 +174,16 @@
 			if (options.holdMode && enabled) {
 				enabled_ts = Date.now();
 			}
-		} else if (is_nav(event)) {
-			const el = find_selectable_for_nav(event.key);
-			if (el) {
-				activate(el);
-				stop(event);
+		} else if (enabled) {
+			if (is_nav(event)) {
+				const el = find_selectable_for_nav(event.key);
+				if (el) {
+					activate(el);
+					stop(event);
+				}
+			} else if (is_open(event)) {
+				open_editor(event);
 			}
-		} else if (is_open(event)) {
-			open_editor(event);
 		}
 	}
 
@@ -217,10 +222,10 @@
 
 	function activate_initial_el() {
 		const hov = innermost_hover_el();
-		let el = is_selectable(hov) ? hov : find_selectable_parent(hov);
+		let el = find_selectable_parent(hov, true);
 		if (!el) {
 			const act = document.activeElement;
-			el = is_selectable(act) ? act : find_selectable_parent(act);
+			el = find_selectable_parent(act, true);
 		}
 		if (!el) {
 			el = find_selectable_child(document.body);
