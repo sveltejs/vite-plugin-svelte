@@ -23,6 +23,7 @@ function createViteScriptPreprocessor(): Preprocessor {
 		if (!supportedScriptLangs.includes(lang)) return;
 		const transformResult = await transformWithEsbuild(content, filename, {
 			loader: lang as ESBuildOptions['loader'],
+			target: 'esnext',
 			tsconfigRaw: {
 				compilerOptions: {
 					// svelte typescript needs this flag to work with type imports
