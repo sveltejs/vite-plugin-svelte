@@ -23,25 +23,28 @@ const buildPackagesUnderTest = async () => {
 const syncNodeModules = async () => {
 	// tests use symbolic linked node_modules directories. make sure the workspace is up for it
 	console.log('syncing node_modules');
-	await execa(
-		'pnpm',
-		['install', '--prefer-frozen-lockfile', '--prefer-offline', '--no-lockfile', '--silent'],
-		{ stdio: 'inherit' }
-	);
+	await execa('pnpm', ['install', '--frozen-lockfile', '--prefer-offline', '--silent'], {
+		stdio: 'inherit'
+	});
 	console.log('syncing node_modules done');
 };
 
 const startPlaywrightServer = async () => {
 	const headless = !showTestBrowser;
-	const args = ['--disable-gpu', '--single-process', '--no-zygote', '--no-sandbox'];
+	const args = [];
 	if (isCI) {
-		args.push('--disable-setuid-sandbox', '--disable-dev-shm-usage');
+		args.push(
+			'--no-zygote',
+			'--disable-gpu',
+			'--no-sandbox',
+			'--disable-setuid-sandbox',
+			'--disable-dev-shm-usage'
+		);
 	}
 	if (headless) {
 		args.push('--headless');
 	}
 	return chromium.launchServer({
-		channel: 'chrome',
 		headless,
 		args
 	});
