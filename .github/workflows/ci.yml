@@ -9,6 +9,19 @@ on:
     branches:
       - main
 
+env:
+  # we call `pnpm playwright install` instead
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
+# cancel in-progress runs on new commits to same PR (gitub.event.number)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+# use min permissions
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
 jobs:
   # "checks" job runs on linux + 16 only and checks that install, build, lint and audit work
   # it also primes the pnpm store cache for linux, important for downstream tests
@@ -87,6 +100,8 @@ jobs:
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: build
         run: pnpm build:ci
+      - name: install playwright browser
+        run: pnpm playwright install chromium
       - name: run tests
         run: pnpm test
       - name: archive tests temp directory
