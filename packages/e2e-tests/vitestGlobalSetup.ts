@@ -33,9 +33,9 @@ const syncNodeModules = async () => {
 
 const startPlaywrightServer = async () => {
 	const headless = !showTestBrowser;
-	const args = ['--disable-gpu', '--single-process', '--no-zygote', '--no-sandbox'];
+	const args = [];
 	if (isCI) {
-		args.push('--disable-setuid-sandbox', '--disable-dev-shm-usage');
+		args.push('--no-sandbox', '--disable-setuid-sandbox');
 	}
 	if (headless) {
 		args.push('--headless');
