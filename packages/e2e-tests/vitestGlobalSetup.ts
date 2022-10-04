@@ -41,7 +41,6 @@ const startPlaywrightServer = async () => {
 		args.push('--headless');
 	}
 	return chromium.launchServer({
-		channel: 'chrome',
 		headless,
 		args
 	});
