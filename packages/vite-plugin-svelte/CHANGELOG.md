@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.0.9
+
+### Patch Changes
+
+- Use esnext for useVitePreprocess ([#452](https://github.com/sveltejs/vite-plugin-svelte/pull/452))
+
 ## 1.0.8
 
 ### Patch Changes
