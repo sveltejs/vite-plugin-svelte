@@ -23,11 +23,9 @@ const buildPackagesUnderTest = async () => {
 const syncNodeModules = async () => {
 	// tests use symbolic linked node_modules directories. make sure the workspace is up for it
 	console.log('syncing node_modules');
-	await execa(
-		'pnpm',
-		['install', '--prefer-frozen-lockfile', '--prefer-offline', '--no-lockfile', '--silent'],
-		{ stdio: 'inherit' }
-	);
+	await execa('pnpm', ['install', '--frozen-lockfile', '--prefer-offline', '--silent'], {
+		stdio: 'inherit'
+	});
 	console.log('syncing node_modules done');
 };
 

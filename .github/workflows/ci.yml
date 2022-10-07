@@ -8,9 +8,19 @@ on:
   pull_request:
     branches:
       - main
+
 env:
   # we call `pnpm playwright install` instead
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
+# cancel in-progress runs on new commits to same PR (gitub.event.number)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+# use min permissions
+permissions:
+  contents: read # to fetch code (actions/checkout)
 
 jobs:
   # "checks" job runs on linux + 16 only and checks that install, build, lint and audit work
