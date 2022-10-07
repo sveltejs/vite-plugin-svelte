@@ -33,13 +33,7 @@ const startPlaywrightServer = async () => {
 	const headless = !showTestBrowser;
 	const args = [];
 	if (isCI) {
-		args.push(
-			'--no-zygote',
-			'--disable-gpu',
-			'--no-sandbox',
-			'--disable-setuid-sandbox',
-			'--disable-dev-shm-usage'
-		);
+		args.push('--no-sandbox', '--disable-setuid-sandbox');
 	}
 	if (headless) {
 		args.push('--headless');
