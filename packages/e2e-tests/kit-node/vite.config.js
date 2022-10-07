@@ -15,7 +15,11 @@ const config = {
 	build: {
 		minify: false
 	},
-	plugins: [transformValidation(), sveltekit()]
+	plugins: [transformValidation(), sveltekit()],
+	optimizeDeps: {
+		// eagerly include these, otherwise vite optimizer might interfere with restarting while the test is running
+		include: ['svelte-i18n', 'e2e-test-dep-svelte-api-only']
+	}
 };
 
 export default config;
