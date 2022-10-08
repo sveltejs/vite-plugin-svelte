@@ -66,10 +66,7 @@ function getSvelteDependencies(
 	return result;
 }
 
-export function resolveDependencyData(
-	dep: string,
-	localRequire: NodeRequire
-): DependencyData | void {
+function resolveDependencyData(dep: string, localRequire: NodeRequire): DependencyData | void {
 	try {
 		const pkgJson = `${dep}/package.json`;
 		const pkg = localRequire(pkgJson);
@@ -173,7 +170,7 @@ const COMMON_PREFIXES_WITHOUT_SVELTE_FIELD = [
  * @param dependency {string}
  * @returns {boolean} true if it is a dependency without a svelte field
  */
-export function is_common_without_svelte_field(dependency: string): boolean {
+function is_common_without_svelte_field(dependency: string): boolean {
 	return (
 		COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD.includes(dependency) ||
 		COMMON_PREFIXES_WITHOUT_SVELTE_FIELD.some(

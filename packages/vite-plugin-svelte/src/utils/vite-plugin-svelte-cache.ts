@@ -105,23 +105,4 @@ export class VitePluginSvelteCache {
 		const dependants = this._dependants.get(path);
 		return dependants ? [...dependants] : [];
 	}
-
-	public getResolvedSvelteField(name: string, importer?: string): string | void {
-		return this._resolvedSvelteFields.get(this._getResolvedSvelteFieldKey(name, importer));
-	}
-
-	public setResolvedSvelteField(
-		importee: string,
-		importer: string | undefined = undefined,
-		resolvedSvelte: string
-	) {
-		this._resolvedSvelteFields.set(
-			this._getResolvedSvelteFieldKey(importee, importer),
-			resolvedSvelte
-		);
-	}
-
-	private _getResolvedSvelteFieldKey(importee: string, importer?: string): string {
-		return importer ? `${importer} > ${importee}` : importee;
-	}
 }

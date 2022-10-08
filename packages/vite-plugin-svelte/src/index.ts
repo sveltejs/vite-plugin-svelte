@@ -16,7 +16,6 @@ import {
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 
 import { ensureWatchedFile, setupWatchers } from './utils/watch';
-import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
@@ -153,22 +152,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 						);
 					}
 					return resolvedSvelteSSR;
-				}
-				try {
-					const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
-					if (resolved) {
-						log.debug(
-							`resolveId resolved ${resolved} via package.json svelte field of ${importee}`
-						);
-						return resolved;
-					}
-				} catch (e) {
-					log.debug.once(
-						`error trying to resolve ${importee} from ${importer} via package.json svelte field `,
-						e
-					);
-					// this error most likely happens due to non-svelte related importee/importers so swallow it here
-					// in case it really way a svelte library, users will notice anyway. (lib not working due to failed resolve)
 				}
 			},
 
