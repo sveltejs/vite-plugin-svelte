@@ -14,7 +14,6 @@ import {
 	fetchPageText
 } from '~utils';
 
-import path from 'path';
 import glob from 'tiny-glob';
 
 describe('kit-node', () => {
@@ -189,6 +188,9 @@ describe('kit-node', () => {
 						await updateChild((content) =>
 							content.replace('<!-- HMR-TEMPLATE-INJECT -->', '-foo<!-- HMR-TEMPLATE-INJECT -->')
 						);
+						// for some reason the update takes longer to materialize, so wait for it to avoid subsequent errors
+						await page.getByText('test-child-foo').waitFor({ state: 'attached' });
+
 						expect(await getText('#before-child')).toBe('before-child');
 						expect(await getText('#test-child')).toBe('test-child-foo');
 						expect(await getText('#after-child')).toBe('after-child');
