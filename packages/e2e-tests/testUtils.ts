@@ -212,7 +212,7 @@ export async function editViteConfig(replacer: (str: string) => string) {
 	}
 }
 
-export async function waitForServerRestartAndReloadPage(timeout = 5000) {
+export async function waitForServerRestartAndReloadPage(timeout = 10000) {
 	const logs = e2eServer.logs.server.out;
 	const startIdx = logs.length;
 	let timeleft = timeout;
@@ -220,7 +220,7 @@ export async function waitForServerRestartAndReloadPage(timeout = 5000) {
 	let restarted = false;
 	while (timeleft > 0) {
 		await sleep(pollInterval);
-		if (logs.some((text, i) => i > startIdx && text.includes('[vite] server restarted.'))) {
+		if (logs.some((text, i) => i > startIdx && text.endsWith('server restarted.'))) {
 			restarted = true;
 			break;
 		}
