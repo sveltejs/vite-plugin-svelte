@@ -1,5 +1,5 @@
 ---
-'@sveltejs/vite-plugin-svelte': patch
+'@sveltejs/vite-plugin-svelte': minor
 ---
 
-fix: let Vite resolve svelte field
+feat: resolve `svelte` in `exports`. prefer `exports` to `svelte` field
