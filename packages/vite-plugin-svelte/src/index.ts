@@ -66,6 +66,12 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				}
 				// @ts-expect-error temporarily lend the options variable until fixed in configResolved
 				options = await preResolveOptions(inlineOptions, config, configEnv);
+
+				// modify the config directly to put svelte first
+				config.resolve ||= {};
+				config.resolve.mainFields ||= [];
+				config.resolve.mainFields.unshift('svelte');
+
 				// extra vite config
 				const extraViteConfig = buildExtraViteConfig(options, config);
 				log.debug('additional vite config', extraViteConfig);
