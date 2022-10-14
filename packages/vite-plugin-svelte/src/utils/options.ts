@@ -9,7 +9,12 @@ import {
 } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
-import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
+import {
+	SVELTE_HMR_IMPORTS,
+	SVELTE_IMPORTS,
+	SVELTE_RESOLVE_CONDITIONS,
+	SVELTE_RESOLVE_MAIN_FIELDS
+} from './constants';
 // eslint-disable-next-line node/no-missing-import
 import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
 import type {
@@ -303,7 +308,8 @@ export function buildExtraViteConfig(
 	const svelteDeps = findRootSvelteDependencies(options.root);
 	const extraViteConfig: Partial<UserConfig> = {
 		resolve: {
-			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
+			conditions: SVELTE_RESOLVE_CONDITIONS,
+			mainFields: SVELTE_RESOLVE_MAIN_FIELDS,
 			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
 		}
 		// this option is still awaiting a PR in vite to be supported

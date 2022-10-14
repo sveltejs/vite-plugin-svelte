@@ -1,5 +1,7 @@
 const VITE_RESOLVE_MAIN_FIELDS = ['module', 'jsnext:main', 'jsnext'];
 
+export const SVELTE_RESOLVE_CONDITIONS = ['svelte'];
+
 export const SVELTE_RESOLVE_MAIN_FIELDS = ['svelte', ...VITE_RESOLVE_MAIN_FIELDS];
 
 export const SVELTE_IMPORTS = [
