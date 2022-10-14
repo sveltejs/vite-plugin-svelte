@@ -11,7 +11,8 @@ import {
 	waitForNavigation,
 	page,
 	browserLogs,
-	fetchPageText
+	fetchPageText,
+	reloadPage
 } from '~utils';
 
 import glob from 'tiny-glob';
@@ -171,7 +172,7 @@ describe('kit-node', () => {
 				it('should serve changes even after page reload', async () => {
 					expect(await getColor(`h1`)).toBe('green');
 					expect(await getText(`#hmr-test2`)).toBe('bar');
-					await page.reload({ waitUntil: 'networkidle' });
+					await reloadPage();
 					expect(await getColor(`h1`)).toBe('green');
 					expect(await getText(`#hmr-test2`)).toBe('bar');
 				});

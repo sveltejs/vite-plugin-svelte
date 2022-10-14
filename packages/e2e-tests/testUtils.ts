@@ -7,7 +7,16 @@ import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 import fetch from 'node-fetch';
 
-import { isBuild, isWin, isCI, page, testDir, browserLogs, e2eServer } from './vitestSetup';
+import {
+	isBuild,
+	isWin,
+	isCI,
+	page,
+	testDir,
+	browserLogs,
+	e2eServer,
+	waitForViteConnect
+} from './vitestSetup';
 
 export * from './vitestSetup';
 
@@ -229,7 +238,11 @@ export async function waitForServerRestartAndReloadPage(timeout = 10000) {
 	if (!restarted) {
 		throw new Error(`server did not restart after ${timeout}ms`);
 	}
-	await page.reload();
+	await reloadPage();
+}
+
+export async function reloadPage() {
+	await Promise.all([page.reload(), waitForViteConnect(page)]);
 }
 
 export async function waitForNavigation(opts: Parameters<typeof page.waitForNavigation>[0]) {
