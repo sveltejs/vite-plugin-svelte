@@ -10,7 +10,9 @@
   ],
   "exports": {
     "./package.json": "./package.json",
-    ".": "./src/index.js"
+    ".": {
+      "svelte": "./src/index.js"
+    }
   },
   "dependencies": {
     "e2e-test-dep-svelte-simple": "workspace:*",
