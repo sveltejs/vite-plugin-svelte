@@ -10,7 +10,7 @@
 
 <div class="hmr-test" {id}>
 	<span class="label">{label}</span>
-	<span class="counter increment" on:click={increment}>{$count}</span>
+	<button class="counter increment" on:click={increment}>{$count}</button>
 </div>
 
 <!-- HMR-TEMPLATE-INJECT -->
