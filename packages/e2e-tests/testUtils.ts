@@ -7,7 +7,16 @@ import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 import fetch from 'node-fetch';
 
-import { isBuild, isWin, isCI, page, testDir, viteTestUrl, browserLogs } from './vitestSetup';
+import {
+	isBuild,
+	isWin,
+	isCI,
+	page,
+	testDir,
+	browserLogs,
+	e2eServer,
+	waitForViteConnect
+} from './vitestSetup';
 
 export * from './vitestSetup';
 
@@ -42,20 +51,23 @@ const timeout = (n: number) => new Promise((r) => setTimeout(r, n));
 
 async function toEl(el: string | ElementHandle): Promise<ElementHandle> {
 	if (typeof el === 'string') {
-		return await page.$(el);
+		return await page.$(el, { strict: true });
 	}
 	return el;
 }
 
 export async function getColor(el: string | ElementHandle) {
 	el = await toEl(el);
+	if (el == null) {
+		return null;
+	}
 	const rgb = await el.evaluate((el) => getComputedStyle(el as Element).color);
 	return hexToNameMap[rgbToHex(rgb)] || rgb;
 }
 
 export async function getBg(el: string | ElementHandle) {
 	el = await toEl(el);
-	return el.evaluate((el) => getComputedStyle(el as Element).backgroundImage);
+	return el == null ? null : el.evaluate((el) => getComputedStyle(el as Element).backgroundImage);
 }
 
 export function readFileContent(filename: string) {
@@ -124,7 +136,7 @@ export async function getEl(selector: string) {
 
 export async function getText(el: string | ElementHandle) {
 	el = await toEl(el);
-	return el ? await el.evaluate((el) => el.textContent) : null;
+	return el ? el.textContent() : null;
 }
 
 export async function hmrUpdateComplete(file, timeout) {
@@ -204,9 +216,33 @@ export async function saveScreenshot(name: string) {
 
 export async function editViteConfig(replacer: (str: string) => string) {
 	editFile('vite.config.js', replacer);
-	await sleep(isWin ? 1000 : 500); // editing vite config restarts server, give it some time
-	await page.goto(viteTestUrl, { waitUntil: 'networkidle' });
-	await sleep(50);
+	if (!isBuild) {
+		await waitForServerRestartAndReloadPage();
+	}
+}
+
+export async function waitForServerRestartAndReloadPage(timeout = 10000) {
+	const logs = e2eServer.logs.server.out;
+	const startIdx = logs.length;
+	let timeleft = timeout;
+	const pollInterval = 50;
+	let restarted = false;
+	while (timeleft > 0) {
+		await sleep(pollInterval);
+		if (logs.some((text, i) => i > startIdx && text.endsWith('server restarted.'))) {
+			restarted = true;
+			break;
+		}
+		timeleft -= pollInterval;
+	}
+	if (!restarted) {
+		throw new Error(`server did not restart after ${timeout}ms`);
+	}
+	await reloadPage();
+}
+
+export async function reloadPage() {
+	await Promise.all([page.reload(), waitForViteConnect(page)]);
 }
 
 export async function waitForNavigation(opts: Parameters<typeof page.waitForNavigation>[0]) {
