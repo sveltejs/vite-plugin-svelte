@@ -67,6 +67,13 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				}
 				// @ts-expect-error temporarily lend the options variable until fixed in configResolved
 				options = await preResolveOptions(inlineOptions, config, configEnv);
+
+				if ((options.experimental as any)?.prebundleSvelteLibraries) {
+					log.warn(
+						'experimental.prebundleSvelteLibraries is no longer experimental and has moved to prebundleSvelteLibraries'
+					);
+				}
+
 				// extra vite config
 				const extraViteConfig = buildExtraViteConfig(options, config);
 				log.debug('additional vite config', extraViteConfig);
