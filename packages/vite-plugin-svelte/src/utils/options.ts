@@ -189,7 +189,7 @@ export function resolveOptions(
 	const merged = mergeConfigs<ResolvedOptions>(defaultOptions, preResolveOptions, extraOptions);
 
 	removeIgnoredOptions(merged);
-	handlePrebundleSvelteLibrariesOption(merged);
+	handleDeprecatedOptions(merged);
 	addSvelteKitOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
@@ -290,7 +290,7 @@ function addSvelteKitOptions(options: ResolvedOptions) {
 	}
 }
 
-function handlePrebundleSvelteLibrariesOption(options: ResolvedOptions) {
+function handleDeprecatedOptions(options: ResolvedOptions) {
 	if ((options.experimental as any)?.prebundleSvelteLibraries) {
 		options.prebundleSvelteLibraries = (options.experimental as any)?.prebundleSvelteLibraries;
 		log.warn(
