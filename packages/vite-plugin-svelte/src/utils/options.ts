@@ -318,7 +318,7 @@ export function buildExtraViteConfig(
 		config.optimizeDeps
 	);
 
-	if (options.experimental?.prebundleSvelteLibraries) {
+	if (options.prebundleSvelteLibraries) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
@@ -378,7 +378,7 @@ function buildOptimizeDepsForSvelte(
 	}
 
 	// If we prebundle svelte libraries, we can skip the whole prebundling dance below
-	if (options.experimental?.prebundleSvelteLibraries) {
+	if (options.prebundleSvelteLibraries) {
 		return { include, exclude };
 	}
 
@@ -541,6 +541,13 @@ export interface PluginOptions {
 	disableDependencyReinclusion?: boolean | string[];
 
 	/**
+	 * Force Vite to pre-bundle Svelte libraries
+	 *
+	 * @default false
+	 */
+	prebundleSvelteLibraries?: boolean;
+
+	/**
 	 * These options are considered experimental and breaking changes to them can occur in any release
 	 */
 	experimental?: ExperimentalOptions;
@@ -593,13 +600,6 @@ export interface ExperimentalOptions {
 	 * @default false
 	 */
 	useVitePreprocess?: boolean;
-
-	/**
-	 * Force Vite to pre-bundle Svelte libraries
-	 *
-	 * @default false
-	 */
-	prebundleSvelteLibraries?: boolean;
 
 	/**
 	 * If a preprocessor does not provide a sourcemap, a best-effort fallback sourcemap will be provided.
