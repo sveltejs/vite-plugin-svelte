@@ -34,6 +34,7 @@ const allowedPluginOptions = new Set([
 	'hot',
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
+	'prebundleSvelteLibraries',
 	'experimental'
 ]);
 
@@ -188,6 +189,7 @@ export function resolveOptions(
 	const merged = mergeConfigs<ResolvedOptions>(defaultOptions, preResolveOptions, extraOptions);
 
 	removeIgnoredOptions(merged);
+	handlePrebundleSvelteLibrariesOption(merged);
 	addSvelteKitOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
@@ -285,6 +287,15 @@ function addSvelteKitOptions(options: ResolvedOptions) {
 		}
 		log.debug(`Setting compilerOptions.hydratable: ${hydratable} for SvelteKit`);
 		options.compilerOptions.hydratable = hydratable;
+	}
+}
+
+function handlePrebundleSvelteLibrariesOption(options: ResolvedOptions) {
+	if ((options.experimental as any)?.prebundleSvelteLibraries) {
+		options.prebundleSvelteLibraries = (options.experimental as any)?.prebundleSvelteLibraries;
+		log.warn(
+			'experimental.prebundleSvelteLibraries is no longer experimental and has moved to prebundleSvelteLibraries'
+		);
 	}
 }
 
