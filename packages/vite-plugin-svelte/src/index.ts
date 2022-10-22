@@ -85,7 +85,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 
 			async buildStart() {
-				if (!options.experimental?.prebundleSvelteLibraries) return;
+				if (!options.prebundleSvelteLibraries) return;
 				const isSvelteMetadataChanged = await saveSvelteMetadata(viteConfig.cacheDir, options);
 				if (isSvelteMetadataChanged) {
 					// Force Vite to optimize again. Although we mutate the config here, it works because

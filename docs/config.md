@@ -201,6 +201,13 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
   > This is currently required for hybrid packages like Routify, that export both Node and browser code.
 
+### prebundleSvelteLibraries
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+  Force Vite to pre-bundle Svelte libraries. Setting this `true` should improve initial page load performance, especially when using large Svelte libraries. See the [FAQ](./faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies) for details of the pre-bundling implementation.
+
 ## Experimental options
 
 These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.
@@ -239,13 +246,6 @@ export default {
 - **Default:** `false`
 
   Use extra preprocessors that delegate style and TypeScript preprocessing to native Vite plugins. TypeScript will be transformed with esbuild. Styles will be transformed using [Vite's CSS plugin](https://vitejs.dev/guide/features.html#css), which handles `@imports`, `url()` references, PostCSS, CSS Modules, and `.scss`/`.sass`/`.less`/`.styl`/`.stylus` files. Do not use together with TypeScript or style preprocessors from `svelte-preprocess` as attempts to transform the content twice will fail!
-
-### prebundleSvelteLibraries
-
-- **Type:** `boolean`
-- **Default:** `false`
-
-  Force Vite to pre-bundle Svelte libraries. Setting this `true` should improve initial page load performance, especially when using large Svelte libraries. See the [FAQ](./faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies) for details of the pre-bundling implementation.
 
 ### generateMissingPreprocessorSourcemaps
 
