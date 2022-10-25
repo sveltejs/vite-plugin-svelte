@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.1.0
+
+### Minor Changes
+
+- Bring `prebundleSvelteLibraries` out of experimental, it is now a top-level option ([#476](https://github.com/sveltejs/vite-plugin-svelte/pull/476))
+
+### Patch Changes
+
+- Remove `@rollup/pluginutils` dependency ([#469](https://github.com/sveltejs/vite-plugin-svelte/pull/469))
+
 ## 1.0.9
 
 ### Patch Changes
