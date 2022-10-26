@@ -1,25 +1,24 @@
 import path from 'path';
-import { builtinModules, createRequire } from 'module';
-import { is_common_without_svelte_field, resolveDependencyData } from './dependencies';
+import { builtinModules } from 'module';
+import { resolveDependencyData, isCommonDepWithoutSvelteField } from './dependencies';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 
-export function resolveViaPackageJsonSvelte(
+export async function resolveViaPackageJsonSvelte(
 	importee: string,
 	importer: string | undefined,
 	cache: VitePluginSvelteCache
-): string | void {
+): Promise<string | void> {
 	if (
 		importer &&
 		isBareImport(importee) &&
 		!isNodeInternal(importee) &&
-		!is_common_without_svelte_field(importee)
+		!isCommonDepWithoutSvelteField(importee)
 	) {
 		const cached = cache.getResolvedSvelteField(importee, importer);
 		if (cached) {
 			return cached;
 		}
-		const localRequire = createRequire(importer);
-		const pkgData = resolveDependencyData(importee, localRequire);
+		const pkgData = await resolveDependencyData(importee, importer);
 		if (pkgData) {
 			const { pkg, dir } = pkgData;
 			if (pkg.svelte) {

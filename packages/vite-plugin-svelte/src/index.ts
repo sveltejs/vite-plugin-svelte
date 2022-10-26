@@ -68,7 +68,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				// @ts-expect-error temporarily lend the options variable until fixed in configResolved
 				options = await preResolveOptions(inlineOptions, config, configEnv);
 				// extra vite config
-				const extraViteConfig = buildExtraViteConfig(options, config);
+				const extraViteConfig = await buildExtraViteConfig(options, config);
 				log.debug('additional vite config', extraViteConfig);
 				return extraViteConfig;
 			},
@@ -155,7 +155,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					return resolvedSvelteSSR;
 				}
 				try {
-					const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
+					const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
 					if (resolved) {
 						log.debug(
 							`resolveId resolved ${resolved} via package.json svelte field of ${importee}`
