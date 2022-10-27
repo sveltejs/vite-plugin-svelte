@@ -1,4 +1,10 @@
-import { transformWithEsbuild, preprocessCSS, ESBuildOptions, ResolvedConfig, Plugin } from 'vite';
+import {
+	transformWithEsbuild,
+	version as viteVersion,
+	ESBuildOptions,
+	ResolvedConfig,
+	Plugin
+} from 'vite';
 import MagicString from 'magic-string';
 import { preprocess } from 'svelte/compiler';
 import { Preprocessor, PreprocessorGroup, Processed, ResolvedOptions } from './options';
@@ -9,6 +15,11 @@ import path from 'path';
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss'];
 
 const supportedScriptLangs = ['ts'];
+
+const viteVersionNums = viteVersion.split('.').map((s) => +s);
+
+// available after 3.2.0
+const supportsPreprocessCss = viteVersionNums[0] >= 3 && viteVersionNums[1] >= 2;
 
 function createViteScriptPreprocessor(): Preprocessor {
 	return async ({ attributes, content, filename = '' }) => {
@@ -33,15 +44,14 @@ function createViteScriptPreprocessor(): Preprocessor {
 }
 
 function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
+	const transform = getCssTransformFn(config);
 	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
 		if (!supportedStyleLangs.includes(lang)) return;
 		const moduleId = `${filename}.${lang}`;
-		const result = await preprocessCSS(content, moduleId, config);
+		const result = await transform(content, moduleId);
 		// patch sourcemap source to point back to original filename
-		// @ts-expect-error
 		if (result.map?.sources?.[0] === moduleId) {
-			// @ts-expect-error
 			result.map.sources[0] = path.basename(filename);
 		}
 		return {
@@ -49,6 +59,28 @@ function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
 			map: result.map ?? undefined
 		};
 	};
+}
+
+// eslint-disable-next-line no-unused-vars
+type CssTransform = (code: string, filename: string) => Promise<{ code: string; map?: any }>;
+
+function getCssTransformFn(config: ResolvedConfig): CssTransform {
+	if (supportsPreprocessCss) {
+		return async (code, filename) => {
+			return (await import('vite')).preprocessCSS(code, filename, config);
+		};
+	} else {
+		const pluginName = 'vite:css';
+		const plugin = config.plugins.find((p) => p.name === pluginName);
+		if (!plugin) {
+			throw new Error(`failed to find plugin ${pluginName}`);
+		}
+		if (!plugin.transform) {
+			throw new Error(`plugin ${pluginName} has no transform`);
+		}
+		// @ts-expect-error
+		return plugin.transform.bind(null);
+	}
 }
 
 function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
