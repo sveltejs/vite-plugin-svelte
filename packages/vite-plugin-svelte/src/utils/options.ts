@@ -34,6 +34,7 @@ const allowedPluginOptions = new Set([
 	'hot',
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
+	'prebundleSvelteLibraries',
 	'experimental'
 ]);
 
@@ -188,6 +189,7 @@ export function resolveOptions(
 	const merged = mergeConfigs<ResolvedOptions>(defaultOptions, preResolveOptions, extraOptions);
 
 	removeIgnoredOptions(merged);
+	handleDeprecatedOptions(merged);
 	addSvelteKitOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
@@ -288,6 +290,15 @@ function addSvelteKitOptions(options: ResolvedOptions) {
 	}
 }
 
+function handleDeprecatedOptions(options: ResolvedOptions) {
+	if ((options.experimental as any)?.prebundleSvelteLibraries) {
+		options.prebundleSvelteLibraries = (options.experimental as any)?.prebundleSvelteLibraries;
+		log.warn(
+			'experimental.prebundleSvelteLibraries is no longer experimental and has moved to prebundleSvelteLibraries'
+		);
+	}
+}
+
 // vite passes unresolved `root`option to config hook but we need the resolved value, so do it here
 // https://github.com/sveltejs/vite-plugin-svelte/issues/113
 // https://github.com/vitejs/vite/blob/43c957de8a99bb326afd732c962f42127b0a4d1e/packages/vite/src/node/config.ts#L293
@@ -318,7 +329,7 @@ export function buildExtraViteConfig(
 		config.optimizeDeps
 	);
 
-	if (options.experimental?.prebundleSvelteLibraries) {
+	if (options.prebundleSvelteLibraries) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
@@ -378,7 +389,7 @@ function buildOptimizeDepsForSvelte(
 	}
 
 	// If we prebundle svelte libraries, we can skip the whole prebundling dance below
-	if (options.experimental?.prebundleSvelteLibraries) {
+	if (options.prebundleSvelteLibraries) {
 		return { include, exclude };
 	}
 
@@ -541,6 +552,13 @@ export interface PluginOptions {
 	disableDependencyReinclusion?: boolean | string[];
 
 	/**
+	 * Force Vite to pre-bundle Svelte libraries
+	 *
+	 * @default false
+	 */
+	prebundleSvelteLibraries?: boolean;
+
+	/**
 	 * These options are considered experimental and breaking changes to them can occur in any release
 	 */
 	experimental?: ExperimentalOptions;
@@ -593,13 +611,6 @@ export interface ExperimentalOptions {
 	 * @default false
 	 */
 	useVitePreprocess?: boolean;
-
-	/**
-	 * Force Vite to pre-bundle Svelte libraries
-	 *
-	 * @default false
-	 */
-	prebundleSvelteLibraries?: boolean;
 
 	/**
 	 * If a preprocessor does not provide a sourcemap, a best-effort fallback sourcemap will be provided.

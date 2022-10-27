@@ -1,11 +1,11 @@
 name: "\U0001F41E Bug report"
-description: Report an issue with vite-plugin-svelte
+description: for reproducible bugs in vite-plugin-svelte only.
 labels: ["bug", "triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for participating in vite-plugin-svelte! Please check for existing reports before creating a new one.
+        Thank you for participating in vite-plugin-svelte! Please make sure that you are reporting a bug that is caused by vite-plugin-svelte and check for existing reports before creating a new one.
   - type: textarea
     id: bug-description
     attributes:
@@ -14,14 +14,20 @@ body:
       placeholder: Bug description
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: reproduction
     attributes:
-      label: Reproduction
-      description: Please provide a link to a repo and step by step instructions to reproduce the problem you ran into. If a report is vague (e.g. just a generic error message) and has no reproduction, it will receive a "need reproduction" label. If no reproduction is provided within a reasonable time-frame, the issue will be closed.
-      placeholder: Reproduction
+      label: Reproduction URL
+      description: A link to a repository or a fork of https://vite.new/svelte, that reproduces the issue. Reproductions must be [short, self-contained and correct](http://sscce.org/) and must not contain files or code that aren't relevant to the issue — please do NOT just paste a link to your project. Explaining how to reproduce is generally not enough. It pushes the burden of creating a reproduction project onto a small set of volunteer maintainers and isn't scalable. If no reproduction is provided, the issue will be closed.
+      placeholder: https://github.com/your/reproduction
     validations:
       required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction
+      description: A list of steps to reproduce the issue in the provided repository
+      placeholder: 1)... 2)... 3)...
   - type: textarea
     id: logs
     attributes:
@@ -37,14 +43,4 @@ body:
       placeholder: System, Binaries, Browsers
     validations:
       required: true
-  - type: dropdown
-    id: severity
-    attributes:
-      label: Severity
-      description: Select the severity of this issue
-      options:
-        - annoyance
-        - blocking an upgrade
-        - blocking all usage of vite-plugin-svelte
-    validations:
-      required: true
+

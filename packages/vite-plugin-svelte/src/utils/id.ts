@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { createFilter } from '@rollup/pluginutils';
+import { createFilter } from 'vite';
 import { Arrayable, ResolvedOptions } from './options';
 import { normalizePath } from 'vite';
 import * as fs from 'fs';

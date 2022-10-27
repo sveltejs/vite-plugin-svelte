@@ -212,14 +212,20 @@ beforeAll(
 );
 
 async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
+	return Promise.all([page.goto(url), waitForViteConnect(page, 15000)]);
+}
+
+export async function waitForViteConnect(page: Page, timeoutMS = 5000) {
+	if (isBuild) {
+		return Promise.resolve(); // no vite websocket on build
+	}
 	let timerId;
 	let pageConsoleListener;
-	const timeoutMS = 15000;
 	const timeoutPromise = new Promise(
 		// eslint-disable-next-line no-unused-vars
 		(_, reject) =>
 			(timerId = setTimeout(() => {
-				reject(`page under test not ready after ${timeoutMS}ms. url: ${url}`);
+				reject(`vite client not connected after ${timeoutMS}ms. url: ${page.url()}`);
 			}, timeoutMS))
 	);
 	const connectedPromise = new Promise<void>((resolve) => {
@@ -232,9 +238,8 @@ async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
 		page.on('console', pageConsoleListener);
 	});
 
-	const connectedOrTimeout = Promise.race([connectedPromise, timeoutPromise]).finally(() => {
+	return Promise.race([connectedPromise, timeoutPromise]).finally(() => {
 		page.off('console', pageConsoleListener);
 		clearTimeout(timerId);
 	});
-	return page.goto(url).then(() => connectedOrTimeout);
 }
