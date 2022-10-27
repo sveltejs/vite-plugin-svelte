@@ -343,6 +343,8 @@ export async function buildExtraViteConfig(
 		}
 	});
 
+	log.debug('crawl svelte packages result', depsConfig);
+
 	// optimize deps
 	extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(config);
 	if (options.prebundleSvelteLibraries) {
