@@ -1,14 +1,8 @@
-import {
-	transformWithEsbuild,
-	ESBuildOptions,
-	ResolvedConfig,
-	TransformResult,
-	Plugin
-} from 'vite';
+import * as vite from 'vite';
+import type { ESBuildOptions, ResolvedConfig, Plugin } from 'vite';
 import MagicString from 'magic-string';
 import { preprocess } from 'svelte/compiler';
 import { Preprocessor, PreprocessorGroup, Processed, ResolvedOptions } from './options';
-import { TransformPluginContext } from 'rollup';
 import { log } from './log';
 import { buildSourceMap } from './sourcemap';
 import path from 'path';
@@ -21,7 +15,7 @@ function createViteScriptPreprocessor(): Preprocessor {
 	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
 		if (!supportedScriptLangs.includes(lang)) return;
-		const transformResult = await transformWithEsbuild(content, filename, {
+		const transformResult = await vite.transformWithEsbuild(content, filename, {
 			loader: lang as ESBuildOptions['loader'],
 			target: 'esnext',
 			tsconfigRaw: {
@@ -40,32 +34,45 @@ function createViteScriptPreprocessor(): Preprocessor {
 }
 
 function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
-	const pluginName = 'vite:css';
-	const plugin = config.plugins.find((p) => p.name === pluginName);
-	if (!plugin) {
-		throw new Error(`failed to find plugin ${pluginName}`);
-	}
-	if (!plugin.transform) {
-		throw new Error(`plugin ${pluginName} has no transform`);
-	}
-	const pluginTransform = plugin.transform!.bind(null as unknown as TransformPluginContext);
+	const transform = getCssTransformFn(config);
 	return async ({ attributes, content, filename = '' }) => {
 		const lang = attributes.lang as string;
 		if (!supportedStyleLangs.includes(lang)) return;
 		const moduleId = `${filename}.${lang}`;
-		const transformResult: TransformResult = (await pluginTransform(
-			content,
-			moduleId
-		)) as TransformResult;
+		const result = await transform(content, moduleId);
 		// patch sourcemap source to point back to original filename
-		if (transformResult.map?.sources?.[0] === moduleId) {
-			transformResult.map.sources[0] = path.basename(filename);
+		if (result.map?.sources?.[0] === moduleId) {
+			result.map.sources[0] = path.basename(filename);
 		}
 		return {
-			code: transformResult.code,
-			map: transformResult.map ?? undefined
+			code: result.code,
+			map: result.map ?? undefined
 		};
 	};
+}
+
+// eslint-disable-next-line no-unused-vars
+type CssTransform = (code: string, filename: string) => Promise<{ code: string; map?: any }>;
+
+function getCssTransformFn(config: ResolvedConfig): CssTransform {
+	// API is only available in Vite 3.2 and above
+	// TODO: Remove Vite plugin hack when bump peer dep to Vite 3.2
+	if (vite.preprocessCSS) {
+		return async (code, filename) => {
+			return vite.preprocessCSS(code, filename, config);
+		};
+	} else {
+		const pluginName = 'vite:css';
+		const plugin = config.plugins.find((p) => p.name === pluginName);
+		if (!plugin) {
+			throw new Error(`failed to find plugin ${pluginName}`);
+		}
+		if (!plugin.transform) {
+			throw new Error(`plugin ${pluginName} has no transform`);
+		}
+		// @ts-expect-error
+		return plugin.transform.bind(null);
+	}
 }
 
 function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
