@@ -56,6 +56,7 @@ type CssTransform = (code: string, filename: string) => Promise<{ code: string; 
 
 function getCssTransformFn(config: ResolvedConfig): CssTransform {
 	// API is only available in Vite 3.2 and above
+	// TODO: Remove Vite plugin hack when bump peer dep to Vite 3.2
 	if (vite.preprocessCSS) {
 		return async (code, filename) => {
 			return vite.preprocessCSS(code, filename, config);
