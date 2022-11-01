@@ -473,14 +473,14 @@ importers:
       svelte-hmr: ^0.15.0
       tsup: ^6.3.0
       vite: ^3.2.0
-      vitefu: ^0.1.0
+      vitefu: ^0.1.1
     dependencies:
       debug: 4.3.4
       deepmerge: 4.2.2
       kleur: 4.1.5
       magic-string: 0.26.7
       svelte-hmr: 0.15.0_svelte@3.52.0
-      vitefu: 0.1.0_vite@3.2.0
+      vitefu: 0.1.1_vite@3.2.0
     devDependencies:
       '@types/debug': 4.1.7
       '@types/diff-match-patch': 1.0.32
@@ -3150,10 +3150,6 @@ packages:
       resolve-from: 4.0.0
     dev: true
 
-  /import-meta-resolve/2.1.0:
-    resolution: {integrity: sha512-yG9pxkWJVTy4cmRsNWE3ztFdtFuYIV8G4N+cbCkO8b+qngkLyIUhxQFuZ0qJm67+0nUOxjMPT7nfksPKza1v2g==}
-    dev: false
-
   /imurmurhash/0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
@@ -5671,15 +5667,14 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitefu/0.1.0_vite@3.2.0:
-    resolution: {integrity: sha512-5MQSHP9yr0HIve8q4XNb7QXfO1P4tzZDZP99qH0FM5ClcwYddeGXRDQ4TQYRUeXLjZ+vLecirHtGNpwFFUF7sw==}
+  /vitefu/0.1.1_vite@3.2.0:
+    resolution: {integrity: sha512-HClD14fjMJ+NQgXBqT3dC3RdO/+Chayil+cCPYZKY3kT+KcJomKzrdgzfCHJkIL2L0OAY+VPvrSW615iPtc7ag==}
     peerDependencies:
       vite: ^3.0.0 || ^3.2.0
     peerDependenciesMeta:
       vite:
         optional: true
     dependencies:
-      import-meta-resolve: 2.1.0
       vite: 3.2.0
     dev: false
 
