@@ -19,12 +19,16 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./preprocess": {
+      "import": "./dist/preprocess.js",
+      "require": "./dist/preprocess.cjs"
+    },
     "./package.json": "./package.json",
     "./src/ui/*": "./src/ui/*"
   },
   "scripts": {
     "dev": "pnpm build:ci --sourcemap --watch src",
-    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm,cjs --no-splitting --shims",
+    "build:ci": "rimraf dist && tsup-node src/index.ts src/preprocess.ts --format esm,cjs --no-splitting --shims",
     "build": "pnpm build:ci --dts --sourcemap"
   },
   "engines": {
