@@ -7,16 +7,16 @@ import type { Preprocessor, PreprocessorGroup } from 'svelte/types/compiler/prep
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
 
-export function vitePreprocess(opts: {
+export function vitePreprocess(opts?: {
 	script?: boolean;
 	style?: boolean | Parameters<typeof viteStyle>[0];
 }) {
 	const preprocessor: PreprocessorGroup = {};
-	if (opts.script !== false) {
+	if (opts?.script !== false) {
 		preprocessor.script = viteScript().script;
 	}
-	if (opts.style !== false) {
-		const styleOpts = typeof opts.style == 'object' ? opts.style : undefined;
+	if (opts?.style !== false) {
+		const styleOpts = typeof opts?.style == 'object' ? opts?.style : undefined;
 		preprocessor.style = viteStyle(styleOpts).style;
 	}
 	return preprocessor;

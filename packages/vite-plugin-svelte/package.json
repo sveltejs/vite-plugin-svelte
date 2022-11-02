@@ -16,10 +16,12 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./preprocess": {
+      "types": "./dist/preprocess.d.ts",
       "import": "./dist/preprocess.js",
       "require": "./dist/preprocess.cjs"
     },
