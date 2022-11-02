@@ -2,11 +2,25 @@ import path from 'path';
 import * as vite from 'vite';
 import type { ESBuildOptions, ResolvedConfig } from 'vite';
 // eslint-disable-next-line node/no-missing-import
-import type { Preprocessor } from 'svelte/types/compiler/preprocess';
+import type { Preprocessor, PreprocessorGroup } from 'svelte/types/compiler/preprocess';
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
-
 const supportedScriptLangs = ['ts'];
+
+export function vitePreprocess(opts: {
+	script?: boolean;
+	style?: boolean | Parameters<typeof viteStyle>[0];
+}) {
+	const preprocessor: PreprocessorGroup = {};
+	if (opts.script !== false) {
+		preprocessor.script = viteScript().script;
+	}
+	if (opts.style !== false) {
+		const styleOpts = typeof opts.style == 'object' ? opts.style : undefined;
+		preprocessor.style = viteStyle(styleOpts).style;
+	}
+	return preprocessor;
+}
 
 export function viteScript(): { script: Preprocessor } {
 	return {
