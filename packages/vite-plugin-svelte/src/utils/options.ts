@@ -390,6 +390,9 @@ function buildOptimizeDepsForSvelte(
 
 	// If we prebundle svelte libraries, we can skip the whole prebundling dance below
 	if (options.prebundleSvelteLibraries) {
+		const depsToInclude = svelteDeps.map((dep) => dep.name).filter((dep) => !isExcluded(dep));
+		log.debug(`automatically including found svelte dependencies: ${depsToInclude.join(', ')}`);
+		include.push(...depsToInclude);
 		return { include, exclude };
 	}
 
