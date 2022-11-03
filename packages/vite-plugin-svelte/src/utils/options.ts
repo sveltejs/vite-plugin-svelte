@@ -393,9 +393,6 @@ function buildOptimizeDepsForSvelte(
 		return { include, exclude };
 	}
 
-	// only svelte component libraries needs to be processed for optimizeDeps, js libraries work fine
-	svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
-
 	const svelteDepsToExclude = Array.from(new Set(svelteDeps.map((dep) => dep.name))).filter(
 		(dep) => !isIncluded(dep)
 	);

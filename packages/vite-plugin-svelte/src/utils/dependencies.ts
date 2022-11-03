@@ -42,11 +42,10 @@ function getSvelteDependencies(
 		.map((dep) => resolveDependencyData(dep, localRequire))
 		.filter(Boolean) as DependencyData[];
 	for (const { pkg, dir } of resolvedDeps) {
-		const type = getSvelteDependencyType(pkg);
-		if (!type) continue;
-		result.push({ name: pkg.name, type, pkg, dir, path });
+		if (!isSvelteLib(pkg)) continue;
+		result.push({ name: pkg.name, pkg, dir, path });
 		// continue crawling for component libraries so we can optimize them, js libraries are fine
-		if (type === 'component-library' && pkg.dependencies) {
+		if (pkg.dependencies) {
 			let dependencyNames = Object.keys(pkg.dependencies);
 			const circular = dependencyNames.filter((name) => path.includes(name));
 			if (circular.length > 0) {
@@ -107,22 +106,8 @@ function parsePkg(dir: string, silent = false): Pkg | void {
 	}
 }
 
-function getSvelteDependencyType(pkg: Pkg): SvelteDependencyType | undefined {
-	if (isSvelteComponentLib(pkg)) {
-		return 'component-library';
-	} else if (isSvelteLib(pkg)) {
-		return 'js-library';
-	} else {
-		return undefined;
-	}
-}
-
-function isSvelteComponentLib(pkg: Pkg) {
-	return !!pkg.svelte;
-}
-
 function isSvelteLib(pkg: Pkg) {
-	return !!pkg.dependencies?.svelte || !!pkg.peerDependencies?.svelte;
+	return !!pkg.svelte || !!pkg.dependencies?.svelte || !!pkg.peerDependencies?.svelte;
 }
 
 const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
@@ -217,15 +202,10 @@ interface DependencyData {
 
 export interface SvelteDependency {
 	name: string;
-	type: SvelteDependencyType;
 	dir: string;
 	pkg: Pkg;
 	path: string[];
 }
-
-// component-library => exports svelte components
-// js-library        => only uses svelte api, no components
-export type SvelteDependencyType = 'component-library' | 'js-library';
 
 export interface Pkg {
 	name: string;
