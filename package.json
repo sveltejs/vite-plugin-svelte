@@ -18,16 +18,16 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.25.0",
+    "@changesets/cli": "^2.25.2",
     "@svitejs/changesets-changelog-github-compact": "^0.1.1",
     "@types/fs-extra": "^9.0.13",
-    "@types/node": "^18.7.14",
-    "@types/semver": "^7.3.12",
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
-    "@typescript-eslint/parser": "^5.40.1",
+    "@types/node": "^18.11.9",
+    "@types/semver": "^7.3.13",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.15.12",
-    "eslint": "^8.26.0",
+    "esbuild": "^0.15.13",
+    "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-markdown": "^3.0.0",
@@ -46,8 +46,8 @@
     "rimraf": "^3.0.2",
     "svelte": "^3.52.0",
     "typescript": "^4.8.4",
-    "vite": "^3.2.0",
-    "vitest": "^0.24.3"
+    "vite": "^3.2.3",
+    "vitest": "^0.25.0"
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --fix",
@@ -55,9 +55,9 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@7.14.0",
+  "packageManager": "pnpm@7.14.2",
   "engines": {
-    "pnpm": "^7.14.0",
+    "pnpm": "^7.13.0",
     "yarn": "forbidden, use pnpm",
     "npm": "forbidden, use pnpm",
     "node": "^14.18.0 || >= 16"
