@@ -102,10 +102,10 @@ importers:
 
   packages/e2e-tests/_test_dependencies/svelte-hybrid:
     specifiers:
-      '@types/node': ^17.0.36
+      '@types/node': ^18.11.9
       e2e-test-dep-cjs-only: workspace:*
     dependencies:
-      '@types/node': 17.0.36
+      '@types/node': 18.11.9
       e2e-test-dep-cjs-only: link:../cjs-only
 
   packages/e2e-tests/_test_dependencies/svelte-nested:
@@ -323,17 +323,17 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       '@tsconfig/svelte': ^3.0.0
-      '@types/node': ^17.0.36
+      '@types/node': ^18.11.9
       svelte: ^3.52.0
       svelte-preprocess: ^4.10.7
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
       '@tsconfig/svelte': 3.0.0
-      '@types/node': 17.0.36
+      '@types/node': 18.11.9
       svelte: 3.52.0
       svelte-preprocess: 4.10.7_svelte@3.52.0
-      vite: 3.2.3_@types+node@17.0.36
+      vite: 3.2.3_@types+node@18.11.9
 
   packages/e2e-tests/vite-ssr:
     specifiers:
@@ -1114,12 +1114,8 @@ packages:
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
     dev: true
 
-  /@types/node/17.0.36:
-    resolution: {integrity: sha512-V3orv+ggDsWVHP99K3JlwtH20R7J4IhI1Kksgc+64q5VxgfRkQG8Ws3MFm/FZOKDYGy9feGFlZ70/HpCNe9QaA==}
-
   /@types/node/18.11.9:
     resolution: {integrity: sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==}
-    dev: true
 
   /@types/node/18.7.14:
     resolution: {integrity: sha512-6bbDaETVi8oyIARulOE9qF1/Qdi/23z6emrUh0fNJRUmjznqrixD4MpGDdgOFk5Xb0m2H6Xu42JGdvAxaJR/wA==}
@@ -5662,40 +5658,6 @@ packages:
       terser:
         optional: true
     dependencies:
-      esbuild: 0.15.13
-      postcss: 8.4.18
-      resolve: 1.22.1
-      rollup: 2.79.1
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
-  /vite/3.2.3_@types+node@17.0.36:
-    resolution: {integrity: sha512-h8jl1TZ76eGs3o2dIBSsvXDLb1m/Ec1iej8ZMdz+PsaFUsftZeWe2CZOI3qogEsMNaywc17gu0q6cQDzh/weCQ==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      '@types/node': 17.0.36
       esbuild: 0.15.13
       postcss: 8.4.18
       resolve: 1.22.1
