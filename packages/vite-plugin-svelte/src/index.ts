@@ -19,7 +19,7 @@ import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
-import { saveSvelteMetadata } from './utils/optimizer';
+import { isOptimizeExcluded, saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 
 interface PluginAPI {
@@ -157,7 +157,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				//@ts-expect-error scan
 				const scan = !!opts?.scan; // scanner phase of optimizeDeps
 				const isPrebundled =
-					options.prebundleSvelteLibraries && viteConfig.optimizeDeps?.include?.includes(importee);
+					options.prebundleSvelteLibraries &&
+					!isOptimizeExcluded(importee, viteConfig.optimizeDeps?.exclude);
 				// for prebundled libraries we let vite resolve the prebundling result
 				// for ssr, during scanning and non-prebundled, we do it
 				if (ssr || scan || !isPrebundled) {
