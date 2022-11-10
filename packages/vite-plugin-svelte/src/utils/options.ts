@@ -329,13 +329,13 @@ export async function buildExtraViteConfig(
 		include: [
 			...optimizeDepsConfig.include,
 			...crawlConfig.optimizeDeps.include.filter(
-				(dep) => !isDepExcluded(dep, optimizeDepsConfig.include)
+				(dep) => !isDepExcluded(dep, optimizeDepsConfig.exclude)
 			)
 		],
 		exclude: [
 			...optimizeDepsConfig.exclude,
 			...crawlConfig.optimizeDeps.exclude.filter(
-				(dep) => !isDepIncluded(dep, optimizeDepsConfig.exclude)
+				(dep) => !isDepIncluded(dep, optimizeDepsConfig.include)
 			)
 		]
 	};
