@@ -20,7 +20,7 @@ import type {
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
 
-import path from 'path';
+import path, { join } from 'path';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
 import deepmerge from 'deepmerge';
@@ -352,13 +352,11 @@ export async function buildExtraViteConfig(
 			(dep) => !dep.includes('>')
 		);
 	} else if (Array.isArray(options.disableDependencyReinclusion)) {
-		const disabledDeps = options.disableDependencyReinclusion;
-		const isDisabled = (dep: string) => {
-			// `crawlFrameworkPkgs` always return `{dep} > {something}` format for deep includes
-			return disabledDeps.some((disabledDep) => dep.includes(`${disabledDep} >`));
-		};
+		const disabledDepsRegex = new RegExp(
+			options.disableDependencyReinclusion.map((dep) => `(?:>|^)\\s*${dep}\\s*>`).join('|')
+		);
 		depsConfig.optimizeDeps.include = depsConfig.optimizeDeps.include.filter(
-			(dep) => !isDisabled(dep)
+			(dep) => !disabledDepsRegex.test(dep)
 		);
 	}
 
