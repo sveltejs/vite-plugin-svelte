@@ -1,12 +1,5 @@
 /* eslint-disable no-unused-vars */
-import {
-	ConfigEnv,
-	DepOptimizationOptions,
-	ResolvedConfig,
-	UserConfig,
-	ViteDevServer,
-	normalizePath
-} from 'vite';
+import { ConfigEnv, ResolvedConfig, UserConfig, ViteDevServer, normalizePath } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
