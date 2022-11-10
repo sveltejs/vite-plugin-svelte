@@ -20,7 +20,7 @@ import type {
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
 
-import path, { join } from 'path';
+import path from 'path';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
 import deepmerge from 'deepmerge';
