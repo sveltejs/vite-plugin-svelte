@@ -158,6 +158,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				const scan = !!opts?.scan; // scanner phase of optimizeDeps
 				const isPrebundled =
 					options.prebundleSvelteLibraries &&
+					viteConfig.optimizeDeps?.disabled !== true &&
+					viteConfig.optimizeDeps?.disabled !== (options.isBuild ? 'build' : 'dev') &&
 					!isOptimizeExcluded(importee, viteConfig.optimizeDeps?.exclude);
 				// for prebundled libraries we let vite resolve the prebundling result
 				// for ssr, during scanning and non-prebundled, we do it
