@@ -311,7 +311,7 @@ export async function buildExtraViteConfig(
 	options: PreResolvedOptions,
 	config: UserConfig
 ): Promise<Partial<UserConfig>> {
-	const extraViteConfig: Partial<UserConfig> = {
+	let extraViteConfig: Partial<UserConfig> = {
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
 			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
@@ -345,8 +345,33 @@ export async function buildExtraViteConfig(
 
 	log.debug('crawl svelte packages result', depsConfig);
 
+	if (options.prebundleSvelteLibraries) {
+		depsConfig.optimizeDeps = { include: [], exclude: [] };
+	} else if (options.disableDependencyReinclusion === true) {
+		depsConfig.optimizeDeps.include = depsConfig.optimizeDeps.include.filter(
+			(dep) => !dep.includes('>')
+		);
+	} else if (Array.isArray(options.disableDependencyReinclusion)) {
+		const disabledDeps = options.disableDependencyReinclusion;
+		const isDisabled = (dep: string) => {
+			// `crawlFrameworkPkgs` always return `{dep} > {something}` format for deep includes
+			return disabledDeps.some((disabledDep) => dep.includes(`${disabledDep} >`));
+		};
+		depsConfig.optimizeDeps.include = depsConfig.optimizeDeps.include.filter(
+			(dep) => !isDisabled(dep)
+		);
+	}
+
+	log.debug('processed crawl svelte packages result', depsConfig);
+
 	// optimize deps
 	extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(config);
+	// ssr config
+	extraViteConfig.ssr = buildSSROptionsForSvelte(config);
+	// merge crawl result
+	extraViteConfig = deepmerge(extraViteConfig, depsConfig);
+
+	// handle prebundling for svelte files
 	if (options.prebundleSvelteLibraries) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
@@ -360,30 +385,7 @@ export async function buildExtraViteConfig(
 				plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
 			}
 		};
-	} else {
-		if (options.disableDependencyReinclusion !== true) {
-			const disabledReinclusions = options.disableDependencyReinclusion || [];
-			if (disabledReinclusions.length > 0) {
-				log.debug(`not reincluding transitive dependencies of`, disabledReinclusions);
-			}
-			const transitiveDepsToInclude = depsConfig.optimizeDeps.include.filter((dep) =>
-				disabledReinclusions.every((disabled) => !dep.includes(disabled))
-			);
-			log.debug(
-				`reincluding transitive dependencies of excluded svelte dependencies`,
-				transitiveDepsToInclude
-			);
-			depsConfig.optimizeDeps.include?.push(...transitiveDepsToInclude);
-		}
-		extraViteConfig.optimizeDeps.include?.push(...depsConfig.optimizeDeps.include);
-		extraViteConfig.optimizeDeps.exclude?.push(...depsConfig.optimizeDeps.exclude);
 	}
-
-	// ssr config
-	extraViteConfig.ssr = buildSSROptionsForSvelte(config);
-	// @ts-expect-error `noExternal` is 100% an array
-	extraViteConfig.ssr?.noExternal?.push(...depsConfig.ssr.noExternal);
-	extraViteConfig.ssr?.external?.push(...depsConfig.ssr.external);
 
 	// enable hmrPartialAccept if not explicitly disabled
 	if (
