@@ -17,7 +17,7 @@ export function parseVersion(version: string): number[] {
  */
 export function compareToSvelte(version: string): 1 | 0 | -1 {
 	const parsedVersion = parseVersion(version);
-	for (let i = 0; i < 4; i++) {
+	for (let i = 0; i < svelteVersion.length; i++) {
 		const a = parsedVersion[i];
 		const b = svelteVersion[i];
 		if (a === b) {
