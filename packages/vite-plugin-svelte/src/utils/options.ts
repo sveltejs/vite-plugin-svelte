@@ -352,12 +352,12 @@ export async function buildExtraViteConfig(
 			(dep) => !dep.includes('>')
 		);
 	} else if (Array.isArray(options.disableDependencyReinclusion)) {
-		const disabledDepsRegex = new RegExp(
-			options.disableDependencyReinclusion.map((dep) => `(?:>|^)\\s*${dep}\\s*>`).join('|')
-		);
-		depsConfig.optimizeDeps.include = depsConfig.optimizeDeps.include.filter(
-			(dep) => !disabledDepsRegex.test(dep)
-		);
+		const disabledDeps = options.disableDependencyReinclusion;
+		depsConfig.optimizeDeps.include = depsConfig.optimizeDeps.include.filter((dep) => {
+			if (!dep.includes('>')) return true;
+			const trimDep = dep.replace(/\s+/g, '');
+			return disabledDeps.some((disabled) => trimDep.includes(`${disabled}>`));
+		});
 	}
 
 	log.debug('processed crawl svelte packages result', depsConfig);
