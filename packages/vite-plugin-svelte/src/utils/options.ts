@@ -26,6 +26,7 @@ import { createRequire } from 'module';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
 import deepmerge from 'deepmerge';
+import { atLeastSvelte } from './svelte-version';
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -170,15 +171,21 @@ export function resolveOptions(
 	preResolveOptions: PreResolvedOptions,
 	viteConfig: ResolvedConfig
 ): ResolvedOptions {
+	const cssOptionAsString = atLeastSvelte('3.53.0');
+	const css = cssOptionAsString
+		? preResolveOptions.emitCss
+			? 'external'
+			: 'injected'
+		: !preResolveOptions.emitCss;
 	const defaultOptions: Partial<Options> = {
 		hot: viteConfig.isProduction
 			? false
 			: {
-					injectCss: !preResolveOptions.emitCss,
+					injectCss: css === true || css === 'injected',
 					partialAccept: !!viteConfig.experimental?.hmrPartialAccept
 			  },
 		compilerOptions: {
-			css: !preResolveOptions.emitCss,
+			css,
 			dev: !viteConfig.isProduction
 		}
 	};
