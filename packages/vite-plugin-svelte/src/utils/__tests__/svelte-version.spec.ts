@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { compareToSvelte, atLeastSvelte, olderThanSvelte, parseVersion } from '../svelte-version';
+import { compareToSvelte, atLeastSvelte, parseVersion } from '../svelte-version';
 import { VERSION } from 'svelte/compiler';
 const svelteVersion = parseVersion(VERSION);
 describe('svelte-version', () => {
@@ -97,50 +97,6 @@ describe('svelte-version', () => {
 			major[0] -= 1;
 			const lowerMajor = major.join('.');
 			expect(atLeastSvelte(lowerMajor)).toBe(false);
-		});
-	});
-
-	describe('olderThanSvelte', () => {
-		it('should return false for current', async () => {
-			expect(olderThanSvelte(VERSION)).toBe(false);
-		});
-
-		it('should return false for patch bump', async () => {
-			const patch = svelteVersion.concat();
-			patch[2] += 1;
-			const patchBump = patch.join('.');
-			expect(olderThanSvelte(patchBump)).toBe(false);
-		});
-		it('should return false for minor bump', async () => {
-			const minor = svelteVersion.concat();
-			minor[1] += 1;
-			const minorBump = minor.join('.');
-			expect(olderThanSvelte(minorBump)).toBe(false);
-		});
-		it('should return false for major bump', async () => {
-			const major = svelteVersion.concat();
-			major[0] += 1;
-			const majorBump = major.join('.');
-			expect(olderThanSvelte(majorBump)).toBe(false);
-		});
-
-		it('should return true for lower patch', async () => {
-			const patch = svelteVersion.concat();
-			patch[2] -= 1;
-			const lowerPatch = patch.join('.');
-			expect(olderThanSvelte(lowerPatch)).toBe(true);
-		});
-		it('should return true for lower minor', async () => {
-			const minor = svelteVersion.concat();
-			minor[1] -= 1;
-			const lowerMinor = minor.join('.');
-			expect(olderThanSvelte(lowerMinor)).toBe(true);
-		});
-		it('should return true for lower major', async () => {
-			const major = svelteVersion.concat();
-			major[0] -= 1;
-			const lowerMajor = major.join('.');
-			expect(olderThanSvelte(lowerMajor)).toBe(true);
 		});
 	});
 });

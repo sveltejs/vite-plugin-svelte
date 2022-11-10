@@ -34,7 +34,3 @@ export function compareToSvelte(version: string): 1 | 0 | -1 {
 export function atLeastSvelte(version: string) {
 	return compareToSvelte(version) >= 0;
 }
-
-export function olderThanSvelte(version: string) {
-	return compareToSvelte(version) === -1;
-}
