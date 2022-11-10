@@ -179,6 +179,16 @@ importers:
       svelte-preprocess: 4.10.7_svelte@3.53.0
       vite: 3.2.3
 
+  packages/e2e-tests/css-none:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      svelte: ^3.53.0
+      vite: ^3.2.3
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      svelte: 3.53.0
+      vite: 3.2.3
+
   packages/e2e-tests/custom-extensions:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*

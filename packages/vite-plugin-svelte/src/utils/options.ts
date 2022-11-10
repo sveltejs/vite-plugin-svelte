@@ -28,6 +28,9 @@ import { addExtraPreprocessors } from './preprocess';
 import deepmerge from 'deepmerge';
 import { atLeastSvelte } from './svelte-version';
 
+// svelte 3.53.0 changed compilerOptions.css from boolean to string | boolen, use string when available
+const cssAsString = atLeastSvelte('3.53.0');
+
 const allowedPluginOptions = new Set([
 	'include',
 	'exclude',
@@ -171,8 +174,7 @@ export function resolveOptions(
 	preResolveOptions: PreResolvedOptions,
 	viteConfig: ResolvedConfig
 ): ResolvedOptions {
-	const cssOptionAsString = atLeastSvelte('3.53.0');
-	const css = cssOptionAsString
+	const css = cssAsString
 		? preResolveOptions.emitCss
 			? 'external'
 			: 'injected'
@@ -215,11 +217,13 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 				log.warn('hmr and emitCss are enabled but hot.injectCss is true, forcing it to false');
 				options.hot.injectCss = false;
 			}
-			if (options.compilerOptions.css) {
+			const css = options.compilerOptions.css;
+			if (css === true || css === 'injected') {
+				const forcedCss = cssAsString ? 'external' : false;
 				log.warn(
-					'hmr and emitCss are enabled but compilerOptions.css is true, forcing it to false'
+					`hmr and emitCss are enabled but compilerOptions.css is ${css}, forcing it to ${forcedCss}`
 				);
-				options.compilerOptions.css = false;
+				options.compilerOptions.css = forcedCss;
 			}
 		} else {
 			if (options.hot === true || !options.hot.injectCss) {
@@ -232,11 +236,13 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 					options.hot.injectCss = true;
 				}
 			}
-			if (!options.compilerOptions.css) {
+			const css = options.compilerOptions.css;
+			if (!(css === true || css === 'injected')) {
+				const forcedCss = cssAsString ? 'injected' : true;
 				log.warn(
-					'hmr with emitCss disabled requires compilerOptions.css to be enabled, forcing it to true'
+					`hmr with emitCss disabled requires compilerOptions.css to be enabled, forcing it to ${forcedCss}`
 				);
-				options.compilerOptions.css = true;
+				options.compilerOptions.css = forcedCss;
 			}
 		}
 	}
