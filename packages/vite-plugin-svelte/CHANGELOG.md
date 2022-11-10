@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.1.1
+
+### Patch Changes
+
+- Use `preprocessCSS` API from Vite 3.2 for `useVitePreprocess` option ([#479](https://github.com/sveltejs/vite-plugin-svelte/pull/479))
+
+- add types to exports map in package.json ([#488](https://github.com/sveltejs/vite-plugin-svelte/pull/488))
+
 ## 1.1.0
 
 ### Minor Changes
