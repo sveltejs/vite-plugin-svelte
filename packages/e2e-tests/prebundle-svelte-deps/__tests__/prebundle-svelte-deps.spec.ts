@@ -24,23 +24,19 @@ test('should render api-only import', async () => {
 });
 
 if (!isBuild) {
-	test('should optimize svelte dependencies and their cjs subdependencies', () => {
+	test('should optimize svelte dependencies', () => {
 		const metadataFile = readVitePrebundleMetadata();
 		const metadata = JSON.parse(metadataFile);
 		const optimizedPaths = Object.keys(metadata.optimized);
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-simple');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-hybrid');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-api-only');
-		expect(optimizedPaths).toContain('e2e-test-dep-svelte-hybrid > e2e-test-dep-cjs-only');
-		expect(optimizedPaths).toContain(
-			'e2e-test-dep-svelte-nested > e2e-test-dep-svelte-simple > e2e-test-dep-cjs-only'
-		);
 	});
 
 	test('should not optimize excluded svelte dependencies', () => {
 		const metadataFile = readVitePrebundleMetadata();
 		const metadata = JSON.parse(metadataFile);
 		const optimizedPaths = Object.keys(metadata.optimized);
-		expect(optimizedPaths).not.toContain('e2e-test-dep-svelte-nested');
+		expect(optimizedPaths).not.toContain('e2e-test-dep-scss-only');
 	});
 }

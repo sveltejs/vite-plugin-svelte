@@ -358,7 +358,6 @@ export function buildExtraViteConfig(
 		log.debug('enabling "experimental.hmrPartialAccept" in vite config');
 		extraViteConfig.experimental = { hmrPartialAccept: true };
 	}
-
 	return extraViteConfig;
 }
 
@@ -384,19 +383,19 @@ function buildOptimizeDepsForSvelte(
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
 
-	// If we prebundle svelte libraries, we can skip the whole prebundling dance below
-	if (options.prebundleSvelteLibraries) {
-		return { include, exclude };
+	// If we prebundle svelte libraries, we can skip excluding svelte libraries
+	if (!options.prebundleSvelteLibraries) {
+		// only svelte component libraries needs to be processed for optimizeDeps, js libraries work fine
+		svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
+
+		const svelteDepsToExclude = Array.from(new Set(svelteDeps.map((dep) => dep.name))).filter(
+			(dep) => !isIncluded(dep)
+		);
+		log.debug(
+			`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`
+		);
+		exclude.push(...svelteDepsToExclude.filter((x) => !isExcluded(x)));
 	}
-
-	// only svelte component libraries needs to be processed for optimizeDeps, js libraries work fine
-	svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
-
-	const svelteDepsToExclude = Array.from(new Set(svelteDeps.map((dep) => dep.name))).filter(
-		(dep) => !isIncluded(dep)
-	);
-	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
-	exclude.push(...svelteDepsToExclude.filter((x) => !isExcluded(x)));
 
 	if (options.disableDependencyReinclusion !== true) {
 		const disabledReinclusions = options.disableDependencyReinclusion || [];
