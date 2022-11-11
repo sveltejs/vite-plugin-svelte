@@ -68,8 +68,9 @@ const _createCompileSvelte = (makeHot: Function) =>
 			  }
 			: compileOptions;
 		const compiled = compile(finalCode, finalCompileOptions);
-
-		if (emitCss && compiled.css.code) {
+		const hasCss = compiled.css?.code?.trim().length > 0;
+		// compiler might not emit css with mode none or it may be empty
+		if (emitCss && hasCss) {
 			// TODO properly update sourcemap?
 			compiled.js.code += `\nimport ${JSON.stringify(cssId)};\n`;
 		}
@@ -79,7 +80,7 @@ const _createCompileSvelte = (makeHot: Function) =>
 			compiled.js.code = makeHot({
 				id: filename,
 				compiledCode: compiled.js.code,
-				hotOptions: options.hot,
+				hotOptions: { ...options.hot, injectCss: options.hot?.injectCss === true && hasCss },
 				compiled,
 				originalCode: code,
 				compileOptions: finalCompileOptions
