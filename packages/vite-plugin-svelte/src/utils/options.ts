@@ -377,7 +377,6 @@ export async function buildExtraViteConfig(
 		log.debug('enabling "experimental.hmrPartialAccept" in vite config');
 		extraViteConfig.experimental = { hmrPartialAccept: true };
 	}
-
 	return extraViteConfig;
 }
 

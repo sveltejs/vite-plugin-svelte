@@ -19,7 +19,7 @@ import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
-import { saveSvelteMetadata } from './utils/optimizer';
+import { isOptimizeExcluded, saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 
 interface PluginAPI {
@@ -154,21 +154,32 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					}
 					return resolvedSvelteSSR;
 				}
-				try {
-					const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
-					if (resolved) {
-						log.debug(
-							`resolveId resolved ${resolved} via package.json svelte field of ${importee}`
+				//@ts-expect-error scan
+				const scan = !!opts?.scan; // scanner phase of optimizeDeps
+				const isPrebundled =
+					options.prebundleSvelteLibraries &&
+					viteConfig.optimizeDeps?.disabled !== true &&
+					viteConfig.optimizeDeps?.disabled !== (options.isBuild ? 'build' : 'dev') &&
+					!isOptimizeExcluded(importee, viteConfig.optimizeDeps?.exclude);
+				// for prebundled libraries we let vite resolve the prebundling result
+				// for ssr, during scanning and non-prebundled, we do it
+				if (ssr || scan || !isPrebundled) {
+					try {
+						const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
+						if (resolved) {
+							log.debug(
+								`resolveId resolved ${resolved} via package.json svelte field of ${importee}`
+							);
+							return resolved;
+						}
+					} catch (e) {
+						log.debug.once(
+							`error trying to resolve ${importee} from ${importer} via package.json svelte field `,
+							e
 						);
-						return resolved;
+						// this error most likely happens due to non-svelte related importee/importers so swallow it here
+						// in case it really way a svelte library, users will notice anyway. (lib not working due to failed resolve)
 					}
-				} catch (e) {
-					log.debug.once(
-						`error trying to resolve ${importee} from ${importer} via package.json svelte field `,
-						e
-					);
-					// this error most likely happens due to non-svelte related importee/importers so swallow it here
-					// in case it really way a svelte library, users will notice anyway. (lib not working due to failed resolve)
 				}
 			},
 
