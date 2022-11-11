@@ -29,8 +29,8 @@ if (!isBuild) {
 		const metadata = JSON.parse(metadataFile);
 		const optimizedPaths = Object.keys(metadata.optimized);
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-simple');
-		expect(optimizedPaths).toContain('e2e-test-dep-svelte-hybrid');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-api-only');
+		expect(optimizedPaths).toContain('e2e-test-dep-svelte-nested');
 	});
 
 	test('should not optimize excluded svelte dependencies', () => {
@@ -38,5 +38,7 @@ if (!isBuild) {
 		const metadata = JSON.parse(metadataFile);
 		const optimizedPaths = Object.keys(metadata.optimized);
 		expect(optimizedPaths).not.toContain('e2e-test-dep-scss-only');
+		expect(optimizedPaths).not.toContain('e2e-test-dep-svelte-hybrid');
+		expect(optimizedPaths).toContain('e2e-test-dep-svelte-hybrid > e2e-test-dep-cjs-only');
 	});
 }
