@@ -268,20 +268,3 @@ export async function fetchPageText() {
 		throw new Error(`request to ${url} failed with ${res.status} - ${res.statusText}.`);
 	}
 }
-
-export function readVitePrebundleMetadata() {
-	const metadataPaths = [
-		'node_modules/.vite/_metadata.json',
-		'node_modules/.vite/deps/_metadata.json' // vite 2.9
-	];
-	for (const metadataPath of metadataPaths) {
-		try {
-			const vitePrebundleMetadata = path.resolve(testDir, metadataPath);
-			const metadataFile = fs.readFileSync(vitePrebundleMetadata, 'utf8');
-			return metadataFile;
-		} catch {
-			// ignore
-		}
-	}
-	throw new Error('Unable to find vite prebundle metadata');
-}
