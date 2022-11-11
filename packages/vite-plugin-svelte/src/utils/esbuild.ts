@@ -5,9 +5,11 @@ import { Compiled } from './compile';
 import { log } from './log';
 import { CompileOptions, ResolvedOptions } from './options';
 import { toESBuildError } from './error';
+import { atLeastSvelte } from './svelte-version';
 
 type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
 type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
+const isCssString = atLeastSvelte('3.53.0');
 
 export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
 
@@ -39,9 +41,13 @@ async function compileSvelte(
 	options: ResolvedOptions,
 	{ filename, code }: { filename: string; code: string }
 ): Promise<string> {
+	let css = options.compilerOptions.css;
+	if (css !== 'none') {
+		css = isCssString ? 'inject' : true;
+	}
 	const compileOptions: CompileOptions = {
 		...options.compilerOptions,
-		css: true,
+		css,
 		filename,
 		format: 'esm',
 		generate: 'dom'
