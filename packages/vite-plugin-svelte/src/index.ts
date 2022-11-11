@@ -1,5 +1,7 @@
 import fs from 'fs';
 import { HmrContext, ModuleNode, Plugin, ResolvedConfig, UserConfig } from 'vite';
+// eslint-disable-next-line node/no-missing-import
+import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update';
 import { log, logCompilerWarnings } from './utils/log';
 import { CompileData, createCompileSvelte } from './utils/compile';
@@ -19,7 +21,7 @@ import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
-import { isOptimizeExcluded, saveSvelteMetadata } from './utils/optimizer';
+import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 
 interface PluginAPI {
@@ -68,7 +70,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				// @ts-expect-error temporarily lend the options variable until fixed in configResolved
 				options = await preResolveOptions(inlineOptions, config, configEnv);
 				// extra vite config
-				const extraViteConfig = buildExtraViteConfig(options, config);
+				const extraViteConfig = await buildExtraViteConfig(options, config);
 				log.debug('additional vite config', extraViteConfig);
 				return extraViteConfig;
 			},
@@ -160,12 +162,12 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					options.prebundleSvelteLibraries &&
 					viteConfig.optimizeDeps?.disabled !== true &&
 					viteConfig.optimizeDeps?.disabled !== (options.isBuild ? 'build' : 'dev') &&
-					!isOptimizeExcluded(importee, viteConfig.optimizeDeps?.exclude);
+					!isDepExcluded(importee, viteConfig.optimizeDeps?.exclude ?? []);
 				// for prebundled libraries we let vite resolve the prebundling result
 				// for ssr, during scanning and non-prebundled, we do it
 				if (ssr || scan || !isPrebundled) {
 					try {
-						const resolved = resolveViaPackageJsonSvelte(importee, importer, cache);
+						const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
 						if (resolved) {
 							log.debug(
 								`resolveId resolved ${resolved} via package.json svelte field of ${importee}`
