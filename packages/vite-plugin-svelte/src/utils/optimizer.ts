@@ -43,3 +43,20 @@ function generateSvelteMetadata(options: ResolvedOptions) {
 	}
 	return metadata;
 }
+
+// vite optimizeDeps.exclude works for subpackages too
+// see https://github.com/vitejs/vite/blob/c87763c1418d1ba876eae13d139eba83ac6f28b2/packages/vite/src/node/optimizer/scan.ts#L293
+export function isOptimizeExcluded(dep: string, exclude?: string[]): boolean {
+	return !!exclude?.some((e) => dep === e || dep.startsWith(`${e}/`));
+}
+
+// include can contain `a > b`  entries, so we have to test the last segment too
+export function isOptimizeIncluded(dep: string, include?: string[]): boolean {
+	return !!include?.some((e) => {
+		if (e === dep) {
+			return true;
+		}
+		const lastArrow = e.lastIndexOf('>');
+		return lastArrow > -1 && e.slice(lastArrow + 1).trim() === dep;
+	});
+}
