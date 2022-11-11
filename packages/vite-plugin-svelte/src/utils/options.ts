@@ -27,6 +27,7 @@ import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
 import deepmerge from 'deepmerge';
 import { atLeastSvelte } from './svelte-version';
+import { isOptimizeExcluded, isOptimizeIncluded } from './optimizer';
 
 // svelte 3.53.0 changed compilerOptions.css from boolean to string | boolen, use string when available
 const cssAsString = atLeastSvelte('3.53.0');
@@ -370,7 +371,6 @@ export function buildExtraViteConfig(
 		log.debug('enabling "experimental.hmrPartialAccept" in vite config');
 		extraViteConfig.experimental = { hmrPartialAccept: true };
 	}
-
 	return extraViteConfig;
 }
 
@@ -382,15 +382,10 @@ function buildOptimizeDepsForSvelte(
 	// include svelte imports for optimization unless explicitly excluded
 	const include: string[] = [];
 	const exclude: string[] = ['svelte-hmr'];
-	const isIncluded = (dep: string) => include.includes(dep) || optimizeDeps?.include?.includes(dep);
-	const isExcluded = (dep: string) => {
-		return (
-			exclude.includes(dep) ||
-			// vite optimizeDeps.exclude works for subpackages too
-			// see https://github.com/vitejs/vite/blob/c87763c1418d1ba876eae13d139eba83ac6f28b2/packages/vite/src/node/optimizer/scan.ts#L293
-			optimizeDeps?.exclude?.some((id: string) => dep === id || id.startsWith(`${dep}/`))
-		);
-	};
+	const isIncluded = (dep: string) =>
+		isOptimizeIncluded(dep, include) || isOptimizeIncluded(dep, optimizeDeps?.include);
+	const isExcluded = (dep: string) =>
+		isOptimizeExcluded(dep, exclude) || isOptimizeExcluded(dep, optimizeDeps?.exclude);
 	if (!isExcluded('svelte')) {
 		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
 		log.debug(
