@@ -131,7 +131,8 @@ export async function preResolveOptions(
 	};
 	const defaultOptions: Partial<Options> = {
 		extensions: ['.svelte'],
-		emitCss: true
+		emitCss: true,
+		prebundleSvelteLibraries: true
 	};
 	const svelteConfig = convertPluginOptions(
 		await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions)
@@ -551,9 +552,11 @@ export interface PluginOptions {
 	disableDependencyReinclusion?: boolean | string[];
 
 	/**
-	 * Force Vite to pre-bundle Svelte libraries
+	 * Enable support for vite optimizeDeps to pre-bundle Svelte libraries
 	 *
-	 * @default false
+	 * to disable pre-bundling for a specific library, add it to optimizeDeps.exclude.
+	 *
+	 * @default true
 	 */
 	prebundleSvelteLibraries?: boolean;
 

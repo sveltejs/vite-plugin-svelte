@@ -99,4 +99,32 @@ For reference, check out [windicss](https://github.com/windicss/vite-plugin-wind
 
 ### What is going on with Vite and `Pre-bundling dependencies:`?
 
-Pre-bundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html). It is required for CJS dependencies, as Vite's development server only works with ES modules on the client side. Importantly for Svelte libraries and ESM modules, prebundling combines component libraries into a single file to speed up the initial page load. Try setting the [`prebundleSvelteLibraries`](./config.md#prebundleSvelteLibraries) option to `true` to speed things up. This will likely be enabled by default in future version of the plugin.
+Pre-bundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html).
+
+It is required for CJS dependencies, as Vite's development server only works with ES modules on the client side.
+Importantly for Svelte libraries and ESM modules, prebundling combines component libraries into a single file to speed up the initial page load.
+
+For huge libraries where you only import a few components this can lead to slower first start, as all components have to be compiled once, even if you never use them.
+It also slows down re-prebundling, which can happen when vite discovers new dependencies or you change your svelte config.
+
+In that case, add these huge libraries to optimizeDeps.exclude and use deep imports to import the components you need.
+
+e.g.
+
+```js
+// vite.config.js
+export default defineConfig({
+  optimizeDeps: {
+    exclude: ['svelte-2000-icons'] // do not pre-bundle svelte-2000-icons
+  }
+});
+```
+
+```html
+<!-- src/.../SomeSvelte.svelte -->
+<script>
+  // use deep import to avoid loading all components of svelte-2000-icons in the browser
+  import OneIcon from 'svelte-2000-icons/src/icons/OneIcon.svelte';
+</script>
+<OneIcon />
+```
