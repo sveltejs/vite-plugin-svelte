@@ -32,5 +32,6 @@ export function compareToSvelte(version: string): 1 | 0 | -1 {
 }
 
 export function atLeastSvelte(version: string) {
-	return compareToSvelte(version) >= 0;
+	const result = compareToSvelte(version) <= 0;
+	return result;
 }
