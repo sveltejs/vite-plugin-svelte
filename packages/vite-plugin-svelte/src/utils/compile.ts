@@ -5,6 +5,8 @@ import { createMakeHot } from 'svelte-hmr';
 import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
+// eslint-disable-next-line node/no-missing-import
+import type { Processed } from 'svelte/types/compiler/preprocess';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
@@ -95,7 +97,8 @@ const _createCompileSvelte = (makeHot: Function) =>
 			// @ts-ignore
 			compiled,
 			ssr,
-			dependencies
+			dependencies,
+			preprocessed
 		};
 	};
 
@@ -156,4 +159,5 @@ export interface CompileData {
 	compiled: Compiled;
 	ssr: boolean | undefined;
 	dependencies: string[];
+	preprocessed?: Processed;
 }

@@ -215,6 +215,22 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 						throw toRollupError(e, options);
 					}
 				}
+			},
+
+			generateBundle() {
+				const emitPreprocessed = options.experimental?.emitPreprocessed;
+				if (emitPreprocessed) {
+					const preprocessed = cache.getPreprocessed();
+					preprocessed.forEach((processed, filename) => {
+						const emit = emitPreprocessed(filename, processed);
+						if (emit) {
+							if (emit.fileName.startsWith('/')) {
+								emit.fileName = emit.fileName.slice(1);
+							}
+							this.emitFile({ ...emit, type: 'asset' });
+						}
+					});
+				}
 			}
 		}
 	];

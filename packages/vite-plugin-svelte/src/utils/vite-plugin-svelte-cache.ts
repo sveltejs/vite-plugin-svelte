@@ -1,5 +1,7 @@
 import { SvelteRequest } from './id';
 import { Code, CompileData } from './compile';
+// eslint-disable-next-line node/no-missing-import
+import { Processed } from 'svelte/types/compiler/preprocess';
 
 export class VitePluginSvelteCache {
 	private _css = new Map<string, Code>();
@@ -8,12 +10,14 @@ export class VitePluginSvelteCache {
 	private _dependants = new Map<string, Set<string>>();
 	private _resolvedSvelteFields = new Map<string, string>();
 	private _errors = new Map<string, any>();
+	private _preprocessed = new Map<string, Processed>();
 
 	public update(compileData: CompileData) {
 		this._errors.delete(compileData.normalizedFilename);
 		this.updateCSS(compileData);
 		this.updateJS(compileData);
 		this.updateDependencies(compileData);
+		this.updatePreprocessed(compileData);
 	}
 
 	public has(svelteRequest: SvelteRequest) {
@@ -37,6 +41,10 @@ export class VitePluginSvelteCache {
 			// do not cache SSR js
 			this._js.set(compileData.normalizedFilename, compileData.compiled.js);
 		}
+	}
+
+	private updatePreprocessed(compileData: CompileData) {
+		this._preprocessed.set(compileData.normalizedFilename, compileData.preprocessed);
 	}
 
 	private updateDependencies(compileData: CompileData) {
@@ -69,6 +77,9 @@ export class VitePluginSvelteCache {
 		if (this._css.delete(id)) {
 			removed = true;
 		}
+		if (this._preprocessed.delete(id)) {
+			removed = true;
+		}
 		if (!keepDependencies) {
 			const dependencies = this._dependencies.get(id);
 			if (dependencies) {
@@ -99,6 +110,10 @@ export class VitePluginSvelteCache {
 
 	public getError(svelteRequest: SvelteRequest) {
 		return this._errors.get(svelteRequest.normalizedFilename);
+	}
+
+	public getPreprocessed() {
+		return this._preprocessed;
 	}
 
 	public getDependants(path: string): string[] {

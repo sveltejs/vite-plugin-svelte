@@ -656,6 +656,14 @@ export interface ExperimentalOptions {
 	 *
 	 */
 	sendWarningsToBrowser?: boolean;
+
+	/**
+	 * emit preprocessed source files
+	 */
+	emitPreprocessed?: (
+		filename: string,
+		processed: Processed
+	) => { fileName: string; source: string } | undefined;
 }
 
 export interface InspectorOptions {
