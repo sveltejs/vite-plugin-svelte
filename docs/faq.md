@@ -104,6 +104,13 @@ Pre-bundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/
 It is required for CJS dependencies, as Vite's development server only works with ES modules on the client side.
 Importantly for Svelte libraries and ESM modules, prebundling combines component libraries into a single file to speed up the initial page load.
 
+For prebundled svelte libraries it is recommended that you do not use deep imports.
+
+```diff
+- import SomeComponent from 'some-library/src/SomeComponent.svelte'
++ import {SomeComponent} from 'some-library'
+```
+
 For huge libraries where you only import a few components this can lead to slower first start, as all components have to be compiled once, even if you never use them.
 It also slows down re-prebundling, which can happen when vite discovers new dependencies or you change your svelte config.
 
