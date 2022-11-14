@@ -1,13 +1,17 @@
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vite';
-
+import path from 'path';
 export default defineConfig(({ command, mode }) => {
 	return {
 		plugins: [svelte()],
 		build: {
 			// make build faster by skipping transforms and minification
 			target: 'esnext',
-			minify: false
+			minify: false,
+			lib: {
+				formats: ['es'],
+				entry: [path.resolve('src/lib/index.js')]
+			}
 		},
 		server: {
 			watch: {
