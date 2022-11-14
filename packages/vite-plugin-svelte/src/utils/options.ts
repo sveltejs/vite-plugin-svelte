@@ -426,7 +426,11 @@ async function buildExtraConfigForDependencies(options: PreResolvedOptions, conf
 					// reincludes look like this: foo > bar > baz
 					// in case foo or bar are excluded, we have to retain the reinclude even with prebundling
 					return (
-						dep.includes('>') && dep.split('>').some((d) => isDepExcluded(d.trim(), userExclude))
+						dep.includes('>') &&
+						dep
+							.split('>')
+							.slice(0, -1)
+							.some((d) => isDepExcluded(d.trim(), userExclude))
 					);
 			  });
 	}
