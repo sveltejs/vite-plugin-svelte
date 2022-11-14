@@ -286,20 +286,9 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 // some SvelteKit options need compilerOptions to work, so set them here.
 function addSvelteKitOptions(options: ResolvedOptions) {
 	// @ts-expect-error kit is not typed to avoid dependency on sveltekit
-	if (options?.kit != null) {
-		// @ts-expect-error kit is not typed to avoid dependency on sveltekit
-		const kit_browser_hydrate = options.kit.browser?.hydrate;
-		const hydratable = kit_browser_hydrate !== false;
-		if (
-			options.compilerOptions.hydratable != null &&
-			options.compilerOptions.hydratable !== hydratable
-		) {
-			log.warn(
-				`Conflicting values "compilerOptions.hydratable: ${options.compilerOptions.hydratable}" and "kit.browser.hydrate: ${kit_browser_hydrate}" in your svelte config. You should remove "compilerOptions.hydratable".`
-			);
-		}
-		log.debug(`Setting compilerOptions.hydratable: ${hydratable} for SvelteKit`);
-		options.compilerOptions.hydratable = hydratable;
+	if (options?.kit != null && options.compilerOptions.hydratable == null) {
+		log.debug(`Setting compilerOptions.hydratable = true for SvelteKit`);
+		options.compilerOptions.hydratable = true;
 	}
 }
 
