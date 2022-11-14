@@ -422,11 +422,12 @@ async function buildExtraConfigForDependencies(options: PreResolvedOptions, conf
 		const userExclude = config.optimizeDeps?.exclude;
 		depsConfig.optimizeDeps.include = !userExclude
 			? []
-			: depsConfig.optimizeDeps.include.filter((dep) => {
-					// reincludes for foo look like this: foo > bar > baz
-					// we need to keep all where the first segment is excluded by the user
-					const arrowIndex = dep.indexOf('>');
-					return arrowIndex > -1 && isDepExcluded(dep.slice(0, arrowIndex).trim(), userExclude);
+			: depsConfig.optimizeDeps.include.filter((dep: string) => {
+					// reincludes look like this: foo > bar > baz
+					// in case foo or bar are excluded, we have to retain the reinclude even with prebundling
+					return (
+						dep.includes('>') && dep.split('>').some((d) => isDepExcluded(d.trim(), userExclude))
+					);
 			  });
 	}
 	if (options.disableDependencyReinclusion === true) {
