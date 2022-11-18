@@ -398,7 +398,7 @@ async function buildExtraConfigForDependencies(options: PreResolvedOptions, conf
 			if (typeof pkgJson.exports === 'object') {
 				// use replacer as a simple way to iterate over nested keys
 				JSON.stringify(pkgJson.exports, (key, value) => {
-					if (key === 'svelte') {
+					if (SVELTE_EXPORT_CONDITIONS.includes(key)) {
 						hasSvelteCondition = true;
 					}
 					return value;
