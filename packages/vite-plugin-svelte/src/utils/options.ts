@@ -2,7 +2,12 @@
 import { ConfigEnv, ResolvedConfig, UserConfig, ViteDevServer, normalizePath } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
-import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
+import {
+	SVELTE_EXPORT_CONDITIONS,
+	SVELTE_HMR_IMPORTS,
+	SVELTE_IMPORTS,
+	SVELTE_RESOLVE_MAIN_FIELDS
+} from './constants';
 // eslint-disable-next-line node/no-missing-import
 import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
 import type {
@@ -315,7 +320,8 @@ export async function buildExtraViteConfig(
 	const extraViteConfig: Partial<UserConfig> = {
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
-			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
+			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS],
+			conditions: [...SVELTE_EXPORT_CONDITIONS]
 		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
@@ -363,6 +369,7 @@ export async function buildExtraViteConfig(
 		// Currently a placeholder as more information is needed after Vite config is resolved,
 		// the real Svelte plugin is added in `patchResolvedViteConfig()`
 		extraViteConfig.optimizeDeps.esbuildOptions = {
+			conditions: [...SVELTE_EXPORT_CONDITIONS],
 			plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
 		};
 	}
@@ -387,7 +394,17 @@ async function buildExtraConfigForDependencies(options: PreResolvedOptions, conf
 		isBuild: options.isBuild,
 		viteUserConfig: config,
 		isFrameworkPkgByJson(pkgJson) {
-			return !!pkgJson.svelte;
+			let hasSvelteCondition = false;
+			if (typeof pkgJson.exports === 'object') {
+				// use replacer as a simple way to iterate over nested keys
+				JSON.stringify(pkgJson.exports, (key, value) => {
+					if (key === 'svelte') {
+						hasSvelteCondition = true;
+					}
+					return value;
+				});
+			}
+			return hasSvelteCondition || !!pkgJson.svelte;
 		},
 		isSemiFrameworkPkgByJson(pkgJson) {
 			return !!pkgJson.dependencies?.svelte || !!pkgJson.peerDependencies?.svelte;

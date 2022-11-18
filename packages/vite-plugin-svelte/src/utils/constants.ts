@@ -18,3 +18,5 @@ export const SVELTE_HMR_IMPORTS = [
 	'svelte-hmr/runtime/proxy-adapter-dom.js',
 	'svelte-hmr'
 ];
+
+export const SVELTE_EXPORT_CONDITIONS = ['svelte'];
