@@ -15,7 +15,6 @@ import {
 	patchResolvedViteConfig,
 	preResolveOptions
 } from './utils/options';
-import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 
 import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
@@ -23,6 +22,7 @@ import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
+import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 
 interface PluginAPI {
 	/**

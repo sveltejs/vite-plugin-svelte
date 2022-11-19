@@ -66,6 +66,7 @@ export interface LogFn {
 	(message: string, payload?: any): void;
 	enabled: boolean;
 	once: (message: string, payload?: any) => void;
+	progress: (message: string, done: boolean) => void;
 }
 
 function createLogger(level: string): LogFn {
@@ -79,6 +80,17 @@ function createLogger(level: string): LogFn {
 		logged.add(message);
 		logFn.apply(null, [message, payload]);
 	};
+	const progress = function (message: string, done = false) {
+		if (logger.enabled) {
+			process.stdout.cursorTo(0);
+			process.stdout.write(
+				logger.color(`${new Date().toLocaleTimeString()} [${prefix}] ${message}`)
+			);
+			if (done) {
+				process.stdout.write('\n');
+			}
+		}
+	};
 	Object.defineProperty(logFn, 'enabled', {
 		get() {
 			return logger.enabled;
@@ -87,6 +99,11 @@ function createLogger(level: string): LogFn {
 	Object.defineProperty(logFn, 'once', {
 		get() {
 			return once;
+		}
+	});
+	Object.defineProperty(logFn, 'progress', {
+		get() {
+			return progress;
 		}
 	});
 	return logFn;

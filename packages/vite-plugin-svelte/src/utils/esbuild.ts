@@ -6,6 +6,7 @@ import { log } from './log';
 import { CompileOptions, ResolvedOptions } from './options';
 import { toESBuildError } from './error';
 import { atLeastSvelte } from './svelte-version';
+import { StatCollection } from './vite-plugin-svelte-stats';
 
 type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
 type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
@@ -23,15 +24,24 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 
 			const svelteExtensions = (options.extensions ?? ['.svelte']).map((ext) => ext.slice(1));
 			const svelteFilter = new RegExp(`\\.(` + svelteExtensions.join('|') + `)(\\?.*)?$`);
-
+			let statsCollection: StatCollection | undefined;
+			build.onStart(() => {
+				statsCollection = options.stats.startCollection('prebundle libraries', {
+					logProgress: true,
+					logResult: (stats) => stats.length > 1
+				});
+			});
 			build.onLoad({ filter: svelteFilter }, async ({ path: filename }) => {
 				const code = await fs.readFile(filename, 'utf8');
 				try {
-					const contents = await compileSvelte(options, { filename, code });
+					const contents = await compileSvelte(options, { filename, code }, statsCollection);
 					return { contents };
 				} catch (e) {
 					return { errors: [toESBuildError(e, options)] };
 				}
+			});
+			build.onEnd(async () => {
+				await statsCollection?.finish();
 			});
 		}
 	};
@@ -39,7 +49,8 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 
 async function compileSvelte(
 	options: ResolvedOptions,
-	{ filename, code }: { filename: string; code: string }
+	{ filename, code }: { filename: string; code: string },
+	statsCollection?: StatCollection
 ): Promise<string> {
 	let css = options.compilerOptions.css;
 	if (css !== 'none') {
@@ -83,8 +94,10 @@ async function compileSvelte(
 				...dynamicCompileOptions
 		  }
 		: compileOptions;
-
+	const endStat = statsCollection?.start(filename);
 	const compiled = compile(finalCode, finalCompileOptions) as Compiled;
-
+	if (endStat) {
+		endStat();
+	}
 	return compiled.js.code + '//# sourceMappingURL=' + compiled.js.map.toUrl();
 }

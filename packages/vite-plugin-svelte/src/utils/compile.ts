@@ -5,11 +5,13 @@ import { createMakeHot } from 'svelte-hmr';
 import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
+import { StatCollection } from './vite-plugin-svelte-stats';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
-const _createCompileSvelte = (makeHot: Function) =>
-	async function compileSvelte(
+const _createCompileSvelte = (makeHot: Function) => {
+	let ssrStats: StatCollection | undefined;
+	return async function compileSvelte(
 		svelteRequest: SvelteRequest,
 		code: string,
 		options: Partial<ResolvedOptions>
@@ -17,6 +19,21 @@ const _createCompileSvelte = (makeHot: Function) =>
 		const { filename, normalizedFilename, cssId, ssr } = svelteRequest;
 		const { emitCss = true } = options;
 		const dependencies = [];
+
+		if (options.stats) {
+			// we have a dev server, it's a ssr request and there are no stats, assume new page load and start collecting
+			if (options.server && ssr && !ssrStats) {
+				ssrStats = options.stats?.startCollection('ssr compile', {
+					logProgress: false,
+					logResult: () => true
+				});
+			}
+			// stats are being collected but this isn't an ssr request, assume page loaded and stop collecting
+			if (!ssr && ssrStats) {
+				await ssrStats.finish();
+				ssrStats = undefined;
+			}
+		}
 
 		const compileOptions: CompileOptions = {
 			...options.compilerOptions,
@@ -67,7 +84,11 @@ const _createCompileSvelte = (makeHot: Function) =>
 					...dynamicCompileOptions
 			  }
 			: compileOptions;
+		const endStat = ssrStats?.start(filename);
 		const compiled = compile(finalCode, finalCompileOptions);
+		if (endStat) {
+			endStat();
+		}
 		const hasCss = compiled.css?.code?.trim().length > 0;
 		// compiler might not emit css with mode none or it may be empty
 		if (emitCss && hasCss) {
@@ -99,7 +120,7 @@ const _createCompileSvelte = (makeHot: Function) =>
 			dependencies
 		};
 	};
-
+};
 function buildMakeHot(options: ResolvedOptions) {
 	const needsMakeHot = options.hot !== false && options.isServe && !options.isProduction;
 	if (needsMakeHot) {

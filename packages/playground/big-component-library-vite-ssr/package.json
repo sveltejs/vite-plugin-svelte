@@ -1,0 +1,29 @@
+{
+  "name": "big-component-library-vite-ssr",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build --ssrManifest --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.js --outDir dist/server",
+    "preview": "cross-env NODE_ENV=production node server"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.18.2",
+    "sirv": "^2.0.2"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "workspace:*",
+    "carbon-components-svelte": "^0.70.12",
+    "carbon-icons-svelte": "^11.4.0",
+    "carbon-preprocess-svelte": "^0.9.1",
+    "cross-env": "^7.0.3",
+    "lodash-es": "^4.17.21",
+    "svelte": "^3.53.1",
+    "svelte-preprocess": "^4.10.7",
+    "vite": "^3.2.3"
+  }
+}
