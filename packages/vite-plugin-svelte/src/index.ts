@@ -228,6 +228,9 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 						throw toRollupError(e, options);
 					}
 				}
+			},
+			async buildEnd() {
+				await options.stats?.finishAll();
 			}
 		}
 	];

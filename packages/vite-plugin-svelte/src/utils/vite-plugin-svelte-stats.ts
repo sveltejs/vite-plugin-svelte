@@ -6,7 +6,8 @@ import { readFileSync } from 'fs';
 interface Stat {
 	file: string;
 	pkg?: string;
-	duration?: number;
+	start: number;
+	end: number;
 }
 
 export interface StatCollection {
@@ -19,6 +20,7 @@ export interface StatCollection {
 	collectionStart: number;
 	duration?: number;
 	finish: () => Promise<void> | void;
+	finished: boolean;
 }
 
 interface PackageStats {
@@ -28,13 +30,16 @@ interface PackageStats {
 }
 
 export interface CollectionOptions {
-	logProgress: boolean;
 	//eslint-disable-next-line no-unused-vars
-	logResult: (stats: Stat[]) => boolean;
+	logInProgress: (collection: StatCollection, now: number) => boolean;
+	//eslint-disable-next-line no-unused-vars
+	logResult: (collection: StatCollection) => boolean;
 }
 
 const defaultCollectionOptions: CollectionOptions = {
-	logProgress: true,
+	// log after 500ms and more than one file processed
+	logInProgress: (c, now) => now - c.collectionStart > 500 && c.stats.length > 1,
+	// always log results
 	logResult: () => true
 };
 
@@ -43,19 +48,13 @@ function humanDuration(n: number) {
 	return n < 100 ? `${n.toFixed(1)}ms` : `${(n / 1000).toFixed(2)}s`;
 }
 
-function formatProgress(name: string, count: number, duration: number, done = false) {
-	return `${name} files:${`${count}`.padStart(5, ' ')} duration:${`${humanDuration(
-		duration
-	)}`.padStart(7, ' ')}${done ? ' - done' : ''}`;
-}
-
 function formatPackageStats(pkgStats: PackageStats[]) {
 	const statLines = pkgStats.map((pkgStat) => {
 		const duration = pkgStat.duration;
 		const avg = duration / pkgStat.files;
 		return [pkgStat.pkg, `${pkgStat.files}`, humanDuration(duration), humanDuration(avg)];
 	});
-	statLines.unshift(['package', 'files', 'duration', 'avg']);
+	statLines.unshift(['package', 'files', 'time', 'avg']);
 	const columnWidths = statLines.reduce(
 		(widths: number[], row) => {
 			for (let i = 0; i < row.length; i++) {
@@ -88,56 +87,70 @@ function formatPackageStats(pkgStats: PackageStats[]) {
 export class VitePluginSvelteStats {
 	// package directory -> package name
 	private _packages: { path: string; name: string }[] = [];
-	startCollection(name: string, options: CollectionOptions = defaultCollectionOptions) {
+	private _collections: StatCollection[] = [];
+	startCollection(name: string, opts?: Partial<CollectionOptions>) {
+		const options = {
+			...defaultCollectionOptions,
+			...opts
+		};
 		const stats: Stat[] = [];
 		const collectionStart = performance.now();
-		let lastProgressLog = 0;
-		const parent = this;
+		const _this = this;
+		let hasLoggedProgress = false;
 		const collection: StatCollection = {
 			name,
 			options,
 			stats,
 			collectionStart,
+			finished: false,
 			start(file) {
-				const stat: Stat = { file };
+				if (collection.finished) {
+					throw new Error('called after finish() has been used');
+				}
 				const start = performance.now();
+				const stat: Stat = { file, start, end: start };
 				return () => {
 					const now = performance.now();
-					stat.duration = now - start;
+					stat.end = now;
 					stats.push(stat);
-					if (
-						options.logProgress &&
-						now - (lastProgressLog || collectionStart) > (lastProgressLog ? 200 : 2000)
-					) {
-						lastProgressLog = now;
-						log.info.progress(formatProgress(name, stats.length, now - collectionStart), false);
+					if (!hasLoggedProgress && options.logInProgress(collection, now)) {
+						hasLoggedProgress = true;
+						log.info(`${name} in progress ...`);
 					}
 				};
 			},
 			async finish() {
-				const now = performance.now();
-				collection.duration = now - collectionStart;
-				if (options.logProgress && lastProgressLog) {
-					log.info.progress(formatProgress(name, stats.length, now - collectionStart, true), true);
-				}
-				if (options.logResult(collection.stats)) {
-					await parent._aggregateStatsResult(collection);
-					if (!lastProgressLog) {
-						log.info(formatProgress(name, stats.length, now - collectionStart, true));
-					}
-					log.info(`${collection.name} details:`, formatPackageStats(collection.packageStats!));
-				}
-				//cut some ties to free it for garbage collection
-				stats.length = 0;
-				collection.stats = [];
-				if (collection.packageStats) {
-					collection.packageStats.length = 0;
-				}
-				collection.start = () => () => {};
-				collection.finish = () => {};
+				await _this._finish(collection);
 			}
 		};
+		_this._collections.push(collection);
 		return collection;
+	}
+
+	public async finishAll() {
+		await Promise.all(this._collections.map((c) => c.finish()));
+	}
+
+	private async _finish(collection: StatCollection) {
+		collection.finished = true;
+		const now = performance.now();
+		collection.duration = now - collection.collectionStart;
+		const logResult = collection.options.logResult(collection);
+		if (logResult) {
+			await this._aggregateStatsResult(collection);
+			log.info(`${collection.name} done.`, formatPackageStats(collection.packageStats!));
+		}
+		//cut some ties to free it for garbage collection
+		const index = this._collections.indexOf(collection);
+		this._collections.splice(index, 1);
+		collection.stats.length = 0;
+		collection.stats = [];
+		if (collection.packageStats) {
+			collection.packageStats.length = 0;
+			collection.packageStats = [];
+		}
+		collection.start = () => () => {};
+		collection.finish = () => {};
 	}
 
 	private async _aggregateStatsResult(collection: StatCollection) {
@@ -184,10 +197,8 @@ export class VitePluginSvelteStats {
 					pkg
 				};
 			}
-			if (stat.duration != null) {
-				group.files += 1;
-				group.duration += stat.duration;
-			}
+			group.files += 1;
+			group.duration += stat.end - stat.start;
 		});
 
 		const groups = Object.values(grouped);

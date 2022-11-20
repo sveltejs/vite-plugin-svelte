@@ -10,7 +10,7 @@ import { StatCollection } from './vite-plugin-svelte-stats';
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
 const _createCompileSvelte = (makeHot: Function) => {
-	let ssrStats: StatCollection | undefined;
+	let stats: StatCollection | undefined;
 	return async function compileSvelte(
 		svelteRequest: SvelteRequest,
 		code: string,
@@ -21,17 +21,27 @@ const _createCompileSvelte = (makeHot: Function) => {
 		const dependencies = [];
 
 		if (options.stats) {
-			// we have a dev server, it's a ssr request and there are no stats, assume new page load and start collecting
-			if (options.server && ssr && !ssrStats) {
-				ssrStats = options.stats?.startCollection('ssr compile', {
-					logProgress: false,
-					logResult: () => true
-				});
-			}
-			// stats are being collected but this isn't an ssr request, assume page loaded and stop collecting
-			if (!ssr && ssrStats) {
-				await ssrStats.finish();
-				ssrStats = undefined;
+			if (options.isBuild) {
+				if (!stats) {
+					// build is either completely ssr or csr, create stats collector on first compile
+					// it is then finished in the buildEnd hook.
+					stats = options.stats.startCollection(`${ssr ? 'ssr' : 'dom'} compile`, {
+						logInProgress: () => false
+					});
+				}
+			} else {
+				// dev time ssr, it's a ssr request and there are no stats, assume new page load and start collecting
+				if (ssr && !stats) {
+					stats = options.stats.startCollection('ssr compile');
+				}
+				// stats are being collected but this isn't an ssr request, assume page loaded and stop collecting
+				if (!ssr && stats) {
+					stats.finish();
+					stats = undefined;
+				}
+				// TODO find a way to trace dom compile during dev
+				// problem: we need to call finish at some point but have no way to tell if page load finished
+				// also they for hmr updates too
 			}
 		}
 
@@ -84,11 +94,13 @@ const _createCompileSvelte = (makeHot: Function) => {
 					...dynamicCompileOptions
 			  }
 			: compileOptions;
-		const endStat = ssrStats?.start(filename);
+
+		const endStat = stats?.start(filename);
 		const compiled = compile(finalCode, finalCompileOptions);
 		if (endStat) {
 			endStat();
 		}
+
 		const hasCss = compiled.css?.code?.trim().length > 0;
 		// compiler might not emit css with mode none or it may be empty
 		if (emitCss && hasCss) {

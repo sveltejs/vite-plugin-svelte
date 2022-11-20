@@ -26,9 +26,8 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 			const svelteFilter = new RegExp(`\\.(` + svelteExtensions.join('|') + `)(\\?.*)?$`);
 			let statsCollection: StatCollection | undefined;
 			build.onStart(() => {
-				statsCollection = options.stats.startCollection('prebundle libraries', {
-					logProgress: true,
-					logResult: (stats) => stats.length > 1
+				statsCollection = options.stats?.startCollection('prebundle libraries', {
+					logResult: (c) => c.stats.length > 1
 				});
 			});
 			build.onLoad({ filter: svelteFilter }, async ({ path: filename }) => {
@@ -40,8 +39,8 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 					return { errors: [toESBuildError(e, options)] };
 				}
 			});
-			build.onEnd(async () => {
-				await statsCollection?.finish();
+			build.onEnd(() => {
+				statsCollection?.finish();
 			});
 		}
 	};

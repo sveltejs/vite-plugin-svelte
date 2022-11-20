@@ -205,7 +205,10 @@ export function resolveOptions(
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
 	// add after merge, would mangle class functions otherwise
-	merged.stats = new VitePluginSvelteStats();
+	// only add if loglevel is info
+	if ([undefined, 'info'].includes(viteConfig.logLevel)) {
+		merged.stats = new VitePluginSvelteStats();
+	}
 
 	return merged;
 }
@@ -745,7 +748,7 @@ export interface PreResolvedOptions extends Options {
 export interface ResolvedOptions extends PreResolvedOptions {
 	isProduction: boolean;
 	server?: ViteDevServer;
-	stats: VitePluginSvelteStats;
+	stats?: VitePluginSvelteStats;
 }
 
 export type {
