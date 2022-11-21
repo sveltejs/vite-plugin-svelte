@@ -2,6 +2,7 @@ import { log } from './log';
 //eslint-disable-next-line node/no-missing-import
 import { findClosestPkgJsonPath } from 'vitefu';
 import { readFileSync } from 'fs';
+import { performance } from 'perf_hooks';
 
 interface Stat {
 	file: string;
