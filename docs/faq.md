@@ -164,9 +164,11 @@ export default {
 };
 ```
 
-#### so what should i do?
+#### recommendations
 
-There is no golden rule, but follow these recommendations:
+There is no golden rule, but you can follow these recommendations:
 
-1. **never** combine auto-import or optimizeImports with prebundling
-2. check the compile stats during dev to help deciding which import style works best for your app
+1. **Never** combine auto-import or optimizeImports with prebundling
+2. Start with index imports and if your dev-server or build process feels slow, check compile stats to see if switching to deep imports can improve the experience.
+3. Do not mix deep and index imports for the same library, use one style consistently.
+4. Use different import styles for different libraries where it helps. E.g. deep imports for the few icons of that one huge icon library, but index import for the component library that is heavily used.
