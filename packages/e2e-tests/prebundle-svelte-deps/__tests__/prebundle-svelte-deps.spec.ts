@@ -11,7 +11,11 @@ test('should render Hybrid import', async () => {
 });
 
 test('should render Simple import', async () => {
-	expect(await getText('#hybrid .label')).toBe('dependency-import');
+	expect(await getText('#simple .label')).toBe('dependency-import');
+});
+
+test('should render Exports Simple import', async () => {
+	expect(await getText('#exports-simple .label')).toBe('dependency-import');
 });
 
 test('should render Nested import', async () => {
@@ -29,6 +33,7 @@ if (!isBuild) {
 		const metadata = JSON.parse(metadataFile);
 		const optimizedPaths = Object.keys(metadata.optimized);
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-simple');
+		expect(optimizedPaths).toContain('e2e-test-dep-svelte-exports-simple');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-api-only');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-nested');
 	});
