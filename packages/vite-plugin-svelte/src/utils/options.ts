@@ -40,6 +40,7 @@ const allowedPluginOptions = new Set([
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
 	'prebundleSvelteLibraries',
+	'disableCompileStats',
 	'experimental'
 ]);
 
@@ -204,12 +205,14 @@ export function resolveOptions(
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
-	// add after merge, would mangle class functions otherwise
-	// only add if loglevel is info
-	if ([undefined, 'info'].includes(viteConfig.logLevel)) {
+	// mergeConfigs would mangle functions on the stats class, so do this afterwards
+	const isLogLevelInfo = [undefined, 'info'].includes(viteConfig.logLevel);
+	const statsDisabledInConfig =
+		merged.disableCompileStats !== true &&
+		merged.disableCompileStats !== (merged.isBuild ? 'build' : 'dev');
+	if (!statsDisabledInConfig && isLogLevelInfo) {
 		merged.stats = new VitePluginSvelteStats();
 	}
-
 	return merged;
 }
 
@@ -563,6 +566,13 @@ export interface PluginOptions {
 	 * @default false
 	 */
 	prebundleSvelteLibraries?: boolean;
+
+	/**
+	 * disable svelte compile statistics
+	 *
+	 * @default false
+	 */
+	disableCompileStats?: 'dev' | 'build' | boolean;
 
 	/**
 	 * These options are considered experimental and breaking changes to them can occur in any release
