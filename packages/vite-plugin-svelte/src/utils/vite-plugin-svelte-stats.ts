@@ -141,7 +141,7 @@ export class VitePluginSvelteStats {
 			await this._aggregateStatsResult(collection);
 			log.info(`${collection.name} done.`, formatPackageStats(collection.packageStats!));
 		}
-		//cut some ties to free it for garbage collection
+		// cut some ties to free it for garbage collection
 		const index = this._collections.indexOf(collection);
 		this._collections.splice(index, 1);
 		collection.stats.length = 0;
