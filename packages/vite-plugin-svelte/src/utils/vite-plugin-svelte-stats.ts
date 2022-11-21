@@ -156,35 +156,31 @@ export class VitePluginSvelteStats {
 
 	private async _aggregateStatsResult(collection: StatCollection) {
 		const stats = collection.stats;
-		// find package for all files in stats
-		await Promise.all(
-			stats.map(async (stat) => {
-				let pkg = this._packages.find((p) => stat.file.startsWith(p.path));
-				if (!pkg) {
-					// check for package.json first
-					let pkgPath = await findClosestPkgJsonPath(stat.file);
-					if (pkgPath) {
-						let path = pkgPath?.replace(/package.json$/, '');
-						let name = JSON.parse(readFileSync(pkgPath, 'utf-8')).name;
-						if (!name) {
-							// some packages have nameless nested package.json
-							pkgPath = await findClosestPkgJsonPath(path);
-							if (pkgPath) {
-								path = pkgPath?.replace(/package.json$/, '');
-								name = JSON.parse(readFileSync(pkgPath, 'utf-8')).name;
-							}
-						}
-						if (path && name) {
-							pkg = { path, name };
-							this._packages.push(pkg);
+		for (const stat of stats) {
+			const pkg = this._packages.find((p) => stat.file.startsWith(p.path));
+			if (!pkg) {
+				// check for package.json first
+				let pkgPath = await findClosestPkgJsonPath(stat.file);
+				if (pkgPath) {
+					let path = pkgPath?.replace(/package.json$/, '');
+					let name = JSON.parse(readFileSync(pkgPath, 'utf-8')).name;
+					if (!name) {
+						// some packages have nameless nested package.json
+						pkgPath = await findClosestPkgJsonPath(path);
+						if (pkgPath) {
+							path = pkgPath?.replace(/package.json$/, '');
+							name = JSON.parse(readFileSync(pkgPath, 'utf-8')).name;
 						}
 					}
+					if (path && name) {
+						this._packages.push({ path, name });
+					}
 				}
-				// TODO is it possible that we want to track files where there is no named packge.json as parent?
-				// what do we want to do for that, try to find common root paths for different stats?
-				stat.pkg = pkg?.name ?? '$unknown';
-			})
-		);
+			}
+			// TODO is it possible that we want to track files where there is no named packge.json as parent?
+			// what do we want to do for that, try to find common root paths for different stats?
+			stat.pkg = pkg?.name ?? '$unknown';
+		}
 
 		// group stats
 		const grouped: { [key: string]: PackageStats } = {};
