@@ -1,5 +1,21 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.2.0
+
+### Minor Changes
+
+- support string values of compilerOptions.css added in svelte 3.53.0 ([#490](https://github.com/sveltejs/vite-plugin-svelte/pull/490))
+
+### Patch Changes
+
+- simplify init of compilerOptions.hydratable for kit (kit.browser.hydrate is no longer in use) ([#496](https://github.com/sveltejs/vite-plugin-svelte/pull/496))
+
+- when prebundleSvelteLibraries is true and a dependency is manually excluded, generate reincludes for it's cjs deps ([#493](https://github.com/sveltejs/vite-plugin-svelte/pull/493))
+
+- Refactor Svelte libraries config handling ([#478](https://github.com/sveltejs/vite-plugin-svelte/pull/478))
+
+- fix(prebundleSvelteLibraries): avoid resolving via svelte field after a library has been prebundled ([#482](https://github.com/sveltejs/vite-plugin-svelte/pull/482))
+
 ## 1.1.1
 
 ### Patch Changes

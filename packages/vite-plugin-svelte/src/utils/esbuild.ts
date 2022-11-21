@@ -43,7 +43,7 @@ async function compileSvelte(
 ): Promise<string> {
 	let css = options.compilerOptions.css;
 	if (css !== 'none') {
-		css = isCssString ? 'inject' : true;
+		css = isCssString ? 'injected' : true;
 	}
 	const compileOptions: CompileOptions = {
 		...options.compilerOptions,

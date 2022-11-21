@@ -2,7 +2,12 @@
 import { ConfigEnv, ResolvedConfig, UserConfig, ViteDevServer, normalizePath } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
-import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
+import {
+	SVELTE_EXPORT_CONDITIONS,
+	SVELTE_HMR_IMPORTS,
+	SVELTE_IMPORTS,
+	SVELTE_RESOLVE_MAIN_FIELDS
+} from './constants';
 // eslint-disable-next-line node/no-missing-import
 import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
 import type {
@@ -287,20 +292,9 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 // some SvelteKit options need compilerOptions to work, so set them here.
 function addSvelteKitOptions(options: ResolvedOptions) {
 	// @ts-expect-error kit is not typed to avoid dependency on sveltekit
-	if (options?.kit != null) {
-		// @ts-expect-error kit is not typed to avoid dependency on sveltekit
-		const kit_browser_hydrate = options.kit.browser?.hydrate;
-		const hydratable = kit_browser_hydrate !== false;
-		if (
-			options.compilerOptions.hydratable != null &&
-			options.compilerOptions.hydratable !== hydratable
-		) {
-			log.warn(
-				`Conflicting values "compilerOptions.hydratable: ${options.compilerOptions.hydratable}" and "kit.browser.hydrate: ${kit_browser_hydrate}" in your svelte config. You should remove "compilerOptions.hydratable".`
-			);
-		}
-		log.debug(`Setting compilerOptions.hydratable: ${hydratable} for SvelteKit`);
-		options.compilerOptions.hydratable = hydratable;
+	if (options?.kit != null && options.compilerOptions.hydratable == null) {
+		log.debug(`Setting compilerOptions.hydratable = true for SvelteKit`);
+		options.compilerOptions.hydratable = true;
 	}
 }
 
@@ -327,7 +321,8 @@ export async function buildExtraViteConfig(
 	const extraViteConfig: Partial<UserConfig> = {
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
-			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
+			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS],
+			conditions: [...SVELTE_EXPORT_CONDITIONS]
 		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
@@ -335,33 +330,36 @@ export async function buildExtraViteConfig(
 		// knownJsSrcExtensions: options.extensions
 	};
 
-	const optimizeDepsConfig = buildOptimizeDepsForSvelte(config);
-	const ssrConfig = buildSSROptionsForSvelte(config);
-	const crawlConfig = await getCrawlPkgsConfig(options, config);
-
+	const extraSvelteConfig = buildExtraConfigForSvelte(config);
+	const extraDepsConfig = await buildExtraConfigForDependencies(options, config);
+	// merge extra svelte and deps config, but make sure dep values are not contradicting svelte
 	extraViteConfig.optimizeDeps = {
 		include: [
-			...optimizeDepsConfig.include,
-			...crawlConfig.optimizeDeps.include.filter(
-				(dep) => !isDepExcluded(dep, optimizeDepsConfig.exclude)
+			...extraSvelteConfig.optimizeDeps.include,
+			...extraDepsConfig.optimizeDeps.include.filter(
+				(dep) => !isDepExcluded(dep, extraSvelteConfig.optimizeDeps.exclude)
 			)
 		],
 		exclude: [
-			...optimizeDepsConfig.exclude,
-			...crawlConfig.optimizeDeps.exclude.filter(
-				(dep) => !isDepIncluded(dep, optimizeDepsConfig.include)
+			...extraSvelteConfig.optimizeDeps.exclude,
+			...extraDepsConfig.optimizeDeps.exclude.filter(
+				(dep) => !isDepIncluded(dep, extraSvelteConfig.optimizeDeps.include)
 			)
 		]
 	};
 
 	extraViteConfig.ssr = {
-		noExternal: [
-			...ssrConfig.noExternal,
-			...crawlConfig.ssr.noExternal.filter((dep) => !isDepExternaled(dep, ssrConfig.external))
-		],
 		external: [
-			...ssrConfig.external,
-			...crawlConfig.ssr.external.filter((dep) => !isDepNoExternaled(dep, ssrConfig.noExternal))
+			...extraSvelteConfig.ssr.external,
+			...extraDepsConfig.ssr.external.filter(
+				(dep) => !isDepNoExternaled(dep, extraSvelteConfig.ssr.noExternal)
+			)
+		],
+		noExternal: [
+			...extraSvelteConfig.ssr.noExternal,
+			...extraDepsConfig.ssr.noExternal.filter(
+				(dep) => !isDepExternaled(dep, extraSvelteConfig.ssr.external)
+			)
 		]
 	};
 
@@ -400,14 +398,24 @@ export async function buildExtraViteConfig(
 	return extraViteConfig;
 }
 
-async function getCrawlPkgsConfig(options: PreResolvedOptions, config: UserConfig) {
+async function buildExtraConfigForDependencies(options: PreResolvedOptions, config: UserConfig) {
 	// extra handling for svelte dependencies in the project
 	const depsConfig = await crawlFrameworkPkgs({
 		root: options.root,
 		isBuild: options.isBuild,
 		viteUserConfig: config,
 		isFrameworkPkgByJson(pkgJson) {
-			return !!pkgJson.svelte;
+			let hasSvelteCondition = false;
+			if (typeof pkgJson.exports === 'object') {
+				// use replacer as a simple way to iterate over nested keys
+				JSON.stringify(pkgJson.exports, (key, value) => {
+					if (SVELTE_EXPORT_CONDITIONS.includes(key)) {
+						hasSvelteCondition = true;
+					}
+					return value;
+				});
+			}
+			return hasSvelteCondition || !!pkgJson.svelte;
 		},
 		isSemiFrameworkPkgByJson(pkgJson) {
 			return !!pkgJson.dependencies?.svelte || !!pkgJson.peerDependencies?.svelte;
@@ -422,11 +430,28 @@ async function getCrawlPkgsConfig(options: PreResolvedOptions, config: UserConfi
 		}
 	});
 
-	log.debug('crawl svelte packages result', depsConfig);
+	log.debug('extra config for dependencies generated by vitefu', depsConfig);
 
 	if (options.prebundleSvelteLibraries) {
-		depsConfig.optimizeDeps = { include: [], exclude: [] };
-	} else if (options.disableDependencyReinclusion === true) {
+		// prebundling enabled, so we don't need extra dependency excludes
+		depsConfig.optimizeDeps.exclude = [];
+		// but keep dependency reinclusions of explicit user excludes
+		const userExclude = config.optimizeDeps?.exclude;
+		depsConfig.optimizeDeps.include = !userExclude
+			? []
+			: depsConfig.optimizeDeps.include.filter((dep: string) => {
+					// reincludes look like this: foo > bar > baz
+					// in case foo or bar are excluded, we have to retain the reinclude even with prebundling
+					return (
+						dep.includes('>') &&
+						dep
+							.split('>')
+							.slice(0, -1)
+							.some((d) => isDepExcluded(d.trim(), userExclude))
+					);
+			  });
+	}
+	if (options.disableDependencyReinclusion === true) {
 		depsConfig.optimizeDeps.include = depsConfig.optimizeDeps.include.filter(
 			(dep) => !dep.includes('>')
 		);
@@ -439,12 +464,12 @@ async function getCrawlPkgsConfig(options: PreResolvedOptions, config: UserConfi
 		});
 	}
 
-	log.debug('processed crawl svelte packages result', depsConfig);
+	log.debug('post-processed extra config for dependencies', depsConfig);
 
 	return depsConfig;
 }
 
-function buildOptimizeDepsForSvelte(config: UserConfig) {
+function buildExtraConfigForSvelte(config: UserConfig) {
 	// include svelte imports for optimization unless explicitly excluded
 	const include: string[] = [];
 	const exclude: string[] = ['svelte-hmr'];
@@ -457,10 +482,6 @@ function buildOptimizeDepsForSvelte(config: UserConfig) {
 	} else {
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
-	return { include, exclude };
-}
-
-function buildSSROptionsForSvelte(config: UserConfig) {
 	const noExternal: (string | RegExp)[] = [];
 	const external: string[] = [];
 	// add svelte to ssr.noExternal unless it is present in ssr.external
@@ -468,7 +489,7 @@ function buildSSROptionsForSvelte(config: UserConfig) {
 	if (!isDepExternaled('svelte', config.ssr?.external ?? [])) {
 		noExternal.push('svelte', /^svelte\//);
 	}
-	return { noExternal, external };
+	return { optimizeDeps: { include, exclude }, ssr: { noExternal, external } };
 }
 
 export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: ResolvedOptions) {

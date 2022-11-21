@@ -61,42 +61,42 @@ describe('svelte-version', () => {
 			expect(atLeastSvelte(VERSION)).toBe(true);
 		});
 
-		it('should return true for patch bump', async () => {
+		it('should return false for higher patch', async () => {
 			const patch = svelteVersion.concat();
 			patch[2] += 1;
 			const patchBump = patch.join('.');
-			expect(atLeastSvelte(patchBump)).toBe(true);
+			expect(atLeastSvelte(patchBump)).toBe(false);
 		});
-		it('should return true for minor bump', async () => {
+		it('should return false for higher minor', async () => {
 			const minor = svelteVersion.concat();
 			minor[1] += 1;
 			const minorBump = minor.join('.');
-			expect(atLeastSvelte(minorBump)).toBe(true);
+			expect(atLeastSvelte(minorBump)).toBe(false);
 		});
-		it('should return true for major bump', async () => {
+		it('should return false for higher major', async () => {
 			const major = svelteVersion.concat();
 			major[0] += 1;
 			const majorBump = major.join('.');
-			expect(atLeastSvelte(majorBump)).toBe(true);
+			expect(atLeastSvelte(majorBump)).toBe(false);
 		});
 
-		it('should return false for lower patch', async () => {
+		it('should return true for lower patch', async () => {
 			const patch = svelteVersion.concat();
 			patch[2] -= 1;
 			const lowerPatch = patch.join('.');
-			expect(atLeastSvelte(lowerPatch)).toBe(false);
+			expect(atLeastSvelte(lowerPatch)).toBe(true);
 		});
-		it('should return false for lower minor', async () => {
+		it('should return true for lower minor', async () => {
 			const minor = svelteVersion.concat();
 			minor[1] -= 1;
 			const lowerMinor = minor.join('.');
-			expect(atLeastSvelte(lowerMinor)).toBe(false);
+			expect(atLeastSvelte(lowerMinor)).toBe(true);
 		});
-		it('should return false for lower major', async () => {
+		it('should return true for lower major', async () => {
 			const major = svelteVersion.concat();
 			major[0] -= 1;
 			const lowerMajor = major.join('.');
-			expect(atLeastSvelte(lowerMajor)).toBe(false);
+			expect(atLeastSvelte(lowerMajor)).toBe(true);
 		});
 	});
 });

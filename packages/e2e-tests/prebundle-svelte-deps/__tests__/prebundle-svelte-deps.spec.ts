@@ -12,10 +12,11 @@ async function expectPageToWork() {
 		expect(msg).not.toMatch('404');
 	});
 	expect(await getText('#hybrid .label')).toBe('dependency-import');
-	expect(await getText('#hybrid .label')).toBe('dependency-import');
 	expect(await getText('#nested #message')).toBe('nested');
 	expect(await getText('#nested #cjs-and-esm')).toBe('esm');
 	expect(await getText('#api-only')).toBe('api loaded: true');
+	expect(await getText('#simple .label')).toBe('dependency-import');
+	expect(await getText('#exports-simple .label')).toBe('dependency-import');
 }
 
 if (!isBuild) {
@@ -27,8 +28,9 @@ if (!isBuild) {
 		const metadata = JSON.parse(metadataFile);
 		const optimizedPaths = Object.keys(metadata.optimized);
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-simple');
-		expect(optimizedPaths).toContain('e2e-test-dep-svelte-hybrid');
+		expect(optimizedPaths).toContain('e2e-test-dep-svelte-exports-simple');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-api-only');
+		expect(optimizedPaths).toContain('e2e-test-dep-svelte-nested');
 	});
 
 	test('should not optimize excluded svelte dependencies', () => {
@@ -36,6 +38,8 @@ if (!isBuild) {
 		const metadata = JSON.parse(metadataFile);
 		const optimizedPaths = Object.keys(metadata.optimized);
 		expect(optimizedPaths).not.toContain('e2e-test-dep-scss-only');
+		expect(optimizedPaths).not.toContain('e2e-test-dep-svelte-hybrid');
+		expect(optimizedPaths).toContain('e2e-test-dep-svelte-hybrid > e2e-test-dep-cjs-only');
 	});
 
 	test('page works with pre-bundling disabled', async () => {
