@@ -206,9 +206,9 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 - **Type:** `boolean`
 - **Default:** `true`
 
-  Enable support for Vite optimizeDeps to pre-bundle Svelte libraries.
+  Enable [Vite's dependency prebundling](https://vitejs.dev/guide/dep-pre-bundling.html) for Svelte libraries.
 
-  This option improves page loading for the dev server in most applications when using svelte component libraries.
+  This option improves page loading for the dev server in most applications when using Svelte component libraries.
 
   See the [FAQ](./faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies) for details and how to fine-tune it for huge libraries.
 
