@@ -208,13 +208,6 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
   Force Vite to pre-bundle Svelte libraries. Setting this `true` should improve initial page load performance, especially when using large Svelte libraries. See the [FAQ](./faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies) for details of the pre-bundling implementation.
 
-### disableCompileStats
-
-- **Type** `boolean | 'dev' | 'build'`
-- **Default:** `false`
-
-  disable svelte compile statistics
-
 ## Experimental options
 
 These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.
@@ -420,3 +413,10 @@ export default {
     rawWarnings: Warning[]; // raw compiler output
   };
   ```
+
+### disableCompileStats
+
+- **Type** `boolean | 'dev' | 'build'`
+- **Default:** `false`
+
+  disable svelte compile statistics.

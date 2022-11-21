@@ -207,10 +207,10 @@ export function resolveOptions(
 	enforceOptionsForProduction(merged);
 	// mergeConfigs would mangle functions on the stats class, so do this afterwards
 	const isLogLevelInfo = [undefined, 'info'].includes(viteConfig.logLevel);
-	const statsDisabledInConfig =
-		merged.disableCompileStats !== true &&
-		merged.disableCompileStats !== (merged.isBuild ? 'build' : 'dev');
-	if (!statsDisabledInConfig && isLogLevelInfo) {
+	const disableCompileStats = merged.experimental?.disableCompileStats;
+	const statsEnabled =
+		disableCompileStats !== true && disableCompileStats !== (merged.isBuild ? 'build' : 'dev');
+	if (statsEnabled && isLogLevelInfo) {
 		merged.stats = new VitePluginSvelteStats();
 	}
 	return merged;
@@ -568,13 +568,6 @@ export interface PluginOptions {
 	prebundleSvelteLibraries?: boolean;
 
 	/**
-	 * disable svelte compile statistics
-	 *
-	 * @default false
-	 */
-	disableCompileStats?: 'dev' | 'build' | boolean;
-
-	/**
 	 * These options are considered experimental and breaking changes to them can occur in any release
 	 */
 	experimental?: ExperimentalOptions;
@@ -672,6 +665,13 @@ export interface ExperimentalOptions {
 	 *
 	 */
 	sendWarningsToBrowser?: boolean;
+
+	/**
+	 * disable svelte compile statistics
+	 *
+	 * @default false
+	 */
+	disableCompileStats?: 'dev' | 'build' | boolean;
 }
 
 export interface InspectorOptions {
