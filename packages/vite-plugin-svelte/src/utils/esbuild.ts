@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { readFileSync } from 'fs';
 import { compile, preprocess } from 'svelte/compiler';
 import { DepOptimizationOptions } from 'vite';
 import { Compiled } from './compile';
@@ -31,7 +31,7 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 				});
 			});
 			build.onLoad({ filter: svelteFilter }, async ({ path: filename }) => {
-				const code = await fs.readFile(filename, 'utf8');
+				const code = readFileSync(filename, 'utf8');
 				try {
 					const contents = await compileSvelte(options, { filename, code }, statsCollection);
 					return { contents };
