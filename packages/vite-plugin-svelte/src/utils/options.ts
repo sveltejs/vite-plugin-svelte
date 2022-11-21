@@ -369,6 +369,8 @@ export async function buildExtraViteConfig(
 	if (options.prebundleSvelteLibraries) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
+			// only prebundle for dev, build isn't working with vite-plugin-svelte
+			disabled: 'build',
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
 			// @ts-ignore
 			extensions: options.extensions ?? ['.svelte'],
@@ -378,6 +380,10 @@ export async function buildExtraViteConfig(
 			esbuildOptions: {
 				plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
 			}
+		};
+		extraViteConfig.ssr.optimizeDeps = {
+			// do not prebundle for ssr, not working with vite-plugin-svelte
+			disabled: true
 		};
 	}
 
