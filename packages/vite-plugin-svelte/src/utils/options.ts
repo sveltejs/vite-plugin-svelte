@@ -45,7 +45,6 @@ const allowedPluginOptions = new Set([
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
 	'prebundleSvelteLibraries',
-	'disableCompileStats',
 	'experimental'
 ]);
 
