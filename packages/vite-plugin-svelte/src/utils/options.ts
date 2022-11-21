@@ -369,7 +369,6 @@ export async function buildExtraViteConfig(
 		// Currently a placeholder as more information is needed after Vite config is resolved,
 		// the real Svelte plugin is added in `patchResolvedViteConfig()`
 		extraViteConfig.optimizeDeps.esbuildOptions = {
-			conditions: [...SVELTE_EXPORT_CONDITIONS],
 			plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
 		};
 	}
