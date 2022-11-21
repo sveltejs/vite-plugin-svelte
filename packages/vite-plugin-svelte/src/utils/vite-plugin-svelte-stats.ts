@@ -157,7 +157,7 @@ export class VitePluginSvelteStats {
 	private async _aggregateStatsResult(collection: StatCollection) {
 		const stats = collection.stats;
 		for (const stat of stats) {
-			const pkg = this._packages.find((p) => stat.file.startsWith(p.path));
+			let pkg = this._packages.find((p) => stat.file.startsWith(p.path));
 			if (!pkg) {
 				// check for package.json first
 				let pkgPath = await findClosestPkgJsonPath(stat.file);
@@ -173,7 +173,8 @@ export class VitePluginSvelteStats {
 						}
 					}
 					if (path && name) {
-						this._packages.push({ path, name });
+						pkg = { path, name };
+						this._packages.push(pkg);
 					}
 				}
 			}
