@@ -33,7 +33,7 @@ importers:
       prettier: ^2.7.1
       prettier-plugin-svelte: ^2.8.0
       rimraf: ^3.0.2
-      svelte: 3.53.1
+      svelte: ^3.53.1
       typescript: ^4.8.4
       vite: ^3.2.3
       vitest: ^0.25.2
@@ -96,9 +96,15 @@ importers:
 
   packages/e2e-tests/_test_dependencies/svelte-api-only:
     specifiers:
-      svelte: 3.53.1
+      svelte: ^3.53.1
     dependencies:
       svelte: 3.53.1
+
+  packages/e2e-tests/_test_dependencies/svelte-exports-simple:
+    specifiers:
+      e2e-test-dep-cjs-only: file:../cjs-only
+    dependencies:
+      e2e-test-dep-cjs-only: file:packages/e2e-tests/_test_dependencies/cjs-only
 
   packages/e2e-tests/_test_dependencies/svelte-hybrid:
     specifiers:
@@ -137,7 +143,7 @@ importers:
       e2e-test-dep-svelte-simple: file:../_test_dependencies/svelte-simple
       postcss: ^8.4.19
       postcss-load-config: ^4.0.1
-      svelte: 3.53.1
+      svelte: ^3.53.1
       svelte-preprocess: ^4.10.7
       vite: ^3.2.3
     dependencies:
@@ -155,7 +161,7 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-test-dep-svelte-simple: file:../_test_dependencies/svelte-simple
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     dependencies:
       e2e-test-dep-svelte-simple: file:packages/e2e-tests/_test_dependencies/svelte-simple
@@ -168,7 +174,7 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-test-dep-svelte-simple: file:../_test_dependencies/svelte-simple
-      svelte: 3.53.1
+      svelte: ^3.53.1
       svelte-preprocess: ^4.10.7
       vite: ^3.2.3
     dependencies:
@@ -182,7 +188,7 @@ importers:
   packages/e2e-tests/css-none:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -192,7 +198,7 @@ importers:
   packages/e2e-tests/custom-extensions:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -216,7 +222,7 @@ importers:
   packages/e2e-tests/env:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -229,7 +235,7 @@ importers:
       e2e-test-dep-svelte-simple: file:../_test_dependencies/svelte-simple
       e2e-test-dep-vite-plugins: file:../_test_dependencies/vite-plugins
       node-fetch: ^3.3.0
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     dependencies:
       e2e-test-dep-svelte-simple: file:packages/e2e-tests/_test_dependencies/svelte-simple
@@ -243,7 +249,7 @@ importers:
   packages/e2e-tests/inspector-kit:
     specifiers:
       '@sveltejs/kit': ^1.0.0-next.546
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/kit': 1.0.0-next.546_svelte@3.53.1+vite@3.2.3
@@ -253,7 +259,7 @@ importers:
   packages/e2e-tests/inspector-vite:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -266,7 +272,7 @@ importers:
       '@sveltejs/kit': ^1.0.0-next.546
       e2e-test-dep-svelte-api-only: file:../_test_dependencies/svelte-api-only
       e2e-test-dep-vite-plugins: file:../_test_dependencies/vite-plugins
-      svelte: 3.53.1
+      svelte: ^3.53.1
       svelte-check: ^2.9.2
       svelte-i18n: ^3.4.0
       tiny-glob: ^0.2.9
@@ -289,7 +295,7 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-test-dep-svelte-hybrid: file:../_test_dependencies/svelte-hybrid
       e2e-test-dep-svelte-nested: file:../_test_dependencies/svelte-nested
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     dependencies:
       e2e-test-dep-svelte-hybrid: file:packages/e2e-tests/_test_dependencies/svelte-hybrid
@@ -303,15 +309,17 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       e2e-test-dep-svelte-api-only: file:../_test_dependencies/svelte-api-only
+      e2e-test-dep-svelte-exports-simple: file:../_test_dependencies/svelte-exports-simple
       e2e-test-dep-svelte-hybrid: file:../_test_dependencies/svelte-hybrid
       e2e-test-dep-svelte-nested: file:../_test_dependencies/svelte-nested
       e2e-test-dep-svelte-simple: file:../_test_dependencies/svelte-simple
       sass: ^1.56.1
-      svelte: 3.53.1
+      svelte: ^3.53.1
       svelte-preprocess: ^4.10.7
       vite: ^3.2.3
     dependencies:
       e2e-test-dep-svelte-api-only: file:packages/e2e-tests/_test_dependencies/svelte-api-only
+      e2e-test-dep-svelte-exports-simple: file:packages/e2e-tests/_test_dependencies/svelte-exports-simple
       e2e-test-dep-svelte-hybrid: file:packages/e2e-tests/_test_dependencies/svelte-hybrid
       e2e-test-dep-svelte-nested: file:packages/e2e-tests/_test_dependencies/svelte-nested
       e2e-test-dep-svelte-simple: file:packages/e2e-tests/_test_dependencies/svelte-simple
@@ -327,7 +335,7 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       sass: ^1.56.1
       stylus: ^0.59.0
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -336,11 +344,24 @@ importers:
       svelte: 3.53.1
       vite: 3.2.3_sass@1.56.1+stylus@0.59.0
 
+  packages/e2e-tests/resolve-exports-svelte:
+    specifiers:
+      '@sveltejs/vite-plugin-svelte': workspace:*
+      e2e-test-dep-svelte-exports-simple: file:../_test_dependencies/svelte-exports-simple
+      svelte: 3.53.1
+      vite: ^3.2.3
+    dependencies:
+      e2e-test-dep-svelte-exports-simple: file:packages/e2e-tests/_test_dependencies/svelte-exports-simple
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      svelte: 3.53.1
+      vite: 3.2.3
+
   packages/e2e-tests/svelte-preprocess:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       sass: ^1.56.1
-      svelte: 3.53.1
+      svelte: ^3.53.1
       svelte-preprocess: ^4.10.7
       typescript: ^4.8.4
       vite: ^3.2.3
@@ -357,7 +378,7 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       '@tsconfig/svelte': ^3.0.0
       '@types/node': ^18.11.9
-      svelte: 3.53.1
+      svelte: ^3.53.1
       svelte-preprocess: ^4.10.7
       vite: ^3.2.3
     devDependencies:
@@ -376,7 +397,7 @@ importers:
       e2e-test-dep-esm-only: file:../_test_dependencies/esm-only
       express: ^4.18.2
       serve-static: ^1.15.0
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -398,7 +419,7 @@ importers:
       express: ^4.18.2
       npm-run-all: ^4.1.5
       serve-static: ^1.15.0
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -418,7 +439,7 @@ importers:
   packages/playground/big:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
@@ -432,7 +453,7 @@ importers:
       carbon-icons-svelte: ^11.4.0
       carbon-preprocess-svelte: ^0.9.1
       lodash-es: ^4.17.21
-      svelte: 3.53.1
+      svelte: ^3.53.1
       svelte-preprocess: ^4.10.7
       vite: ^3.2.3
     dependencies:
@@ -508,7 +529,7 @@ importers:
       '@sveltejs/adapter-auto': ^1.0.0-next.87
       '@sveltejs/kit': ^1.0.0-next.546
       '@types/cookie': ^0.5.1
-      svelte: 3.53.1
+      svelte: ^3.53.1
       svelte-check: ^2.9.2
       typescript: ^4.8.4
       vite: ^3.2.3
@@ -526,7 +547,7 @@ importers:
   packages/playground/optimizedeps-include:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
-      svelte: 3.53.1
+      svelte: ^3.53.1
       tinro: ^0.6.12
       vite: ^3.2.3
     devDependencies:
@@ -539,7 +560,7 @@ importers:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:*
       diff-match-patch: ^1.0.5
-      svelte: 3.53.1
+      svelte: ^3.53.1
       vite: ^3.2.3
       vite-plugin-windicss: ^1.8.8
       windicss: ^3.5.6
@@ -563,7 +584,7 @@ importers:
       kleur: ^4.1.5
       magic-string: ^0.26.7
       rollup: ^2.79.1
-      svelte: 3.53.1
+      svelte: ^3.53.1
       svelte-hmr: ^0.15.1
       tsup: ^6.5.0
       vite: ^3.2.3
@@ -6161,6 +6182,14 @@ packages:
     version: 1.0.0
     dependencies:
       svelte: 3.53.1
+
+  file:packages/e2e-tests/_test_dependencies/svelte-exports-simple:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-exports-simple, type: directory}
+    name: e2e-test-dep-svelte-exports-simple
+    version: 1.0.0
+    dependencies:
+      e2e-test-dep-cjs-only: file:packages/e2e-tests/_test_dependencies/cjs-only
+    dev: false
 
   file:packages/e2e-tests/_test_dependencies/svelte-hybrid:
     resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-hybrid, type: directory}
