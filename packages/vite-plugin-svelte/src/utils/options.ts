@@ -558,9 +558,9 @@ export interface PluginOptions {
 	disableDependencyReinclusion?: boolean | string[];
 
 	/**
-	 * Enable support for Vite's dependency optimization to prebundle Svelte libraries
+	 * Enable support for Vite's dependency optimization to prebundle Svelte libraries.
 	 *
-	 * to disable prebundling for a specific library, add it to `optimizeDeps.exclude`.
+	 * To disable prebundling for a specific library, add it to `optimizeDeps.exclude`.
 	 *
 	 * @default true
 	 */

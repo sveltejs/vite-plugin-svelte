@@ -136,7 +136,7 @@ import SomeComponent from 'some-library/src/SomeComponent.svelte'
 
 **Do not use them in combination with prebundling!**
 
-Prebundling works by reading your .svelte files from disk. scanning them for imports. It cannot detect
+Prebundling works by reading your `.svelte` files from disk and scanning them for imports. It cannot detect
 added/changed/removed imports and these then cause extra requests, delays and render the prebundled files from the initial scan moot.
 If you prefer to use these tools, please exclude the libraries you use them with from prebundling.
 
