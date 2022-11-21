@@ -99,39 +99,74 @@ For reference, check out [windicss](https://github.com/windicss/vite-plugin-wind
 
 ### What is going on with Vite and `Pre-bundling dependencies:`?
 
-Pre-bundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html).
+Prebundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html).
+
+> We only use prebundling during **development**, the following does not apply to or describe the built application
 
 It is required for CJS dependencies, as Vite's development server only works with ES modules on the client side.
-Importantly for Svelte libraries and ESM modules, prebundling combines component libraries into a single file to speed up the initial page load.
+Importantly for Svelte libraries and ES modules, it also reduces the number of http requests when you load a page from the dev server and caches files so subsequent starts are even faster.
 
-For prebundled svelte libraries it is recommended that you do not use deep imports.
+The way prebundling Svelte libraries affects your dev-server load times depends on the import style you use, index or deep:
+
+#### index imports
+
+offers better DX but can cause noticable delays on your machine, esp. for libraries with many files.
 
 ```diff
-- import SomeComponent from 'some-library/src/SomeComponent.svelte'
-+ import {SomeComponent} from 'some-library'
+import {SomeComponent} from 'some-library'
++ only one request per library
++ intellisense for the whole library after first import
+- compiles the whole library even if you only use a few components
+- slower build and dev-server ssr
 ```
 
-For huge libraries where you only import a few components this can lead to slower first start, as all components have to be compiled once, even if you never use them.
-It also slows down re-prebundling, which can happen when vite discovers new dependencies or you change your svelte config.
+#### deep imports
 
-In that case, add these huge libraries to optimizeDeps.exclude and use deep imports to import the components you need.
+offers snappier dev and faster builds for libraries with many files at the expense of some DX
 
-e.g.
+```diff
+import SomeComponent from 'some-library/src/SomeComponent.svelte'
++ compiles only the components you import
++ faster build and dev-server ssr
+- one request per import can slow down initial load if you use a lot of components
+- intellisense only for imported components
+```
+
+#### a word on import (re-)writing with plugins or preprocessors (auto-import, optimizeImports etc)
+
+**Do not use them in combination with prebundling!**
+
+Prebundling works by reading your .svelte files from disk. scanning them for imports. It cannot detect
+added/changed/removed imports and these then cause extra requests, delays and render the prebundled files from the initial scan moot.
+If you prefer to use these tools, please exclude the libraries you use them with from prebundling.
+
+#### excluding libraries from prebundling
+
+If you want to disable prebundling for a single library, use optimizeDeps.exclude
 
 ```js
 // vite.config.js
 export default defineConfig({
   optimizeDeps: {
-    exclude: ['svelte-2000-icons'] // do not pre-bundle svelte-2000-icons
+    exclude: ['some-library'] // do not pre-bundle some-library
   }
 });
 ```
 
-```html
-<!-- src/.../SomeSvelte.svelte -->
-<script>
-  // use deep import to avoid loading all components of svelte-2000-icons in the browser
-  import OneIcon from 'svelte-2000-icons/src/icons/OneIcon.svelte';
-</script>
-<OneIcon />
+Or disable it for all Svelte libraries
+
+```js
+// svelte.config.js
+export default {
+  vitePlugin: {
+    prebundleSvelteLibraries: false
+  }
+};
 ```
+
+#### so what should i do?
+
+There is no golden rule, but follow these recommendations:
+
+1. **never** combine auto-import or optimizeImports with prebundling
+2. check the compile stats during dev to help deciding which import style works best for your app
