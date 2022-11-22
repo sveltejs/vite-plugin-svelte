@@ -108,21 +108,21 @@ Importantly for Svelte libraries and ES modules, it also reduces the number of h
 
 The way prebundling Svelte libraries affects your dev-server load times depends on the import style you use, index or deep:
 
-#### index imports
+#### Index imports
 
-offers better DX but can cause noticable delays on your machine, esp. for libraries with many files.
+Offers better DX but can cause noticable delays on your machine, especially for libraries with many files.
 
 ```diff
-import {SomeComponent} from 'some-library'
+import { SomeComponent } from 'some-library'
 + only one request per library
 + intellisense for the whole library after first import
 - compiles the whole library even if you only use a few components
 - slower build and dev-server ssr
 ```
 
-#### deep imports
+#### Deep imports
 
-offers snappier dev and faster builds for libraries with many files at the expense of some DX
+Offers snappier dev and faster builds for libraries with many files at the expense of some DX
 
 ```diff
 import SomeComponent from 'some-library/src/SomeComponent.svelte'
@@ -132,7 +132,7 @@ import SomeComponent from 'some-library/src/SomeComponent.svelte'
 - intellisense only for imported components
 ```
 
-#### a word on import (re-)writing with plugins or preprocessors (auto-import, optimizeImports etc)
+#### Rewriting imports with plugins or preprocessors
 
 **Do not use them in combination with prebundling!**
 
@@ -140,9 +140,9 @@ Prebundling works by reading your `.svelte` files from disk and scanning them fo
 added/changed/removed imports and these then cause extra requests, delays and render the prebundled files from the initial scan moot.
 If you prefer to use these tools, please exclude the libraries you use them with from prebundling.
 
-#### excluding libraries from prebundling
+#### Excluding libraries from prebundling
 
-If you want to disable prebundling for a single library, use optimizeDeps.exclude
+If you want to disable prebundling for a single library, use `optimizeDeps.exclude`
 
 ```js
 // vite.config.js
@@ -164,7 +164,7 @@ export default {
 };
 ```
 
-#### recommendations
+#### Recommendations
 
 There is no golden rule, but you can follow these recommendations:
 
