@@ -204,7 +204,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 ### prebundleSvelteLibraries
 
 - **Type:** `boolean`
-- **Default:** `true`
+- **Default:** `true` for dev, `false` for build
 
   Enable [Vite's dependency prebundling](https://vitejs.dev/guide/dep-pre-bundling.html) for Svelte libraries.
 
