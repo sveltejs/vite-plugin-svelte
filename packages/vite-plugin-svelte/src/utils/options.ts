@@ -32,6 +32,7 @@ import {
 } from 'vitefu';
 import { atLeastSvelte } from './svelte-version';
 import { isCommonDepWithoutSvelteField } from './dependencies';
+import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
 
 // svelte 3.53.0 changed compilerOptions.css from boolean to string | boolen, use string when available
 const cssAsString = atLeastSvelte('3.53.0');
@@ -210,6 +211,14 @@ export function resolveOptions(
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
+	// mergeConfigs would mangle functions on the stats class, so do this afterwards
+	const isLogLevelInfo = [undefined, 'info'].includes(viteConfig.logLevel);
+	const disableCompileStats = merged.experimental?.disableCompileStats;
+	const statsEnabled =
+		disableCompileStats !== true && disableCompileStats !== (merged.isBuild ? 'build' : 'dev');
+	if (statsEnabled && isLogLevelInfo) {
+		merged.stats = new VitePluginSvelteStats();
+	}
 	return merged;
 }
 
@@ -724,6 +733,13 @@ export interface ExperimentalOptions {
 	 *
 	 */
 	sendWarningsToBrowser?: boolean;
+
+	/**
+	 * disable svelte compile statistics
+	 *
+	 * @default false
+	 */
+	disableCompileStats?: 'dev' | 'build' | boolean;
 }
 
 export interface InspectorOptions {
@@ -810,6 +826,7 @@ export interface PreResolvedOptions extends Options {
 export interface ResolvedOptions extends PreResolvedOptions {
 	isProduction: boolean;
 	server?: ViteDevServer;
+	stats?: VitePluginSvelteStats;
 }
 
 export type {
