@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.3.0
+
+### Minor Changes
+
+- enable `prebundleSvelteLibraries` during dev by default to improve page loading for the dev server. ([#494](https://github.com/sveltejs/vite-plugin-svelte/pull/494))
+
+  see the [FAQ](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies) for more information about `prebundleSvelteLibraries` and how to tune it.
+
+- Enable resolving via "svelte" exports condition ([#502](https://github.com/sveltejs/vite-plugin-svelte/pull/502))
+
+- add compile time stats logging ([#503](https://github.com/sveltejs/vite-plugin-svelte/pull/503))
+
 ## 1.2.0
 
 ### Minor Changes
