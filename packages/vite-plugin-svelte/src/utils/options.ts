@@ -135,9 +135,11 @@ export async function preResolveOptions(
 		...viteUserConfig,
 		root: resolveViteRoot(viteUserConfig)
 	};
+	const isBuild = viteEnv.command === 'build';
 	const defaultOptions: Partial<Options> = {
 		extensions: ['.svelte'],
-		emitCss: true
+		emitCss: true,
+		prebundleSvelteLibraries: !isBuild
 	};
 	const svelteConfig = convertPluginOptions(
 		await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions)
@@ -145,7 +147,7 @@ export async function preResolveOptions(
 
 	const extraOptions: Partial<PreResolvedOptions> = {
 		root: viteConfigWithResolvedRoot.root!,
-		isBuild: viteEnv.command === 'build',
+		isBuild,
 		isServe: viteEnv.command === 'serve',
 		isDebug: process.env.DEBUG != null
 	};
@@ -373,12 +375,17 @@ export async function buildExtraViteConfig(
 
 	// handle prebundling for svelte files
 	if (options.prebundleSvelteLibraries) {
-		extraViteConfig.optimizeDeps.extensions = options.extensions ?? ['.svelte'];
-		// Add esbuild plugin to prebundle Svelte files.
-		// Currently a placeholder as more information is needed after Vite config is resolved,
-		// the real Svelte plugin is added in `patchResolvedViteConfig()`
-		extraViteConfig.optimizeDeps.esbuildOptions = {
-			plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
+		extraViteConfig.optimizeDeps = {
+			...extraViteConfig.optimizeDeps,
+			// Experimental Vite API to allow these extensions to be scanned and prebundled
+			// @ts-ignore
+			extensions: options.extensions ?? ['.svelte'],
+			// Add esbuild plugin to prebundle Svelte files.
+			// Currently a placeholder as more information is needed after Vite config is resolved,
+			// the real Svelte plugin is added in `patchResolvedViteConfig()`
+			esbuildOptions: {
+				plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
+			}
 		};
 	}
 
@@ -392,7 +399,42 @@ export async function buildExtraViteConfig(
 		log.debug('enabling "experimental.hmrPartialAccept" in vite config');
 		extraViteConfig.experimental = { hmrPartialAccept: true };
 	}
+	validateViteConfig(extraViteConfig, config, options);
 	return extraViteConfig;
+}
+
+function validateViteConfig(
+	extraViteConfig: Partial<UserConfig>,
+	config: UserConfig,
+	options: PreResolvedOptions
+) {
+	const { prebundleSvelteLibraries, isBuild } = options;
+	if (prebundleSvelteLibraries) {
+		const isEnabled = (option: 'dev' | 'build' | boolean) =>
+			option !== true && option !== (isBuild ? 'build' : 'dev');
+		const logWarning = (name: string, value: 'dev' | 'build' | boolean, recommendation: string) =>
+			log.warn.once(
+				`Incompatible options: \`prebundleSvelteLibraries: true\` and vite \`${name}: ${JSON.stringify(
+					value
+				)}\` ${isBuild ? 'during build.' : '.'} ${recommendation}`
+			);
+		const viteOptimizeDepsDisabled = config.optimizeDeps?.disabled ?? 'build'; // fall back to vite default
+		const isOptimizeDepsEnabled = isEnabled(viteOptimizeDepsDisabled);
+		if (!isBuild && !isOptimizeDepsEnabled) {
+			logWarning(
+				'optimizeDeps.disabled',
+				viteOptimizeDepsDisabled,
+				'Forcing `optimizeDeps.disabled: "build"`. Disable prebundleSvelteLibraries or update your vite config to enable optimizeDeps during dev.'
+			);
+			extraViteConfig.optimizeDeps!.disabled = 'build';
+		} else if (isBuild && isOptimizeDepsEnabled) {
+			logWarning(
+				'optimizeDeps.disabled',
+				viteOptimizeDepsDisabled,
+				'Disable optimizeDeps or prebundleSvelteLibraries for build if you experience errors.'
+			);
+		}
+	}
 }
 
 async function buildExtraConfigForDependencies(options: PreResolvedOptions, config: UserConfig) {
@@ -576,9 +618,11 @@ export interface PluginOptions {
 	disableDependencyReinclusion?: boolean | string[];
 
 	/**
-	 * Force Vite to pre-bundle Svelte libraries
+	 * Enable support for Vite's dependency optimization to prebundle Svelte libraries.
 	 *
-	 * @default false
+	 * To disable prebundling for a specific library, add it to `optimizeDeps.exclude`.
+	 *
+	 * @default true for dev, false for build
 	 */
 	prebundleSvelteLibraries?: boolean;
 
