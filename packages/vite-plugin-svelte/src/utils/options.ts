@@ -419,9 +419,7 @@ function validateViteConfig(
 				)}\` ${isBuild ? 'during build.' : '.'} ${recommendation}`
 			);
 		const viteOptimizeDepsDisabled = config.optimizeDeps?.disabled ?? 'build'; // fall back to vite default
-		const viteSsrOptimizeDepsDisabled = config.ssr?.optimizeDeps?.disabled ?? true; // fall back to undocumented vite default
 		const isOptimizeDepsEnabled = isEnabled(viteOptimizeDepsDisabled);
-		const isSsrOptimizeDepsEnabled = isEnabled(viteSsrOptimizeDepsDisabled);
 		if (!isBuild && !isOptimizeDepsEnabled) {
 			logWarning(
 				'optimizeDeps.disabled',
@@ -434,13 +432,6 @@ function validateViteConfig(
 				'optimizeDeps.disabled',
 				viteOptimizeDepsDisabled,
 				'Disable optimizeDeps or prebundleSvelteLibraries for build if you experience errors.'
-			);
-		}
-		if (isSsrOptimizeDepsEnabled) {
-			logWarning(
-				'ssr.optimizeDeps.disabled',
-				viteSsrOptimizeDepsDisabled,
-				'Disable ssr.optimizeDeps or prebundleSvelteLibraries if you experience errors.'
 			);
 		}
 	}
