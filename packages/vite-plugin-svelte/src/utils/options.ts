@@ -411,7 +411,7 @@ function validateViteConfig(
 	const { prebundleSvelteLibraries, isBuild } = options;
 	if (prebundleSvelteLibraries) {
 		const isEnabled = (option: 'dev' | 'build' | boolean) =>
-			option !== true && option != (isBuild ? 'build' : 'dev');
+			option !== true && option !== (isBuild ? 'build' : 'dev');
 		const logWarning = (name: string, value: 'dev' | 'build' | boolean, recommendation: string) =>
 			log.warn.once(
 				`Incompatible options: \`prebundleSvelteLibraries: true\` and vite \`${name}: ${JSON.stringify(
@@ -622,7 +622,7 @@ export interface PluginOptions {
 	 *
 	 * To disable prebundling for a specific library, add it to `optimizeDeps.exclude`.
 	 *
-	 * @default true
+	 * @default true for dev, false for build
 	 */
 	prebundleSvelteLibraries?: boolean;
 
