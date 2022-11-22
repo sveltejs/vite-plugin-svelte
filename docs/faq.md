@@ -172,3 +172,8 @@ There is no golden rule, but you can follow these recommendations:
 2. Start with index imports and if your dev-server or build process feels slow, check compile stats to see if switching to deep imports can improve the experience.
 3. Do not mix deep and index imports for the same library, use one style consistently.
 4. Use different import styles for different libraries where it helps. E.g. deep imports for the few icons of that one huge icon library, but index import for the component library that is heavily used.
+
+#### I get a warning `Incompatible options: prebundleSvelteLibraries ...`
+
+This warning only occurs if you use non-default settings in your vite config that can cause problems in combination with prebundleSvelteLibraries.
+You should not use prebundleSvelteLibraries during build or for ssr, disable one of the incompatible options to make that warning (and subsequent errors) go away.
