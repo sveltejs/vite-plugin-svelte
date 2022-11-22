@@ -413,3 +413,10 @@ export default {
     rawWarnings: Warning[]; // raw compiler output
   };
   ```
+
+### disableCompileStats
+
+- **Type** `boolean | 'dev' | 'build'`
+- **Default:** `false`
+
+  disable svelte compile statistics.
