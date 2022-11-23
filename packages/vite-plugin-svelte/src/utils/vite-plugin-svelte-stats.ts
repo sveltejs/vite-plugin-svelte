@@ -131,6 +131,7 @@ export class VitePluginSvelteStats {
 				if (collection.finished) {
 					throw new Error('called after finish() has been used');
 				}
+				file = normalizePath(file);
 				const start = performance.now();
 				const stat: Stat = { file, start, end: start };
 				return () => {
