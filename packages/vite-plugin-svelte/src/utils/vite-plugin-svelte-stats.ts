@@ -4,6 +4,7 @@ import { findClosestPkgJsonPath } from 'vitefu';
 import { readFileSync } from 'fs';
 import { dirname } from 'path';
 import { performance } from 'perf_hooks';
+import { normalizePath } from 'vite';
 
 interface Stat {
 	file: string;
@@ -86,6 +87,13 @@ function formatPackageStats(pkgStats: PackageStats[]) {
 	return table;
 }
 
+/**
+ * utility to get the package name a file belongs to
+ *
+ * @param {string} file to parse package for
+ * @param {string} dir optional directory to start looking, used by recursive calls
+ * @returns {path:string,name:string} tuple of path,name where name is the parsed package name and path is the normalized path to it
+ */
 async function parseClosestNamedPackage(
 	file: string,
 	dir?: string
@@ -93,14 +101,16 @@ async function parseClosestNamedPackage(
 	const pkgPath = await findClosestPkgJsonPath(dir ?? file);
 	if (pkgPath) {
 		const name = JSON.parse(readFileSync(pkgPath, 'utf-8')).name;
+		const pkgDir = dirname(pkgPath);
 		if (!name) {
-			return parseClosestNamedPackage(file, dirname(pkgPath));
+			// skip over pkgDir, vitefu appends package.json automatically so it would find the same package otherwise
+			return parseClosestNamedPackage(file, dirname(pkgDir));
 		}
-		const path = pkgPath.replace(/package.json$/, '');
+		const path = normalizePath(pkgDir) + '/';
 		return { name, path };
 	} else {
 		// no package.json found with a name in it, give up.
-		const path = dirname(file) + '/';
+		const path = normalizePath(dirname(file)) + '/';
 		log.debug.once(
 			`Encountered files outside a named package in ${path}, marking them as $unknown.`
 		);
