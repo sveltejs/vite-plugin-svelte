@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.3.1
+
+### Patch Changes
+
+- improve robustness of compile stats taking ([#507](https://github.com/sveltejs/vite-plugin-svelte/pull/507))
+
 ## 1.3.0
 
 ### Minor Changes
