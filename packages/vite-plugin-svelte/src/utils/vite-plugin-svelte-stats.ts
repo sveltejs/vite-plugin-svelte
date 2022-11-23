@@ -2,6 +2,7 @@ import { log } from './log';
 //eslint-disable-next-line node/no-missing-import
 import { findClosestPkgJsonPath } from 'vitefu';
 import { readFileSync } from 'fs';
+import { dirname } from 'path';
 import { performance } from 'perf_hooks';
 
 interface Stat {
@@ -85,6 +86,31 @@ function formatPackageStats(pkgStats: PackageStats[]) {
 	return table;
 }
 
+async function parseClosestNamedPackage(
+	file: string,
+	dir?: string
+): Promise<{ name: string; path: string }> {
+	const pkgPath = await findClosestPkgJsonPath(dir ?? file);
+	if (pkgPath) {
+		const name = JSON.parse(readFileSync(pkgPath, 'utf-8')).name;
+		if (!name) {
+			return parseClosestNamedPackage(file, dirname(pkgPath));
+		}
+		const path = pkgPath.replace(/package.json$/, '');
+		return { name, path };
+	} else {
+		// no package.json found with a name in it, give up.
+		const path = dirname(file) + '/';
+		log.debug.once(
+			`Encountered files outside a named package in ${path}, marking them as $unknown.`
+		);
+		return {
+			name: '$unknown',
+			path
+		};
+	}
+}
+
 export class VitePluginSvelteStats {
 	// package directory -> package name
 	private _packages: { path: string; name: string }[] = [];
@@ -133,25 +159,30 @@ export class VitePluginSvelteStats {
 	}
 
 	private async _finish(collection: StatCollection) {
-		collection.finished = true;
-		const now = performance.now();
-		collection.duration = now - collection.collectionStart;
-		const logResult = collection.options.logResult(collection);
-		if (logResult) {
-			await this._aggregateStatsResult(collection);
-			log.info(`${collection.name} done.`, formatPackageStats(collection.packageStats!));
+		try {
+			collection.finished = true;
+			const now = performance.now();
+			collection.duration = now - collection.collectionStart;
+			const logResult = collection.options.logResult(collection);
+			if (logResult) {
+				await this._aggregateStatsResult(collection);
+				log.info(`${collection.name} done.`, formatPackageStats(collection.packageStats!));
+			}
+			// cut some ties to free it for garbage collection
+			const index = this._collections.indexOf(collection);
+			this._collections.splice(index, 1);
+			collection.stats.length = 0;
+			collection.stats = [];
+			if (collection.packageStats) {
+				collection.packageStats.length = 0;
+				collection.packageStats = [];
+			}
+			collection.start = () => () => {};
+			collection.finish = () => {};
+		} catch (e) {
+			// this should not happen, but stats taking also should not break the process
+			log.debug.once(`failed to finish stats for ${collection.name}`, e);
 		}
-		// cut some ties to free it for garbage collection
-		const index = this._collections.indexOf(collection);
-		this._collections.splice(index, 1);
-		collection.stats.length = 0;
-		collection.stats = [];
-		if (collection.packageStats) {
-			collection.packageStats.length = 0;
-			collection.packageStats = [];
-		}
-		collection.start = () => () => {};
-		collection.finish = () => {};
 	}
 
 	private async _aggregateStatsResult(collection: StatCollection) {
@@ -159,28 +190,10 @@ export class VitePluginSvelteStats {
 		for (const stat of stats) {
 			let pkg = this._packages.find((p) => stat.file.startsWith(p.path));
 			if (!pkg) {
-				// check for package.json first
-				let pkgPath = await findClosestPkgJsonPath(stat.file);
-				if (pkgPath) {
-					let path = pkgPath?.replace(/package.json$/, '');
-					let name = JSON.parse(readFileSync(pkgPath, 'utf-8')).name;
-					if (!name) {
-						// some packages have nameless nested package.json
-						pkgPath = await findClosestPkgJsonPath(path);
-						if (pkgPath) {
-							path = pkgPath?.replace(/package.json$/, '');
-							name = JSON.parse(readFileSync(pkgPath, 'utf-8')).name;
-						}
-					}
-					if (path && name) {
-						pkg = { path, name };
-						this._packages.push(pkg);
-					}
-				}
+				pkg = await parseClosestNamedPackage(stat.file);
+				this._packages.push(pkg);
 			}
-			// TODO is it possible that we want to track files where there is no named packge.json as parent?
-			// what do we want to do for that, try to find common root paths for different stats?
-			stat.pkg = pkg?.name ?? '$unknown';
+			stat.pkg = pkg.name;
 		}
 
 		// group stats
