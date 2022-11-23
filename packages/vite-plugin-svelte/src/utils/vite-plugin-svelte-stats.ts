@@ -90,35 +90,22 @@ function formatPackageStats(pkgStats: PackageStats[]) {
 /**
  * utility to get the package name a file belongs to
  *
- * @param {string} file to parse package for
- * @param {string} dir optional directory to start looking, used by recursive calls
+ * @param {string} file to find package for
  * @returns {path:string,name:string} tuple of path,name where name is the parsed package name and path is the normalized path to it
  */
-async function parseClosestNamedPackage(
-	file: string,
-	dir?: string
-): Promise<{ name: string; path: string }> {
-	const pkgPath = await findClosestPkgJsonPath(dir ?? file);
-	if (pkgPath) {
-		const name = JSON.parse(readFileSync(pkgPath, 'utf-8')).name;
-		const pkgDir = dirname(pkgPath);
-		if (!name) {
-			// skip over pkgDir, vitefu appends package.json automatically so it would find the same package otherwise
-			return parseClosestNamedPackage(file, dirname(pkgDir));
+async function getClosestNamedPackage(file: string): Promise<{ name: string; path: string }> {
+	let name = '$unknown';
+	let path = await findClosestPkgJsonPath(file, (pkgPath) => {
+		const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+		if (pkg.name != null) {
+			name = pkg.name;
+			return true;
 		}
-		const path = normalizePath(pkgDir) + '/';
-		return { name, path };
-	} else {
-		// no package.json found with a name in it, give up.
-		const path = normalizePath(dirname(file)) + '/';
-		log.debug.once(
-			`Encountered files outside a named package in ${path}, marking them as $unknown.`
-		);
-		return {
-			name: '$unknown',
-			path
-		};
-	}
+		return false;
+	});
+	// return normalized path with appended '/' so .startsWith works for future file checks
+	path = normalizePath(dirname(path ?? file)) + '/';
+	return { name, path };
 }
 
 export class VitePluginSvelteStats {
@@ -200,7 +187,7 @@ export class VitePluginSvelteStats {
 		for (const stat of stats) {
 			let pkg = this._packages.find((p) => stat.file.startsWith(p.path));
 			if (!pkg) {
-				pkg = await parseClosestNamedPackage(stat.file);
+				pkg = await getClosestNamedPackage(stat.file);
 				this._packages.push(pkg);
 			}
 			stat.pkg = pkg.name;
