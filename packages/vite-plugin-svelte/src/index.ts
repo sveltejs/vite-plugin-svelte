@@ -167,17 +167,18 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				// for ssr, during scanning and non-prebundled, we do it
 				if (ssr || scan || !isPrebundled) {
 					try {
+						const isFirstResolve = !cache.hasResolvedSvelteField(importee, importer);
 						const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
-						if (resolved) {
+						if (isFirstResolve && resolved) {
+							const packageInfo = await cache.getPackageInfo(resolved);
 							log.debug.once(
-								`resolveId resolved ${resolved} via package.json svelte field of ${importee}`
+								`resolveId resolved ${importee} to ${resolved} via package.json svelte field of ${packageInfo.name}@${packageInfo.version}`
 							);
 							try {
 								const viteResolved = (
 									await this.resolve(importee, importer, { ...opts, skipSelf: true })
 								)?.id;
 								if (resolved !== viteResolved) {
-									const packageInfo = await cache.getPackageInfo(resolved);
 									log.warn.once(
 										`DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\` which resolves .svelte files differently than standard vite resolve.\nUsing the "svelte" field in package.json is deprecated and packages should use the "svelte" exports condition instead. See :LINK HERE: for more information.`
 									);
@@ -188,9 +189,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 									`DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\` which resolves .svelte files but standard vite resolve failed to resolve.\nUsing the "svelte" field in package.json is deprecated and packages should use the "svelte" exports condition instead. See :LINK HERE: for more information.`
 								);
 							}
-
-							return resolved;
 						}
+						return resolved;
 					} catch (e) {
 						log.debug.once(
 							`error trying to resolve ${importee} from ${importer} via package.json svelte field `,

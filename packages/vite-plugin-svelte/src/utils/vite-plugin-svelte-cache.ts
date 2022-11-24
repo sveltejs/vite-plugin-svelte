@@ -123,6 +123,9 @@ export class VitePluginSvelteCache {
 		return this._resolvedSvelteFields.get(this._getResolvedSvelteFieldKey(name, importer));
 	}
 
+	public hasResolvedSvelteField(name: string, importer?: string) {
+		return this._resolvedSvelteFields.has(this._getResolvedSvelteFieldKey(name, importer));
+	}
 	public setResolvedSvelteField(
 		importee: string,
 		importer: string | undefined = undefined,
