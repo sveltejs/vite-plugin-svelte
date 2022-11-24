@@ -177,3 +177,30 @@ There is no golden rule, but you can follow these recommendations:
 
 This warning only occurs if you use non-default settings in your vite config that can cause problems in combination with prebundleSvelteLibraries.
 You should not use prebundleSvelteLibraries during build or for ssr, disable one of the incompatible options to make that warning (and subsequent errors) go away.
+
+### deprecated "svelte" field in package.json
+
+In the past, Svelte recommended using the custom "svelte" field in package.json to allow libraries to point at .svelte source files.
+This field requires a custom implementation to resolve, so you have to use a bundler plugin and this plugin needs to implement resolving.
+Since then, node has added support for [conditional exports](https://nodejs.org/api/packages.html#conditional-exports), which have more generic support in bundlers and node itself. So to increase the compatibility with the wider ecosystem and reduce the implementation needs for current and future bundler plugins, it is recommended that packages use the "svelte" exports condition.
+
+Example:
+
+```diff
+// package.json
+- "svelte": "src/index.js"
++ "exports": {
++   "./package.json": "./package.json",
++   "./*": {
++     "svelte": "./src/*",
++   },
++   ".": {
++     "svelte": "./index.js"
++   }
+  }
+```
+
+> **Support for the svelte field is deprecated and is going to be removed in a future version of vite-plugin-svelte.**
+>
+> Library authors are highly encouraged to update their packages to the new exports condition as outlined above. Check out
+> [svelte-package](https://kit.svelte.dev/docs/packaging) which already supports it.
