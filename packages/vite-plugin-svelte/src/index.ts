@@ -186,7 +186,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 							} catch (e) {
 								const packageInfo = await cache.getPackageInfo(resolved);
 								log.warn.once(
-									`DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\` which resolves .svelte files but standard vite resolve failed to resolve.\nUsing the "svelte" field in package.json is deprecated and packages should use the "svelte" exports condition instead. See :LINK HERE: for more information.`
+									`DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\` which resolves .svelte files but standard vite resolve failed to resolve.\nUsing the "svelte" field in package.json is deprecated and packages should use the "svelte" exports condition instead. See :LINK HERE: for more information.`,
+									e
 								);
 							}
 						}
