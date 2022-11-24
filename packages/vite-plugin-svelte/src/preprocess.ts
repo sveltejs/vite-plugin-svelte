@@ -9,7 +9,7 @@ const supportedScriptLangs = ['ts'];
 
 export function vitePreprocess(opts?: {
 	script?: boolean;
-	style?: boolean | Parameters<typeof viteStyle>[0];
+	style?: boolean | vite.InlineConfig | vite.ResolvedConfig;
 }) {
 	const preprocessor: PreprocessorGroup = {};
 	if (opts?.script !== false) {
