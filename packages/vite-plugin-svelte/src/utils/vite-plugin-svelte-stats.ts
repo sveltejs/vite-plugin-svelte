@@ -1,10 +1,7 @@
 import { log } from './log';
-//eslint-disable-next-line node/no-missing-import
-import { findClosestPkgJsonPath } from 'vitefu';
-import { readFileSync } from 'fs';
-import { dirname } from 'path';
 import { performance } from 'perf_hooks';
 import { normalizePath } from 'vite';
+import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 
 interface Stat {
 	file: string;
@@ -87,31 +84,13 @@ function formatPackageStats(pkgStats: PackageStats[]) {
 	return table;
 }
 
-/**
- * utility to get the package name a file belongs to
- *
- * @param {string} file to find package for
- * @returns {path:string,name:string} tuple of path,name where name is the parsed package name and path is the normalized path to it
- */
-async function getClosestNamedPackage(file: string): Promise<{ name: string; path: string }> {
-	let name = '$unknown';
-	let path = await findClosestPkgJsonPath(file, (pkgPath) => {
-		const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
-		if (pkg.name != null) {
-			name = pkg.name;
-			return true;
-		}
-		return false;
-	});
-	// return normalized path with appended '/' so .startsWith works for future file checks
-	path = normalizePath(dirname(path ?? file)) + '/';
-	return { name, path };
-}
-
 export class VitePluginSvelteStats {
 	// package directory -> package name
-	private _packages: { path: string; name: string }[] = [];
+	private _cache: VitePluginSvelteCache;
 	private _collections: StatCollection[] = [];
+	constructor(cache: VitePluginSvelteCache) {
+		this._cache = cache;
+	}
 	startCollection(name: string, opts?: Partial<CollectionOptions>) {
 		const options = {
 			...defaultCollectionOptions,
@@ -186,12 +165,7 @@ export class VitePluginSvelteStats {
 	private async _aggregateStatsResult(collection: StatCollection) {
 		const stats = collection.stats;
 		for (const stat of stats) {
-			let pkg = this._packages.find((p) => stat.file.startsWith(p.path));
-			if (!pkg) {
-				pkg = await getClosestNamedPackage(stat.file);
-				this._packages.push(pkg);
-			}
-			stat.pkg = pkg.name;
+			stat.pkg = (await this._cache.getPackageInfo(stat.file)).name;
 		}
 
 		// group stats

@@ -33,6 +33,7 @@ import {
 import { atLeastSvelte } from './svelte-version';
 import { isCommonDepWithoutSvelteField } from './dependencies';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
+import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 
 // svelte 3.53.0 changed compilerOptions.css from boolean to string | boolen, use string when available
 const cssAsString = atLeastSvelte('3.53.0');
@@ -180,7 +181,8 @@ function mergeConfigs<T>(...configs: (Partial<T> | undefined)[]): T {
 // also validates the final config.
 export function resolveOptions(
 	preResolveOptions: PreResolvedOptions,
-	viteConfig: ResolvedConfig
+	viteConfig: ResolvedConfig,
+	cache: VitePluginSvelteCache
 ): ResolvedOptions {
 	const css = cssAsString
 		? preResolveOptions.emitCss
@@ -217,7 +219,7 @@ export function resolveOptions(
 	const statsEnabled =
 		disableCompileStats !== true && disableCompileStats !== (merged.isBuild ? 'build' : 'dev');
 	if (statsEnabled && isLogLevelInfo) {
-		merged.stats = new VitePluginSvelteStats();
+		merged.stats = new VitePluginSvelteStats(cache);
 	}
 	return merged;
 }

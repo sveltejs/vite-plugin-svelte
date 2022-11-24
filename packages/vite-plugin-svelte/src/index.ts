@@ -76,7 +76,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 
 			async configResolved(config) {
-				options = resolveOptions(options, config);
+				options = resolveOptions(options, config, cache);
 				patchResolvedViteConfig(config, options);
 				requestParser = buildIdParser(options);
 				compileSvelte = createCompileSvelte(options);
@@ -169,9 +169,26 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					try {
 						const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
 						if (resolved) {
-							log.debug(
+							log.debug.once(
 								`resolveId resolved ${resolved} via package.json svelte field of ${importee}`
 							);
+							try {
+								const viteResolved = (
+									await this.resolve(importee, importer, { ...opts, skipSelf: true })
+								)?.id;
+								if (resolved !== viteResolved) {
+									const packageInfo = await cache.getPackageInfo(resolved);
+									log.warn.once(
+										`DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\` which resolves .svelte files differently than standard vite resolve.\nUsing the "svelte" field in package.json is deprecated and packages should use the "svelte" exports condition instead. See :LINK HERE: for more information.`
+									);
+								}
+							} catch (e) {
+								const packageInfo = await cache.getPackageInfo(resolved);
+								log.warn.once(
+									`DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\` which resolves .svelte files but standard vite resolve failed to resolve.\nUsing the "svelte" field in package.json is deprecated and packages should use the "svelte" exports condition instead. See :LINK HERE: for more information.`
+								);
+							}
+
 							return resolved;
 						}
 					} catch (e) {

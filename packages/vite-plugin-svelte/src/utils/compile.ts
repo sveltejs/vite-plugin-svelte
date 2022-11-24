@@ -113,6 +113,7 @@ const _createCompileSvelte = (makeHot: Function) => {
 			compiled.js.code = makeHot({
 				id: filename,
 				compiledCode: compiled.js.code,
+				// @ts-expect-error hot isn't a boolean anymore at this point
 				hotOptions: { ...options.hot, injectCss: options.hot?.injectCss === true && hasCss },
 				compiled,
 				originalCode: code,
