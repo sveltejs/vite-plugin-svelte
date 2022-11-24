@@ -20,3 +20,6 @@ export const SVELTE_HMR_IMPORTS = [
 ];
 
 export const SVELTE_EXPORT_CONDITIONS = ['svelte'];
+
+export const FAQ_LINK_DEPRECATED_SVELTE_FIELD =
+	'https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#deprecated-svelte-field';

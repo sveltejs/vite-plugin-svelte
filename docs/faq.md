@@ -178,7 +178,9 @@ There is no golden rule, but you can follow these recommendations:
 This warning only occurs if you use non-default settings in your vite config that can cause problems in combination with prebundleSvelteLibraries.
 You should not use prebundleSvelteLibraries during build or for ssr, disable one of the incompatible options to make that warning (and subsequent errors) go away.
 
-### deprecated "svelte" field in package.json
+<!-- the following header generates an anchor that is used in logging, do not modify!-->
+
+### deprecated "svelte" field
 
 In the past, Svelte recommended using the custom "svelte" field in package.json to allow libraries to point at .svelte source files.
 This field requires a custom implementation to resolve, so you have to use a bundler plugin and this plugin needs to implement resolving.

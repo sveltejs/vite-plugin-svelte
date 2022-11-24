@@ -23,6 +23,7 @@ import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
+import { FAQ_LINK_DEPRECATED_SVELTE_FIELD } from './utils/constants';
 
 interface PluginAPI {
 	/**
@@ -174,21 +175,23 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 							log.debug.once(
 								`resolveId resolved ${importee} to ${resolved} via package.json svelte field of ${packageInfo.name}@${packageInfo.version}`
 							);
+							const logDeprecationWarning = (error?: Error) => {
+								const prefix = `DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\``;
+								const reason = error
+									? ' and without it resolve would fail with the following error:'
+									: ' and vite would resolve differently without it.';
+								const secondLine = `Packages should use the "svelte" exports condition instead. See ${FAQ_LINK_DEPRECATED_SVELTE_FIELD} for more information.`;
+								log.warn.once(`${prefix}${reason}\n${secondLine}`, error);
+							};
 							try {
 								const viteResolved = (
 									await this.resolve(importee, importer, { ...opts, skipSelf: true })
 								)?.id;
 								if (resolved !== viteResolved) {
-									log.warn.once(
-										`DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\` which resolves .svelte files differently than standard vite resolve.\nUsing the "svelte" field in package.json is deprecated and packages should use the "svelte" exports condition instead. See :LINK HERE: for more information.`
-									);
+									logDeprecationWarning();
 								}
 							} catch (e) {
-								const packageInfo = await cache.getPackageInfo(resolved);
-								log.warn.once(
-									`DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\` which resolves .svelte files but standard vite resolve failed to resolve.\nUsing the "svelte" field in package.json is deprecated and packages should use the "svelte" exports condition instead. See :LINK HERE: for more information.`,
-									e
-								);
+								logDeprecationWarning(e);
 							}
 						}
 						return resolved;
