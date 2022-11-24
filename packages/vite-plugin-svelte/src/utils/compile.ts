@@ -5,11 +5,13 @@ import { createMakeHot } from 'svelte-hmr';
 import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
+import { StatCollection } from './vite-plugin-svelte-stats';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
-const _createCompileSvelte = (makeHot: Function) =>
-	async function compileSvelte(
+const _createCompileSvelte = (makeHot: Function) => {
+	let stats: StatCollection | undefined;
+	return async function compileSvelte(
 		svelteRequest: SvelteRequest,
 		code: string,
 		options: Partial<ResolvedOptions>
@@ -17,6 +19,31 @@ const _createCompileSvelte = (makeHot: Function) =>
 		const { filename, normalizedFilename, cssId, ssr } = svelteRequest;
 		const { emitCss = true } = options;
 		const dependencies = [];
+
+		if (options.stats) {
+			if (options.isBuild) {
+				if (!stats) {
+					// build is either completely ssr or csr, create stats collector on first compile
+					// it is then finished in the buildEnd hook.
+					stats = options.stats.startCollection(`${ssr ? 'ssr' : 'dom'} compile`, {
+						logInProgress: () => false
+					});
+				}
+			} else {
+				// dev time ssr, it's a ssr request and there are no stats, assume new page load and start collecting
+				if (ssr && !stats) {
+					stats = options.stats.startCollection('ssr compile');
+				}
+				// stats are being collected but this isn't an ssr request, assume page loaded and stop collecting
+				if (!ssr && stats) {
+					stats.finish();
+					stats = undefined;
+				}
+				// TODO find a way to trace dom compile during dev
+				// problem: we need to call finish at some point but have no way to tell if page load finished
+				// also they for hmr updates too
+			}
+		}
 
 		const compileOptions: CompileOptions = {
 			...options.compilerOptions,
@@ -67,9 +94,16 @@ const _createCompileSvelte = (makeHot: Function) =>
 					...dynamicCompileOptions
 			  }
 			: compileOptions;
-		const compiled = compile(finalCode, finalCompileOptions);
 
-		if (emitCss && compiled.css.code) {
+		const endStat = stats?.start(filename);
+		const compiled = compile(finalCode, finalCompileOptions);
+		if (endStat) {
+			endStat();
+		}
+
+		const hasCss = compiled.css?.code?.trim().length > 0;
+		// compiler might not emit css with mode none or it may be empty
+		if (emitCss && hasCss) {
 			// TODO properly update sourcemap?
 			compiled.js.code += `\nimport ${JSON.stringify(cssId)};\n`;
 		}
@@ -79,7 +113,7 @@ const _createCompileSvelte = (makeHot: Function) =>
 			compiled.js.code = makeHot({
 				id: filename,
 				compiledCode: compiled.js.code,
-				hotOptions: options.hot,
+				hotOptions: { ...options.hot, injectCss: options.hot?.injectCss === true && hasCss },
 				compiled,
 				originalCode: code,
 				compileOptions: finalCompileOptions
@@ -98,7 +132,7 @@ const _createCompileSvelte = (makeHot: Function) =>
 			dependencies
 		};
 	};
-
+};
 function buildMakeHot(options: ResolvedOptions) {
 	const needsMakeHot = options.hot !== false && options.isServe && !options.isProduction;
 	if (needsMakeHot) {

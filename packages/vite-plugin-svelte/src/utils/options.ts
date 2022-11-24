@@ -1,15 +1,13 @@
 /* eslint-disable no-unused-vars */
-import {
-	ConfigEnv,
-	DepOptimizationOptions,
-	ResolvedConfig,
-	UserConfig,
-	ViteDevServer,
-	normalizePath
-} from 'vite';
+import { ConfigEnv, ResolvedConfig, UserConfig, ViteDevServer, normalizePath } from 'vite';
 import { log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
-import { SVELTE_HMR_IMPORTS, SVELTE_IMPORTS, SVELTE_RESOLVE_MAIN_FIELDS } from './constants';
+import {
+	SVELTE_EXPORT_CONDITIONS,
+	SVELTE_HMR_IMPORTS,
+	SVELTE_IMPORTS,
+	SVELTE_RESOLVE_MAIN_FIELDS
+} from './constants';
 // eslint-disable-next-line node/no-missing-import
 import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
 import type {
@@ -21,11 +19,23 @@ import type {
 } from 'svelte/types/compiler/preprocess';
 
 import path from 'path';
-import { findRootSvelteDependencies, needsOptimization, SvelteDependency } from './dependencies';
-import { createRequire } from 'module';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
 import { addExtraPreprocessors } from './preprocess';
 import deepmerge from 'deepmerge';
+import {
+	crawlFrameworkPkgs,
+	isDepExcluded,
+	isDepExternaled,
+	isDepIncluded,
+	isDepNoExternaled
+	// eslint-disable-next-line node/no-missing-import
+} from 'vitefu';
+import { atLeastSvelte } from './svelte-version';
+import { isCommonDepWithoutSvelteField } from './dependencies';
+import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
+
+// svelte 3.53.0 changed compilerOptions.css from boolean to string | boolen, use string when available
+const cssAsString = atLeastSvelte('3.53.0');
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -125,9 +135,11 @@ export async function preResolveOptions(
 		...viteUserConfig,
 		root: resolveViteRoot(viteUserConfig)
 	};
+	const isBuild = viteEnv.command === 'build';
 	const defaultOptions: Partial<Options> = {
 		extensions: ['.svelte'],
-		emitCss: true
+		emitCss: true,
+		prebundleSvelteLibraries: !isBuild
 	};
 	const svelteConfig = convertPluginOptions(
 		await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions)
@@ -135,7 +147,7 @@ export async function preResolveOptions(
 
 	const extraOptions: Partial<PreResolvedOptions> = {
 		root: viteConfigWithResolvedRoot.root!,
-		isBuild: viteEnv.command === 'build',
+		isBuild,
 		isServe: viteEnv.command === 'serve',
 		isDebug: process.env.DEBUG != null
 	};
@@ -170,15 +182,20 @@ export function resolveOptions(
 	preResolveOptions: PreResolvedOptions,
 	viteConfig: ResolvedConfig
 ): ResolvedOptions {
+	const css = cssAsString
+		? preResolveOptions.emitCss
+			? 'external'
+			: 'injected'
+		: !preResolveOptions.emitCss;
 	const defaultOptions: Partial<Options> = {
 		hot: viteConfig.isProduction
 			? false
 			: {
-					injectCss: !preResolveOptions.emitCss,
+					injectCss: css === true || css === 'injected',
 					partialAccept: !!viteConfig.experimental?.hmrPartialAccept
 			  },
 		compilerOptions: {
-			css: !preResolveOptions.emitCss,
+			css,
 			dev: !viteConfig.isProduction
 		}
 	};
@@ -194,6 +211,14 @@ export function resolveOptions(
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
+	// mergeConfigs would mangle functions on the stats class, so do this afterwards
+	const isLogLevelInfo = [undefined, 'info'].includes(viteConfig.logLevel);
+	const disableCompileStats = merged.experimental?.disableCompileStats;
+	const statsEnabled =
+		disableCompileStats !== true && disableCompileStats !== (merged.isBuild ? 'build' : 'dev');
+	if (statsEnabled && isLogLevelInfo) {
+		merged.stats = new VitePluginSvelteStats();
+	}
 	return merged;
 }
 
@@ -208,11 +233,13 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 				log.warn('hmr and emitCss are enabled but hot.injectCss is true, forcing it to false');
 				options.hot.injectCss = false;
 			}
-			if (options.compilerOptions.css) {
+			const css = options.compilerOptions.css;
+			if (css === true || css === 'injected') {
+				const forcedCss = cssAsString ? 'external' : false;
 				log.warn(
-					'hmr and emitCss are enabled but compilerOptions.css is true, forcing it to false'
+					`hmr and emitCss are enabled but compilerOptions.css is ${css}, forcing it to ${forcedCss}`
 				);
-				options.compilerOptions.css = false;
+				options.compilerOptions.css = forcedCss;
 			}
 		} else {
 			if (options.hot === true || !options.hot.injectCss) {
@@ -225,11 +252,13 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 					options.hot.injectCss = true;
 				}
 			}
-			if (!options.compilerOptions.css) {
+			const css = options.compilerOptions.css;
+			if (!(css === true || css === 'injected')) {
+				const forcedCss = cssAsString ? 'injected' : true;
 				log.warn(
-					'hmr with emitCss disabled requires compilerOptions.css to be enabled, forcing it to true'
+					`hmr with emitCss disabled requires compilerOptions.css to be enabled, forcing it to ${forcedCss}`
 				);
-				options.compilerOptions.css = true;
+				options.compilerOptions.css = forcedCss;
 			}
 		}
 	}
@@ -273,20 +302,9 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 // some SvelteKit options need compilerOptions to work, so set them here.
 function addSvelteKitOptions(options: ResolvedOptions) {
 	// @ts-expect-error kit is not typed to avoid dependency on sveltekit
-	if (options?.kit != null) {
-		// @ts-expect-error kit is not typed to avoid dependency on sveltekit
-		const kit_browser_hydrate = options.kit.browser?.hydrate;
-		const hydratable = kit_browser_hydrate !== false;
-		if (
-			options.compilerOptions.hydratable != null &&
-			options.compilerOptions.hydratable !== hydratable
-		) {
-			log.warn(
-				`Conflicting values "compilerOptions.hydratable: ${options.compilerOptions.hydratable}" and "kit.browser.hydrate: ${kit_browser_hydrate}" in your svelte config. You should remove "compilerOptions.hydratable".`
-			);
-		}
-		log.debug(`Setting compilerOptions.hydratable: ${hydratable} for SvelteKit`);
-		options.compilerOptions.hydratable = hydratable;
+	if (options?.kit != null && options.compilerOptions.hydratable == null) {
+		log.debug(`Setting compilerOptions.hydratable = true for SvelteKit`);
+		options.compilerOptions.hydratable = true;
 	}
 }
 
@@ -306,16 +324,15 @@ function resolveViteRoot(viteConfig: UserConfig): string | undefined {
 	return normalizePath(viteConfig.root ? path.resolve(viteConfig.root) : process.cwd());
 }
 
-export function buildExtraViteConfig(
+export async function buildExtraViteConfig(
 	options: PreResolvedOptions,
 	config: UserConfig
-): Partial<UserConfig> {
-	// extra handling for svelte dependencies in the project
-	const svelteDeps = findRootSvelteDependencies(options.root);
+): Promise<Partial<UserConfig>> {
 	const extraViteConfig: Partial<UserConfig> = {
 		resolve: {
 			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
-			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS]
+			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS],
+			conditions: [...SVELTE_EXPORT_CONDITIONS]
 		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
@@ -323,12 +340,40 @@ export function buildExtraViteConfig(
 		// knownJsSrcExtensions: options.extensions
 	};
 
-	extraViteConfig.optimizeDeps = buildOptimizeDepsForSvelte(
-		svelteDeps,
-		options,
-		config.optimizeDeps
-	);
+	const extraSvelteConfig = buildExtraConfigForSvelte(config);
+	const extraDepsConfig = await buildExtraConfigForDependencies(options, config);
+	// merge extra svelte and deps config, but make sure dep values are not contradicting svelte
+	extraViteConfig.optimizeDeps = {
+		include: [
+			...extraSvelteConfig.optimizeDeps.include,
+			...extraDepsConfig.optimizeDeps.include.filter(
+				(dep) => !isDepExcluded(dep, extraSvelteConfig.optimizeDeps.exclude)
+			)
+		],
+		exclude: [
+			...extraSvelteConfig.optimizeDeps.exclude,
+			...extraDepsConfig.optimizeDeps.exclude.filter(
+				(dep) => !isDepIncluded(dep, extraSvelteConfig.optimizeDeps.include)
+			)
+		]
+	};
 
+	extraViteConfig.ssr = {
+		external: [
+			...extraSvelteConfig.ssr.external,
+			...extraDepsConfig.ssr.external.filter(
+				(dep) => !isDepNoExternaled(dep, extraSvelteConfig.ssr.noExternal)
+			)
+		],
+		noExternal: [
+			...extraSvelteConfig.ssr.noExternal,
+			...extraDepsConfig.ssr.noExternal.filter(
+				(dep) => !isDepExternaled(dep, extraSvelteConfig.ssr.external)
+			)
+		]
+	};
+
+	// handle prebundling for svelte files
 	if (options.prebundleSvelteLibraries) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
@@ -344,9 +389,6 @@ export function buildExtraViteConfig(
 		};
 	}
 
-	// @ts-ignore
-	extraViteConfig.ssr = buildSSROptionsForSvelte(svelteDeps, options, config, extraViteConfig);
-
 	// enable hmrPartialAccept if not explicitly disabled
 	if (
 		(options.hot == null ||
@@ -357,112 +399,136 @@ export function buildExtraViteConfig(
 		log.debug('enabling "experimental.hmrPartialAccept" in vite config');
 		extraViteConfig.experimental = { hmrPartialAccept: true };
 	}
-
+	validateViteConfig(extraViteConfig, config, options);
 	return extraViteConfig;
 }
 
-function buildOptimizeDepsForSvelte(
-	svelteDeps: SvelteDependency[],
-	options: PreResolvedOptions,
-	optimizeDeps?: DepOptimizationOptions
-): DepOptimizationOptions {
+function validateViteConfig(
+	extraViteConfig: Partial<UserConfig>,
+	config: UserConfig,
+	options: PreResolvedOptions
+) {
+	const { prebundleSvelteLibraries, isBuild } = options;
+	if (prebundleSvelteLibraries) {
+		const isEnabled = (option: 'dev' | 'build' | boolean) =>
+			option !== true && option !== (isBuild ? 'build' : 'dev');
+		const logWarning = (name: string, value: 'dev' | 'build' | boolean, recommendation: string) =>
+			log.warn.once(
+				`Incompatible options: \`prebundleSvelteLibraries: true\` and vite \`${name}: ${JSON.stringify(
+					value
+				)}\` ${isBuild ? 'during build.' : '.'} ${recommendation}`
+			);
+		const viteOptimizeDepsDisabled = config.optimizeDeps?.disabled ?? 'build'; // fall back to vite default
+		const isOptimizeDepsEnabled = isEnabled(viteOptimizeDepsDisabled);
+		if (!isBuild && !isOptimizeDepsEnabled) {
+			logWarning(
+				'optimizeDeps.disabled',
+				viteOptimizeDepsDisabled,
+				'Forcing `optimizeDeps.disabled: "build"`. Disable prebundleSvelteLibraries or update your vite config to enable optimizeDeps during dev.'
+			);
+			extraViteConfig.optimizeDeps!.disabled = 'build';
+		} else if (isBuild && isOptimizeDepsEnabled) {
+			logWarning(
+				'optimizeDeps.disabled',
+				viteOptimizeDepsDisabled,
+				'Disable optimizeDeps or prebundleSvelteLibraries for build if you experience errors.'
+			);
+		}
+	}
+}
+
+async function buildExtraConfigForDependencies(options: PreResolvedOptions, config: UserConfig) {
+	// extra handling for svelte dependencies in the project
+	const depsConfig = await crawlFrameworkPkgs({
+		root: options.root,
+		isBuild: options.isBuild,
+		viteUserConfig: config,
+		isFrameworkPkgByJson(pkgJson) {
+			let hasSvelteCondition = false;
+			if (typeof pkgJson.exports === 'object') {
+				// use replacer as a simple way to iterate over nested keys
+				JSON.stringify(pkgJson.exports, (key, value) => {
+					if (SVELTE_EXPORT_CONDITIONS.includes(key)) {
+						hasSvelteCondition = true;
+					}
+					return value;
+				});
+			}
+			return hasSvelteCondition || !!pkgJson.svelte;
+		},
+		isSemiFrameworkPkgByJson(pkgJson) {
+			return !!pkgJson.dependencies?.svelte || !!pkgJson.peerDependencies?.svelte;
+		},
+		isFrameworkPkgByName(pkgName) {
+			const isNotSveltePackage = isCommonDepWithoutSvelteField(pkgName);
+			if (isNotSveltePackage) {
+				return false;
+			} else {
+				return undefined;
+			}
+		}
+	});
+
+	log.debug('extra config for dependencies generated by vitefu', depsConfig);
+
+	if (options.prebundleSvelteLibraries) {
+		// prebundling enabled, so we don't need extra dependency excludes
+		depsConfig.optimizeDeps.exclude = [];
+		// but keep dependency reinclusions of explicit user excludes
+		const userExclude = config.optimizeDeps?.exclude;
+		depsConfig.optimizeDeps.include = !userExclude
+			? []
+			: depsConfig.optimizeDeps.include.filter((dep: string) => {
+					// reincludes look like this: foo > bar > baz
+					// in case foo or bar are excluded, we have to retain the reinclude even with prebundling
+					return (
+						dep.includes('>') &&
+						dep
+							.split('>')
+							.slice(0, -1)
+							.some((d) => isDepExcluded(d.trim(), userExclude))
+					);
+			  });
+	}
+	if (options.disableDependencyReinclusion === true) {
+		depsConfig.optimizeDeps.include = depsConfig.optimizeDeps.include.filter(
+			(dep) => !dep.includes('>')
+		);
+	} else if (Array.isArray(options.disableDependencyReinclusion)) {
+		const disabledDeps = options.disableDependencyReinclusion;
+		depsConfig.optimizeDeps.include = depsConfig.optimizeDeps.include.filter((dep) => {
+			if (!dep.includes('>')) return true;
+			const trimDep = dep.replace(/\s+/g, '');
+			return disabledDeps.some((disabled) => trimDep.includes(`${disabled}>`));
+		});
+	}
+
+	log.debug('post-processed extra config for dependencies', depsConfig);
+
+	return depsConfig;
+}
+
+function buildExtraConfigForSvelte(config: UserConfig) {
 	// include svelte imports for optimization unless explicitly excluded
 	const include: string[] = [];
 	const exclude: string[] = ['svelte-hmr'];
-	const isIncluded = (dep: string) => include.includes(dep) || optimizeDeps?.include?.includes(dep);
-	const isExcluded = (dep: string) => {
-		return (
-			exclude.includes(dep) ||
-			// vite optimizeDeps.exclude works for subpackages too
-			// see https://github.com/vitejs/vite/blob/c87763c1418d1ba876eae13d139eba83ac6f28b2/packages/vite/src/node/optimizer/scan.ts#L293
-			optimizeDeps?.exclude?.some((id: string) => dep === id || id.startsWith(`${dep}/`))
-		);
-	};
-	if (!isExcluded('svelte')) {
+	if (!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
 		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
 		log.debug(
 			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `
 		);
-		include.push(...svelteImportsToInclude.filter((x) => !isIncluded(x)));
+		include.push(...svelteImportsToInclude);
 	} else {
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
-
-	// If we prebundle svelte libraries, we can skip the whole prebundling dance below
-	if (options.prebundleSvelteLibraries) {
-		return { include, exclude };
-	}
-
-	// only svelte component libraries needs to be processed for optimizeDeps, js libraries work fine
-	svelteDeps = svelteDeps.filter((dep) => dep.type === 'component-library');
-
-	const svelteDepsToExclude = Array.from(new Set(svelteDeps.map((dep) => dep.name))).filter(
-		(dep) => !isIncluded(dep)
-	);
-	log.debug(`automatically excluding found svelte dependencies: ${svelteDepsToExclude.join(', ')}`);
-	exclude.push(...svelteDepsToExclude.filter((x) => !isExcluded(x)));
-
-	if (options.disableDependencyReinclusion !== true) {
-		const disabledReinclusions = options.disableDependencyReinclusion || [];
-		if (disabledReinclusions.length > 0) {
-			log.debug(`not reincluding transitive dependencies of`, disabledReinclusions);
-		}
-		const transitiveDepsToInclude = svelteDeps
-			.filter((dep) => !disabledReinclusions.includes(dep.name) && isExcluded(dep.name))
-			.flatMap((dep) => {
-				const localRequire = createRequire(`${dep.dir}/package.json`);
-				return Object.keys(dep.pkg.dependencies || {})
-					.filter((depOfDep) => !isExcluded(depOfDep) && needsOptimization(depOfDep, localRequire))
-					.map((depOfDep) => dep.path.concat(dep.name, depOfDep).join(' > '));
-			});
-		log.debug(
-			`reincluding transitive dependencies of excluded svelte dependencies`,
-			transitiveDepsToInclude
-		);
-		include.push(...transitiveDepsToInclude);
-	}
-
-	return { include, exclude };
-}
-
-function buildSSROptionsForSvelte(
-	svelteDeps: SvelteDependency[],
-	options: ResolvedOptions,
-	config: UserConfig
-): any {
 	const noExternal: (string | RegExp)[] = [];
-
+	const external: string[] = [];
 	// add svelte to ssr.noExternal unless it is present in ssr.external
 	// so we can resolve it with svelte/ssr
-	if (!config.ssr?.external?.includes('svelte')) {
+	if (!isDepExternaled('svelte', config.ssr?.external ?? [])) {
 		noExternal.push('svelte', /^svelte\//);
 	}
-
-	// add svelte dependencies to ssr.noExternal unless present in ssr.external
-	noExternal.push(
-		...Array.from(new Set(svelteDeps.map((s) => s.name))).filter(
-			(x) => !config.ssr?.external?.includes(x)
-		)
-	);
-	const ssr = {
-		noExternal,
-		external: [] as string[]
-	};
-
-	if (options.isServe) {
-		// during dev, we have to externalize transitive dependencies, see https://github.com/sveltejs/vite-plugin-svelte/issues/281
-		ssr.external = Array.from(
-			new Set(svelteDeps.flatMap((dep) => Object.keys(dep.pkg.dependencies || {})))
-		).filter(
-			(dep) =>
-				!ssr.noExternal.includes(dep) &&
-				// TODO noExternal can be something different than a string array
-				//!config.ssr?.noExternal?.includes(dep) &&
-				!config.ssr?.external?.includes(dep)
-		);
-	}
-
-	return ssr;
+	return { optimizeDeps: { include, exclude }, ssr: { noExternal, external } };
 }
 
 export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: ResolvedOptions) {
@@ -552,9 +618,11 @@ export interface PluginOptions {
 	disableDependencyReinclusion?: boolean | string[];
 
 	/**
-	 * Force Vite to pre-bundle Svelte libraries
+	 * Enable support for Vite's dependency optimization to prebundle Svelte libraries.
 	 *
-	 * @default false
+	 * To disable prebundling for a specific library, add it to `optimizeDeps.exclude`.
+	 *
+	 * @default true for dev, false for build
 	 */
 	prebundleSvelteLibraries?: boolean;
 
@@ -656,6 +724,13 @@ export interface ExperimentalOptions {
 	 *
 	 */
 	sendWarningsToBrowser?: boolean;
+
+	/**
+	 * disable svelte compile statistics
+	 *
+	 * @default false
+	 */
+	disableCompileStats?: 'dev' | 'build' | boolean;
 }
 
 export interface InspectorOptions {
@@ -742,6 +817,7 @@ export interface PreResolvedOptions extends Options {
 export interface ResolvedOptions extends PreResolvedOptions {
 	isProduction: boolean;
 	server?: ViteDevServer;
+	stats?: VitePluginSvelteStats;
 }
 
 export type {

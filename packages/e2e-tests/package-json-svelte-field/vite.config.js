@@ -4,6 +4,9 @@ import { defineConfig } from 'vite';
 export default defineConfig(({ command, mode }) => {
 	return {
 		plugins: [svelte()],
+		optimizeDeps: {
+			exclude: ['e2e-test-dep-scss-only']
+		},
 		build: {
 			// make build faster by skipping transforms and minification
 			target: 'esnext',

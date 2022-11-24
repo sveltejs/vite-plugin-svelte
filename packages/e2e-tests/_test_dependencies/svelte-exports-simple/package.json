@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "private": true,
+  "name": "e2e-test-dep-svelte-exports-simple",
+  "dependencies": {
+    "e2e-test-dep-cjs-only": "file:../cjs-only"
+  },
+  "type": "module",
+	"exports": {
+		"./*": {
+			"svelte": "./src/components/*"
+		},
+		".": {
+			"svelte": "./index.js"
+		}
+	}
+}

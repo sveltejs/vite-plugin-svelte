@@ -1,5 +1,47 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.3.1
+
+### Patch Changes
+
+- improve robustness of compile stats taking ([#507](https://github.com/sveltejs/vite-plugin-svelte/pull/507))
+
+## 1.3.0
+
+### Minor Changes
+
+- enable `prebundleSvelteLibraries` during dev by default to improve page loading for the dev server. ([#494](https://github.com/sveltejs/vite-plugin-svelte/pull/494))
+
+  see the [FAQ](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies) for more information about `prebundleSvelteLibraries` and how to tune it.
+
+- Enable resolving via "svelte" exports condition ([#502](https://github.com/sveltejs/vite-plugin-svelte/pull/502))
+
+- add compile time stats logging ([#503](https://github.com/sveltejs/vite-plugin-svelte/pull/503))
+
+## 1.2.0
+
+### Minor Changes
+
+- support string values of compilerOptions.css added in svelte 3.53.0 ([#490](https://github.com/sveltejs/vite-plugin-svelte/pull/490))
+
+### Patch Changes
+
+- simplify init of compilerOptions.hydratable for kit (kit.browser.hydrate is no longer in use) ([#496](https://github.com/sveltejs/vite-plugin-svelte/pull/496))
+
+- when prebundleSvelteLibraries is true and a dependency is manually excluded, generate reincludes for it's cjs deps ([#493](https://github.com/sveltejs/vite-plugin-svelte/pull/493))
+
+- Refactor Svelte libraries config handling ([#478](https://github.com/sveltejs/vite-plugin-svelte/pull/478))
+
+- fix(prebundleSvelteLibraries): avoid resolving via svelte field after a library has been prebundled ([#482](https://github.com/sveltejs/vite-plugin-svelte/pull/482))
+
+## 1.1.1
+
+### Patch Changes
+
+- Use `preprocessCSS` API from Vite 3.2 for `useVitePreprocess` option ([#479](https://github.com/sveltejs/vite-plugin-svelte/pull/479))
+
+- add types to exports map in package.json ([#488](https://github.com/sveltejs/vite-plugin-svelte/pull/488))
+
 ## 1.1.0
 
 ### Minor Changes
