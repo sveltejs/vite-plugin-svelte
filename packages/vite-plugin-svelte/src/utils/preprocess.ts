@@ -5,21 +5,14 @@ import { PreprocessorGroup, Processed, ResolvedOptions } from './options';
 import { log } from './log';
 import { buildSourceMap } from './sourcemap';
 import path from 'path';
-import { viteScript, viteStyle } from '../preprocess';
+import { vitePreprocess } from '../preprocess';
 
 function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
 	return {
 		markup({ content, filename }) {
-			return preprocess(
-				content,
-				{
-					script: viteScript().script,
-					style: viteStyle(config).style
-				},
-				{ filename }
-			);
+			return preprocess(content, vitePreprocess({ style: config }), { filename });
 		}
-	} as PreprocessorGroup;
+	};
 }
 
 /**

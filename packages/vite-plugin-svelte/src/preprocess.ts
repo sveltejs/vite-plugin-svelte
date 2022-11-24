@@ -22,7 +22,7 @@ export function vitePreprocess(opts?: {
 	return preprocessor;
 }
 
-export function viteScript(): { script: Preprocessor } {
+function viteScript(): { script: Preprocessor } {
 	return {
 		async script({ attributes, content, filename = '' }) {
 			const lang = attributes.lang as string;
@@ -46,20 +46,20 @@ export function viteScript(): { script: Preprocessor } {
 	};
 }
 
-export function viteStyle(config: vite.InlineConfig | vite.ResolvedConfig = {}): {
+function viteStyle(config: vite.InlineConfig | vite.ResolvedConfig = {}): {
 	style: Preprocessor;
 } {
 	let transform: CssTransform;
 	return {
 		async style({ attributes, content, filename = '' }) {
+			const lang = attributes.lang as string;
+			if (!supportedStyleLangs.includes(lang)) return;
 			if (!transform) {
 				const resolvedConfig = isResolvedConfig(config)
 					? config
 					: await vite.resolveConfig(config, 'build');
 				transform = getCssTransformFn(resolvedConfig);
 			}
-			const lang = attributes.lang as string;
-			if (!supportedStyleLangs.includes(lang)) return;
 			const moduleId = `${filename}.${lang}`;
 			const result = await transform(content, moduleId);
 			// patch sourcemap source to point back to original filename
