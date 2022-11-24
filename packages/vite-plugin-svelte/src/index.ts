@@ -103,17 +103,28 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				setupWatchers(options, cache, requestParser);
 			},
 
-			load(id, opts) {
+			async load(id, opts) {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, !!ssr);
 				if (svelteRequest) {
 					const { filename, query } = svelteRequest;
 					// virtual css module
 					if (query.svelte && query.type === 'style') {
-						const css = cache.getCSS(svelteRequest);
+						let css = cache.getCSS(svelteRequest);
+						const isPlainRequest = query.raw || query.direct;
+						if (!css && isPlainRequest) {
+							// not cached, but plain requests may happen independently
+							// so compile for css on the fly
+							log.debug(`compiling for direct css request ${id}`);
+							css = (
+								await compileSvelte(svelteRequest, fs.readFileSync(filename, 'utf-8'), options)
+							).compiled.css;
+						}
 						if (css) {
-							log.debug(`load returns css for ${filename}`);
-							return css;
+							log.debug(
+								`load returns ${isPlainRequest ? 'plain css' : 'css module code'} for ${filename}`
+							);
+							return isPlainRequest ? css.code : css;
 						}
 					}
 					// prevent vite asset plugin from loading files as url that should be compiled in transform
@@ -205,7 +216,12 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 						ensureWatchedFile(options.server!.watcher, d, options.root);
 					});
 				}
-				log.debug(`transform returns compiled js for ${svelteRequest.filename}`);
+				if (svelteRequest.query.raw) {
+					// TODO is direct allowed for js requests too?
+					log.debug(`transform returns raw compiled js for ${svelteRequest.filename}`);
+					return compileData.compiled.js.code;
+				}
+				log.debug(`transform returns compiled js module for ${svelteRequest.filename}`);
 				return {
 					...compileData.compiled.js,
 					meta: {

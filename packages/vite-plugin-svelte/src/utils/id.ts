@@ -16,6 +16,7 @@ export interface RequestQuery {
 	// vite specific
 	url?: boolean;
 	raw?: boolean;
+	direct?: boolean;
 }
 
 export interface SvelteRequest {
@@ -44,7 +45,7 @@ function parseToSvelteRequest(
 	ssr: boolean
 ): SvelteRequest | undefined {
 	const query = parseRequestQuery(rawQuery);
-	if (query.url || query.raw) {
+	if (query.url || (query.raw && !query.svelte)) {
 		// skip requests with special vite tags
 		return;
 	}
