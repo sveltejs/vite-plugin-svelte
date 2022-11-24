@@ -175,7 +175,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 							log.debug.once(
 								`resolveId resolved ${importee} to ${resolved} via package.json svelte field of ${packageInfo.name}@${packageInfo.version}`
 							);
-							const logDeprecationWarning = (error?: Error) => {
+							const logDeprecationWarning = (error?: Error | string) => {
 								const prefix = `DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\``;
 								const reason = error
 									? ' and without it resolve would fail with the following error:'
@@ -188,7 +188,9 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 									await this.resolve(importee, importer, { ...opts, skipSelf: true })
 								)?.id;
 								if (resolved !== viteResolved) {
-									logDeprecationWarning();
+									logDeprecationWarning(
+										`'${importee}' resolved to '${resolved}' but vite would resolve to '${viteResolved}'`
+									);
 								}
 							} catch (e) {
 								logDeprecationWarning(e);
