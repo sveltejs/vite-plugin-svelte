@@ -50,31 +50,39 @@ function viteStyle(config: vite.InlineConfig | vite.ResolvedConfig = {}): {
 	style: Preprocessor;
 } {
 	let transform: CssTransform;
-	return {
-		async style({ attributes, content, filename = '' }) {
-			const lang = attributes.lang as string;
-			if (!supportedStyleLangs.includes(lang)) return;
-			if (!transform) {
-				const resolvedConfig = isResolvedConfig(config)
-					? config
-					: await vite.resolveConfig(
-							config,
-							process.env.NODE_ENV === 'production' ? 'build' : 'serve'
-					  );
-				transform = getCssTransformFn(resolvedConfig);
+	const style: Preprocessor = async ({ attributes, content, filename = '' }) => {
+		const lang = attributes.lang as string;
+		if (!supportedStyleLangs.includes(lang)) return;
+		if (!transform) {
+			let resolvedConfig: vite.ResolvedConfig;
+			// @ts-expect-error special prop added if running in v-p-s
+			if (style.__resolvedConfig) {
+				// @ts-expect-error
+				resolvedConfig = style.__resolvedConfig;
+			} else if (isResolvedConfig(config)) {
+				resolvedConfig = config;
+			} else {
+				resolvedConfig = await vite.resolveConfig(
+					config,
+					process.env.NODE_ENV === 'production' ? 'build' : 'serve'
+				);
 			}
-			const moduleId = `${filename}.${lang}`;
-			const result = await transform(content, moduleId);
-			// patch sourcemap source to point back to original filename
-			if (result.map?.sources?.[0] === moduleId) {
-				result.map.sources[0] = path.basename(filename);
-			}
-			return {
-				code: result.code,
-				map: result.map ?? undefined
-			};
+			transform = getCssTransformFn(resolvedConfig);
 		}
+		const moduleId = `${filename}.${lang}`;
+		const result = await transform(content, moduleId);
+		// patch sourcemap source to point back to original filename
+		if (result.map?.sources?.[0] === moduleId) {
+			result.map.sources[0] = path.basename(filename);
+		}
+		return {
+			code: result.code,
+			map: result.map ?? undefined
+		};
 	};
+	// @ts-expect-error tag so can be found by v-p-s
+	style.__resolvedConfig = null;
+	return { style };
 }
 
 // eslint-disable-next-line no-unused-vars
