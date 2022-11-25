@@ -57,7 +57,10 @@ function viteStyle(config: vite.InlineConfig | vite.ResolvedConfig = {}): {
 			if (!transform) {
 				const resolvedConfig = isResolvedConfig(config)
 					? config
-					: await vite.resolveConfig(config, 'build');
+					: await vite.resolveConfig(
+							config,
+							process.env.NODE_ENV === 'production' ? 'build' : 'serve'
+					  );
 				transform = getCssTransformFn(resolvedConfig);
 			}
 			const moduleId = `${filename}.${lang}`;
