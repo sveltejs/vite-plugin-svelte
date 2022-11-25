@@ -1,6 +1,6 @@
-// eslint-disable-next-line node/no-missing-require
-const { vitePreprocess } = require('@sveltejs/vite-plugin-svelte/preprocess');
+// eslint-disable-next-line node/no-missing-import
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte/preprocess';
 
-module.exports = {
+export default {
 	preprocess: [vitePreprocess()]
 };
