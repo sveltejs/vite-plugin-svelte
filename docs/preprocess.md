@@ -2,6 +2,8 @@
 
 `@sveltejs/vite-plugin-svelte/preprocess` exports utilities to preprocess Svelte components using Vite's built-in transformers.
 
+Compared to [`svelte-preprocess`](https://github.com/sveltejs/svelte-preprocess), Vite preprocessors shares the same CSS configuration from the Vite config so you don't have to configure them twice. [`esbuild`](http://esbuild.github.io) is also used to transform TypeScript by default.
+
 ## vitePreprocess
 
 - **Type:** `{ script?: boolean, style?: boolean | InlineConfig | ResolvedConfig }`
