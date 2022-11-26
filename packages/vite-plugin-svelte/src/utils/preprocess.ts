@@ -42,7 +42,9 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 	const appendPreprocessors: PreprocessorGroup[] = [];
 
 	if (options.experimental?.useVitePreprocess) {
-		log.debug('adding vite preprocessor');
+		log.warn(
+			'`experimental.useVitePreprocess` is deprecated. Use the `vitePreprocess()` preprocessor instead. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.'
+		);
 		prependPreprocessors.push(createVitePreprocessorGroup(config));
 	}
 
