@@ -3,11 +3,21 @@ import { createFilter } from 'vite';
 import { Arrayable, ResolvedOptions } from './options';
 import { normalizePath } from 'vite';
 import * as fs from 'fs';
+//eslint-disable-next-line node/no-missing-import
+import { CompileOptions } from 'svelte/types/compiler/interfaces';
+import { log } from './log';
 
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
-
-export type SvelteQueryTypes = 'style' | 'script';
+const SUPPORTED_COMPILE_OPTIONS_IN_QUERY = [
+	'generate',
+	'dev',
+	'css',
+	'hydratable',
+	'customElement',
+	'immutable'
+];
+export type SvelteQueryTypes = 'style' | 'script' | 'preprocessed';
 
 export interface RequestQuery {
 	// our own
@@ -17,6 +27,10 @@ export interface RequestQuery {
 	url?: boolean;
 	raw?: boolean;
 	direct?: boolean;
+	compileOptions?: Pick<
+		CompileOptions,
+		'generate' | 'dev' | 'css' | 'hydratable' | 'customElement' | 'immutable'
+	>;
 }
 
 export interface SvelteRequest {
@@ -27,6 +41,7 @@ export interface SvelteRequest {
 	query: RequestQuery;
 	timestamp: number;
 	ssr: boolean;
+	raw: boolean;
 }
 
 function splitId(id: string) {
@@ -45,10 +60,12 @@ function parseToSvelteRequest(
 	ssr: boolean
 ): SvelteRequest | undefined {
 	const query = parseRequestQuery(rawQuery);
-	if (query.url || (query.raw && !query.svelte)) {
+	const rawOrDirect = !!(query.raw || query.direct);
+	if (query.url || (!query.svelte && rawOrDirect)) {
 		// skip requests with special vite tags
 		return;
 	}
+	const raw = rawOrDirect;
 	const normalizedFilename = normalize(filename, root);
 	const cssId = createVirtualImportId(filename, root, 'style');
 
@@ -59,7 +76,8 @@ function parseToSvelteRequest(
 		cssId,
 		query,
 		timestamp,
-		ssr
+		ssr,
+		raw
 	};
 }
 
@@ -87,6 +105,32 @@ function parseRequestQuery(rawQuery: string): RequestQuery {
 			query[key] = true;
 		}
 	}
+	const compileOptions = query['compileOptions'];
+	if (compileOptions) {
+		if (!(query.raw && query.type === 'script')) {
+			throw new Error(
+				`Invalid compileOptions in query ${rawQuery}. CompileOptions are only supported for raw script queries, eg '?svelte&raw&type=script&compileOptions={"generate":"ssr","dev":false}`
+			);
+		}
+		try {
+			const parsed = JSON.parse(compileOptions);
+			const invalid = Object.keys(parsed).filter(
+				(key) => !SUPPORTED_COMPILE_OPTIONS_IN_QUERY.includes(key)
+			);
+			if (invalid.length) {
+				throw new Error(
+					`Invalid compileOptions in query ${rawQuery}: ${invalid.join(
+						', '
+					)}. Supported: ${SUPPORTED_COMPILE_OPTIONS_IN_QUERY.join(', ')}`
+				);
+			}
+			query['compileOptions'] = parsed;
+		} catch (e) {
+			log.error('failed to parse request query compileOptions', e);
+			throw e;
+		}
+	}
+
 	return query as RequestQuery;
 }
 

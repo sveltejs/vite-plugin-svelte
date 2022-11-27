@@ -107,12 +107,11 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, !!ssr);
 				if (svelteRequest) {
-					const { filename, query } = svelteRequest;
+					const { filename, query, raw } = svelteRequest;
 					// virtual css module
 					if (query.svelte && query.type === 'style') {
 						let css = cache.getCSS(svelteRequest);
-						const isPlainRequest = query.raw || query.direct;
-						if (!css && isPlainRequest) {
+						if (!css && raw) {
 							// not cached, but plain requests may happen independently
 							// so compile for css on the fly
 							log.debug(`compiling for direct css request ${id}`);
@@ -121,14 +120,12 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 							).compiled.css;
 						}
 						if (css) {
-							log.debug(
-								`load returns ${isPlainRequest ? 'plain css' : 'css module code'} for ${filename}`
-							);
-							return isPlainRequest ? css.code : css;
+							log.debug(`load returns ${raw ? 'plain css' : 'css module code'} for ${filename}`);
+							return raw ? toDefaultExport(css) : css;
 						}
 					}
 					// prevent vite asset plugin from loading files as url that should be compiled in transform
-					if (viteConfig.assetsInclude(filename)) {
+					if (viteConfig.assetsInclude(filename) || raw) {
 						log.debug(`load returns raw content for ${filename}`);
 						return fs.readFileSync(filename, 'utf-8');
 					}
@@ -139,14 +136,12 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(importee, ssr);
 				if (svelteRequest?.query.svelte) {
-					if (svelteRequest.query.type === 'style') {
+					if (svelteRequest.query.type === 'style' && !svelteRequest.raw) {
 						// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
 						// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
 						log.debug(`resolveId resolved virtual css module ${svelteRequest.cssId}`);
 						return svelteRequest.cssId;
 					}
-					log.debug(`resolveId resolved ${importee}`);
-					return importee; // query with svelte tag, an id we generated, no need for further analysis
 				}
 
 				if (ssr && importee === 'svelte') {
@@ -199,8 +194,12 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			async transform(code, id, opts) {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, ssr);
-				if (!svelteRequest || svelteRequest.query.svelte) {
+				if (!svelteRequest) {
 					return;
+				}
+				const { query, raw } = svelteRequest;
+				if (query.svelte && query.type === 'style') {
+					return; // styles are handled by load after js compile created a cached virtual module
 				}
 				let compileData;
 				try {
@@ -210,16 +209,27 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					throw toRollupError(e, options);
 				}
 				logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
+
+				if (raw) {
+					// subquery for raw code
+					if (query.type === 'script') {
+						log.debug(`transform returns raw compiled js data for ${svelteRequest.filename}`);
+						return toDefaultExport(compileData.compiled.js);
+					}
+					if (query.type === 'preprocessed') {
+						log.debug(`transform returns raw preprocessed data for ${svelteRequest.filename}`);
+						return toDefaultExport(compileData.preprocessed);
+					}
+					throw new Error(
+						`invalid raw query in id: ${svelteRequest.id}. It has to be combined with a supported type.`
+					);
+				}
+
 				cache.update(compileData);
 				if (compileData.dependencies?.length && options.server) {
 					compileData.dependencies.forEach((d) => {
 						ensureWatchedFile(options.server!.watcher, d, options.root);
 					});
-				}
-				if (svelteRequest.query.raw) {
-					// TODO is direct allowed for js requests too?
-					log.debug(`transform returns raw compiled js for ${svelteRequest.filename}`);
-					return compileData.compiled.js.code;
 				}
 				log.debug(`transform returns compiled js module for ${svelteRequest.filename}`);
 				return {
@@ -272,3 +282,7 @@ export {
 } from './utils/options';
 
 export { SvelteWarningsMessage } from './utils/log';
+
+function toDefaultExport(object: object | string) {
+	return `export default ${JSON.stringify(object)}`;
+}

@@ -6,17 +6,21 @@ import { SvelteRequest } from './id';
 import { safeBase64Hash } from './hash';
 import { log } from './log';
 import { StatCollection } from './vite-plugin-svelte-stats';
+//eslint-disable-next-line node/no-missing-import
+import type { Processed } from 'svelte/types/compiler/preprocess';
+import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
 const _createCompileSvelte = (makeHot: Function) => {
 	let stats: StatCollection | undefined;
+	const devStylePreprocessor = createInjectScopeEverythingRulePreprocessorGroup();
 	return async function compileSvelte(
 		svelteRequest: SvelteRequest,
 		code: string,
 		options: Partial<ResolvedOptions>
 	): Promise<CompileData> {
-		const { filename, normalizedFilename, cssId, ssr } = svelteRequest;
+		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
 		const dependencies = [];
 
@@ -51,7 +55,7 @@ const _createCompileSvelte = (makeHot: Function) => {
 			generate: ssr ? 'ssr' : 'dom',
 			format: 'esm'
 		};
-		if (options.hot && options.emitCss) {
+		if (options.hot && options.emitCss && !raw) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
 			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
 			compileOptions.cssHash = () => hash;
@@ -65,10 +69,20 @@ const _createCompileSvelte = (makeHot: Function) => {
 		}
 
 		let preprocessed;
-
-		if (options.preprocess) {
+		let preprocessors = options.preprocess;
+		if (!options.isBuild && options.emitCss && options.hot && !raw) {
+			// inject preprocessor that ensures css hmr works better
+			if (!Array.isArray(preprocessors)) {
+				preprocessors = preprocessors
+					? [preprocessors, devStylePreprocessor]
+					: [devStylePreprocessor];
+			} else {
+				preprocessors = preprocessors.concat(devStylePreprocessor);
+			}
+		}
+		if (preprocessors) {
 			try {
-				preprocessed = await preprocess(code, options.preprocess, { filename });
+				preprocessed = await preprocess(code, preprocessors, { filename });
 			} catch (e) {
 				e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
 				throw e;
@@ -88,36 +102,52 @@ const _createCompileSvelte = (makeHot: Function) => {
 				`dynamic compile options for  ${filename}: ${JSON.stringify(dynamicCompileOptions)}`
 			);
 		}
-		const finalCompileOptions = dynamicCompileOptions
+		let finalCompileOptions = dynamicCompileOptions
 			? {
 					...compileOptions,
 					...dynamicCompileOptions
 			  }
 			: compileOptions;
 
-		const endStat = stats?.start(filename);
+		if (svelteRequest.query.compileOptions) {
+			if (log.debug.enabled) {
+				log.debug(
+					`query compile options for  ${filename}: ${JSON.stringify(
+						svelteRequest.query.compileOptions
+					)}`
+				);
+			}
+			finalCompileOptions = {
+				...finalCompileOptions,
+				...svelteRequest.query.compileOptions
+			};
+		}
+		const endStat = !raw && stats?.start(filename);
 		const compiled = compile(finalCode, finalCompileOptions);
 		if (endStat) {
 			endStat();
 		}
+		if (!raw) {
+			// wire css import and code for hmr
+			const hasCss = compiled.css?.code?.trim().length > 0;
+			// compiler might not emit css with mode none or it may be empty
+			if (emitCss && hasCss) {
+				// TODO properly update sourcemap?
+				compiled.js.code += `\nimport ${JSON.stringify(cssId)};\n`;
+			}
 
-		const hasCss = compiled.css?.code?.trim().length > 0;
-		// compiler might not emit css with mode none or it may be empty
-		if (emitCss && hasCss) {
-			// TODO properly update sourcemap?
-			compiled.js.code += `\nimport ${JSON.stringify(cssId)};\n`;
-		}
-
-		// only apply hmr when not in ssr context and hot options are set
-		if (!ssr && makeHot) {
-			compiled.js.code = makeHot({
-				id: filename,
-				compiledCode: compiled.js.code,
-				hotOptions: { ...options.hot, injectCss: options.hot?.injectCss === true && hasCss },
-				compiled,
-				originalCode: code,
-				compileOptions: finalCompileOptions
-			});
+			// only apply hmr when not in ssr context and hot options are set
+			if (!ssr && makeHot) {
+				compiled.js.code = makeHot({
+					id: filename,
+					compiledCode: compiled.js.code,
+					//@ts-expect-error hot isn't a boolean at this point
+					hotOptions: { ...options.hot, injectCss: options.hot?.injectCss === true && hasCss },
+					compiled,
+					originalCode: code,
+					compileOptions: finalCompileOptions
+				});
+			}
 		}
 
 		compiled.js.dependencies = dependencies;
@@ -129,7 +159,8 @@ const _createCompileSvelte = (makeHot: Function) => {
 			// @ts-ignore
 			compiled,
 			ssr,
-			dependencies
+			dependencies,
+			preprocessed: preprocessed ?? { code }
 		};
 	};
 };
@@ -190,4 +221,5 @@ export interface CompileData {
 	compiled: Compiled;
 	ssr: boolean | undefined;
 	dependencies: string[];
+	preprocessed: Processed;
 }
