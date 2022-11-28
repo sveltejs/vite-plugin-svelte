@@ -15,7 +15,8 @@ const SUPPORTED_COMPILE_OPTIONS_IN_QUERY = [
 	'css',
 	'hydratable',
 	'customElement',
-	'immutable'
+	'immutable',
+	'enableSourcemap'
 ];
 export type SvelteQueryTypes = 'style' | 'script' | 'preprocessed';
 
@@ -29,7 +30,7 @@ export interface RequestQuery {
 	direct?: boolean;
 	compileOptions?: Pick<
 		CompileOptions,
-		'generate' | 'dev' | 'css' | 'hydratable' | 'customElement' | 'immutable'
+		'generate' | 'dev' | 'css' | 'hydratable' | 'customElement' | 'immutable' | 'enableSourcemap'
 	>;
 }
 

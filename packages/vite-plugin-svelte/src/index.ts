@@ -108,26 +108,52 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				const svelteRequest = requestParser(id, !!ssr);
 				if (svelteRequest) {
 					const { filename, query, raw } = svelteRequest;
-					// virtual css module
-					if (query.svelte && query.type === 'style') {
-						let css = cache.getCSS(svelteRequest);
-						if (!css && raw) {
-							// not cached, but plain requests may happen independently
-							// so compile for css on the fly
-							log.debug(`compiling for direct css request ${id}`);
-							css = (
-								await compileSvelte(svelteRequest, fs.readFileSync(filename, 'utf-8'), options)
-							).compiled.css;
+					if (raw) {
+						// raw svelte subrequest, compile on the fly and return requested subpart
+						let compileData;
+						try {
+							compileData = await compileSvelte(
+								svelteRequest,
+								fs.readFileSync(filename, 'utf-8'),
+								options
+							);
+						} catch (e) {
+							throw toRollupError(e, options);
 						}
-						if (css) {
-							log.debug(`load returns ${raw ? 'plain css' : 'css module code'} for ${filename}`);
-							return raw ? toDefaultExport(css) : css;
+						let result;
+						if (query.type === 'style') {
+							result = compileData.compiled.css;
+						} else if (query.type === 'script') {
+							result = compileData.compiled.js;
+						} else if (query.type === 'preprocessed') {
+							result = compileData.preprocessed;
+						} else {
+							throw new Error(
+								`invalid type value in ${svelteRequest.id}. supported are script, style, preprocessed`
+							);
 						}
-					}
-					// prevent vite asset plugin from loading files as url that should be compiled in transform
-					if (viteConfig.assetsInclude(filename) || raw) {
-						log.debug(`load returns raw content for ${filename}`);
-						return fs.readFileSync(filename, 'utf-8');
+						if (query.direct) {
+							log.debug(`load returns direct result for ${id}`);
+							return result.code;
+						} else if (query.raw) {
+							log.debug(`load returns raw result for ${id}`);
+							return toDefaultExport(result);
+						} else {
+							throw new Error(`invalid raw mode in ${svelteRequest.id}, supported are raw, direct`);
+						}
+					} else {
+						if (query.svelte && query.type === 'style') {
+							const css = cache.getCSS(svelteRequest);
+							if (css) {
+								log.debug(`load returns css for ${filename}`);
+								return css;
+							}
+						}
+						// prevent vite asset plugin from loading files as url that should be compiled in transform
+						if (viteConfig.assetsInclude(filename)) {
+							log.debug(`load returns raw content for ${filename}`);
+							return fs.readFileSync(filename, 'utf-8');
+						}
 					}
 				}
 			},
@@ -194,12 +220,8 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			async transform(code, id, opts) {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, ssr);
-				if (!svelteRequest) {
+				if (!svelteRequest || svelteRequest.query.type === 'style' || svelteRequest.raw) {
 					return;
-				}
-				const { query, raw } = svelteRequest;
-				if (query.svelte && query.type === 'style') {
-					return; // styles are handled by load after js compile created a cached virtual module
 				}
 				let compileData;
 				try {
@@ -209,29 +231,13 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					throw toRollupError(e, options);
 				}
 				logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
-
-				if (raw) {
-					// subquery for raw code
-					if (query.type === 'script') {
-						log.debug(`transform returns raw compiled js data for ${svelteRequest.filename}`);
-						return toDefaultExport(compileData.compiled.js);
-					}
-					if (query.type === 'preprocessed') {
-						log.debug(`transform returns raw preprocessed data for ${svelteRequest.filename}`);
-						return toDefaultExport(compileData.preprocessed);
-					}
-					throw new Error(
-						`invalid raw query in id: ${svelteRequest.id}. It has to be combined with a supported type.`
-					);
-				}
-
 				cache.update(compileData);
 				if (compileData.dependencies?.length && options.server) {
 					compileData.dependencies.forEach((d) => {
 						ensureWatchedFile(options.server!.watcher, d, options.root);
 					});
 				}
-				log.debug(`transform returns compiled js module for ${svelteRequest.filename}`);
+				log.debug(`transform returns compiled js for ${svelteRequest.filename}`);
 				return {
 					...compileData.compiled.js,
 					meta: {

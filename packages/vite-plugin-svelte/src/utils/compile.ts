@@ -24,7 +24,7 @@ const _createCompileSvelte = (makeHot: Function) => {
 		const { emitCss = true } = options;
 		const dependencies = [];
 
-		if (options.stats) {
+		if (options.stats && !raw) {
 			if (options.isBuild) {
 				if (!stats) {
 					// build is either completely ssr or csr, create stats collector on first compile
@@ -55,16 +55,23 @@ const _createCompileSvelte = (makeHot: Function) => {
 			generate: ssr ? 'ssr' : 'dom',
 			format: 'esm'
 		};
-		if (options.hot && options.emitCss && !raw) {
-			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
-			compileOptions.cssHash = () => hash;
-		}
-		if (ssr && compileOptions.enableSourcemap !== false) {
-			if (typeof compileOptions.enableSourcemap === 'object') {
-				compileOptions.enableSourcemap.css = false;
-			} else {
-				compileOptions.enableSourcemap = { js: true, css: false };
+		if (raw) {
+			// ensure raw queries compile consistently between dev and build, compileOptions query can be used to modify these
+			compileOptions.dev = false;
+			compileOptions.generate = 'dom';
+			compileOptions.enableSourcemap = false;
+		} else {
+			if (options.hot && options.emitCss) {
+				const hash = `s-${safeBase64Hash(normalizedFilename)}`;
+				log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
+				compileOptions.cssHash = () => hash;
+			}
+			if (ssr && compileOptions.enableSourcemap !== false) {
+				if (typeof compileOptions.enableSourcemap === 'object') {
+					compileOptions.enableSourcemap.css = false;
+				} else {
+					compileOptions.enableSourcemap = { js: true, css: false };
+				}
 			}
 		}
 
@@ -91,6 +98,10 @@ const _createCompileSvelte = (makeHot: Function) => {
 			if (preprocessed.dependencies) dependencies.push(...preprocessed.dependencies);
 			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 		}
+		if (raw && svelteRequest.query.type === 'preprocessed') {
+			// shortcut
+			return { preprocessed: preprocessed ?? { code } } as CompileData;
+		}
 		const finalCode = preprocessed ? preprocessed.code : code;
 		const dynamicCompileOptions = await options.experimental?.dynamicCompileOptions?.({
 			filename,
@@ -109,7 +120,7 @@ const _createCompileSvelte = (makeHot: Function) => {
 			  }
 			: compileOptions;
 
-		if (svelteRequest.query.compileOptions) {
+		if (raw && svelteRequest.query.compileOptions) {
 			if (log.debug.enabled) {
 				log.debug(
 					`query compile options for  ${filename}: ${JSON.stringify(
