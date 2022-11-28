@@ -52,19 +52,25 @@ describe.runIf(isBuild)('snapshots not obsolete warning', async () => {
 });
 
 describe.runIf(!isBuild)('direct', () => {
-	test('Dummy.svelte?direct&svelte&type=style&lang.css', async () => {
-		const response = await fetchFromPage('src/Dummy.svelte?direct&svelte&type=style&lang.css', {
-			headers: { Accept: 'text/css' }
-		});
+	test('Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css', async () => {
+		const response = await fetchFromPage(
+			'src/Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css',
+			{
+				headers: { Accept: 'text/css' }
+			}
+		);
 		expect(response.ok).toBe(true);
 		expect(response.headers.get('Content-Type')).toBe('text/css');
 		const css = await response.text();
 		expect(css).toMatchSnapshot();
 	});
-	test('Dummy.svelte?direct&svelte&type=script', async () => {
-		const response = await fetchFromPage('src/Dummy.svelte?direct&svelte&type=script', {
-			headers: { Accept: 'application/javascript' }
-		});
+	test('Dummy.svelte?direct&svelte&type=script&sourcemap&lang.js', async () => {
+		const response = await fetchFromPage(
+			'src/Dummy.svelte?direct&svelte&type=script&sourcemap&lang.js',
+			{
+				headers: { Accept: 'application/javascript' }
+			}
+		);
 		expect(response.ok).toBe(true);
 		expect(response.headers.get('Content-Type')).toBe('application/javascript');
 		const js = await response.text();

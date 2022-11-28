@@ -24,14 +24,15 @@ export interface RequestQuery {
 	// our own
 	svelte?: boolean;
 	type?: SvelteQueryTypes;
-	// vite specific
-	url?: boolean;
-	raw?: boolean;
-	direct?: boolean;
+	sourcemap?: boolean;
 	compileOptions?: Pick<
 		CompileOptions,
 		'generate' | 'dev' | 'css' | 'hydratable' | 'customElement' | 'immutable' | 'enableSourcemap'
 	>;
+	// vite specific
+	url?: boolean;
+	raw?: boolean;
+	direct?: boolean;
 }
 
 export interface SvelteRequest {

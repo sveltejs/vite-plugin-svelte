@@ -129,12 +129,29 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 							result = compileData.preprocessed;
 						} else {
 							throw new Error(
-								`invalid type value in ${svelteRequest.id}. supported are script, style, preprocessed`
+								`invalid "type=${query.type}" in ${svelteRequest.id}. supported are script, style, preprocessed`
 							);
 						}
 						if (query.direct) {
+							const supportedDirectTypes = ['script', 'style'];
+							if (!supportedDirectTypes.includes(query.type)) {
+								throw new Error(
+									`invalid "type=${query.type}" combined with direct in ${
+										svelteRequest.id
+									}. supported are: ${supportedDirectTypes.join(', ')}`
+								);
+							}
 							log.debug(`load returns direct result for ${id}`);
-							return result.code;
+							let directOutput = result.code;
+							if (query.sourcemap && result.map?.toUrl) {
+								const map = `sourceMappingURL=${result.map.toUrl()}`;
+								if (query.type === 'style') {
+									directOutput += `\n\n/*# ${map} */\n`;
+								} else if (query.type === 'script') {
+									directOutput += `\n\n//# ${map}\n`;
+								}
+							}
+							return directOutput;
 						} else if (query.raw) {
 							log.debug(`load returns raw result for ${id}`);
 							return toDefaultExport(result);

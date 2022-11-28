@@ -59,7 +59,14 @@ const _createCompileSvelte = (makeHot: Function) => {
 			// ensure raw queries compile consistently between dev and build, compileOptions query can be used to modify these
 			compileOptions.dev = false;
 			compileOptions.generate = 'dom';
-			compileOptions.enableSourcemap = false;
+			if (svelteRequest.query.sourcemap) {
+				compileOptions.enableSourcemap = {
+					js: svelteRequest.query.type === 'script',
+					css: svelteRequest.query.type === 'style'
+				};
+			} else {
+				compileOptions.enableSourcemap = false;
+			}
 		} else {
 			if (options.hot && options.emitCss) {
 				const hash = `s-${safeBase64Hash(normalizedFilename)}`;
