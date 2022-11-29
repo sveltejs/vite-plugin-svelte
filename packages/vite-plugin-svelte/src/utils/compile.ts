@@ -12,6 +12,8 @@ import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
+export type CompileSvelte = ReturnType<typeof _createCompileSvelte>;
+
 const _createCompileSvelte = (makeHot: Function) => {
 	let stats: StatCollection | undefined;
 	const devStylePreprocessor = createInjectScopeEverythingRulePreprocessorGroup();
@@ -24,7 +26,7 @@ const _createCompileSvelte = (makeHot: Function) => {
 		const { emitCss = true } = options;
 		const dependencies = [];
 
-		if (options.stats && !raw) {
+		if (options.stats) {
 			if (options.isBuild) {
 				if (!stats) {
 					// build is either completely ssr or csr, create stats collector on first compile
@@ -55,36 +57,22 @@ const _createCompileSvelte = (makeHot: Function) => {
 			generate: ssr ? 'ssr' : 'dom',
 			format: 'esm'
 		};
-		if (raw) {
-			// ensure raw queries compile consistently between dev and build, compileOptions query can be used to modify these
-			compileOptions.dev = false;
-			compileOptions.generate = 'dom';
-			if (svelteRequest.query.sourcemap) {
-				compileOptions.enableSourcemap = {
-					js: svelteRequest.query.type === 'script',
-					css: svelteRequest.query.type === 'style'
-				};
+		if (options.hot && options.emitCss) {
+			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
+			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
+			compileOptions.cssHash = () => hash;
+		}
+		if (ssr && compileOptions.enableSourcemap !== false) {
+			if (typeof compileOptions.enableSourcemap === 'object') {
+				compileOptions.enableSourcemap.css = false;
 			} else {
-				compileOptions.enableSourcemap = false;
-			}
-		} else {
-			if (options.hot && options.emitCss) {
-				const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-				log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
-				compileOptions.cssHash = () => hash;
-			}
-			if (ssr && compileOptions.enableSourcemap !== false) {
-				if (typeof compileOptions.enableSourcemap === 'object') {
-					compileOptions.enableSourcemap.css = false;
-				} else {
-					compileOptions.enableSourcemap = { js: true, css: false };
-				}
+				compileOptions.enableSourcemap = { js: true, css: false };
 			}
 		}
 
 		let preprocessed;
 		let preprocessors = options.preprocess;
-		if (!options.isBuild && options.emitCss && options.hot && !raw) {
+		if (!options.isBuild && options.emitCss && options.hot) {
 			// inject preprocessor that ensures css hmr works better
 			if (!Array.isArray(preprocessors)) {
 				preprocessors = preprocessors
@@ -120,27 +108,14 @@ const _createCompileSvelte = (makeHot: Function) => {
 				`dynamic compile options for  ${filename}: ${JSON.stringify(dynamicCompileOptions)}`
 			);
 		}
-		let finalCompileOptions = dynamicCompileOptions
+		const finalCompileOptions = dynamicCompileOptions
 			? {
 					...compileOptions,
 					...dynamicCompileOptions
 			  }
 			: compileOptions;
 
-		if (raw && svelteRequest.query.compileOptions) {
-			if (log.debug.enabled) {
-				log.debug(
-					`query compile options for  ${filename}: ${JSON.stringify(
-						svelteRequest.query.compileOptions
-					)}`
-				);
-			}
-			finalCompileOptions = {
-				...finalCompileOptions,
-				...svelteRequest.query.compileOptions
-			};
-		}
-		const endStat = !raw && stats?.start(filename);
+		const endStat = stats?.start(filename);
 		const compiled = compile(finalCode, finalCompileOptions);
 		if (endStat) {
 			endStat();

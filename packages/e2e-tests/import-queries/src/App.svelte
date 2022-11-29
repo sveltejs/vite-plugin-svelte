@@ -3,7 +3,7 @@
 	import raw from './Dummy.svelte?raw';
 	import preprocessed from './Dummy.svelte?raw&svelte&type=preprocessed';
 	import script from './Dummy.svelte?raw&svelte&type=script';
-	import wcScript from './Dummy.svelte?raw&svelte&type=script&compileOptions={"customElement":true,"dev":false}';
+	import wcScript from './Dummy.svelte?raw&svelte&type=script&compilerOptions={"customElement":true,"dev":false}';
 	import style from './Dummy.svelte?raw&svelte&type=style';
 </script>
 

@@ -23,6 +23,7 @@ import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
+import { loadRaw } from './utils/load-raw';
 
 interface PluginAPI {
 	/**
@@ -109,55 +110,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				if (svelteRequest) {
 					const { filename, query, raw } = svelteRequest;
 					if (raw) {
-						// raw svelte subrequest, compile on the fly and return requested subpart
-						let compileData;
-						try {
-							compileData = await compileSvelte(
-								svelteRequest,
-								fs.readFileSync(filename, 'utf-8'),
-								options
-							);
-						} catch (e) {
-							throw toRollupError(e, options);
-						}
-						let result;
-						if (query.type === 'style') {
-							result = compileData.compiled.css;
-						} else if (query.type === 'script') {
-							result = compileData.compiled.js;
-						} else if (query.type === 'preprocessed') {
-							result = compileData.preprocessed;
-						} else {
-							throw new Error(
-								`invalid "type=${query.type}" in ${svelteRequest.id}. supported are script, style, preprocessed`
-							);
-						}
-						if (query.direct) {
-							const supportedDirectTypes = ['script', 'style'];
-							if (!supportedDirectTypes.includes(query.type)) {
-								throw new Error(
-									`invalid "type=${query.type}" combined with direct in ${
-										svelteRequest.id
-									}. supported are: ${supportedDirectTypes.join(', ')}`
-								);
-							}
-							log.debug(`load returns direct result for ${id}`);
-							let directOutput = result.code;
-							if (query.sourcemap && result.map?.toUrl) {
-								const map = `sourceMappingURL=${result.map.toUrl()}`;
-								if (query.type === 'style') {
-									directOutput += `\n\n/*# ${map} */\n`;
-								} else if (query.type === 'script') {
-									directOutput += `\n\n//# ${map}\n`;
-								}
-							}
-							return directOutput;
-						} else if (query.raw) {
-							log.debug(`load returns raw result for ${id}`);
-							return toDefaultExport(result);
-						} else {
-							throw new Error(`invalid raw mode in ${svelteRequest.id}, supported are raw, direct`);
-						}
+						return loadRaw(svelteRequest, compileSvelte, options);
 					} else {
 						if (query.svelte && query.type === 'style') {
 							const css = cache.getCSS(svelteRequest);
@@ -305,7 +258,3 @@ export {
 } from './utils/options';
 
 export { SvelteWarningsMessage } from './utils/log';
-
-function toDefaultExport(object: object | string) {
-	return `export default ${JSON.stringify(object)}`;
-}

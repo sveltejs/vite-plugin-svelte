@@ -25,7 +25,7 @@ export interface RequestQuery {
 	svelte?: boolean;
 	type?: SvelteQueryTypes;
 	sourcemap?: boolean;
-	compileOptions?: Pick<
+	compilerOptions?: Pick<
 		CompileOptions,
 		'generate' | 'dev' | 'css' | 'hydratable' | 'customElement' | 'immutable' | 'enableSourcemap'
 	>;
@@ -107,15 +107,15 @@ function parseRequestQuery(rawQuery: string): RequestQuery {
 			query[key] = true;
 		}
 	}
-	const compileOptions = query['compileOptions'];
-	if (compileOptions) {
-		if (!(query.raw && query.type === 'script')) {
+	const compilerOptions = query.compilerOptions;
+	if (compilerOptions) {
+		if (!(query.raw && (query.type === 'script' || query.type === 'style'))) {
 			throw new Error(
-				`Invalid compileOptions in query ${rawQuery}. CompileOptions are only supported for raw script queries, eg '?svelte&raw&type=script&compileOptions={"generate":"ssr","dev":false}`
+				`Invalid compilerOptions in query ${rawQuery}. CompileOptions are only supported for raw script or style queries, eg '?svelte&raw&type=script&compileOptions={"generate":"ssr","dev":false}`
 			);
 		}
 		try {
-			const parsed = JSON.parse(compileOptions);
+			const parsed = JSON.parse(compilerOptions);
 			const invalid = Object.keys(parsed).filter(
 				(key) => !SUPPORTED_COMPILE_OPTIONS_IN_QUERY.includes(key)
 			);
@@ -126,7 +126,7 @@ function parseRequestQuery(rawQuery: string): RequestQuery {
 					)}. Supported: ${SUPPORTED_COMPILE_OPTIONS_IN_QUERY.join(', ')}`
 				);
 			}
-			query['compileOptions'] = parsed;
+			query.compilerOptions = parsed;
 		} catch (e) {
 			log.error('failed to parse request query compileOptions', e);
 			throw e;
