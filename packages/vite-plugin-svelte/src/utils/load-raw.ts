@@ -17,21 +17,22 @@ export async function loadRaw(
 
 	// raw svelte subrequest, compile on the fly and return requested subpart
 	let compileData;
+	const source = fs.readFileSync(filename, 'utf-8');
 	try {
 		//avoid compileSvelte doing extra ssr stuff unless requested
-		svelteRequest.ssr = svelteRequest.query.compilerOptions?.generate === 'ssr';
-
-		compileData = await compileSvelte(svelteRequest, fs.readFileSync(filename, 'utf-8'), {
+		svelteRequest.ssr = query.compilerOptions?.generate === 'ssr';
+		const type = query.type;
+		compileData = await compileSvelte(svelteRequest, source, {
 			...options,
 			// don't use dynamic vite-plugin-svelte defaults here to ensure stable result between ssr,dev and build
 			compilerOptions: {
 				dev: false,
 				css: false,
 				hydratable: false,
-				enableSourcemap: svelteRequest.query.sourcemap
+				enableSourcemap: query.sourcemap
 					? {
-							js: svelteRequest.query.type === 'script',
-							css: svelteRequest.query.type === 'style'
+							js: type === 'script' || type === 'all',
+							css: type === 'style' || type === 'all'
 					  }
 					: false,
 				...svelteRequest.query.compilerOptions
@@ -49,18 +50,20 @@ export async function loadRaw(
 		result = compileData.compiled.js;
 	} else if (query.type === 'preprocessed') {
 		result = compileData.preprocessed;
+	} else if (query.type === 'all') {
+		return toDefaultExport({ source, compiled: compileData.compiled });
 	} else {
 		throw new Error(
-			`invalid "type=${query.type}" in ${svelteRequest.id}. supported are script, style, preprocessed`
+			`invalid "type=${query.type}" in ${id}. supported are script, style, preprocessed, all`
 		);
 	}
 	if (query.direct) {
 		const supportedDirectTypes = ['script', 'style'];
 		if (!supportedDirectTypes.includes(query.type)) {
 			throw new Error(
-				`invalid "type=${query.type}" combined with direct in ${
-					svelteRequest.id
-				}. supported are: ${supportedDirectTypes.join(', ')}`
+				`invalid "type=${
+					query.type
+				}" combined with direct in ${id}. supported are: ${supportedDirectTypes.join(', ')}`
 			);
 		}
 		log.debug(`load returns direct result for ${id}`);
@@ -78,7 +81,7 @@ export async function loadRaw(
 		log.debug(`load returns raw result for ${id}`);
 		return toDefaultExport(result);
 	} else {
-		throw new Error(`invalid raw mode in ${svelteRequest.id}, supported are raw, direct`);
+		throw new Error(`invalid raw mode in ${id}, supported are raw, direct`);
 	}
 }
 

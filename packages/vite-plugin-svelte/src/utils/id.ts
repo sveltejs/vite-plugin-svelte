@@ -9,7 +9,8 @@ import { log } from './log';
 
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
-const SUPPORTED_COMPILE_OPTIONS_IN_QUERY = [
+
+const SUPPORTED_COMPILER_OPTIONS = [
 	'generate',
 	'dev',
 	'css',
@@ -18,7 +19,9 @@ const SUPPORTED_COMPILE_OPTIONS_IN_QUERY = [
 	'immutable',
 	'enableSourcemap'
 ];
-export type SvelteQueryTypes = 'style' | 'script' | 'preprocessed';
+const TYPES_WITH_COMPILER_OPTIONS = ['style', 'script', 'all'];
+
+export type SvelteQueryTypes = 'style' | 'script' | 'preprocessed' | 'all';
 
 export interface RequestQuery {
 	// our own
@@ -109,26 +112,28 @@ function parseRequestQuery(rawQuery: string): RequestQuery {
 	}
 	const compilerOptions = query.compilerOptions;
 	if (compilerOptions) {
-		if (!(query.raw && (query.type === 'script' || query.type === 'style'))) {
+		if (!((query.raw || query.direct) && TYPES_WITH_COMPILER_OPTIONS.includes(query.type))) {
 			throw new Error(
-				`Invalid compilerOptions in query ${rawQuery}. CompileOptions are only supported for raw script or style queries, eg '?svelte&raw&type=script&compileOptions={"generate":"ssr","dev":false}`
+				`Invalid compilerOptions in query ${rawQuery}. CompilerOptions are only supported for raw or direct queries with type in "${TYPES_WITH_COMPILER_OPTIONS.join(
+					', '
+				)}" e.g. '?svelte&raw&type=script&compilerOptions={"generate":"ssr","dev":false}`
 			);
 		}
 		try {
 			const parsed = JSON.parse(compilerOptions);
 			const invalid = Object.keys(parsed).filter(
-				(key) => !SUPPORTED_COMPILE_OPTIONS_IN_QUERY.includes(key)
+				(key) => !SUPPORTED_COMPILER_OPTIONS.includes(key)
 			);
 			if (invalid.length) {
 				throw new Error(
-					`Invalid compileOptions in query ${rawQuery}: ${invalid.join(
+					`Invalid compilerOptions in query ${rawQuery}: ${invalid.join(
 						', '
-					)}. Supported: ${SUPPORTED_COMPILE_OPTIONS_IN_QUERY.join(', ')}`
+					)}. Supported: ${SUPPORTED_COMPILER_OPTIONS.join(', ')}`
 				);
 			}
 			query.compilerOptions = parsed;
 		} catch (e) {
-			log.error('failed to parse request query compileOptions', e);
+			log.error('failed to parse request query compilerOptions', e);
 			throw e;
 		}
 	}

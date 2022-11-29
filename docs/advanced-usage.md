@@ -1,10 +1,17 @@
 # Advanced usage
 
+> **HERE BE DRAGONS**
+>
+> The features described here are not meant to be used in regular libraries or end-user applications.
+> They can be useful for frameworks, documentation sites or in special situations, but you are responsible for applying them correctly.
+>
+> **Proceed with caution!**
+
 ## custom queries
 
 Vite supports using query parameters to request different outcomes for the same file.
 
-The following schemes are supported by vite-plugin-svelte
+The following schemes are supported by vite-plugin-svelte:
 
 ### raw
 
@@ -20,6 +27,9 @@ import script from 'File.svelte?raw&svelte&type=script';
 
 //get output of svelte.compile css as {code, map }
 import style from 'File.svelte?raw&svelte&type=style';
+
+//get output of svelte.compile as {source, compiled:{js,css,preprocessed,dependencies,ast}}
+import all from 'File.svelte?raw&svelte&type=all';
 ```
 
 ### direct
@@ -33,7 +43,7 @@ import style from 'File.svelte?raw&svelte&type=style';
 
 ### sourcemap
 
-add `&sourcemap` to `?(raw|direct)&svelte&type=(script|style)` queries to include sourcemaps (inline for direct)
+add `&sourcemap` to `?(raw|direct)&svelte&type=(script|style|all)` queries to include sourcemaps (inline for direct)
 
 ### compilerOptions
 
