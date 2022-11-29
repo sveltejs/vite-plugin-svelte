@@ -4,8 +4,8 @@ import { HmrContext, ModuleNode, Plugin, ResolvedConfig, UserConfig } from 'vite
 import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update';
 import { log, logCompilerWarnings } from './utils/log';
-import { CompileData, createCompileSvelte } from './utils/compile';
-import { buildIdParser, IdParser, SvelteRequest } from './utils/id';
+import { type CompileSvelte, createCompileSvelte } from './utils/compile';
+import { buildIdParser, IdParser } from './utils/id';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
@@ -46,11 +46,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	let options: ResolvedOptions;
 	let viteConfig: ResolvedConfig;
 	/* eslint-disable no-unused-vars */
-	let compileSvelte: (
-		svelteRequest: SvelteRequest,
-		code: string,
-		options: Partial<ResolvedOptions>
-	) => Promise<CompileData>;
+	let compileSvelte: CompileSvelte;
 	/* eslint-enable no-unused-vars */
 
 	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;

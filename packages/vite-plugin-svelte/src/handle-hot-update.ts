@@ -20,7 +20,7 @@ export async function handleHotUpdate(
 		log.debug(`handleHotUpdate called before initial transform for ${svelteRequest.id}`);
 		return;
 	}
-	const { read, server } = ctx;
+	const { read, server, modules } = ctx;
 
 	const cachedJS = cache.getJS(svelteRequest);
 	const cachedCss = cache.getCSS(svelteRequest);
@@ -35,41 +35,41 @@ export async function handleHotUpdate(
 		throw e;
 	}
 
-	const affectedModules = new Set<ModuleNode | undefined>();
+	const affectedModules = [...modules];
 
-	const cssModule = server.moduleGraph.getModuleById(svelteRequest.cssId);
-	const mainModule = server.moduleGraph.getModuleById(svelteRequest.id);
-	const cssUpdated = cssModule && cssChanged(cachedCss, compileData.compiled.css);
-	if (cssUpdated) {
-		log.debug(`handleHotUpdate css changed for ${svelteRequest.cssId}`);
-		affectedModules.add(cssModule);
+	const cssIdx = modules.findIndex((m) => m.id === svelteRequest.cssId);
+	if (cssIdx > -1) {
+		const cssUpdated = cssChanged(cachedCss, compileData.compiled.css);
+		if (!cssUpdated) {
+			log.debug(`skipping unchanged css for ${svelteRequest.cssId}`);
+			affectedModules.splice(cssIdx, 1);
+		}
 	}
-	const jsUpdated =
-		mainModule && jsChanged(cachedJS, compileData.compiled.js, svelteRequest.filename);
-	if (jsUpdated) {
-		log.debug(`handleHotUpdate js changed for ${svelteRequest.id}`);
-		affectedModules.add(mainModule);
+	const jsIdx = modules.findIndex((m) => m.id === svelteRequest.id);
+	if (jsIdx > -1) {
+		const jsUpdated = jsChanged(cachedJS, compileData.compiled.js, svelteRequest.filename);
+		if (!jsUpdated) {
+			log.debug(`skipping unchanged js for ${svelteRequest.id}`);
+			affectedModules.splice(jsIdx, 1);
+			// transform won't be called, log warnings here
+			logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
+		}
 	}
-
-	if (!jsUpdated) {
-		// transform won't be called, log warnings here
-		logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
-	}
-
-	const result = [...affectedModules].filter(Boolean) as ModuleNode[];
 
 	// TODO is this enough? see also: https://github.com/vitejs/vite/issues/2274
-	const ssrModulesToInvalidate = result.filter((m) => !!m.ssrTransformResult);
+	const ssrModulesToInvalidate = affectedModules.filter((m) => !!m.ssrTransformResult);
 	if (ssrModulesToInvalidate.length > 0) {
 		log.debug(`invalidating modules ${ssrModulesToInvalidate.map((m) => m.id).join(', ')}`);
 		ssrModulesToInvalidate.forEach((moduleNode) => server.moduleGraph.invalidateModule(moduleNode));
 	}
-	if (result.length > 0) {
+	if (affectedModules.length > 0) {
 		log.debug(
-			`handleHotUpdate for ${svelteRequest.id} result: ${result.map((m) => m.id).join(', ')}`
+			`handleHotUpdate for ${svelteRequest.id} result: ${affectedModules
+				.map((m) => m.id)
+				.join(', ')}`
 		);
 	}
-	return result;
+	return affectedModules;
 }
 
 function cssChanged(prev?: Code, next?: Code): boolean {
