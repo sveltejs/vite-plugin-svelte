@@ -535,7 +535,6 @@ export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: Res
 	if (options.preprocess) {
 		for (const preprocessor of arraify(options.preprocess)) {
 			if (preprocessor.style && '__resolvedConfig' in preprocessor.style) {
-				// @ts-expect-error used by vite style preprocessor
 				preprocessor.style.__resolvedConfig = viteConfig;
 			}
 		}
