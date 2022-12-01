@@ -9,6 +9,8 @@
 </script>
 
 <main>
+	<h1>Component</h1>
+	<div id="component"><Dummy name="dummy" /></div>
 	<h1>raw</h1>
 	<pre id="raw">{raw}</pre>
 	<h1>preprocessed</h1>
@@ -20,7 +22,5 @@
 	<h1>style</h1>
 	<pre id="style">{style.code}</pre>
 	<h1>all</h1>
-	<pre id="all">{JSON.stringify(all)}</pre>
-	<h1>Component</h1>
-	<div id="component"><Dummy name="dummy" /></div>
+	<pre id="all">{JSON.stringify(all, null, 2)}</pre>
 </main>
