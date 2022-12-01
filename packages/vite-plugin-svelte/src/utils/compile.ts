@@ -9,10 +9,29 @@ import { StatCollection } from './vite-plugin-svelte-stats';
 //eslint-disable-next-line node/no-missing-import
 import type { Processed } from 'svelte/types/compiler/preprocess';
 import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess';
+import path from 'path';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
 export type CompileSvelte = ReturnType<typeof _createCompileSvelte>;
+
+function mapSourcesToRelative(map: { sources?: string[] }, filename: string) {
+	// sourcemap sources are relative to the sourcemap itself
+	// assume the sourcemap location is the same as filename and turn absolute paths to relative
+	// to avoid leaking fs information like vite root
+	if (map?.sources) {
+		map.sources = map.sources.map((s) => {
+			if (s === filename) {
+				// empty string not allowed, use simple filename
+				return path.basename(filename);
+			} else if (path.isAbsolute(s)) {
+				return path.relative(filename, s);
+			} else {
+				return s;
+			}
+		});
+	}
+}
 
 const _createCompileSvelte = (makeHot: Function) => {
 	let stats: StatCollection | undefined;
@@ -93,6 +112,9 @@ const _createCompileSvelte = (makeHot: Function) => {
 			if (preprocessed.dependencies) dependencies.push(...preprocessed.dependencies);
 			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 		}
+		if (typeof preprocessed?.map === 'object') {
+			mapSourcesToRelative(preprocessed?.map, filename);
+		}
 		if (raw && svelteRequest.query.type === 'preprocessed') {
 			// shortcut
 			return { preprocessed: preprocessed ?? { code } } as CompileData;
@@ -120,6 +142,8 @@ const _createCompileSvelte = (makeHot: Function) => {
 		if (endStat) {
 			endStat();
 		}
+		mapSourcesToRelative(compiled.js?.map, filename);
+		mapSourcesToRelative(compiled.css?.map, filename);
 		if (!raw) {
 			// wire css import and code for hmr
 			const hasCss = compiled.css?.code?.trim().length > 0;
