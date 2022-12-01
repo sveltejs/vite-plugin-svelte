@@ -21,11 +21,10 @@ function mapSourcesToRelative(map: { sources?: string[] }, filename: string) {
 	// to avoid leaking fs information like vite root
 	if (map?.sources) {
 		map.sources = map.sources.map((s) => {
-			if (s === filename) {
-				// empty string not allowed, use simple filename
-				return path.basename(filename);
-			} else if (path.isAbsolute(s)) {
-				return path.relative(filename, s);
+			if (path.isAbsolute(s)) {
+				const relative = path.relative(filename, s);
+				// empty string a source is not allowed, use simple filename
+				return relative === '' ? path.basename(filename) : relative;
 			} else {
 				return s;
 			}
