@@ -4,7 +4,7 @@
 
 Compared to [`svelte-preprocess`](https://github.com/sveltejs/svelte-preprocess), Vite preprocessors share the same CSS configuration from the Vite config so you don't have to configure them twice. [`esbuild`](http://esbuild.github.io) is also used to transform TypeScript by default.
 
-However, `svelte-preprocess` does provide extra functionalities not available with Vite preprocessors, such as [template tag](https://github.com/sveltejs/svelte-preprocess#template-tag), [external files](https://github.com/sveltejs/svelte-preprocess#external-files), and [global styles](https://github.com/sveltejs/svelte-preprocess#global-style) ([It's recommended to use import instead](./faq.md#where-should-i-put-my-global-styles)). If those features are required, you can still use `svelte-preprocess`, but make sure to turn off it's script and style preprocessing options.
+However, `svelte-preprocess` does provide extra functionalities not available with Vite preprocessors, such as [template tag](https://github.com/sveltejs/svelte-preprocess#template-tag), [external files](https://github.com/sveltejs/svelte-preprocess#external-files), and [global styles](https://github.com/sveltejs/svelte-preprocess#global-style) ([though it's recommended to use import instead](./faq.md#where-should-i-put-my-global-styles)). If those features are required, you can still use `svelte-preprocess`, but make sure to turn off it's script and style preprocessing options.
 
 ## vitePreprocess
 
