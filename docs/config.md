@@ -251,13 +251,6 @@ export default {
 
   Use extra preprocessors that delegate style and TypeScript preprocessing to native Vite plugins. TypeScript will be transformed with esbuild. Styles will be transformed using [Vite's CSS plugin](https://vitejs.dev/guide/features.html#css), which handles `@imports`, `url()` references, PostCSS, CSS Modules, and `.scss`/`.sass`/`.less`/`.styl`/`.stylus` files. Do not use together with TypeScript or style preprocessors from `svelte-preprocess` as attempts to transform the content twice will fail!
 
-### generateMissingPreprocessorSourcemaps
-
-- **Type:** `boolean`
-- **Default:** `false`
-
-  If a preprocessor does not provide a sourcemap, a best-effort fallback sourcemap will be provided. This option requires [diff-match-patch](https://github.com/google/diff-match-patch) to be installed as a peer dependency.
-
 ### dynamicCompileOptions
 
 - **Type:**
