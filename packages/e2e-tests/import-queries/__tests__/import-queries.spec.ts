@@ -49,6 +49,33 @@ describe('raw', () => {
 		const result = await getText('#all');
 		expect(normalizeSnapshot(result)).toMatchSnapshot();
 	});
+
+	describe('mixed exports', () => {
+		test('Dummy.svelte?raw&svelte&type=preprocessed', async () => {
+			const module = await fetchFromPage('src/Dummy.svelte?raw&svelte&type=preprocessed').then(
+				(res) => res.text()
+			);
+			expect(normalizeSnapshot(module)).toMatchSnapshot();
+		});
+		test('Dummy.svelte?raw&svelte&type=style', async () => {
+			const module = await fetchFromPage('src/Dummy.svelte?raw&svelte&type=style').then((res) =>
+				res.text()
+			);
+			expect(normalizeSnapshot(module)).toMatchSnapshot();
+		});
+		test('Dummy.svelte?raw&svelte&type=script', async () => {
+			const module = await fetchFromPage('src/Dummy.svelte?raw&svelte&type=script').then((res) =>
+				res.text()
+			);
+			expect(normalizeSnapshot(module)).toMatchSnapshot();
+		});
+		test('Dummy.svelte?raw&svelte&type=all', async () => {
+			const module = await fetchFromPage('src/Dummy.svelte?raw&svelte&type=all').then((res) =>
+				res.text()
+			);
+			expect(normalizeSnapshot(module)).toMatchSnapshot();
+		});
+	});
 });
 
 // vitest prints a warning about obsolete snapshots during build tests, ignore it, they are used in dev tests.

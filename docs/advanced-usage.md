@@ -29,17 +29,55 @@ In addition to the plain .svelte source content, you can use special svelte quer
 #### raw&svelte
 
 ```js
-//get output of svelte.preprocess as {code, map, dependencies}
+//get output of svelte.preprocess code as string
 import preprocessed from 'File.svelte?raw&svelte&type=preprocessed';
+```
 
-//get output of svelte.compile js as {code, map, dependencies}
+```js
+//get output of svelte.compile js.code as string
 import script from 'File.svelte?raw&svelte&type=script';
+```
 
-//get output of svelte.compile css as {code, map }
+```js
+//get output of svelte.compile css.code as string
 import style from 'File.svelte?raw&svelte&type=style';
+```
 
-//get output of svelte.compile as {source, compiled:{js,css,preprocessed,dependencies,ast}}
-import all from 'File.svelte?raw&svelte&type=all';
+##### detail exports
+
+raw&svelte exports code string as default export, but also offers named exports if you need details
+
+```js
+//get output of svelte.preprocess
+import { code, map, dependencies } from 'File.svelte?raw&svelte&type=preprocessed';
+```
+
+```js
+//get output of svelte.compile js
+import { code, map, dependencies } from 'File.svelte?raw&svelte&type=script';
+```
+
+```js
+//get output of svelte.compile css
+import { code, map, dependencies } from 'File.svelte?raw&svelte&type=style';
+```
+
+```js
+//get everything in one go
+import * as all from 'File.svelte?raw&svelte&type=all';
+import {
+  source,
+  preprocessed,
+  dependencies,
+  js,
+  css,
+  ast,
+  normalizedFilename,
+  ssr,
+  lang,
+  warnings,
+  stats
+} from 'File.svelte?raw&svelte&type=all';
 ```
 
 #### direct&svelte

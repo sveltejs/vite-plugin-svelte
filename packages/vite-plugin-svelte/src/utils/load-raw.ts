@@ -3,7 +3,7 @@ import fs from 'fs';
 import { toRollupError } from './error';
 import { log } from './log';
 import type { SvelteRequest } from './id';
-import { CompileSvelte } from './compile';
+import { type CompileData, CompileSvelte } from './compile';
 
 /**
  * utility function to compile ?raw and ?direct requests in load hook
@@ -50,8 +50,8 @@ export async function loadRaw(
 		result = compileData.compiled.js;
 	} else if (query.type === 'preprocessed') {
 		result = compileData.preprocessed;
-	} else if (query.type === 'all') {
-		return toDefaultExport({ source, compiled: compileData.compiled });
+	} else if (query.type === 'all' && query.raw) {
+		return allToRawExports(compileData, source);
 	} else {
 		throw new Error(
 			`invalid "type=${query.type}" in ${id}. supported are script, style, preprocessed, all`
@@ -79,12 +79,33 @@ export async function loadRaw(
 		return directOutput;
 	} else if (query.raw) {
 		log.debug(`load returns raw result for ${id}`);
-		return toDefaultExport(result);
+		return toRawExports(result);
 	} else {
 		throw new Error(`invalid raw mode in ${id}, supported are raw, direct`);
 	}
 }
 
-function toDefaultExport(object: object | string) {
-	return `export default ${JSON.stringify(object)}`;
+function allToRawExports(compileData: CompileData, source: string) {
+	// flatten CompileData
+	const exports: Partial<CompileData & { source: string }> = {
+		...compileData,
+		...compileData.compiled,
+		source
+	};
+	delete exports.compiled;
+	delete exports.filename; // absolute path, remove to avoid it in output
+	return toRawExports(exports);
+}
+
+function toRawExports(object: object) {
+	let exports =
+		Object.entries(object)
+			//eslint-disable-next-line no-unused-vars
+			.filter(([key, value]) => typeof value !== 'function') // preprocess output has a toString function that's enumerable
+			.map(([key, value]) => `export const ${key}=${JSON.stringify(value)}`)
+			.join('\n') + '\n';
+	if (Object.prototype.hasOwnProperty.call(object, 'code')) {
+		exports += `export default code\n`;
+	}
+	return exports;
 }
