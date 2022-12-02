@@ -26,7 +26,7 @@ However, `svelte-preprocess` does provide extra functionalities not available wi
 
   ```js
   // svelte.config.js
-  import { vitePreprocess } from '@sveltejs/vite-plugin-svelte/preprocess';
+  import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
   export default {
     preprocess: [vitePreprocess()]
