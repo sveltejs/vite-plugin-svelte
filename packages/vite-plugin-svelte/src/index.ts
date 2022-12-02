@@ -238,6 +238,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	return plugins.filter(Boolean);
 }
 
+export { vitePreprocess } from './preprocess';
 export { loadSvelteConfig } from './utils/load-svelte-config';
 
 export {
