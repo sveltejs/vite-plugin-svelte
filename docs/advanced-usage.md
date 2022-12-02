@@ -18,7 +18,17 @@ The following schemes are supported by vite-plugin-svelte:
 ```js
 //get .svelte file content as a string
 import content from 'File.svelte?raw';
+```
 
+### experimental
+
+In addition to the plain .svelte source content, you can use special svelte queries.
+
+> These svelte subqueries are experimental, availability, syntax and output format may change
+
+#### raw&svelte
+
+```js
 //get output of svelte.preprocess as {code, map, dependencies}
 import preprocessed from 'File.svelte?raw&svelte&type=preprocessed';
 
@@ -32,20 +42,20 @@ import style from 'File.svelte?raw&svelte&type=style';
 import all from 'File.svelte?raw&svelte&type=all';
 ```
 
-### direct
+#### direct&svelte
 
 ```html
 <!-- load and execute component script -->
 <script type="application/javascript" src="File.svelte?direct&svelte&type=script&lang.js" />
 <!-- embed component style as css -->
-<link rel="stylesheet" type="text/css" href="File.svelte?direct&svelte&type=script&lang.css" />
+<link rel="stylesheet" type="text/css" href="File.svelte?direct&svelte&type=style&lang.css" />
 ```
 
-### sourcemap
+#### sourcemap
 
 add `&sourcemap` to `?(raw|direct)&svelte&type=(script|style|all)` queries to include sourcemaps (inline for direct)
 
-### compilerOptions
+#### compilerOptions
 
 ?raw and ?direct use default compilerOptions, even if you have different values in your svelte.config.js:
 
