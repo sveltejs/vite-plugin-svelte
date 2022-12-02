@@ -4,8 +4,8 @@ import { HmrContext, ModuleNode, Plugin, ResolvedConfig, UserConfig } from 'vite
 import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update';
 import { log, logCompilerWarnings } from './utils/log';
-import { CompileData, createCompileSvelte } from './utils/compile';
-import { buildIdParser, IdParser, SvelteRequest } from './utils/id';
+import { type CompileSvelte, createCompileSvelte } from './utils/compile';
+import { buildIdParser, IdParser } from './utils/id';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
@@ -23,6 +23,7 @@ import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
+import { loadRaw } from './utils/load-raw';
 
 interface PluginAPI {
 	/**
@@ -45,11 +46,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	let options: ResolvedOptions;
 	let viteConfig: ResolvedConfig;
 	/* eslint-disable no-unused-vars */
-	let compileSvelte: (
-		svelteRequest: SvelteRequest,
-		code: string,
-		options: Partial<ResolvedOptions>
-	) => Promise<CompileData>;
+	let compileSvelte: CompileSvelte;
 	/* eslint-enable no-unused-vars */
 
 	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;
@@ -103,23 +100,26 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				setupWatchers(options, cache, requestParser);
 			},
 
-			load(id, opts) {
+			async load(id, opts) {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, !!ssr);
 				if (svelteRequest) {
-					const { filename, query } = svelteRequest;
-					// virtual css module
-					if (query.svelte && query.type === 'style') {
-						const css = cache.getCSS(svelteRequest);
-						if (css) {
-							log.debug(`load returns css for ${filename}`);
-							return css;
+					const { filename, query, raw } = svelteRequest;
+					if (raw) {
+						return loadRaw(svelteRequest, compileSvelte, options);
+					} else {
+						if (query.svelte && query.type === 'style') {
+							const css = cache.getCSS(svelteRequest);
+							if (css) {
+								log.debug(`load returns css for ${filename}`);
+								return css;
+							}
 						}
-					}
-					// prevent vite asset plugin from loading files as url that should be compiled in transform
-					if (viteConfig.assetsInclude(filename)) {
-						log.debug(`load returns raw content for ${filename}`);
-						return fs.readFileSync(filename, 'utf-8');
+						// prevent vite asset plugin from loading files as url that should be compiled in transform
+						if (viteConfig.assetsInclude(filename)) {
+							log.debug(`load returns raw content for ${filename}`);
+							return fs.readFileSync(filename, 'utf-8');
+						}
 					}
 				}
 			},
@@ -128,14 +128,12 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(importee, ssr);
 				if (svelteRequest?.query.svelte) {
-					if (svelteRequest.query.type === 'style') {
+					if (svelteRequest.query.type === 'style' && !svelteRequest.raw) {
 						// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
 						// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
 						log.debug(`resolveId resolved virtual css module ${svelteRequest.cssId}`);
 						return svelteRequest.cssId;
 					}
-					log.debug(`resolveId resolved ${importee}`);
-					return importee; // query with svelte tag, an id we generated, no need for further analysis
 				}
 
 				if (ssr && importee === 'svelte') {
@@ -188,7 +186,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			async transform(code, id, opts) {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, ssr);
-				if (!svelteRequest || svelteRequest.query.svelte) {
+				if (!svelteRequest || svelteRequest.query.type === 'style' || svelteRequest.raw) {
 					return;
 				}
 				let compileData;

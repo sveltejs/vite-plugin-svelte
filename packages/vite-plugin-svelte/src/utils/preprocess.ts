@@ -21,7 +21,7 @@ function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup 
  *
  * only used during dev with enabled css hmr
  */
-function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
+export function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
 	return {
 		style({ content, filename }) {
 			const s = new MagicString(content);
@@ -100,10 +100,6 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 				.join(', ')}`
 		);
 		appendPreprocessors.push(...pluginsWithPreprocessors.map((p) => p.api.sveltePreprocess));
-	}
-
-	if (options.hot && options.emitCss) {
-		appendPreprocessors.push(createInjectScopeEverythingRulePreprocessorGroup());
 	}
 
 	return { prependPreprocessors, appendPreprocessors };
