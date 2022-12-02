@@ -71,7 +71,7 @@ const _createCompileSvelte = (makeHot: Function) => {
 
 		const compileOptions: CompileOptions = {
 			...options.compilerOptions,
-			filename,
+			filename: normalizedFilename, // use normalized here to avoid bleeding absolute fs path
 			generate: ssr ? 'ssr' : 'dom',
 			format: 'esm'
 		};
@@ -102,7 +102,7 @@ const _createCompileSvelte = (makeHot: Function) => {
 		}
 		if (preprocessors) {
 			try {
-				preprocessed = await preprocess(code, preprocessors, { filename });
+				preprocessed = await preprocess(code, preprocessors, { filename }); // full filename here so postcss works
 			} catch (e) {
 				e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
 				throw e;
