@@ -535,12 +535,25 @@ function buildExtraConfigForSvelte(config: UserConfig) {
 }
 
 export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: ResolvedOptions) {
+	if (options.preprocess) {
+		for (const preprocessor of arraify(options.preprocess)) {
+			if (preprocessor.style && '__resolvedConfig' in preprocessor.style) {
+				preprocessor.style.__resolvedConfig = viteConfig;
+			}
+		}
+	}
+
+	// replace facade esbuild plugin with a real one
 	const facadeEsbuildSveltePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
 		(plugin) => plugin.name === facadeEsbuildSveltePluginName
 	);
 	if (facadeEsbuildSveltePlugin) {
 		Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
 	}
+}
+
+function arraify<T>(value: T | T[]): T[] {
+	return Array.isArray(value) ? value : [value];
 }
 
 export type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
