@@ -1,9 +1,8 @@
 import type { ResolvedConfig, Plugin } from 'vite';
 import MagicString from 'magic-string';
 import { preprocess } from 'svelte/compiler';
-import { PreprocessorGroup, Processed, ResolvedOptions } from './options';
+import { PreprocessorGroup, ResolvedOptions } from './options';
 import { log } from './log';
-import { buildSourceMap } from './sourcemap';
 import path from 'path';
 import { vitePreprocess } from '../preprocess';
 
@@ -117,67 +116,4 @@ export function addExtraPreprocessors(options: ResolvedOptions, config: Resolved
 			options.preprocess = [...prependPreprocessors, options.preprocess, ...appendPreprocessors];
 		}
 	}
-	const generateMissingSourceMaps = !!options.experimental?.generateMissingPreprocessorSourcemaps;
-	if (options.preprocess && generateMissingSourceMaps) {
-		options.preprocess = Array.isArray(options.preprocess)
-			? options.preprocess.map((p, i) => validateSourceMapOutputWrapper(p, i))
-			: validateSourceMapOutputWrapper(options.preprocess, 0);
-	}
-}
-
-function validateSourceMapOutputWrapper(group: PreprocessorGroup, i: number): PreprocessorGroup {
-	const wrapper: PreprocessorGroup = {};
-
-	for (const [processorType, processorFn] of Object.entries(group) as Array<
-		// eslint-disable-next-line no-unused-vars
-		[keyof PreprocessorGroup, (options: { filename?: string; content: string }) => Processed]
-	>) {
-		wrapper[processorType] = async (options) => {
-			const result = await processorFn(options);
-
-			if (result && result.code !== options.content) {
-				let invalidMap = false;
-				if (!result.map) {
-					invalidMap = true;
-					log.warn.enabled &&
-						log.warn.once(
-							`preprocessor at index ${i} did not return a sourcemap for ${processorType} transform`,
-							{
-								filename: options.filename,
-								type: processorType,
-								processor: processorFn.toString()
-							}
-						);
-				} else if ((result.map as any)?.mappings === '') {
-					invalidMap = true;
-					log.warn.enabled &&
-						log.warn.once(
-							`preprocessor at index ${i} returned an invalid empty sourcemap for ${processorType} transform`,
-							{
-								filename: options.filename,
-								type: processorType,
-								processor: processorFn.toString()
-							}
-						);
-				}
-				if (invalidMap) {
-					try {
-						const map = await buildSourceMap(options.content, result.code, options.filename);
-						if (map) {
-							log.debug.enabled &&
-								log.debug(
-									`adding generated sourcemap to preprocesor result for ${options.filename}`
-								);
-							result.map = map;
-						}
-					} catch (e) {
-						log.error(`failed to build sourcemap`, e);
-					}
-				}
-			}
-			return result;
-		};
-	}
-
-	return wrapper;
 }

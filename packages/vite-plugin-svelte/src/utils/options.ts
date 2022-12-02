@@ -315,6 +315,9 @@ function handleDeprecatedOptions(options: ResolvedOptions) {
 			'experimental.prebundleSvelteLibraries is no longer experimental and has moved to prebundleSvelteLibraries'
 		);
 	}
+	if ((options.experimental as any)?.generateMissingPreprocessorSourcemaps) {
+		log.warn('experimental.generateMissingPreprocessorSourcemaps has been removed.');
+	}
 }
 
 // vite passes unresolved `root`option to config hook but we need the resolved value, so do it here
@@ -692,15 +695,6 @@ export interface ExperimentalOptions {
 	 * @default false
 	 */
 	useVitePreprocess?: boolean;
-
-	/**
-	 * If a preprocessor does not provide a sourcemap, a best-effort fallback sourcemap will be provided.
-	 * This option requires `diff-match-patch` to be installed as a peer dependency.
-	 *
-	 * @see https://github.com/google/diff-match-patch
-	 * @default false
-	 */
-	generateMissingPreprocessorSourcemaps?: boolean;
 
 	/**
 	 * A function to update `compilerOptions` before compilation
