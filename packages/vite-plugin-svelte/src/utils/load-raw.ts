@@ -85,6 +85,12 @@ export async function loadRaw(
 	}
 }
 
+/**
+ * turn compileData and source into a flat list of raw exports
+ *
+ * @param compileData
+ * @param source
+ */
 function allToRawExports(compileData: CompileData, source: string) {
 	// flatten CompileData
 	const exports: Partial<CompileData & { source: string }> = {
@@ -97,11 +103,26 @@ function allToRawExports(compileData: CompileData, source: string) {
 	return toRawExports(exports);
 }
 
+/**
+ * turn object into raw exports.
+ *
+ * every prop is returned as a const export, and if prop 'code' exists it is additionally added as default export
+ *
+ * eg {'foo':'bar','code':'baz'} results in
+ *
+ *  ```js
+ *  export const code='baz'
+ *  export const foo='bar'
+ *  export default code
+ *  ```
+ * @param object
+ */
 function toRawExports(object: object) {
 	let exports =
 		Object.entries(object)
 			//eslint-disable-next-line no-unused-vars
 			.filter(([key, value]) => typeof value !== 'function') // preprocess output has a toString function that's enumerable
+			.sort(([a], [b]) => (a < b ? -1 : a === b ? 0 : 1))
 			.map(([key, value]) => `export const ${key}=${JSON.stringify(value)}`)
 			.join('\n') + '\n';
 	if (Object.prototype.hasOwnProperty.call(object, 'code')) {

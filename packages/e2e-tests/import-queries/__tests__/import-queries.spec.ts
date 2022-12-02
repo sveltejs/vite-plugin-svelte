@@ -50,7 +50,7 @@ describe('raw', () => {
 		expect(normalizeSnapshot(result)).toMatchSnapshot();
 	});
 
-	describe('mixed exports', () => {
+	describe.runIf(!isBuild)('mixed exports', () => {
 		test('Dummy.svelte?raw&svelte&type=preprocessed', async () => {
 			const module = await fetchFromPage('src/Dummy.svelte?raw&svelte&type=preprocessed').then(
 				(res) => res.text()
