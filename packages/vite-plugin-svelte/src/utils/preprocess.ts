@@ -1,93 +1,17 @@
-import * as vite from 'vite';
-import type { ESBuildOptions, ResolvedConfig, Plugin } from 'vite';
+import type { ResolvedConfig, Plugin } from 'vite';
 import MagicString from 'magic-string';
 import { preprocess } from 'svelte/compiler';
-import { Preprocessor, PreprocessorGroup, Processed, ResolvedOptions } from './options';
+import { PreprocessorGroup, ResolvedOptions } from './options';
 import { log } from './log';
-import { buildSourceMap } from './sourcemap';
 import path from 'path';
-
-const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss'];
-
-const supportedScriptLangs = ['ts'];
-
-function createViteScriptPreprocessor(): Preprocessor {
-	return async ({ attributes, content, filename = '' }) => {
-		const lang = attributes.lang as string;
-		if (!supportedScriptLangs.includes(lang)) return;
-		const transformResult = await vite.transformWithEsbuild(content, filename, {
-			loader: lang as ESBuildOptions['loader'],
-			target: 'esnext',
-			tsconfigRaw: {
-				compilerOptions: {
-					// svelte typescript needs this flag to work with type imports
-					importsNotUsedAsValues: 'preserve',
-					preserveValueImports: true
-				}
-			}
-		});
-		return {
-			code: transformResult.code,
-			map: transformResult.map
-		};
-	};
-}
-
-function createViteStylePreprocessor(config: ResolvedConfig): Preprocessor {
-	const transform = getCssTransformFn(config);
-	return async ({ attributes, content, filename = '' }) => {
-		const lang = attributes.lang as string;
-		if (!supportedStyleLangs.includes(lang)) return;
-		const moduleId = `${filename}.${lang}`;
-		const result = await transform(content, moduleId);
-		// patch sourcemap source to point back to original filename
-		if (result.map?.sources?.[0] === moduleId) {
-			result.map.sources[0] = path.basename(filename);
-		}
-		return {
-			code: result.code,
-			map: result.map ?? undefined
-		};
-	};
-}
-
-// eslint-disable-next-line no-unused-vars
-type CssTransform = (code: string, filename: string) => Promise<{ code: string; map?: any }>;
-
-function getCssTransformFn(config: ResolvedConfig): CssTransform {
-	// API is only available in Vite 3.2 and above
-	// TODO: Remove Vite plugin hack when bump peer dep to Vite 3.2
-	if (vite.preprocessCSS) {
-		return async (code, filename) => {
-			return vite.preprocessCSS(code, filename, config);
-		};
-	} else {
-		const pluginName = 'vite:css';
-		const plugin = config.plugins.find((p) => p.name === pluginName);
-		if (!plugin) {
-			throw new Error(`failed to find plugin ${pluginName}`);
-		}
-		if (!plugin.transform) {
-			throw new Error(`plugin ${pluginName} has no transform`);
-		}
-		// @ts-expect-error
-		return plugin.transform.bind(null);
-	}
-}
+import { vitePreprocess } from '../preprocess';
 
 function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
 	return {
 		markup({ content, filename }) {
-			return preprocess(
-				content,
-				{
-					script: createViteScriptPreprocessor(),
-					style: createViteStylePreprocessor(config)
-				},
-				{ filename }
-			);
+			return preprocess(content, vitePreprocess({ style: config }), { filename });
 		}
-	} as PreprocessorGroup;
+	};
 }
 
 /**
@@ -96,7 +20,7 @@ function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup 
  *
  * only used during dev with enabled css hmr
  */
-function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
+export function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
 	return {
 		style({ content, filename }) {
 			const s = new MagicString(content);
@@ -117,7 +41,9 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 	const appendPreprocessors: PreprocessorGroup[] = [];
 
 	if (options.experimental?.useVitePreprocess) {
-		log.debug('adding vite preprocessor');
+		log.warn(
+			'`experimental.useVitePreprocess` is deprecated. Use the `vitePreprocess()` preprocessor instead. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.'
+		);
 		prependPreprocessors.push(createVitePreprocessorGroup(config));
 	}
 
@@ -175,10 +101,6 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 		appendPreprocessors.push(...pluginsWithPreprocessors.map((p) => p.api.sveltePreprocess));
 	}
 
-	if (options.hot && options.emitCss) {
-		appendPreprocessors.push(createInjectScopeEverythingRulePreprocessorGroup());
-	}
-
 	return { prependPreprocessors, appendPreprocessors };
 }
 
@@ -194,67 +116,4 @@ export function addExtraPreprocessors(options: ResolvedOptions, config: Resolved
 			options.preprocess = [...prependPreprocessors, options.preprocess, ...appendPreprocessors];
 		}
 	}
-	const generateMissingSourceMaps = !!options.experimental?.generateMissingPreprocessorSourcemaps;
-	if (options.preprocess && generateMissingSourceMaps) {
-		options.preprocess = Array.isArray(options.preprocess)
-			? options.preprocess.map((p, i) => validateSourceMapOutputWrapper(p, i))
-			: validateSourceMapOutputWrapper(options.preprocess, 0);
-	}
-}
-
-function validateSourceMapOutputWrapper(group: PreprocessorGroup, i: number): PreprocessorGroup {
-	const wrapper: PreprocessorGroup = {};
-
-	for (const [processorType, processorFn] of Object.entries(group) as Array<
-		// eslint-disable-next-line no-unused-vars
-		[keyof PreprocessorGroup, (options: { filename?: string; content: string }) => Processed]
-	>) {
-		wrapper[processorType] = async (options) => {
-			const result = await processorFn(options);
-
-			if (result && result.code !== options.content) {
-				let invalidMap = false;
-				if (!result.map) {
-					invalidMap = true;
-					log.warn.enabled &&
-						log.warn.once(
-							`preprocessor at index ${i} did not return a sourcemap for ${processorType} transform`,
-							{
-								filename: options.filename,
-								type: processorType,
-								processor: processorFn.toString()
-							}
-						);
-				} else if ((result.map as any)?.mappings === '') {
-					invalidMap = true;
-					log.warn.enabled &&
-						log.warn.once(
-							`preprocessor at index ${i} returned an invalid empty sourcemap for ${processorType} transform`,
-							{
-								filename: options.filename,
-								type: processorType,
-								processor: processorFn.toString()
-							}
-						);
-				}
-				if (invalidMap) {
-					try {
-						const map = await buildSourceMap(options.content, result.code, options.filename);
-						if (map) {
-							log.debug.enabled &&
-								log.debug(
-									`adding generated sourcemap to preprocesor result for ${options.filename}`
-								);
-							result.map = map;
-						}
-					} catch (e) {
-						log.error(`failed to build sourcemap`, e);
-					}
-				}
-			}
-			return result;
-		};
-	}
-
-	return wrapper;
 }

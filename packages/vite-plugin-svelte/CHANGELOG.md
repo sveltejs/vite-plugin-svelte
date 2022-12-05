@@ -1,5 +1,19 @@
 # @sveltejs/vite-plugin-svelte
 
+## 1.4.0
+
+### Minor Changes
+
+- support `&direct` and `&raw` query parameters for svelte requests ([#513](https://github.com/sveltejs/vite-plugin-svelte/pull/513))
+
+- Export `vitePreprocess()` Svelte preprocessor ([#509](https://github.com/sveltejs/vite-plugin-svelte/pull/509))
+
+### Patch Changes
+
+- ensure sources paths in sourcemaps are not absolute file paths ([#513](https://github.com/sveltejs/vite-plugin-svelte/pull/513))
+
+- remove experimental.generateMissingPreprocessorSourcemaps ([#514](https://github.com/sveltejs/vite-plugin-svelte/pull/514))
+
 ## 1.3.1
 
 ### Patch Changes
