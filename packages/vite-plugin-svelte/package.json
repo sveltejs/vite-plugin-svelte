@@ -9,12 +9,11 @@
     "*.d.ts"
   ],
   "type": "module",
-  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": "./dist/index.js"
     },
     "./package.json": "./package.json",
     "./src/ui/*": "./src/ui/*"
