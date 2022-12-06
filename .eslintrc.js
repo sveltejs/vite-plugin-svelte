@@ -27,7 +27,7 @@ module.exports = {
 		'node/no-missing-import': [
 			'error',
 			{
-				allowModules: ['types', 'estree', 'testUtils'],
+				allowModules: ['types', 'estree', 'testUtils', '@sveltejs/vite-plugin-svelte'],
 				tryExtensions: ['.ts', '.js', '.jsx', '.tsx']
 			}
 		],
