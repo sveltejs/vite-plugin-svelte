@@ -9,21 +9,19 @@
     "*.d.ts"
   ],
   "type": "module",
-  "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json",
     "./src/ui/*": "./src/ui/*"
   },
   "scripts": {
     "dev": "pnpm build:ci --sourcemap --watch src",
-    "build:ci": "rimraf dist && tsup-node src/index.ts src/preprocess.ts --format esm,cjs --no-splitting --shims",
+    "build:ci": "rimraf dist && tsup-node src/index.ts --format esm",
     "build": "pnpm build:ci --dts --sourcemap"
   },
   "engines": {
