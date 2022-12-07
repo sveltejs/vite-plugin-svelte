@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.0-beta.0
+
+### Major Changes
+
+- remove cjs build ([#522](https://github.com/sveltejs/vite-plugin-svelte/pull/522))
+
+- update vite peerDependency to vite-4 ([#521](https://github.com/sveltejs/vite-plugin-svelte/pull/521))
+
 ## 1.4.0
 
 ### Minor Changes
