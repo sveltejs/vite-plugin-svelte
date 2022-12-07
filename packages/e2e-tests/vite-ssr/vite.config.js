@@ -1,7 +1,8 @@
 const { defineConfig } = require('vite');
-const { svelte } = require('@sveltejs/vite-plugin-svelte');
 
-module.exports = defineConfig(({ command, mode }) => {
+module.exports = defineConfig(async ({ command, mode }) => {
+	//eslint-disable-next-line node/no-missing-import
+	const { svelte } = await import('@sveltejs/vite-plugin-svelte');
 	return {
 		plugins: [
 			svelte({

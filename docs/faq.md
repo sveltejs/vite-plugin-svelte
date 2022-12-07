@@ -177,3 +177,34 @@ There is no golden rule, but you can follow these recommendations:
 
 This warning only occurs if you use non-default settings in your vite config that can cause problems in combination with prebundleSvelteLibraries.
 You should not use prebundleSvelteLibraries during build or for ssr, disable one of the incompatible options to make that warning (and subsequent errors) go away.
+
+### how can I use vite-plugin-svelte from commonjs
+
+You really shouldn't. Svelte and Vite are esm first and the ecosystem is moving away from commonjs and so should you. Consider migrating to esm.
+
+In case you have to, use dynamic import to load vite-plugin-svelte's esm code from cjs like this:
+
+```diff
+// vite.config.cjs
+const { defineConfig } = require('vite');
+- const { svelte } = require('@sveltejs/vite-plugin-svelte');
+module.exports = defineConfig(async ({ command, mode }) => {
++ const { svelte } = await import('@sveltejs/vite-plugin-svelte');
+  return {plugins:[svelte()]}
+}
+```
+
+And for `vitePreprocess` you have to set up a lazy promise as top-level-await doesn't work for esm imports in cjs:
+
+```diff
+- const {vitePreprocess} = require('@sveltejs/vite-plugin-svelte')
++ const vitePreprocess = import('@sveltejs/vite-plugin-svelte').then(m => m.vitePreprocess())
+
+module.exports = {
+-    preprocess: vitePreprocess()
++    preprocess: {
++        script:async (options) => (await vitePreprocess).script(options),
++        style:async (options) => (await vitePreprocess).style(options),
++    }
+}
+```
