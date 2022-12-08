@@ -18,7 +18,6 @@ import {
 
 import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
-import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
@@ -47,9 +46,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	let viteConfig: ResolvedConfig;
 	/* eslint-disable no-unused-vars */
 	let compileSvelte: CompileSvelte;
-	/* eslint-enable no-unused-vars */
 
-	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;
 	const api: PluginAPI = {};
 	const plugins: Plugin[] = [
 		{
@@ -136,24 +133,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					}
 				}
 
-				if (ssr && importee === 'svelte') {
-					if (!resolvedSvelteSSR) {
-						resolvedSvelteSSR = this.resolve('svelte/ssr', undefined, { skipSelf: true }).then(
-							(svelteSSR) => {
-								log.debug('resolved svelte to svelte/ssr');
-								return svelteSSR;
-							},
-							(err) => {
-								log.debug(
-									'failed to resolve svelte to svelte/ssr. Update svelte to a version that exports it',
-									err
-								);
-								return null; // returning null here leads to svelte getting resolved regularly
-							}
-						);
-					}
-					return resolvedSvelteSSR;
-				}
 				//@ts-expect-error scan
 				const scan = !!opts?.scan; // scanner phase of optimizeDeps
 				const isPrebundled =
