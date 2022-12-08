@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.0-beta.2
+
+### Major Changes
+
+- reintroduce custom svelte/ssr resolve ([#532](https://github.com/sveltejs/vite-plugin-svelte/pull/532))
+
 ## 2.0.0-beta.1
 
 ### Major Changes
