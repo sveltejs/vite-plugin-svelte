@@ -30,12 +30,9 @@ import {
 	isDepNoExternaled
 	// eslint-disable-next-line node/no-missing-import
 } from 'vitefu';
-import { atLeastSvelte } from './svelte-version';
+
 import { isCommonDepWithoutSvelteField } from './dependencies';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
-
-// svelte 3.53.0 changed compilerOptions.css from boolean to string | boolen, use string when available
-const cssAsString = atLeastSvelte('3.53.0');
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -182,16 +179,12 @@ export function resolveOptions(
 	preResolveOptions: PreResolvedOptions,
 	viteConfig: ResolvedConfig
 ): ResolvedOptions {
-	const css = cssAsString
-		? preResolveOptions.emitCss
-			? 'external'
-			: 'injected'
-		: !preResolveOptions.emitCss;
+	const css = preResolveOptions.emitCss ? 'external' : 'injected';
 	const defaultOptions: Partial<Options> = {
 		hot: viteConfig.isProduction
 			? false
 			: {
-					injectCss: css === true || css === 'injected',
+					injectCss: css === 'injected',
 					partialAccept: !!viteConfig.experimental?.hmrPartialAccept
 			  },
 		compilerOptions: {
@@ -235,7 +228,7 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 			}
 			const css = options.compilerOptions.css;
 			if (css === true || css === 'injected') {
-				const forcedCss = cssAsString ? 'external' : false;
+				const forcedCss = 'external';
 				log.warn(
 					`hmr and emitCss are enabled but compilerOptions.css is ${css}, forcing it to ${forcedCss}`
 				);
@@ -254,7 +247,7 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 			}
 			const css = options.compilerOptions.css;
 			if (!(css === true || css === 'injected')) {
-				const forcedCss = cssAsString ? 'injected' : true;
+				const forcedCss = 'injected';
 				log.warn(
 					`hmr with emitCss disabled requires compilerOptions.css to be enabled, forcing it to ${forcedCss}`
 				);
