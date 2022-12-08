@@ -5,12 +5,10 @@ import { Compiled } from './compile';
 import { log } from './log';
 import { CompileOptions, ResolvedOptions } from './options';
 import { toESBuildError } from './error';
-import { atLeastSvelte } from './svelte-version';
 import { StatCollection } from './vite-plugin-svelte-stats';
 
 type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
 type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
-const isCssString = atLeastSvelte('3.53.0');
 
 export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
 
@@ -53,7 +51,8 @@ async function compileSvelte(
 ): Promise<string> {
 	let css = options.compilerOptions.css;
 	if (css !== 'none') {
-		css = isCssString ? 'injected' : true;
+		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
+		css = 'injected';
 	}
 	const compileOptions: CompileOptions = {
 		...options.compilerOptions,
