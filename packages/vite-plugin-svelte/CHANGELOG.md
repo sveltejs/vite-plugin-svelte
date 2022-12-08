@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.0-beta.1
+
+### Major Changes
+
+- remove custom svelte/ssr resolve that is no longer needed in vite 4 ([#527](https://github.com/sveltejs/vite-plugin-svelte/pull/527))
+
+- update svelte peerDependency to ^3.54.0 ([#529](https://github.com/sveltejs/vite-plugin-svelte/pull/529))
+
 ## 2.0.0-beta.0
 
 ### Major Changes
