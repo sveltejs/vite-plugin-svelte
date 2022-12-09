@@ -1,5 +1,21 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.0
+
+### Major Changes
+
+- update svelte peerDependency to ^3.54.0 ([#529](https://github.com/sveltejs/vite-plugin-svelte/pull/529))
+
+- remove cjs build ([#522](https://github.com/sveltejs/vite-plugin-svelte/pull/522))
+
+- update vite peerDependency to vite-4 ([#521](https://github.com/sveltejs/vite-plugin-svelte/pull/521))
+
+### Patch Changes
+
+- Remove `experimental.useVitePreprocess` option in favour of `vitePreprocess` ([#538](https://github.com/sveltejs/vite-plugin-svelte/pull/538))
+
+- Remove pre Vite 3.2 support for `vitePreprocess` ([#536](https://github.com/sveltejs/vite-plugin-svelte/pull/536))
+
 ## 2.0.0-beta.3
 
 ### Patch Changes
