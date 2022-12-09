@@ -1,9 +1,7 @@
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+
 export default {
-	vitePlugin: {
-		experimental: {
-			useVitePreprocess: true
-		}
-	},
+	preprocess: [vitePreprocess()],
 	onwarn(warning, defaultHandler) {
 		// import query test generates one of these
 		if (warning.code === 'custom-element-no-tag') return;

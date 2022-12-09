@@ -244,13 +244,6 @@ export default {
 };
 ```
 
-### useVitePreprocess
-
-- **Type:** `boolean`
-- **Default:** `false`
-
-  Use extra preprocessors that delegate style and TypeScript preprocessing to native Vite plugins. TypeScript will be transformed with esbuild. Styles will be transformed using [Vite's CSS plugin](https://vitejs.dev/guide/features.html#css), which handles `@imports`, `url()` references, PostCSS, CSS Modules, and `.scss`/`.sass`/`.less`/`.styl`/`.stylus` files. Do not use together with TypeScript or style preprocessors from `svelte-preprocess` as attempts to transform the content twice will fail!
-
 ### dynamicCompileOptions
 
 - **Type:**

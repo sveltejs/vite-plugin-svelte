@@ -681,15 +681,6 @@ export interface SvelteOptions {
  */
 export interface ExperimentalOptions {
 	/**
-	 * Use extra preprocessors that delegate style and TypeScript preprocessing to native Vite plugins
-	 *
-	 * Do not use together with `svelte-preprocess`!
-	 *
-	 * @default false
-	 */
-	useVitePreprocess?: boolean;
-
-	/**
 	 * A function to update `compilerOptions` before compilation
 	 *
 	 * `data.filename` - The file to be compiled
