@@ -89,7 +89,6 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				if (isSvelteMetadataChanged) {
 					// Force Vite to optimize again. Although we mutate the config here, it works because
 					// Vite's optimizer runs after `buildStart()`.
-					// TODO: verify this works in vite3
 					viteConfig.optimizeDeps.force = true;
 				}
 			},

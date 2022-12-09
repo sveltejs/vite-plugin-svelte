@@ -1,18 +1,8 @@
 import type { ResolvedConfig, Plugin } from 'vite';
 import MagicString from 'magic-string';
-import { preprocess } from 'svelte/compiler';
 import { PreprocessorGroup, ResolvedOptions } from './options';
 import { log } from './log';
 import path from 'path';
-import { vitePreprocess } from '../preprocess';
-
-function createVitePreprocessorGroup(config: ResolvedConfig): PreprocessorGroup {
-	return {
-		markup({ content, filename }) {
-			return preprocess(content, vitePreprocess({ style: config }), { filename });
-		}
-	};
-}
 
 /**
  * this appends a *{} rule to component styles to force the svelte compiler to add style classes to all nodes
@@ -39,13 +29,6 @@ export function createInjectScopeEverythingRulePreprocessorGroup(): Preprocessor
 function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
 	const prependPreprocessors: PreprocessorGroup[] = [];
 	const appendPreprocessors: PreprocessorGroup[] = [];
-
-	if (options.experimental?.useVitePreprocess) {
-		log.warn(
-			'`experimental.useVitePreprocess` is deprecated. Use the `vitePreprocess()` preprocessor instead. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.'
-		);
-		prependPreprocessors.push(createVitePreprocessorGroup(config));
-	}
 
 	// @ts-ignore
 	const pluginsWithPreprocessorsDeprecated = config.plugins.filter((p) => p?.sveltePreprocess);
