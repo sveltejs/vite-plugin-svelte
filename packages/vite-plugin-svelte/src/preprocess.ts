@@ -1,6 +1,6 @@
 import path from 'path';
-import * as vite from 'vite';
-import type { ESBuildOptions, ResolvedConfig } from 'vite';
+import { preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
+import type { ESBuildOptions, InlineConfig, ResolvedConfig } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import type { Preprocessor, PreprocessorGroup } from 'svelte/types/compiler/preprocess';
 
@@ -9,7 +9,7 @@ const supportedScriptLangs = ['ts'];
 
 export function vitePreprocess(opts?: {
 	script?: boolean;
-	style?: boolean | vite.InlineConfig | vite.ResolvedConfig;
+	style?: boolean | InlineConfig | ResolvedConfig;
 }) {
 	const preprocessor: PreprocessorGroup = {};
 	if (opts?.script !== false) {
@@ -27,7 +27,7 @@ function viteScript(): { script: Preprocessor } {
 		async script({ attributes, content, filename = '' }) {
 			const lang = attributes.lang as string;
 			if (!supportedScriptLangs.includes(lang)) return;
-			const transformResult = await vite.transformWithEsbuild(content, filename, {
+			const transformResult = await transformWithEsbuild(content, filename, {
 				loader: lang as ESBuildOptions['loader'],
 				target: 'esnext',
 				tsconfigRaw: {
@@ -46,7 +46,7 @@ function viteScript(): { script: Preprocessor } {
 	};
 }
 
-function viteStyle(config: vite.InlineConfig | vite.ResolvedConfig = {}): {
+function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 	style: Preprocessor;
 } {
 	let transform: CssTransform;
@@ -54,7 +54,7 @@ function viteStyle(config: vite.InlineConfig | vite.ResolvedConfig = {}): {
 		const lang = attributes.lang as string;
 		if (!supportedStyleLangs.includes(lang)) return;
 		if (!transform) {
-			let resolvedConfig: vite.ResolvedConfig;
+			let resolvedConfig: ResolvedConfig;
 			// @ts-expect-error special prop added if running in v-p-s
 			if (style.__resolvedConfig) {
 				// @ts-expect-error
@@ -62,7 +62,7 @@ function viteStyle(config: vite.InlineConfig | vite.ResolvedConfig = {}): {
 			} else if (isResolvedConfig(config)) {
 				resolvedConfig = config;
 			} else {
-				resolvedConfig = await vite.resolveConfig(
+				resolvedConfig = await resolveConfig(
 					config,
 					process.env.NODE_ENV === 'production' ? 'build' : 'serve'
 				);
@@ -89,26 +89,11 @@ function viteStyle(config: vite.InlineConfig | vite.ResolvedConfig = {}): {
 type CssTransform = (code: string, filename: string) => Promise<{ code: string; map?: any }>;
 
 function getCssTransformFn(config: ResolvedConfig): CssTransform {
-	// API is only available in Vite 3.2 and above
-	// TODO: Remove Vite plugin hack when bump peer dep to Vite 3.2
-	if (vite.preprocessCSS) {
-		return async (code, filename) => {
-			return vite.preprocessCSS(code, filename, config);
-		};
-	} else {
-		const pluginName = 'vite:css';
-		const plugin = config.plugins.find((p) => p.name === pluginName);
-		if (!plugin) {
-			throw new Error(`failed to find plugin ${pluginName}`);
-		}
-		if (!plugin.transform) {
-			throw new Error(`plugin ${pluginName} has no transform`);
-		}
-		// @ts-expect-error
-		return plugin.transform.bind(null);
-	}
+	return async (code, filename) => {
+		return preprocessCSS(code, filename, config);
+	};
 }
 
-function isResolvedConfig(config: any): config is vite.ResolvedConfig {
+function isResolvedConfig(config: any): config is ResolvedConfig {
 	return !!config.inlineConfig;
 }
