@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.0-beta.3
+
+### Patch Changes
+
+- Remove `experimental.useVitePreprocess` option in favour of `vitePreprocess` ([#538](https://github.com/sveltejs/vite-plugin-svelte/pull/538))
+
+- Remove pre Vite 3.2 support for `vitePreprocess` ([#536](https://github.com/sveltejs/vite-plugin-svelte/pull/536))
+
 ## 2.0.0-beta.2
 
 ### Major Changes
