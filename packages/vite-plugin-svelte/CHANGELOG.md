@@ -6,7 +6,9 @@
 
 - update svelte peerDependency to ^3.54.0 ([#529](https://github.com/sveltejs/vite-plugin-svelte/pull/529))
 
-- remove cjs build ([#522](https://github.com/sveltejs/vite-plugin-svelte/pull/522))
+- remove commonjs variant of vite-plugin-svelte ([#522](https://github.com/sveltejs/vite-plugin-svelte/pull/522))
+
+  Make sure your package.json contains `"type": "module"`and see [FAQ](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#how-can-i-use-vite-plugin-svelte-from-commonjs) for more information
 
 - update vite peerDependency to vite-4 ([#521](https://github.com/sveltejs/vite-plugin-svelte/pull/521))
 
