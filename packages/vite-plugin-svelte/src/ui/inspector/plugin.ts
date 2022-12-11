@@ -35,6 +35,7 @@ export function svelteInspector(): Plugin {
 
 		configResolved(config) {
 			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
+			const isSvelteKit = config.plugins.some((p) => p.name.startsWith(`vite-plugin-sveltekit`));
 			if (vps?.api?.options?.experimental?.inspector) {
 				inspectorOptions = {
 					...defaultInspectorOptions,
@@ -45,9 +46,10 @@ export function svelteInspector(): Plugin {
 				log.debug('inspector disabled, could not find config');
 				disabled = true;
 			} else {
-				if (vps.api.options.kit && !inspectorOptions.appendTo) {
-					const out_dir = path.basename(vps.api.options.kit.outDir || '.svelte-kit');
-					inspectorOptions.appendTo = `${out_dir}/generated/root.svelte`;
+				if (isSvelteKit && !inspectorOptions.appendTo) {
+					// this could append twice if a user had a file that ends with /generated/root.svelte
+					// but that should be rare and inspector doesn't execute twice
+					inspectorOptions.appendTo = `/generated/root.svelte`;
 				}
 				appendTo = inspectorOptions.appendTo;
 			}
