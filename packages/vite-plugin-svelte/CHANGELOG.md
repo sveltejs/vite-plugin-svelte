@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.1
+
+### Patch Changes
+
+- update minimum version of vitefu dependency to avoid peer mismatch ([#543](https://github.com/sveltejs/vite-plugin-svelte/pull/543))
+
 ## 2.0.0
 
 ### Major Changes
