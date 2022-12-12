@@ -55,8 +55,7 @@ export function svelteInspector(): Plugin {
 		},
 
 		async resolveId(importee: string, importer, options) {
-			// @ts-expect-error scan is experimental
-			if (options?.ssr || options?.scan || disabled) {
+			if (options?.ssr || disabled) {
 				return;
 			}
 			if (importee.startsWith('virtual:svelte-inspector-options')) {
