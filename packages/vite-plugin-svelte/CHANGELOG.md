@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.2
+
+### Patch Changes
+
+- improve detection of sveltekit in inspector plugin to be compatible to latest changes ([`47c54c9`](https://github.com/sveltejs/vite-plugin-svelte/commit/47c54c92b886ea9d9bdd1fc7549079b39215ccd1))
+
 ## 2.0.1
 
 ### Patch Changes
