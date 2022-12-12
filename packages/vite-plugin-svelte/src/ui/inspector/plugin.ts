@@ -35,28 +35,28 @@ export function svelteInspector(): Plugin {
 
 		configResolved(config) {
 			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
-			const isSvelteKit = config.plugins.some((p) => p.name.startsWith(`vite-plugin-sveltekit`));
-			if (vps?.api?.options?.experimental?.inspector) {
-				inspectorOptions = {
-					...defaultInspectorOptions,
-					...vps.api.options.experimental.inspector
-				};
-			}
-			if (!vps || !inspectorOptions) {
+			const options = vps?.api?.options?.experimental?.inspector;
+			if (!vps || !options) {
 				log.debug('inspector disabled, could not find config');
 				disabled = true;
-			} else {
-				if (isSvelteKit && !inspectorOptions.appendTo) {
-					// this could append twice if a user had a file that ends with /generated/root.svelte
-					// but that should be rare and inspector doesn't execute twice
-					inspectorOptions.appendTo = `/generated/root.svelte`;
-				}
-				appendTo = inspectorOptions.appendTo;
+				return;
 			}
+			inspectorOptions = {
+				...defaultInspectorOptions,
+				...options
+			};
+
+			if (vps.api.options.isSvelteKit && !inspectorOptions.appendTo) {
+				// this could append twice if a user had a file that ends with /generated/root.svelte
+				// but that should be rare and inspector doesn't execute twice
+				inspectorOptions.appendTo = `/generated/root.svelte`;
+			}
+			appendTo = inspectorOptions.appendTo;
 		},
 
 		async resolveId(importee: string, importer, options) {
-			if (options?.ssr || disabled) {
+			// @ts-expect-error scan is experimental
+			if (options?.ssr || options?.scan || disabled) {
 				return;
 			}
 			if (importee.startsWith('virtual:svelte-inspector-options')) {
