@@ -86,14 +86,6 @@ export function setupWatchers(
 		} else {
 			listenerCollection.add.push(restartOnConfigAdd);
 		}
-	} else if (options.isSvelteKit) {
-		const restartOnConfigChangeKit = (filename: string) => {
-			// sveltekit always uses svelte.config.js
-			if (path.basename(filename) === 'svelte.config.js') {
-				triggerViteRestart(filename);
-			}
-		};
-		listenerCollection.change.push(restartOnConfigChangeKit);
 	}
 
 	Object.entries(listenerCollection).forEach(([evt, listeners]) => {

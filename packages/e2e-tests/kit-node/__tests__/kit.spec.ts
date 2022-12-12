@@ -243,17 +243,6 @@ describe('kit-node', () => {
 						expect(await getText('button')).toBe('Clicks: 0');
 					});
 				});
-				describe('config file update', () => {
-					it('should auto refresh', async () => {
-						const button = await getEl('button');
-						await button.click();
-						expect(await getText('button')).toBe('Clicks: 1');
-						editFile('svelte.config.js', (config) => config + '\n');
-						await waitForNavigation({ waitUntil: 'networkidle' });
-						// clicks should reset, means the browser refreshed
-						expect(await getText('button')).toBe('Clicks: 0');
-					});
-				});
 			});
 		}
 	});
