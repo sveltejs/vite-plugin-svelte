@@ -194,8 +194,7 @@ export function resolveOptions(
 	};
 	const extraOptions: Partial<ResolvedOptions> = {
 		root: viteConfig.root,
-		isProduction: viteConfig.isProduction,
-		isSvelteKit: viteConfig.plugins.some((p) => p.name.startsWith('vite-plugin-sveltekit'))
+		isProduction: viteConfig.isProduction
 	};
 	const merged = mergeConfigs<ResolvedOptions>(defaultOptions, preResolveOptions, extraOptions);
 
@@ -808,7 +807,6 @@ export interface PreResolvedOptions extends Options {
 
 export interface ResolvedOptions extends PreResolvedOptions {
 	isProduction: boolean;
-	isSvelteKit: boolean;
 	server?: ViteDevServer;
 	stats?: VitePluginSvelteStats;
 }

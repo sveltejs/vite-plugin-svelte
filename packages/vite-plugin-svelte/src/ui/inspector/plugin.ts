@@ -45,8 +45,8 @@ export function svelteInspector(): Plugin {
 				...defaultInspectorOptions,
 				...options
 			};
-
-			if (vps.api.options.isSvelteKit && !inspectorOptions.appendTo) {
+			const isSvelteKit = config.plugins.some((p) => p.name.startsWith('vite-plugin-sveltekit'));
+			if (isSvelteKit && !inspectorOptions.appendTo) {
 				// this could append twice if a user had a file that ends with /generated/root.svelte
 				// but that should be rare and inspector doesn't execute twice
 				inspectorOptions.appendTo = `/generated/root.svelte`;
