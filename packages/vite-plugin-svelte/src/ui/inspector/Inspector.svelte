@@ -391,6 +391,7 @@
 		background-position: center;
 		background-repeat: no-repeat;
 		cursor: pointer;
+		touch-action: pan-x pan-y;
 
 		/* Toggle Positioning*/
 		--svelte-inspector-toggle-inset: 24px;
