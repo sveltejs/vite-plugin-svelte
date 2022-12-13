@@ -24,6 +24,11 @@
 	// cursor pos and width for file_loc overlay positioning
 	let x, y, w;
 
+	// Toggle Position and Drag state
+	let dragging = false;
+	let left = 24;
+	let top = 24;
+
 	let active_el;
 
 	let enabled_ts;
@@ -284,17 +289,39 @@
 			}
 		};
 	});
+
+	function startToggleDrag() {
+		dragging = true;
+	}
+
+	/** @param {PointerEvent} e */
+	function updateTogglePosition(e) {
+		if (!dragging) return;
+
+		left = e.clientX;
+		top = e.clientY;
+	}
+
+	function stopToggleDrag() {
+		dragging = false;
+	}
 </script>
+
+<svelte:window
+	on:pointermove|preventDefault={updateTogglePosition}
+	on:pointercancel={stopToggleDrag}
+	on:pointerup={stopToggleDrag}
+	on:pointerleave={stopToggleDrag}
+/>
 
 {#if show_toggle}
 	<button
 		id="svelte-inspector-toggle"
 		class:enabled
-		style={`background-image: var(--svelte-inspector-icon);${options.toggleButtonPos
-			.split('-')
-			.map((p) => `${p}: 8px;`)
-			.join('')}`}
+		class:dragging
+		style={`background-image: var(--svelte-inspector-icon); left: ${left}px; top: ${top}px`}
 		on:click={() => toggle()}
+		on:pointerdown|preventDefault={startToggleDrag}
 		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
 	/>
 {/if}
@@ -342,6 +369,13 @@
 		background-position: center;
 		background-repeat: no-repeat;
 		cursor: pointer;
+
+		transform: translate(-50%, -50%);
+	}
+
+	#svelte-inspector-toggle.dragging {
+		/*Important to override the custom svelte cursor when inspector is active*/
+		cursor: move !important;
 	}
 
 	#svelte-inspector-announcer {
