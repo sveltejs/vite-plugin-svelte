@@ -26,6 +26,7 @@
 
 	// Toggle Position and Drag state
 	let dragging = false;
+	let pressed = false;
 	let togglePosition = [0, 0];
 
 	let active_el;
@@ -204,6 +205,7 @@
 	}
 
 	function toggle() {
+		if (dragging) return;
 		enabled ? disable() : enable();
 	}
 
@@ -211,7 +213,7 @@
 		const l = enabled ? body.addEventListener : body.removeEventListener;
 		l('mousemove', mousemove);
 		l('mouseover', mouseover);
-		l('click', open_editor, true);
+		l('pointerup', open_editor, true);
 	}
 
 	function enable() {
@@ -293,17 +295,19 @@
 	});
 
 	function startToggleDrag() {
-		dragging = true;
+		pressed = true;
 	}
 
 	/** @param {PointerEvent} e */
 	function updateTogglePosition(e) {
-		if (!dragging) return;
+		if (!pressed) return;
+		dragging = true;
 		togglePosition = [e.clientX, e.clientY];
 	}
 
 	function stopToggleDrag() {
 		dragging = false;
+		pressed = false;
 		setPreferredTogglePosition(togglePosition);
 	}
 
@@ -342,7 +346,7 @@
 			--svelte-inspector-toggle-left: ${togglePosition[0]}px; 
 			--svelte-inspector-toggle-top: ${togglePosition[1]}px;
 		`}
-		on:click={toggle}
+		on:pointerup={toggle}
 		on:pointerdown|preventDefault={startToggleDrag}
 		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
 	/>
@@ -409,7 +413,7 @@
 	}
 
 	#svelte-inspector-toggle.dragging {
-		/*Important to override the custom svelte cursor when inspector is active*/
+		/*Important to override the custom svelte inspector cursor when inspector is active*/
 		cursor: move !important;
 	}
 
