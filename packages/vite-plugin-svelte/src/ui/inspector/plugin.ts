@@ -12,7 +12,6 @@ const defaultInspectorOptions: InspectorOptions = {
 	openKey: 'Enter',
 	holdMode: false,
 	showToggleButton: 'active',
-	toggleButtonPos: 'top-right',
 	customStyles: true
 };
 

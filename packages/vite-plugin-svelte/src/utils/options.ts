@@ -774,12 +774,6 @@ export interface InspectorOptions {
 	showToggleButton?: 'always' | 'active' | 'never';
 
 	/**
-	 * where to display the toggle button
-	 * @default top-right
-	 */
-	toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
-
-	/**
 	 * inject custom styles when inspector is active
 	 */
 	customStyles?: boolean;
