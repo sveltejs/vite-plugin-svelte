@@ -28,6 +28,7 @@
 	let dragging = false;
 	let pressed = false;
 	let togglePosition = [0, 0];
+	const TOGGLE_POSITION_LOCALSTORAGE_KEY = 'vite-plugin-svelte:inspector-toggle-position';
 
 	let active_el;
 
@@ -312,9 +313,7 @@
 	}
 
 	function getPreferredTogglePosition() {
-		let previouslySavedPosition = localStorage.getItem(
-			'vite-plugin-svelte:inspector-toggle-position'
-		);
+		let previouslySavedPosition = localStorage.getItem(TOGGLE_POSITION_LOCALSTORAGE_KEY);
 		if (!previouslySavedPosition) {
 			return [0, 0];
 		}
@@ -322,10 +321,7 @@
 	}
 
 	function setPreferredTogglePosition(preferredPosition) {
-		localStorage.setItem(
-			'vite-plugin-svelte:inspector-toggle-position',
-			JSON.stringify(preferredPosition)
-		);
+		localStorage.setItem(TOGGLE_POSITION_LOCALSTORAGE_KEY, JSON.stringify(preferredPosition));
 	}
 </script>
 
