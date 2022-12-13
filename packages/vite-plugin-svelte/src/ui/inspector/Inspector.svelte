@@ -26,12 +26,12 @@
 
 	// Toggle Position and Drag state
 	let dragging = false;
-	let left = 24;
-	let top = 24;
+	let TOGGLE_MINIMUM_INSET = 24; //The minimum number of pixels the center of the toggle must be from the viewport edge
+	let togglePosition = [TOGGLE_MINIMUM_INSET, TOGGLE_MINIMUM_INSET];
 
 	let active_el;
 
-	let enabled_ts;
+	let enabled_at;
 
 	$: show_toggle =
 		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled);
@@ -160,7 +160,7 @@
 	}
 
 	function is_holding() {
-		return enabled_ts && Date.now() - enabled_ts > 250;
+		return enabled_at && Date.now() - enabled_at > 250;
 	}
 
 	function stop(event) {
@@ -177,7 +177,7 @@
 		if (is_combo(event)) {
 			toggle();
 			if (options.holdMode && enabled) {
-				enabled_ts = Date.now();
+				enabled_at = Date.now();
 			}
 		} else if (enabled) {
 			if (is_nav(event)) {
@@ -200,7 +200,7 @@
 		if (enabled && is_holding() && toggle_combo.includes(k)) {
 			disable();
 		} else {
-			enabled_ts = null;
+			enabled_at = null;
 		}
 	}
 
@@ -252,7 +252,7 @@
 
 	function disable() {
 		enabled = false;
-		enabled_ts = null;
+		enabled_at = null;
 		const b = document.body;
 		listeners(b, enabled);
 		if (options.customStyles) {
@@ -263,6 +263,9 @@
 	}
 
 	onMount(() => {
+		//Load the initial position of the svelte-inspector-toggle
+		togglePosition = getPreferredTogglePosition();
+
 		const s = document.createElement('style');
 		s.setAttribute('type', 'text/css');
 		s.setAttribute('id', 'svelte-inspector-style');
@@ -294,16 +297,47 @@
 		dragging = true;
 	}
 
+	function enforceToggleInset(x, y) {
+		if (x < TOGGLE_MINIMUM_INSET) x = TOGGLE_MINIMUM_INSET;
+		if (y < TOGGLE_MINIMUM_INSET) y = TOGGLE_MINIMUM_INSET;
+
+		if (x > window.innerWidth - TOGGLE_MINIMUM_INSET) {
+			x = window.innerWidth - TOGGLE_MINIMUM_INSET;
+		}
+
+		if (y > window.innerHeight - TOGGLE_MINIMUM_INSET) {
+			y = window.innerHeight - TOGGLE_MINIMUM_INSET;
+		}
+		return [x, y];
+	}
+
 	/** @param {PointerEvent} e */
 	function updateTogglePosition(e) {
 		if (!dragging) return;
-
-		left = e.clientX;
-		top = e.clientY;
+		togglePosition = enforceToggleInset(e.clientX, e.clientY);
 	}
 
 	function stopToggleDrag() {
 		dragging = false;
+		localStorage.setItem(
+			'vite-plugin-svelte:inspector-toggle-position',
+			JSON.stringify(togglePosition)
+		);
+	}
+
+	function onViewportResize() {
+		const preferredPosition = getPreferredTogglePosition();
+		togglePosition = enforceToggleInset(...preferredPosition);
+	}
+
+	function getPreferredTogglePosition() {
+		let previouslySavedPosition = localStorage.getItem(
+			'vite-plugin-svelte:inspector-toggle-position'
+		);
+		if (!previouslySavedPosition) {
+			return [TOGGLE_MINIMUM_INSET, TOGGLE_MINIMUM_INSET];
+		}
+		return JSON.parse(previouslySavedPosition);
 	}
 </script>
 
@@ -312,6 +346,7 @@
 	on:pointercancel={stopToggleDrag}
 	on:pointerup={stopToggleDrag}
 	on:pointerleave={stopToggleDrag}
+	on:resize={onViewportResize}
 />
 
 {#if show_toggle}
@@ -319,8 +354,8 @@
 		id="svelte-inspector-toggle"
 		class:enabled
 		class:dragging
-		style={`background-image: var(--svelte-inspector-icon); left: ${left}px; top: ${top}px`}
-		on:click={() => toggle()}
+		style={`background-image: var(--svelte-inspector-icon); left: ${togglePosition[0]}px; top: ${togglePosition[1]}px`}
+		on:click={toggle}
 		on:pointerdown|preventDefault={startToggleDrag}
 		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
 	/>
