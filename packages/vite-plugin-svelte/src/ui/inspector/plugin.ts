@@ -7,10 +7,10 @@ import fs from 'fs';
 import { idToFile } from './utils';
 
 const defaultInspectorOptions: InspectorOptions = {
-	toggleKeyCombo: ['linux', 'win32'].includes(process.platform) ? 'control-shift' : 'meta-shift',
+	toggleKeyCombo: process.platform === 'darwin' ? 'meta-shift' : 'control-shift',
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
 	openKey: 'Enter',
-	holdMode: process.platform === 'linux',
+	holdMode: false,
 	showToggleButton: 'active',
 	toggleButtonPos: 'top-right',
 	customStyles: true
