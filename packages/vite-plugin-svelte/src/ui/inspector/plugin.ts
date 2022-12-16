@@ -10,7 +10,7 @@ const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
 	openKey: 'Enter',
-	holdMode: false,
+	holdMode: true,
 	showToggleButton: 'active',
 	toggleButtonPos: 'top-right',
 	customStyles: true
