@@ -764,7 +764,7 @@ export interface InspectorOptions {
 
 	/**
 	 * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
-	 * @default false
+	 * @default true
 	 */
 	holdMode?: boolean;
 	/**
