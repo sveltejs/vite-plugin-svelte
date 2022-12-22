@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import fs from 'fs-extra';
+import path from 'path';
 import { chromium } from 'playwright-core';
 import type { Browser, Page } from 'playwright-core';
 import type { File } from 'vitest';
