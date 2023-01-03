@@ -9,28 +9,11 @@ import { StatCollection } from './vite-plugin-svelte-stats';
 //eslint-disable-next-line node/no-missing-import
 import type { Processed } from 'svelte/types/compiler/preprocess';
 import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess';
-import path from 'path';
+import { mapSourcesToRelative } from './sourcemaps';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
 export type CompileSvelte = ReturnType<typeof _createCompileSvelte>;
-
-function mapSourcesToRelative(map: { sources?: string[] }, filename: string) {
-	// sourcemap sources are relative to the sourcemap itself
-	// assume the sourcemap location is the same as filename and turn absolute paths to relative
-	// to avoid leaking fs information like vite root
-	if (map?.sources) {
-		map.sources = map.sources.map((s) => {
-			if (path.isAbsolute(s)) {
-				const relative = path.relative(filename, s);
-				// empty string a source is not allowed, use simple filename
-				return relative === '' ? path.basename(filename) : relative;
-			} else {
-				return s;
-			}
-		});
-	}
-}
 
 const _createCompileSvelte = (makeHot: Function) => {
 	let stats: StatCollection | undefined;
