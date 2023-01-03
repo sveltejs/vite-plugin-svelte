@@ -2,11 +2,10 @@ import { preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
 import type { ESBuildOptions, InlineConfig, ResolvedConfig } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import type { Preprocessor, PreprocessorGroup } from 'svelte/types/compiler/preprocess';
+import { mapSourcesToRelative } from './utils/sourcemaps';
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
-
-import { mapSourcesToRelative } from './utils/sourcemaps';
 
 export function vitePreprocess(opts?: {
 	script?: boolean;
