@@ -67,6 +67,17 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 					process.env.NODE_ENV === 'production' ? 'build' : 'serve'
 				);
 			}
+			if (lang !== 'postcss') {
+				resolvedConfig = {
+					...resolvedConfig,
+					css: {
+						...(resolvedConfig.css ?? {}),
+						postcss: {
+							plugins: [{ postcssPlugin: 'vitePreprocess' }]
+						}
+					}
+				};
+			}
 			transform = getCssTransformFn(resolvedConfig);
 		}
 		const moduleId = `${filename}.${lang}`;
