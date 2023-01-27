@@ -6,7 +6,8 @@ import {
 	SVELTE_EXPORT_CONDITIONS,
 	SVELTE_HMR_IMPORTS,
 	SVELTE_IMPORTS,
-	SVELTE_RESOLVE_MAIN_FIELDS
+	SVELTE_RESOLVE_MAIN_FIELDS,
+	VITE_RESOLVE_MAIN_FIELDS
 } from './constants';
 // eslint-disable-next-line node/no-missing-import
 import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
@@ -324,9 +325,18 @@ export async function buildExtraViteConfig(
 	options: PreResolvedOptions,
 	config: UserConfig
 ): Promise<Partial<UserConfig>> {
+	// make sure we only readd vite default mainFields when no other plugin has changed the config already
+	// see https://github.com/sveltejs/vite-plugin-svelte/issues/581
+	if (!config.resolve) {
+		config.resolve = {};
+	}
+	config.resolve.mainFields = [
+		...SVELTE_RESOLVE_MAIN_FIELDS,
+		...(config.resolve.mainFields ?? VITE_RESOLVE_MAIN_FIELDS)
+	];
+
 	const extraViteConfig: Partial<UserConfig> = {
 		resolve: {
-			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
 			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS],
 			conditions: [...SVELTE_EXPORT_CONDITIONS]
 		}
