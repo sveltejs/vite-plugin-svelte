@@ -1,8 +1,8 @@
-import path from 'path';
 import { preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
 import type { ESBuildOptions, InlineConfig, ResolvedConfig } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import type { Preprocessor, PreprocessorGroup } from 'svelte/types/compiler/preprocess';
+import { mapSourcesToRelative } from './utils/sourcemaps';
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
@@ -27,7 +27,7 @@ function viteScript(): { script: Preprocessor } {
 		async script({ attributes, content, filename = '' }) {
 			const lang = attributes.lang as string;
 			if (!supportedScriptLangs.includes(lang)) return;
-			const transformResult = await transformWithEsbuild(content, filename, {
+			const { code, map } = await transformWithEsbuild(content, filename, {
 				loader: lang as ESBuildOptions['loader'],
 				target: 'esnext',
 				tsconfigRaw: {
@@ -38,9 +38,12 @@ function viteScript(): { script: Preprocessor } {
 					}
 				}
 			});
+
+			mapSourcesToRelative(map, filename);
+
 			return {
-				code: transformResult.code,
-				map: transformResult.map
+				code,
+				map
 			};
 		}
 	};
@@ -70,14 +73,13 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 			transform = getCssTransformFn(resolvedConfig);
 		}
 		const moduleId = `${filename}.${lang}`;
-		const result = await transform(content, moduleId);
-		// patch sourcemap source to point back to original filename
-		if (result.map?.sources?.[0] === moduleId) {
-			result.map.sources[0] = path.basename(filename);
-		}
+		const { code, map } = await transform(content, moduleId);
+
+		mapSourcesToRelative(map, moduleId);
+
 		return {
-			code: result.code,
-			map: result.map ?? undefined
+			code,
+			map: map ?? undefined
 		};
 	};
 	// @ts-expect-error tag so can be found by v-p-s
