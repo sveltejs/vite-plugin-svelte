@@ -133,12 +133,13 @@ describe.runIf(!isBuild)('ssrLoadModule', () => {
 			vite
 				.ssrLoadModule('./src/Dummy.svelte' + query, { fixStacktrace: true })
 				.then((m) => m.default?.code ?? m.default);
+		return async () => {
+			await vite.close();
+			vite = null;
+			ssrLoadDummy = null;
+		};
 	});
-	afterAll(async () => {
-		await vite.close();
-		vite = null;
-		ssrLoadDummy = null;
-	});
+
 	test('?raw', async () => {
 		const result = await ssrLoadDummy('?raw');
 		expect(result).toMatchSnapshot();
