@@ -219,11 +219,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				}
 				const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);
 				if (svelteRequest) {
-					try {
-						return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
-					} catch (e) {
-						throw toRollupError(e, options);
-					}
+					return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
 				}
 			},
 			async buildEnd() {

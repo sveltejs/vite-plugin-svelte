@@ -4,6 +4,7 @@ import { log, logCompilerWarnings } from './utils/log';
 import { SvelteRequest } from './utils/id';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { ResolvedOptions } from './utils/options';
+import { toRollupError } from './utils/error';
 
 /**
  * Vite-specific HMR handling
@@ -32,7 +33,7 @@ export async function handleHotUpdate(
 		cache.update(compileData);
 	} catch (e) {
 		cache.setError(svelteRequest, e);
-		throw e;
+		throw toRollupError(e, options);
 	}
 
 	const affectedModules = [...modules];
