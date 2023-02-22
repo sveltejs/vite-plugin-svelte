@@ -260,11 +260,11 @@ importers:
 
   packages/e2e-tests/inspector-kit:
     specifiers:
-      '@sveltejs/kit': ^1.5.6
+      '@sveltejs/kit': ^1.8.3
       svelte: ^3.55.1
       vite: ^4.1.1
     devDependencies:
-      '@sveltejs/kit': 1.5.6_svelte@3.55.1+vite@4.1.1
+      '@sveltejs/kit': 1.8.3_svelte@3.55.1+vite@4.1.1
       svelte: 3.55.1
       vite: 4.1.1
 
@@ -281,7 +281,7 @@ importers:
   packages/e2e-tests/kit-node:
     specifiers:
       '@sveltejs/adapter-node': ^1.2.0
-      '@sveltejs/kit': ^1.5.6
+      '@sveltejs/kit': ^1.8.3
       e2e-test-dep-svelte-api-only: file:../_test_dependencies/svelte-api-only
       e2e-test-dep-vite-plugins: file:../_test_dependencies/vite-plugins
       svelte: ^3.55.1
@@ -291,8 +291,8 @@ importers:
       typescript: ^4.9.5
       vite: ^4.1.1
     devDependencies:
-      '@sveltejs/adapter-node': 1.2.0_@sveltejs+kit@1.5.6
-      '@sveltejs/kit': 1.5.6_svelte@3.55.1+vite@4.1.1
+      '@sveltejs/adapter-node': 1.2.0_@sveltejs+kit@1.8.3
+      '@sveltejs/kit': 1.8.3_svelte@3.55.1+vite@4.1.1
       e2e-test-dep-svelte-api-only: file:packages/e2e-tests/_test_dependencies/svelte-api-only
       e2e-test-dep-vite-plugins: file:packages/e2e-tests/_test_dependencies/vite-plugins
       svelte: 3.55.1
@@ -482,7 +482,7 @@ importers:
   packages/playground/big-component-library-kit:
     specifiers:
       '@sveltejs/adapter-auto': 2.0.0
-      '@sveltejs/kit': ^1.5.6
+      '@sveltejs/kit': ^1.8.3
       carbon-components-svelte: ^0.72.3
       carbon-icons-svelte: ^11.4.0
       carbon-preprocess-svelte: ^0.9.1
@@ -493,8 +493,8 @@ importers:
       typescript: ^4.9.5
       vite: ^4.1.1
     devDependencies:
-      '@sveltejs/adapter-auto': 2.0.0_@sveltejs+kit@1.5.6
-      '@sveltejs/kit': 1.5.6_svelte@3.55.1+vite@4.1.1
+      '@sveltejs/adapter-auto': 2.0.0_@sveltejs+kit@1.8.3
+      '@sveltejs/kit': 1.8.3_svelte@3.55.1+vite@4.1.1
       carbon-components-svelte: 0.72.3
       carbon-icons-svelte: 11.4.0
       carbon-preprocess-svelte: 0.9.1_svelte@3.55.1
@@ -539,7 +539,7 @@ importers:
       '@fontsource/fira-mono': ^4.5.10
       '@neoconfetti/svelte': ^1.0.0
       '@sveltejs/adapter-auto': ^2.0.0
-      '@sveltejs/kit': ^1.5.6
+      '@sveltejs/kit': ^1.8.3
       '@types/cookie': ^0.5.1
       svelte: ^3.55.1
       svelte-check: ^3.0.3
@@ -548,8 +548,8 @@ importers:
     devDependencies:
       '@fontsource/fira-mono': 4.5.10
       '@neoconfetti/svelte': 1.0.0
-      '@sveltejs/adapter-auto': 2.0.0_@sveltejs+kit@1.5.6
-      '@sveltejs/kit': 1.5.6_svelte@3.55.1+vite@4.1.1
+      '@sveltejs/adapter-auto': 2.0.0_@sveltejs+kit@1.8.3
+      '@sveltejs/kit': 1.8.3_svelte@3.55.1+vite@4.1.1
       '@types/cookie': 0.5.1
       svelte: 3.55.1
       svelte-check: 3.0.3_svelte@3.55.1
@@ -1421,16 +1421,16 @@ packages:
       rollup: 3.12.1
     dev: true
 
-  /@sveltejs/adapter-auto/2.0.0_@sveltejs+kit@1.5.6:
+  /@sveltejs/adapter-auto/2.0.0_@sveltejs+kit@1.8.3:
     resolution: {integrity: sha512-b+gkHFZgD771kgV3aO4avHFd7y1zhmMYy9i6xOK7m/rwmwaRO8gnF5zBc0Rgca80B2PMU1bKNxyBTHA14OzUAQ==}
     peerDependencies:
       '@sveltejs/kit': ^1.0.0
     dependencies:
-      '@sveltejs/kit': 1.5.6_svelte@3.55.1+vite@4.1.1
+      '@sveltejs/kit': 1.8.3_svelte@3.55.1+vite@4.1.1
       import-meta-resolve: 2.2.0
     dev: true
 
-  /@sveltejs/adapter-node/1.2.0_@sveltejs+kit@1.5.6:
+  /@sveltejs/adapter-node/1.2.0_@sveltejs+kit@1.8.3:
     resolution: {integrity: sha512-j0nxkrNZ4zBkOIOtqHUET5l8qvcFo64xNL2xv8F1QICkz746o5DVCGaJEPC3B2X2fTklXExxe80yXZhf38p6zg==}
     peerDependencies:
       '@sveltejs/kit': ^1.0.0
@@ -1438,12 +1438,12 @@ packages:
       '@rollup/plugin-commonjs': 24.0.0_rollup@3.12.1
       '@rollup/plugin-json': 6.0.0_rollup@3.12.1
       '@rollup/plugin-node-resolve': 15.0.1_rollup@3.12.1
-      '@sveltejs/kit': 1.5.6_svelte@3.55.1+vite@4.1.1
+      '@sveltejs/kit': 1.8.3_svelte@3.55.1+vite@4.1.1
       rollup: 3.12.1
     dev: true
 
-  /@sveltejs/kit/1.5.6_svelte@3.55.1+vite@4.1.1:
-    resolution: {integrity: sha512-CHVeQpbcwSIUekF6WwevmExKXyfHnzM5nlCEUv13lGgfJ0zKA0ny5YwIe40vccrm5w5Caec7jMTt9Ih3McJr5g==}
+  /@sveltejs/kit/1.8.3_svelte@3.55.1+vite@4.1.1:
+    resolution: {integrity: sha512-32tiLy5PPpt2lquK2p53/5wR+ghAXw0HymIBEezmwmwtzx7Xf36xw3RG3fDYQ9gyzon89T+JRweXgAv/qhhvSQ==}
     engines: {node: ^16.14 || >=18}
     hasBin: true
     requiresBuild: true
@@ -1454,17 +1454,17 @@ packages:
       '@sveltejs/vite-plugin-svelte': link:packages/vite-plugin-svelte
       '@types/cookie': 0.5.1
       cookie: 0.5.0
-      devalue: 4.2.3
+      devalue: 4.3.0
       esm-env: 1.0.0
       kleur: 4.1.5
-      magic-string: 0.27.0
+      magic-string: 0.29.0
       mime: 3.0.0
       sade: 1.8.1
       set-cookie-parser: 2.5.1
       sirv: 2.0.2
       svelte: 3.55.1
       tiny-glob: 0.2.9
-      undici: 5.18.0
+      undici: 5.20.0
       vite: 4.1.1
     dev: true
 
@@ -1550,6 +1550,9 @@ packages:
   /@types/node/18.13.0:
     resolution: {integrity: sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==}
 
+  /@types/node/18.14.0:
+    resolution: {integrity: sha512-5EWrvLmglK+imbCJY0+INViFWUHg1AHel1sq4ZVSfdcNqGy9Edv3UB9IIzzg+xPaUcAgZYcfVs2fBcwDeZzU0A==}
+
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
     dev: true
@@ -1565,7 +1568,7 @@ packages:
   /@types/sass/1.43.1:
     resolution: {integrity: sha512-BPdoIt1lfJ6B7rw35ncdwBZrAssjcwzI5LByIrYs+tpXlj/CAkuVdRsgZDdP4lq5EjyWzwxZCqAoFyHKFwp32g==}
     dependencies:
-      '@types/node': 18.13.0
+      '@types/node': 18.14.0
     dev: true
 
   /@types/semver/6.2.3:
@@ -2483,8 +2486,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /devalue/4.2.3:
-    resolution: {integrity: sha512-JG6Q248aN0pgFL57e3zqTVeFraBe+5W2ugvv1mLXsJP6YYIYJhRZhAl7QP8haJrqob6X10F9NEkuCvNILZTPeQ==}
+  /devalue/4.3.0:
+    resolution: {integrity: sha512-n94yQo4LI3w7erwf84mhRUkUJfhLoCZiLyoOZ/QFsDbcWNZePrLwbQpvZBUG2TNxwV3VjCKPxkiiQA6pe3TrTA==}
     dev: true
 
   /diff-match-patch/1.0.5:
@@ -3990,7 +3993,6 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.14
-    dev: false
 
   /map-obj/1.0.1:
     resolution: {integrity: sha512-7N/q3lyZ+LVCp7PzuxrJr4KMbBE2hW7BT7YNia330OFxIf4d3r5zVpicP2650l7CPN6RM9zOJRl3NGpqSiw3Eg==}
@@ -5944,8 +5946,8 @@ packages:
       which-boxed-primitive: 1.0.2
     dev: true
 
-  /undici/5.18.0:
-    resolution: {integrity: sha512-1iVwbhonhFytNdg0P4PqyIAXbdlVZVebtPDvuM36m66mRw4OGrCm2MYynJv/UENFLdP13J1nPVQzVE2zTs1OeA==}
+  /undici/5.20.0:
+    resolution: {integrity: sha512-J3j60dYzuo6Eevbawwp1sdg16k5Tf768bxYK4TUJRH7cBM4kFCbf3mOnM/0E3vQYXvpxITbbWmBafaDbxLDz3g==}
     engines: {node: '>=12.18'}
     dependencies:
       busboy: 1.6.0
@@ -6492,7 +6494,7 @@ packages:
     version: 1.0.0
     hasBin: true
     dependencies:
-      '@types/node': 18.13.0
+      '@types/node': 18.14.0
       e2e-test-dep-cjs-only: file:packages/e2e-tests/_test_dependencies/cjs-only
     dev: false
 

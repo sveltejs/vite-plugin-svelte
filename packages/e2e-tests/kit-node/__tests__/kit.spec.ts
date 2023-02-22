@@ -99,7 +99,7 @@ describe('kit-node', () => {
 				expect(includesClientOnlyModule).toBe(false);
 			});
 			it('should include dynamic import from onmount in client output', async () => {
-				const clientFiles = await glob('.svelte-kit/output/client/**/*.js', { cwd: testDir });
+				const clientFiles = await glob('.svelte-kit/output/client/**/*.mjs', { cwd: testDir });
 				const includesClientOnlyModule = clientFiles.some((file: string) =>
 					file.includes('client-only-module')
 				);
