@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.3
+
+### Patch Changes
+
+- fix(vitePreprocess): use relative paths in sourcemap sources ([#570](https://github.com/sveltejs/vite-plugin-svelte/pull/570))
+
+- show correct error overlay for compiler errors during hot update ([#592](https://github.com/sveltejs/vite-plugin-svelte/pull/592))
+
+- respect custom resolve.mainFields config when adding svelte ([#582](https://github.com/sveltejs/vite-plugin-svelte/pull/582))
+
 ## 2.0.2
 
 ### Patch Changes
