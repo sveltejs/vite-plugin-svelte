@@ -89,7 +89,7 @@ export default Dummy$;
 exports[`direct > Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css 1`] = `
 "button.svelte-d8vj6a{color:#000099}
 
-/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiRHVtbXkuc3ZlbHRlIiwibWFwcGluZ3MiOiJBQVdrQixNQUFBLGNBQUEsQ0FBQSxjQUtsQiIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJEdW1teS5zdmVsdGUiXX0= */
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiRHVtbXkuc3ZlbHRlIiwibWFwcGluZ3MiOiJBQVdrQixvQkFBQSIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJEdW1teS5zdmVsdGUiXX0= */
 "
 `;
 
@@ -533,7 +533,7 @@ exports[`raw > Dummy.svelte?raw&svelte&type=all&sourcemap 1`] = `
     \\"map\\": {
       \\"version\\": 3,
       \\"file\\": \\"Dummy.svelte\\",
-      \\"mappings\\": \\"AAWkB,MAAA,cAAA,CAAA,cAKlB\\",
+      \\"mappings\\": \\"AAWkB,oBAAA\\",
       \\"names\\": [],
       \\"sources\\": [
         \\"Dummy.svelte\\"
@@ -785,7 +785,9 @@ function instance$($$self, $$props, $$invalidate) {
 class Dummy$ extends SvelteElement$ {
 	constructor(options) {
 		super();
-		this.shadowRoot.innerHTML = \`<style>button{color:#000099}</style>\`;
+		const style = document.createElement('style');
+		style.textContent = \`button{color:#000099}\`;
+		this.shadowRoot.appendChild(style);
 
 		init$(
 			this,
@@ -1069,7 +1071,9 @@ function instance$($$self, $$props, $$invalidate) {
 class Dummy$ extends SvelteElement$ {
 	constructor(options) {
 		super();
-		this.shadowRoot.innerHTML = \`<style>button{color:#000099}</style>\`;
+		const style = document.createElement('style');
+		style.textContent = \`button{color:#000099}\`;
+		this.shadowRoot.appendChild(style);
 
 		init$(
 			this,
