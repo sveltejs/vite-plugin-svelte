@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.4
+
+### Patch Changes
+
+- fix(vitePreprocess): remove problematic pure annotations that could lead to wrong build output in some cases ([#609](https://github.com/sveltejs/vite-plugin-svelte/pull/609))
+
 ## 2.0.3
 
 ### Patch Changes
