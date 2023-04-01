@@ -1,16 +1,10 @@
-const { svelte } = require('@sveltejs/vite-plugin-svelte');
-const { defineConfig } = require('vite');
-const vitePluginWindicss = require('vite-plugin-windicss').default;
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { defineConfig } from 'vite';
+import vitePluginWindicss from 'vite-plugin-windicss';
 
-module.exports = defineConfig(({ command, mode }) => {
-	const isProduction = mode === 'production';
-	return {
-		plugins: [
-			svelte({ experimental: { generateMissingPreprocessorSourcemaps: true } }),
-			vitePluginWindicss()
-		],
-		build: {
-			minify: isProduction
-		}
-	};
+export default defineConfig({
+	plugins: [
+		svelte({ experimental: { generateMissingPreprocessorSourcemaps: true } }),
+		vitePluginWindicss()
+	]
 });

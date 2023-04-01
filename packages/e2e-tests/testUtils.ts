@@ -269,6 +269,10 @@ export async function fetchPageText() {
 	}
 }
 
+export async function fetchFromPage(url, init?) {
+	const fullUrl = page.url() + (url.startsWith('/') ? url.slice(1) : url);
+	return fetch(fullUrl, init);
+}
 export function readVitePrebundleMetadata() {
 	const metadataPaths = [
 		'node_modules/.vite/_metadata.json',

@@ -1,5 +1,95 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.0.4
+
+### Patch Changes
+
+- fix(vitePreprocess): remove problematic pure annotations that could lead to wrong build output in some cases ([#609](https://github.com/sveltejs/vite-plugin-svelte/pull/609))
+
+## 2.0.3
+
+### Patch Changes
+
+- fix(vitePreprocess): use relative paths in sourcemap sources ([#570](https://github.com/sveltejs/vite-plugin-svelte/pull/570))
+
+- show correct error overlay for compiler errors during hot update ([#592](https://github.com/sveltejs/vite-plugin-svelte/pull/592))
+
+- respect custom resolve.mainFields config when adding svelte ([#582](https://github.com/sveltejs/vite-plugin-svelte/pull/582))
+
+## 2.0.2
+
+### Patch Changes
+
+- improve detection of sveltekit in inspector plugin to be compatible to latest changes ([`47c54c9`](https://github.com/sveltejs/vite-plugin-svelte/commit/47c54c92b886ea9d9bdd1fc7549079b39215ccd1))
+
+## 2.0.1
+
+### Patch Changes
+
+- update minimum version of vitefu dependency to avoid peer mismatch ([#543](https://github.com/sveltejs/vite-plugin-svelte/pull/543))
+
+## 2.0.0
+
+### Major Changes
+
+- update svelte peerDependency to ^3.54.0 ([#529](https://github.com/sveltejs/vite-plugin-svelte/pull/529))
+
+- remove commonjs variant of vite-plugin-svelte ([#522](https://github.com/sveltejs/vite-plugin-svelte/pull/522))
+
+  Make sure your package.json contains `"type": "module"`and see [FAQ](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#how-can-i-use-vite-plugin-svelte-from-commonjs) for more information
+
+- update vite peerDependency to vite-4 ([#521](https://github.com/sveltejs/vite-plugin-svelte/pull/521))
+
+### Patch Changes
+
+- Remove `experimental.useVitePreprocess` option in favour of `vitePreprocess` ([#538](https://github.com/sveltejs/vite-plugin-svelte/pull/538))
+
+- Remove pre Vite 3.2 support for `vitePreprocess` ([#536](https://github.com/sveltejs/vite-plugin-svelte/pull/536))
+
+## 2.0.0-beta.3
+
+### Patch Changes
+
+- Remove `experimental.useVitePreprocess` option in favour of `vitePreprocess` ([#538](https://github.com/sveltejs/vite-plugin-svelte/pull/538))
+
+- Remove pre Vite 3.2 support for `vitePreprocess` ([#536](https://github.com/sveltejs/vite-plugin-svelte/pull/536))
+
+## 2.0.0-beta.2
+
+### Major Changes
+
+- reintroduce custom svelte/ssr resolve ([#532](https://github.com/sveltejs/vite-plugin-svelte/pull/532))
+
+## 2.0.0-beta.1
+
+### Major Changes
+
+- remove custom svelte/ssr resolve that is no longer needed in vite 4 ([#527](https://github.com/sveltejs/vite-plugin-svelte/pull/527))
+
+- update svelte peerDependency to ^3.54.0 ([#529](https://github.com/sveltejs/vite-plugin-svelte/pull/529))
+
+## 2.0.0-beta.0
+
+### Major Changes
+
+- remove cjs build ([#522](https://github.com/sveltejs/vite-plugin-svelte/pull/522))
+
+- update vite peerDependency to vite-4 ([#521](https://github.com/sveltejs/vite-plugin-svelte/pull/521))
+
+## 1.4.0
+
+### Minor Changes
+
+- support `&direct` and `&raw` query parameters for svelte requests ([#513](https://github.com/sveltejs/vite-plugin-svelte/pull/513))
+
+- Export `vitePreprocess()` Svelte preprocessor ([#509](https://github.com/sveltejs/vite-plugin-svelte/pull/509))
+
+### Patch Changes
+
+- ensure sources paths in sourcemaps are not absolute file paths ([#513](https://github.com/sveltejs/vite-plugin-svelte/pull/513))
+
+- remove experimental.generateMissingPreprocessorSourcemaps ([#514](https://github.com/sveltejs/vite-plugin-svelte/pull/514))
+
 ## 1.3.1
 
 ### Patch Changes

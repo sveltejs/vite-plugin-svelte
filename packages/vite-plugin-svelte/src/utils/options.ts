@@ -6,7 +6,8 @@ import {
 	SVELTE_EXPORT_CONDITIONS,
 	SVELTE_HMR_IMPORTS,
 	SVELTE_IMPORTS,
-	SVELTE_RESOLVE_MAIN_FIELDS
+	SVELTE_RESOLVE_MAIN_FIELDS,
+	VITE_RESOLVE_MAIN_FIELDS
 } from './constants';
 // eslint-disable-next-line node/no-missing-import
 import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
@@ -30,13 +31,10 @@ import {
 	isDepNoExternaled
 	// eslint-disable-next-line node/no-missing-import
 } from 'vitefu';
-import { atLeastSvelte } from './svelte-version';
+
 import { isCommonDepWithoutSvelteField } from './dependencies';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
-
-// svelte 3.53.0 changed compilerOptions.css from boolean to string | boolen, use string when available
-const cssAsString = atLeastSvelte('3.53.0');
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -184,16 +182,12 @@ export function resolveOptions(
 	viteConfig: ResolvedConfig,
 	cache: VitePluginSvelteCache
 ): ResolvedOptions {
-	const css = cssAsString
-		? preResolveOptions.emitCss
-			? 'external'
-			: 'injected'
-		: !preResolveOptions.emitCss;
+	const css = preResolveOptions.emitCss ? 'external' : 'injected';
 	const defaultOptions: Partial<Options> = {
 		hot: viteConfig.isProduction
 			? false
 			: {
-					injectCss: css === true || css === 'injected',
+					injectCss: css === 'injected',
 					partialAccept: !!viteConfig.experimental?.hmrPartialAccept
 			  },
 		compilerOptions: {
@@ -237,7 +231,7 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 			}
 			const css = options.compilerOptions.css;
 			if (css === true || css === 'injected') {
-				const forcedCss = cssAsString ? 'external' : false;
+				const forcedCss = 'external';
 				log.warn(
 					`hmr and emitCss are enabled but compilerOptions.css is ${css}, forcing it to ${forcedCss}`
 				);
@@ -256,7 +250,7 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 			}
 			const css = options.compilerOptions.css;
 			if (!(css === true || css === 'injected')) {
-				const forcedCss = cssAsString ? 'injected' : true;
+				const forcedCss = 'injected';
 				log.warn(
 					`hmr with emitCss disabled requires compilerOptions.css to be enabled, forcing it to ${forcedCss}`
 				);
@@ -317,6 +311,9 @@ function handleDeprecatedOptions(options: ResolvedOptions) {
 			'experimental.prebundleSvelteLibraries is no longer experimental and has moved to prebundleSvelteLibraries'
 		);
 	}
+	if ((options.experimental as any)?.generateMissingPreprocessorSourcemaps) {
+		log.warn('experimental.generateMissingPreprocessorSourcemaps has been removed.');
+	}
 }
 
 // vite passes unresolved `root`option to config hook but we need the resolved value, so do it here
@@ -330,9 +327,18 @@ export async function buildExtraViteConfig(
 	options: PreResolvedOptions,
 	config: UserConfig
 ): Promise<Partial<UserConfig>> {
+	// make sure we only readd vite default mainFields when no other plugin has changed the config already
+	// see https://github.com/sveltejs/vite-plugin-svelte/issues/581
+	if (!config.resolve) {
+		config.resolve = {};
+	}
+	config.resolve.mainFields = [
+		...SVELTE_RESOLVE_MAIN_FIELDS,
+		...(config.resolve.mainFields ?? VITE_RESOLVE_MAIN_FIELDS)
+	];
+
 	const extraViteConfig: Partial<UserConfig> = {
 		resolve: {
-			mainFields: [...SVELTE_RESOLVE_MAIN_FIELDS],
 			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS],
 			conditions: [...SVELTE_EXPORT_CONDITIONS]
 		}
@@ -534,12 +540,25 @@ function buildExtraConfigForSvelte(config: UserConfig) {
 }
 
 export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: ResolvedOptions) {
+	if (options.preprocess) {
+		for (const preprocessor of arraify(options.preprocess)) {
+			if (preprocessor.style && '__resolvedConfig' in preprocessor.style) {
+				preprocessor.style.__resolvedConfig = viteConfig;
+			}
+		}
+	}
+
+	// replace facade esbuild plugin with a real one
 	const facadeEsbuildSveltePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
 		(plugin) => plugin.name === facadeEsbuildSveltePluginName
 	);
 	if (facadeEsbuildSveltePlugin) {
 		Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
 	}
+}
+
+function arraify<T>(value: T | T[]): T[] {
+	return Array.isArray(value) ? value : [value];
 }
 
 export type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
@@ -673,24 +692,6 @@ export interface SvelteOptions {
  * These options are considered experimental and breaking changes to them can occur in any release
  */
 export interface ExperimentalOptions {
-	/**
-	 * Use extra preprocessors that delegate style and TypeScript preprocessing to native Vite plugins
-	 *
-	 * Do not use together with `svelte-preprocess`!
-	 *
-	 * @default false
-	 */
-	useVitePreprocess?: boolean;
-
-	/**
-	 * If a preprocessor does not provide a sourcemap, a best-effort fallback sourcemap will be provided.
-	 * This option requires `diff-match-patch` to be installed as a peer dependency.
-	 *
-	 * @see https://github.com/google/diff-match-patch
-	 * @default false
-	 */
-	generateMissingPreprocessorSourcemaps?: boolean;
-
 	/**
 	 * A function to update `compilerOptions` before compilation
 	 *
