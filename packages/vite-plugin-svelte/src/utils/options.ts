@@ -734,6 +734,13 @@ export interface ExperimentalOptions {
 	 * @default false
 	 */
 	disableCompileStats?: 'dev' | 'build' | boolean;
+
+	/**
+	 * disable svelte field resolve warnings
+	 *
+	 * @default false
+	 */
+	disableSvelteResolveWarnings?: boolean;
 }
 
 export interface InspectorOptions {

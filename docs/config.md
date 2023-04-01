@@ -410,3 +410,10 @@ export default {
 - **Default:** `false`
 
   disable svelte compile statistics.
+
+### disableSvelteResolveWarnings
+
+- **Type** `boolean`
+- **Default:** `false`
+
+  disable svelte resolve warnings

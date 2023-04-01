@@ -51,6 +51,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	/* eslint-enable no-unused-vars */
 
 	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;
+	let packagesWithResolveWarnings: Set<string>;
 	const api: PluginAPI = {};
 	const plugins: Plugin[] = [
 		{
@@ -85,6 +86,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 
 			async buildStart() {
+				packagesWithResolveWarnings = new Set<string>();
 				if (!options.prebundleSvelteLibraries) return;
 				const isSvelteMetadataChanged = await saveSvelteMetadata(viteConfig.cacheDir, options);
 				if (isSvelteMetadataChanged) {
@@ -169,28 +171,29 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 						const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
 						if (isFirstResolve && resolved) {
 							const packageInfo = await cache.getPackageInfo(resolved);
+							const packageVersion = `${packageInfo.name}@${packageInfo.version}`;
 							log.debug.once(
-								`resolveId resolved ${importee} to ${resolved} via package.json svelte field of ${packageInfo.name}@${packageInfo.version}`
+								`resolveId resolved ${importee} to ${resolved} via package.json svelte field of ${packageVersion}`
 							);
-							const logDeprecationWarning = (error?: Error | string) => {
-								const prefix = `DEPRECATION WARNING: ${packageInfo.name}@${packageInfo.version} package.json has \`"svelte":"${packageInfo.svelte}"\``;
-								const reason = error
-									? ' and without it resolve would fail with the following error:'
-									: ' and vite would resolve differently without it.';
-								const secondLine = `Packages should use the "svelte" exports condition instead. See ${FAQ_LINK_DEPRECATED_SVELTE_FIELD} for more information.`;
-								log.warn.once(`${prefix}${reason}\n${secondLine}`, error);
-							};
+
 							try {
 								const viteResolved = (
 									await this.resolve(importee, importer, { ...opts, skipSelf: true })
 								)?.id;
 								if (resolved !== viteResolved) {
-									logDeprecationWarning(
-										`'${importee}' resolved to '${resolved}' but vite would resolve to '${viteResolved}'`
-									);
+									packagesWithResolveWarnings.add(packageVersion);
+									log.debug.enabled &&
+										log.debug.once(
+											`resolve difference for ${packageVersion} ${importee} - svelte: "${resolved}", vite: "${viteResolved}"`
+										);
 								}
 							} catch (e) {
-								logDeprecationWarning(e);
+								packagesWithResolveWarnings.add(packageVersion);
+								log.debug.enabled &&
+									log.debug.once(
+										`resolve error for ${packageVersion} ${importee} - svelte: "${resolved}", vite: ERROR`,
+										e
+									);
 							}
 						}
 						return resolved;
@@ -247,6 +250,16 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 			async buildEnd() {
 				await options.stats?.finishAll();
+				if (
+					!options.experimental?.disableSvelteResolveWarnings &&
+					packagesWithResolveWarnings?.size > 0
+				) {
+					log.warn(
+						`WARNING: The following packages use a svelte resolve configuration in package.json that is going to cause problems in the future.\n\n${[
+							...packagesWithResolveWarnings
+						].join('\n')}\n\nPlease see ${FAQ_LINK_DEPRECATED_SVELTE_FIELD} for details.`
+					);
+				}
 			}
 		}
 	];
