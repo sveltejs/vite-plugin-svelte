@@ -221,11 +221,10 @@ Example:
 
 ```diff
 // package.json
-- "svelte": "src/index.js"
+  "svelte": "src/index.js",
 + "exports": {
-+   "./package.json": "./package.json",
 +   "./*": {
-+     "svelte": "./src/*",
++     "svelte": "./src/lib/components/*",
 +   },
 +   ".": {
 +     "svelte": "./index.js"
@@ -233,7 +232,9 @@ Example:
   }
 ```
 
-> **Support for the svelte field is deprecated and is going to be removed in a future version of vite-plugin-svelte.**
+> **Support for the svelte field is going to be deprecated and later removed in a future versions of vite-plugin-svelte.**
 >
-> Library authors are highly encouraged to update their packages to the new exports condition as outlined above. Check out
+> Library authors are highly encouraged to update their packages to add the new exports condition as outlined above. Check out
 > [svelte-package](https://kit.svelte.dev/docs/packaging) which already supports it.
+>
+> For backwards compatibility, you can keep the svelte field in addition to the exports condition. But make sure that both always resolve to the same files.
