@@ -140,7 +140,7 @@ export class VitePluginSvelteStats {
 					stats.push(stat);
 					if (!hasLoggedProgress && options.logInProgress(collection, now)) {
 						hasLoggedProgress = true;
-						log.info(`${name} in progress ...`);
+						log.debug(`${name} in progress ...`);
 					}
 				};
 			},
@@ -164,7 +164,7 @@ export class VitePluginSvelteStats {
 			const logResult = collection.options.logResult(collection);
 			if (logResult) {
 				await this._aggregateStatsResult(collection);
-				log.info(`${collection.name} done.`, formatPackageStats(collection.packageStats!));
+				log.debug(`${collection.name} done.`, formatPackageStats(collection.packageStats!));
 			}
 			// cut some ties to free it for garbage collection
 			const index = this._collections.indexOf(collection);
