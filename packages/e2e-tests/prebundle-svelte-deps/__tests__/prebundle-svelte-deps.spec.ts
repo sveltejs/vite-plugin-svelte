@@ -4,7 +4,7 @@ import {
 	getText,
 	isBuild,
 	readVitePrebundleMetadata,
-	waitForServerRestartAndReloadPage
+	waitForServerRestartAndPageReload
 } from '~utils';
 
 async function expectPageToWork() {
@@ -46,7 +46,7 @@ if (!isBuild) {
 		editFile('svelte.config.js', (c) =>
 			c.replace('prebundleSvelteLibraries: true', 'prebundleSvelteLibraries: false')
 		);
-		await waitForServerRestartAndReloadPage();
+		await waitForServerRestartAndPageReload();
 		await expectPageToWork();
 		const metadataFile = readVitePrebundleMetadata();
 		const metadata = JSON.parse(metadataFile);

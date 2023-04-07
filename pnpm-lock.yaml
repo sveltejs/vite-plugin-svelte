@@ -307,6 +307,7 @@ importers:
       '@sveltejs/vite-plugin-svelte': workspace:^
       e2e-test-dep-svelte-hybrid: file:../_test_dependencies/svelte-hybrid
       e2e-test-dep-svelte-nested: file:../_test_dependencies/svelte-nested
+      sass: ^1.59.3
       svelte: ^3.57.0
       vite: ^4.2.1
     dependencies:
@@ -314,8 +315,9 @@ importers:
       e2e-test-dep-svelte-nested: file:packages/e2e-tests/_test_dependencies/svelte-nested
     devDependencies:
       '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
+      sass: 1.59.3
       svelte: 3.57.0
-      vite: 4.2.1
+      vite: 4.2.1_sass@1.59.3
 
   packages/e2e-tests/prebundle-svelte-deps:
     specifiers:

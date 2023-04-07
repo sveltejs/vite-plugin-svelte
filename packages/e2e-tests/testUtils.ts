@@ -217,11 +217,11 @@ export async function saveScreenshot(name: string) {
 export async function editViteConfig(replacer: (str: string) => string) {
 	editFile('vite.config.js', replacer);
 	if (!isBuild) {
-		await waitForServerRestartAndReloadPage();
+		await waitForServerRestartAndPageReload();
 	}
 }
 
-export async function waitForServerRestartAndReloadPage(timeout = 10000) {
+export async function waitForServerRestartAndPageReload(timeout = 10000) {
 	const logs = e2eServer.logs.server.out;
 	const startIdx = logs.length;
 	let timeleft = timeout;
@@ -238,7 +238,10 @@ export async function waitForServerRestartAndReloadPage(timeout = 10000) {
 	if (!restarted) {
 		throw new Error(`server did not restart after ${timeout}ms`);
 	}
-	await reloadPage();
+	// wait for vite auto-refresh and connect
+	await waitForViteConnect(page);
+	// wait for page to completely load
+	await page.waitForLoadState();
 }
 
 export async function reloadPage() {
