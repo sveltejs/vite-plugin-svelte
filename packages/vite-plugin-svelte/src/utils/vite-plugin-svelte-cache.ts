@@ -152,7 +152,7 @@ export class VitePluginSvelteCache {
 }
 
 /**
- * utility to get some info from the package.json a file belongs to (closest one with a "name" set)
+ * utility to get some info from the closest package.json with a "name" set
  *
  * @param {string} file to find info for
  * @returns {PackageInfo}
