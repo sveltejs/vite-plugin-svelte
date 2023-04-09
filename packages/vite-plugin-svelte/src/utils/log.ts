@@ -8,7 +8,10 @@ const levels: string[] = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
 const loggers: { [key: string]: any } = {
 	debug: {
-		log: debug(`vite:${prefix}`),
+		log: {
+			default: debug(`vite:${prefix}`),
+			stats: debug(`vite:${prefix}:stats`)
+		},
 		enabled: false,
 		isDebug: true
 	},
@@ -48,12 +51,13 @@ function setLevel(level: string) {
 	}
 }
 
-function _log(logger: any, message: string, payload?: any) {
+function _log(logger: any, message: string, payload?: any, namespace?: string) {
 	if (!logger.enabled) {
 		return;
 	}
 	if (logger.isDebug) {
-		payload !== undefined ? logger.log(message, payload) : logger.log(message);
+		const log = logger.log[namespace || 'default'];
+		payload !== undefined ? log(message, payload) : log(message);
 	} else {
 		logger.log(logger.color(`${new Date().toLocaleTimeString()} [${prefix}] ${message}`));
 		if (payload) {
@@ -63,21 +67,21 @@ function _log(logger: any, message: string, payload?: any) {
 }
 
 export interface LogFn {
-	(message: string, payload?: any): void;
+	(message: string, payload?: any, namespace?: string): void;
 	enabled: boolean;
-	once: (message: string, payload?: any) => void;
+	once: (message: string, payload?: any, namespace?: string) => void;
 }
 
 function createLogger(level: string): LogFn {
 	const logger = loggers[level];
 	const logFn: LogFn = _log.bind(null, logger) as LogFn;
 	const logged = new Set<String>();
-	const once = function (message: string, payload?: any) {
+	const once = function (message: string, payload?: any, namespace?: string) {
 		if (logged.has(message)) {
 			return;
 		}
 		logged.add(message);
-		logFn.apply(null, [message, payload]);
+		logFn.apply(null, [message, payload, namespace]);
 	};
 	Object.defineProperty(logFn, 'enabled', {
 		get() {
