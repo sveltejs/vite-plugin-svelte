@@ -206,8 +206,7 @@ export function resolveOptions(
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
 	// mergeConfigs would mangle functions on the stats class, so do this afterwards
-	const isLogLevelInfo = [undefined, 'info'].includes(viteConfig.logLevel);
-	if (isLogLevelInfo) {
+	if (log.debug.enabled) {
 		merged.stats = new VitePluginSvelteStats();
 	}
 	return merged;
