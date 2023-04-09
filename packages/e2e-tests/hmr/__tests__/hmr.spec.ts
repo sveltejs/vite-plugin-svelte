@@ -12,7 +12,7 @@ import {
 	removeFile,
 	editViteConfig,
 	browserLogs,
-	waitForServerRestartAndReloadPage
+	waitForServerRestartAndPageReload
 } from '~utils';
 
 test('should render App', async () => {
@@ -165,7 +165,7 @@ if (!isBuild) {
 
 		test('should work with emitCss: false in svelte config', async () => {
 			addFile('svelte.config.cjs', `module.exports={vitePlugin:{emitCss:false}}`);
-			await waitForServerRestartAndReloadPage();
+			await waitForServerRestartAndPageReload();
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
 			removeFile('svelte.config.cjs');
 		});
@@ -186,7 +186,7 @@ if (!isBuild) {
 				`module.exports = {
 			  preprocess:[{markup:${injectPreprocessor.toString()}}]};`
 			);
-			await waitForServerRestartAndReloadPage();
+			await waitForServerRestartAndPageReload();
 			expect(await getText('#preprocess-inject')).toBe('Injected');
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
@@ -201,7 +201,7 @@ if (!isBuild) {
 					.replace('preprocess-inject', 'preprocess-inject-2')
 					.replace('Injected', 'Injected 2')
 			);
-			await waitForServerRestartAndReloadPage();
+			await waitForServerRestartAndPageReload();
 			expect(await getText('#preprocess-inject-2')).toBe('Injected 2');
 			expect(await getEl('#preprocess-inject')).toBe(null);
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('green');
@@ -213,7 +213,7 @@ if (!isBuild) {
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
 			expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
 			await removeFile('svelte.config.cjs');
-			await waitForServerRestartAndReloadPage();
+			await waitForServerRestartAndPageReload();
 			expect(await getEl('#preprocess-inject-2')).toBe(null);
 			expect(await getEl('#preprocess-inject')).toBe(null);
 			expect(await getColor(`#hmr-test-1 .label`)).toBe('red');
