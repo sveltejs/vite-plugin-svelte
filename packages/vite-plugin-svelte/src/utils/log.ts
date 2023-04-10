@@ -3,15 +3,11 @@ import { cyan, yellow, red } from 'kleur/colors';
 import debug from 'debug';
 import { ResolvedOptions, Warning } from './options';
 import { SvelteRequest } from './id';
-
 const levels: string[] = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
 const loggers: { [key: string]: any } = {
 	debug: {
-		log: {
-			default: debug(`vite:${prefix}`),
-			stats: debug(`vite:${prefix}:stats`)
-		},
+		log: debug(`vite:${prefix}`),
 		enabled: false,
 		isDebug: true
 	},
@@ -56,10 +52,16 @@ function _log(logger: any, message: string, payload?: any, namespace?: string) {
 		return;
 	}
 	if (logger.isDebug) {
-		const log = logger.log[namespace || 'default'];
+		const log = namespace ? logger.log.extend(namespace) : logger.log;
 		payload !== undefined ? log(message, payload) : log(message);
 	} else {
-		logger.log(logger.color(`${new Date().toLocaleTimeString()} [${prefix}] ${message}`));
+		logger.log(
+			logger.color(
+				`${new Date().toLocaleTimeString()} [${prefix}${
+					namespace ? `:${namespace}` : ''
+				}] ${message}`
+			)
+		);
 		if (payload) {
 			logger.log(payload);
 		}
@@ -212,4 +214,8 @@ export function buildExtendedLogMessage(w: Warning) {
 		parts.push(w.message);
 	}
 	return parts.join('');
+}
+
+export function isDebugNamespaceEnabled(namespace: string) {
+	return debug.enabled(`vite:${prefix}:${namespace}`);
 }

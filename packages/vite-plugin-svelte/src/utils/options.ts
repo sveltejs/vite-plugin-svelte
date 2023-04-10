@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { ConfigEnv, ResolvedConfig, UserConfig, ViteDevServer, normalizePath } from 'vite';
-import { log } from './log';
+import { isDebugNamespaceEnabled, log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import {
 	SVELTE_EXPORT_CONDITIONS,
@@ -206,7 +206,7 @@ export function resolveOptions(
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
 	// mergeConfigs would mangle functions on the stats class, so do this afterwards
-	if (log.debug.enabled) {
+	if (log.debug.enabled && isDebugNamespaceEnabled('stats')) {
 		merged.stats = new VitePluginSvelteStats();
 	}
 	return merged;
