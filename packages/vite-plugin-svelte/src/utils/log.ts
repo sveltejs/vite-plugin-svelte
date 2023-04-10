@@ -3,7 +3,6 @@ import { cyan, yellow, red } from 'kleur/colors';
 import debug from 'debug';
 import { ResolvedOptions, Warning } from './options';
 import { SvelteRequest } from './id';
-
 const levels: string[] = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
 const loggers: { [key: string]: any } = {
@@ -48,14 +47,21 @@ function setLevel(level: string) {
 	}
 }
 
-function _log(logger: any, message: string, payload?: any) {
+function _log(logger: any, message: string, payload?: any, namespace?: string) {
 	if (!logger.enabled) {
 		return;
 	}
 	if (logger.isDebug) {
-		payload !== undefined ? logger.log(message, payload) : logger.log(message);
+		const log = namespace ? logger.log.extend(namespace) : logger.log;
+		payload !== undefined ? log(message, payload) : log(message);
 	} else {
-		logger.log(logger.color(`${new Date().toLocaleTimeString()} [${prefix}] ${message}`));
+		logger.log(
+			logger.color(
+				`${new Date().toLocaleTimeString()} [${prefix}${
+					namespace ? `:${namespace}` : ''
+				}] ${message}`
+			)
+		);
 		if (payload) {
 			logger.log(payload);
 		}
@@ -63,21 +69,21 @@ function _log(logger: any, message: string, payload?: any) {
 }
 
 export interface LogFn {
-	(message: string, payload?: any): void;
+	(message: string, payload?: any, namespace?: string): void;
 	enabled: boolean;
-	once: (message: string, payload?: any) => void;
+	once: (message: string, payload?: any, namespace?: string) => void;
 }
 
 function createLogger(level: string): LogFn {
 	const logger = loggers[level];
 	const logFn: LogFn = _log.bind(null, logger) as LogFn;
 	const logged = new Set<String>();
-	const once = function (message: string, payload?: any) {
+	const once = function (message: string, payload?: any, namespace?: string) {
 		if (logged.has(message)) {
 			return;
 		}
 		logged.add(message);
-		logFn.apply(null, [message, payload]);
+		logFn.apply(null, [message, payload, namespace]);
 	};
 	Object.defineProperty(logFn, 'enabled', {
 		get() {
@@ -208,4 +214,8 @@ export function buildExtendedLogMessage(w: Warning) {
 		parts.push(w.message);
 	}
 	return parts.join('');
+}
+
+export function isDebugNamespaceEnabled(namespace: string) {
+	return debug.enabled(`vite:${prefix}:${namespace}`);
 }
