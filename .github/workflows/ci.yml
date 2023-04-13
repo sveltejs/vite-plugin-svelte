@@ -87,17 +87,15 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: install pnpm
-        if: matrix.node_version != 14
+        if: matrix.node != 14
         shell: bash
         run: |
           PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
           echo installing pnpm version $PNPM_VER
           npm i -g pnpm@$PNPM_VER
       - name: install legacy pnpm for node14
-        if: matrix.node_version == 14
-        shell: bash
-        run: |
-          npm i -g pnpm@^7.32.0
+        if: matrix.node == 14
+        run: npm i -g pnpm@^7.32.0
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
