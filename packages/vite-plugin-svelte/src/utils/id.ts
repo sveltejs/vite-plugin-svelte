@@ -4,7 +4,7 @@ import { Arrayable, ResolvedOptions } from './options';
 import { normalizePath } from 'vite';
 import * as fs from 'fs';
 //eslint-disable-next-line node/no-missing-import
-import { CompileOptions } from 'svelte/types/compiler/interfaces';
+import { CompileOptions } from 'svelte/compiler';
 import { log } from './log';
 
 const VITE_FS_PREFIX = '/@fs/';

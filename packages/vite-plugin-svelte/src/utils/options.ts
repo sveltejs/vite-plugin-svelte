@@ -9,15 +9,14 @@ import {
 	SVELTE_RESOLVE_MAIN_FIELDS,
 	VITE_RESOLVE_MAIN_FIELDS
 } from './constants';
-// eslint-disable-next-line node/no-missing-import
-import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
 import type {
+	CompileOptions,
 	MarkupPreprocessor,
 	Preprocessor,
 	PreprocessorGroup,
 	Processed
 	// eslint-disable-next-line node/no-missing-import
-} from 'svelte/types/compiler/preprocess';
+} from 'svelte/compiler';
 
 import path from 'path';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
