@@ -1,3 +1,4 @@
+import path from 'path';
 import { preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
 import type { ESBuildOptions, InlineConfig, ResolvedConfig } from 'vite';
 // eslint-disable-next-line node/no-missing-import
@@ -74,9 +75,19 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 		}
 		const moduleId = `${filename}.${lang}`;
 		const { code, map } = await transform(content, moduleId);
-
 		mapSourcesToRelative(map, moduleId);
-
+		const baseModuleId = path.basename(moduleId);
+		const baseFilename = path.basename(filename);
+		if (map?.file === moduleId) {
+			map.file = filename;
+		} else if (map?.file === baseModuleId) {
+			map.file = baseFilename;
+		}
+		if (map?.sources?.map) {
+			map.sources = map.sources.map((source: string) =>
+				source === baseModuleId ? baseFilename : source
+			);
+		}
 		return {
 			code,
 			map: map ?? undefined
