@@ -95,7 +95,9 @@ jobs:
           npm i -g pnpm@$PNPM_VER
       - name: install legacy pnpm for node14
         if: matrix.node == 14
-        run: npm i -g pnpm@^7.32.0
+        run: |
+          npm i -g pnpm@^7.32.0
+          tmppkg="$(jq '.engines.pnpm = "^7.32.0"' package.json)" && echo -E "${tmppkg}" > package.json && tmppkg=""
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
