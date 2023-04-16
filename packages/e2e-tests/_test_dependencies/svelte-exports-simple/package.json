@@ -6,6 +6,10 @@
     "e2e-test-dep-cjs-only": "file:../cjs-only"
   },
   "type": "module",
+  "files": [
+    "src",
+    "index.js"
+  ],
 	"exports": {
 		"./*": {
 			"svelte": "./src/components/*"
