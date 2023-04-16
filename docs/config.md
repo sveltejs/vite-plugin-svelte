@@ -404,13 +404,6 @@ export default {
   };
   ```
 
-### disableCompileStats
-
-- **Type** `boolean | 'dev' | 'build'`
-- **Default:** `false`
-
-  disable svelte compile statistics.
-
 ### disableSvelteResolveWarnings
 
 - **Type** `boolean`

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { ConfigEnv, ResolvedConfig, UserConfig, ViteDevServer, normalizePath } from 'vite';
-import { log } from './log';
+import { isDebugNamespaceEnabled, log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import {
 	SVELTE_EXPORT_CONDITIONS,
@@ -208,11 +208,7 @@ export function resolveOptions(
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
 	// mergeConfigs would mangle functions on the stats class, so do this afterwards
-	const isLogLevelInfo = [undefined, 'info'].includes(viteConfig.logLevel);
-	const disableCompileStats = merged.experimental?.disableCompileStats;
-	const statsEnabled =
-		disableCompileStats !== true && disableCompileStats !== (merged.isBuild ? 'build' : 'dev');
-	if (statsEnabled && isLogLevelInfo) {
+	if (log.debug.enabled && isDebugNamespaceEnabled('stats')) {
 		merged.stats = new VitePluginSvelteStats(cache);
 	}
 	return merged;
@@ -727,13 +723,6 @@ export interface ExperimentalOptions {
 	 *
 	 */
 	sendWarningsToBrowser?: boolean;
-
-	/**
-	 * disable svelte compile statistics
-	 *
-	 * @default false
-	 */
-	disableCompileStats?: 'dev' | 'build' | boolean;
 
 	/**
 	 * disable svelte field resolve warnings
