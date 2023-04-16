@@ -7,6 +7,8 @@ import { mapToRelative, removeLangSuffix } from './utils/sourcemaps';
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
 
+export const lang_sep = '.vite-preprocess.';
+
 export function vitePreprocess(opts?: {
 	script?: boolean;
 	style?: boolean | InlineConfig | ResolvedConfig;
@@ -72,9 +74,10 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 			}
 			transform = getCssTransformFn(resolvedConfig);
 		}
-		const moduleId = `${filename}.${lang}`;
+		const suffix = `${lang_sep}${lang}`;
+		const moduleId = `${filename}${suffix}`;
 		const { code, map } = await transform(content, moduleId);
-		removeLangSuffix(map, filename, lang);
+		removeLangSuffix(map, suffix);
 		mapToRelative(map, filename);
 		return {
 			code,

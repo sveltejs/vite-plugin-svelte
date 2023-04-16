@@ -40,21 +40,13 @@ export function mapToRelative(map: SourceMapFileRefs | undefined, filename: stri
  * map is modified in place.
  *
  * @param map the output sourcemap
- * @param filename original filename passed to vite
- * @param lang added lang extension
+ * @param suffix the suffix to remove
  */
-export function removeLangSuffix(
-	map: SourceMapFileRefs | undefined,
-	filename: string,
-	lang: string
-) {
+export function removeLangSuffix(map: SourceMapFileRefs | undefined, suffix: string) {
 	if (!map) {
 		return;
 	}
-	const basename = path.basename(filename);
-	const suffixed = `${basename}.${lang}`;
-	const removeSuffix = (s: string) =>
-		s.endsWith(suffixed) ? s.slice(0, -1 * (lang.length + 1)) : s;
+	const removeSuffix = (s: string) => (s.endsWith(suffix) ? s.slice(0, -1 * suffix.length) : s);
 	if (map.file) {
 		map.file = removeSuffix(map.file);
 	}
