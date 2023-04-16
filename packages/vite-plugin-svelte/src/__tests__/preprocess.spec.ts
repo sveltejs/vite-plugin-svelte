@@ -1,11 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { vitePreprocess } from '../preprocess';
 import path from 'path';
+import { normalizePath } from 'vite';
 import { fileURLToPath } from 'url';
-const fixturesDir = path.join(
-	path.dirname(fileURLToPath(import.meta.url)),
-	'fixtures',
-	'preprocess'
+
+const fixtureDir = normalizePath(
+	path.relative(
+		process.cwd(),
+		path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'preprocess')
+	)
 );
 
 describe('vitePreprocess', () => {
@@ -19,22 +22,21 @@ describe('vitePreprocess', () => {
 	describe('style', async () => {
 		it('produces sourcemap with relative filename', async () => {
 			const { style } = vitePreprocess({ style: { css: { devSourcemap: true } } });
-			const depFixture = `${fixturesDir}/foo.scss`;
 			const scss = `
-			  @import '${depFixture}';
+			  @import './foo';
 				.foo {
 				  &.bar {
-				  color: red;
+				    color: red;
 				  }
 				}`.replace(/\t/g, '');
-			const file = `${path.resolve('File.svelte')}`;
+
 			const processed = await style({
 				content: scss,
 				attributes: {
 					lang: 'scss'
 				},
 				markup: '', // not read by vitePreprocess
-				filename: file
+				filename: `${fixtureDir}/File.svelte`
 			});
 			expect(processed).toBeDefined();
 			// @ts-ignore
@@ -42,7 +44,7 @@ describe('vitePreprocess', () => {
 			expect(code).toBe('.foo {\n  color: green;\n}\n\n.foo.bar {\n  color: red;\n}');
 			expect(map.file).toBe('File.svelte');
 			expect(map.sources.length).toBe(2);
-			expect(map.sources[0]).toBe(path.relative(file, depFixture));
+			expect(map.sources[0]).toBe('foo.scss');
 			expect(map.sources[1]).toBe('File.svelte');
 		});
 	});

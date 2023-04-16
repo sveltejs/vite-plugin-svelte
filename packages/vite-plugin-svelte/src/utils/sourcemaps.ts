@@ -3,30 +3,33 @@ import path from 'path';
 interface SourceMapFileRefs {
 	file?: string;
 	sources?: string[];
+	sourceRoot?: string;
 }
 /**
- * sourcemap file references are relative to the sourcemap itself
- * assume the sourcemap location is the same as filename and turn absolute paths to relative
- * to avoid leaking fs information like vite root
+ * convert absolute paths in sourcemap file refs to their relative equivalents to avoid leaking fs info
+ *
+ *
  */
 export function mapToRelative(map: SourceMapFileRefs | undefined, filename: string) {
 	if (!map) {
 		return;
 	}
-	const basename = path.basename(filename);
-	if (map.file === filename) {
-		map.file = basename;
+	const dirname = path.dirname(filename);
+	const toRelative = (s: string) => {
+		let sourcePath = s.startsWith('file://') ? s.slice(7) : s;
+		if (map.sourceRoot) {
+			sourcePath = path.resolve(map.sourceRoot, sourcePath);
+		}
+		if (path.isAbsolute(sourcePath)) {
+			return path.relative(dirname, sourcePath);
+		}
+		return s;
+	};
+	if (map.file) {
+		map.file = path.basename(filename);
 	}
 	if (map.sources) {
-		map.sources = map.sources.map((s) => {
-			if (path.isAbsolute(s)) {
-				const relative = path.relative(filename, s);
-				// empty string as a source is not allowed, use simple filename
-				return relative === '' ? basename : relative;
-			} else {
-				return s;
-			}
-		});
+		map.sources = map.sources.map(toRelative);
 	}
 }
 
