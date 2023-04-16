@@ -185,18 +185,6 @@ importers:
       svelte-preprocess: 5.0.3_svelte@3.58.0
       vite: 4.2.1
 
-  packages/e2e-tests/css-dev-sourcemap:
-    specifiers:
-      '@sveltejs/vite-plugin-svelte': workspace:^
-      sass: ^1.61.0
-      svelte: ^3.58.0
-      vite: ^4.2.1
-    devDependencies:
-      '@sveltejs/vite-plugin-svelte': link:../../vite-plugin-svelte
-      sass: 1.61.0
-      svelte: 3.58.0
-      vite: 4.2.1_sass@1.61.0
-
   packages/e2e-tests/css-none:
     specifiers:
       '@sveltejs/vite-plugin-svelte': workspace:^

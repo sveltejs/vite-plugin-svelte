@@ -1,9 +1,8 @@
-import path from 'path';
 import { preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
 import type { ESBuildOptions, InlineConfig, ResolvedConfig } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import type { Preprocessor, PreprocessorGroup } from 'svelte/types/compiler/preprocess';
-import { mapSourcesToRelative } from './utils/sourcemaps';
+import { mapToRelative, removeLangSuffix } from './utils/sourcemaps';
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
@@ -40,7 +39,7 @@ function viteScript(): { script: Preprocessor } {
 				}
 			});
 
-			mapSourcesToRelative(map, filename);
+			mapToRelative(map, filename);
 
 			return {
 				code,
@@ -75,19 +74,8 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 		}
 		const moduleId = `${filename}.${lang}`;
 		const { code, map } = await transform(content, moduleId);
-		mapSourcesToRelative(map, moduleId);
-		const baseModuleId = path.basename(moduleId);
-		const baseFilename = path.basename(filename);
-		if (map?.file === moduleId) {
-			map.file = filename;
-		} else if (map?.file === baseModuleId) {
-			map.file = baseFilename;
-		}
-		if (map?.sources?.map) {
-			map.sources = map.sources.map((source: string) =>
-				source === baseModuleId ? baseFilename : source
-			);
-		}
+		removeLangSuffix(map, filename, lang);
+		mapToRelative(map, filename);
 		return {
 			code,
 			map: map ?? undefined

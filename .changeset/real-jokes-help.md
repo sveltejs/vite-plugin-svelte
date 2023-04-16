@@ -2,4 +2,4 @@
 '@sveltejs/vite-plugin-svelte': patch
 ---
 
-fixed Sourcemap for "Component.svelte" points to missing source files
+fix(vitePreprocess): use relative paths without lang suffix in sourcemaps to avoid missing source file errors.
