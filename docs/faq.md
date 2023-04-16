@@ -211,7 +211,9 @@ module.exports = {
 
 <!-- the following header generates an anchor that is used in logging, do not modify!-->
 
-### deprecated "svelte" field
+### conflicts in svelte resolve
+
+| If you see a warning logged for this when using a svelte library, please tell the library maintainers.
 
 In the past, Svelte recommended using the custom "svelte" field in package.json to allow libraries to point at .svelte source files.
 This field requires a custom implementation to resolve, so you have to use a bundler plugin and this plugin needs to implement resolving.

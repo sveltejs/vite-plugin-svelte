@@ -24,7 +24,7 @@ import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { loadRaw } from './utils/load-raw';
-import { FAQ_LINK_DEPRECATED_SVELTE_FIELD } from './utils/constants';
+import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants';
 
 interface PluginAPI {
 	/**
@@ -255,9 +255,9 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					packagesWithResolveWarnings?.size > 0
 				) {
 					log.warn(
-						`WARNING: The following packages use a svelte resolve configuration in package.json that is going to cause problems in the future.\n\n${[
+						`WARNING: The following packages use a svelte resolve configuration in package.json that has conflicting results and is going to cause problems future.\n\n${[
 							...packagesWithResolveWarnings
-						].join('\n')}\n\nPlease see ${FAQ_LINK_DEPRECATED_SVELTE_FIELD} for details.`
+						].join('\n')}\n\nPlease see ${FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE} for details.`
 					);
 				}
 			}
