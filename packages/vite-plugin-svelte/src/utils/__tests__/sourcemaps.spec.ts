@@ -18,7 +18,7 @@ describe('removeLangSuffix', () => {
 	});
 });
 
-describe('convertToRelativePaths', () => {
+describe('mapToRelative', () => {
 	it('converts absolute to relative', () => {
 		const map = {
 			file: '/some/path/File.svelte',
