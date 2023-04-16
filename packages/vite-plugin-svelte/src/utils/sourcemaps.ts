@@ -1,5 +1,5 @@
 import path from 'path';
-
+const IS_WINDOWS = process.platform === 'win32';
 interface SourceMapFileRefs {
 	file?: string;
 	sources?: string[];
@@ -16,7 +16,8 @@ export function mapToRelative(map: SourceMapFileRefs | undefined, filename: stri
 	}
 	const dirname = path.dirname(filename);
 	const toRelative = (s: string) => {
-		let sourcePath = s.startsWith('file://') ? s.slice(7) : s;
+		//remove leading file:// and extra / from file:///C://path on windows
+		let sourcePath = s.startsWith('file:///') ? s.slice(IS_WINDOWS ? 8 : 7) : s;
 		if (map.sourceRoot) {
 			sourcePath = path.resolve(map.sourceRoot, sourcePath);
 		}
