@@ -19,18 +19,21 @@ export function mapToRelative(map: SourceMapFileRefs | undefined, filename: stri
 		//remove leading file:// and extra / from file:///C://path on windows
 		let sourcePath = s.startsWith('file:///') ? s.slice(IS_WINDOWS ? 8 : 7) : s;
 		if (map.sourceRoot) {
-			sourcePath = path.resolve(map.sourceRoot, sourcePath);
+			sourcePath = `${map.sourceRoot}${map.sourceRoot.endsWith('/') ? '' : '/'}${sourcePath}`;
 		}
 		if (path.isAbsolute(sourcePath)) {
-			return path.relative(dirname, sourcePath);
+			sourcePath = path.relative(dirname, sourcePath);
 		}
-		return s;
+		return sourcePath;
 	};
 	if (map.file) {
 		map.file = path.basename(filename);
 	}
 	if (map.sources) {
 		map.sources = map.sources.map(toRelative);
+	}
+	if (map.sourceRoot) {
+		delete map.sourceRoot;
 	}
 }
 

@@ -33,12 +33,13 @@ describe('mapToRelative', () => {
 	it('accounts for sourceRoot', () => {
 		const map = {
 			file: '/some/path/File.svelte',
-			sources: ['path/foo.scss', '/some/path/File.svelte'],
+			sources: ['path/foo.scss', 'path/File.svelte'],
 			sourceRoot: '/some'
 		};
 		mapToRelative(map, '/some/path/File.svelte');
 		expect(map.file).toBe('File.svelte');
 		expect(map.sources[0]).toBe('foo.scss');
 		expect(map.sources[1]).toBe('File.svelte');
+		expect(map.sourceRoot).not.toBeDefined();
 	});
 });
