@@ -215,9 +215,9 @@ module.exports = {
 
 | If you see a warning logged for this when using a svelte library, please tell the library maintainers.
 
-In the past, Svelte recommended using the custom "svelte" field in package.json to allow libraries to point at .svelte source files.
+In the past, Svelte recommended using the custom `svelte` field in `package.json` to allow libraries to point at `.svelte` source files.
 This field requires a custom implementation to resolve, so you have to use a bundler plugin and this plugin needs to implement resolving.
-Since then, node has added support for [conditional exports](https://nodejs.org/api/packages.html#conditional-exports), which have more generic support in bundlers and node itself. So to increase the compatibility with the wider ecosystem and reduce the implementation needs for current and future bundler plugins, it is recommended that packages use the "svelte" exports condition.
+Since then, Node has added support for [conditional exports](https://nodejs.org/api/packages.html#conditional-exports), which have more generic support in bundlers and Node itself. So to increase the compatibility with the wider ecosystem and reduce the implementation needs for current and future bundler plugins, it is recommended that packages use the `svelte` exports condition.
 
 Example:
 
@@ -234,9 +234,7 @@ Example:
   }
 ```
 
-> **Support for the svelte field is going to be deprecated and later removed in a future versions of vite-plugin-svelte.**
->
 > Library authors are highly encouraged to update their packages to add the new exports condition as outlined above. Check out
 > [svelte-package](https://kit.svelte.dev/docs/packaging) which already supports it.
 >
-> For backwards compatibility, you can keep the svelte field in addition to the exports condition. But make sure that both always resolve to the same files.
+> For backwards compatibility, you can keep the `svelte` field in addition to the `exports` condition. But make sure that both always resolve to the same files.
