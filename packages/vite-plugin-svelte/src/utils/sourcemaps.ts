@@ -1,4 +1,5 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 const IS_WINDOWS = process.platform === 'win32';
 interface SourceMapFileRefs {
 	file?: string;
@@ -16,16 +17,23 @@ export function mapToRelative(map: SourceMapFileRefs | undefined, filename: stri
 	}
 	const dirname = path.dirname(filename);
 	const toRelative = (s: string) => {
-		//remove leading file:// and extra / from file:///C://path on windows
-		let sourcePath = s.startsWith('file:///') ? s.slice(IS_WINDOWS ? 8 : 7) : s;
-		if (map.sourceRoot) {
-			sourcePath = `${map.sourceRoot}${map.sourceRoot.endsWith('/') ? '' : '/'}${sourcePath}`;
+		let sourcePath: string;
+		let isAbsolute: boolean;
+		if (s.startsWith('file:///')) {
+			sourcePath = fileURLToPath(s);
+			if (IS_WINDOWS) {
+				sourcePath = sourcePath.replace(/\\/g, '/'); // ensure forward slashed paths on win
+			}
+			isAbsolute = true; // file urls are always absolute
+		} else {
+			sourcePath = map.sourceRoot
+				? `${map.sourceRoot}${map.sourceRoot.endsWith('/') || s.startsWith('/') ? '' : '/'}${s}`
+				: s;
+			isAbsolute = path.isAbsolute(sourcePath);
 		}
-		if (path.isAbsolute(sourcePath)) {
-			sourcePath = path.relative(dirname, sourcePath);
-		}
-		return sourcePath;
+		return isAbsolute ? path.relative(dirname, sourcePath) : sourcePath;
 	};
+
 	if (map.file) {
 		map.file = path.basename(filename);
 	}
@@ -33,6 +41,8 @@ export function mapToRelative(map: SourceMapFileRefs | undefined, filename: stri
 		map.sources = map.sources.map(toRelative);
 	}
 	if (map.sourceRoot) {
+		// we have prepended sourceRoot and computed relative paths from it
+		// remove it here to avoid downstream processing prepending it again
 		delete map.sourceRoot;
 	}
 }
