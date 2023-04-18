@@ -76,12 +76,14 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 		}
 		const suffix = `${lang_sep}${lang}`;
 		const moduleId = `${filename}${suffix}`;
-		const { code, map } = await transform(content, moduleId);
+		const { code, map, deps } = await transform(content, moduleId);
 		removeLangSuffix(map, suffix);
 		mapToRelative(map, filename);
+		const dependencies = deps ? Array.from(deps).filter((d) => !d.endsWith(suffix)) : undefined;
 		return {
 			code,
-			map: map ?? undefined
+			map: map ?? undefined,
+			dependencies
 		};
 	};
 	// @ts-expect-error tag so can be found by v-p-s
@@ -90,7 +92,10 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 }
 
 // eslint-disable-next-line no-unused-vars
-type CssTransform = (code: string, filename: string) => Promise<{ code: string; map?: any }>;
+type CssTransform = (
+	code: string,
+	filename: string
+) => Promise<{ code: string; map?: any; deps?: Set<string> }>;
 
 function getCssTransformFn(config: ResolvedConfig): CssTransform {
 	return async (code, filename) => {

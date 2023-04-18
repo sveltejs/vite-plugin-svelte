@@ -40,12 +40,15 @@ describe('vitePreprocess', () => {
 			});
 			expect(processed).toBeDefined();
 			// @ts-ignore
-			const { code, map } = processed;
+			const { code, map, dependencies } = processed;
 			expect(code).toBe('.foo {\n  color: green;\n}\n\n.foo.bar {\n  color: red;\n}');
 			expect(map.file).toBe('File.svelte');
 			expect(map.sources.length).toBe(2);
 			expect(map.sources[0]).toBe('foo.scss');
 			expect(map.sources[1]).toBe('File.svelte');
+			expect(dependencies).toBeDefined();
+			expect(dependencies[0]).toBe(path.resolve(fixtureDir, 'foo.scss'));
+			expect(dependencies.length).toBe(1);
 		});
 	});
 });
