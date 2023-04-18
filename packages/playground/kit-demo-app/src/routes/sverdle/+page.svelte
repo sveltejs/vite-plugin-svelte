@@ -119,12 +119,12 @@
 			{#if !won && data.answer}
 				<p>the answer was "{data.answer}"</p>
 			{/if}
-			<button data-key="enter" aria-selected="true" class="restart" formaction="?/restart">
+			<button data-key="enter" class="restart" formaction="?/restart">
 				{won ? 'you won :)' : `game over :(`} play again?
 			</button>
 		{:else}
 			<div class="keyboard">
-				<button data-key="enter" aria-selected={submittable} disabled={!submittable}>enter</button>
+				<button data-key="enter" disabled={!submittable}>enter</button>
 
 				<button
 					on:click|preventDefault={update}
