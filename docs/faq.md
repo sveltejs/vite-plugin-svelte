@@ -223,16 +223,17 @@ Example:
 
 ```diff
 // package.json
-  "svelte": "src/index.js",
+  "files": ["dist"],
+  "svelte": "dist/index.js",
 + "exports": {
-+   "./*": {
-+     "svelte": "./src/lib/components/*",
-+   },
 +   ".": {
-+     "svelte": "./index.js"
++     "svelte": "./dist/index.js"
 +   }
   }
 ```
+
+You can also add individual exports of .svelte files in the exports map which gives users a choice to also use deep imports.
+See the faq about [vite and prebundling](#what-is-going-on-with-vite-and-pre-bundling-dependencies) why they can be useful at times.
 
 > Library authors are highly encouraged to update their packages to add the new exports condition as outlined above. Check out
 > [svelte-package](https://kit.svelte.dev/docs/packaging) which already supports it.
