@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { HmrContext, ModuleNode, Plugin, ResolvedConfig, UserConfig } from 'vite';
+import { HmrContext, ModuleNode, Plugin, ResolvedConfig, UserConfig, version } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update';
@@ -135,7 +135,9 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					}
 				}
 
-				if (ssr && importee === 'svelte') {
+				// TODO: remove this after bumping peerDep on Vite to at least 4.1
+				const vers = version.split('.').map((s) => parseInt(s));
+				if (vers[0] === 4 && vers[1] === 0 && ssr && importee === 'svelte') {
 					if (!resolvedSvelteSSR) {
 						resolvedSvelteSSR = this.resolve('svelte/ssr', undefined, { skipSelf: true }).then(
 							(svelteSSR) => {
