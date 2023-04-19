@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { HmrContext, ModuleNode, Plugin, ResolvedConfig, UserConfig, version } from 'vite';
+import { HmrContext, ModuleNode, Plugin, ResolvedConfig, UserConfig, version as viteVersion } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update';
