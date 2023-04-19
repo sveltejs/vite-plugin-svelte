@@ -43,6 +43,9 @@ interface PluginAPI {
 	// TODO expose compile cache here so other utility plugins can use it
 }
 
+const isVite4_0 = viteVersion.startsWith('4.0');
+const isSvelte3 = svelteVersion.startsWith('3');
+
 export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
@@ -144,12 +147,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				}
 
 				// TODO: remove this after bumping peerDep on Vite to 4.1+ or Svelte to 4.0+
-				if (
-					viteVersion.startsWith('4.0') &&
-					svelteVersion.startsWith('3') &&
-					ssr &&
-					importee === 'svelte'
-				) {
+				if (isVite4_0 && isSvelte3 && ssr && importee === 'svelte') {
 					if (!resolvedSvelteSSR) {
 						resolvedSvelteSSR = this.resolve('svelte/ssr', undefined, { skipSelf: true }).then(
 							(svelteSSR) => {
