@@ -137,7 +137,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 
 				// TODO: remove this after bumping peerDep on Vite to at least 4.1
 				const vers = version.split('.').map((s) => parseInt(s));
-				if (vers[0] === 4 && vers[1] === 0 && ssr && importee === 'svelte') {
+				if (viteVersion.startsWith('4.0') && ssr && importee === 'svelte') {
 					if (!resolvedSvelteSSR) {
 						resolvedSvelteSSR = this.resolve('svelte/ssr', undefined, { skipSelf: true }).then(
 							(svelteSSR) => {
