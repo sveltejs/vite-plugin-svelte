@@ -1,5 +1,13 @@
 import fs from 'fs';
-import { HmrContext, ModuleNode, Plugin, ResolvedConfig, UserConfig, version as viteVersion } from 'vite';
+import { VERSION as svelteVersion } from 'svelte/compiler';
+import {
+	HmrContext,
+	ModuleNode,
+	Plugin,
+	ResolvedConfig,
+	UserConfig,
+	version as viteVersion
+} from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update';
@@ -135,8 +143,13 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					}
 				}
 
-				// TODO: remove this after bumping peerDep on Vite to at least 4.1
-				if (viteVersion.startsWith('4.0') && ssr && importee === 'svelte') {
+				// TODO: remove this after bumping peerDep on Vite to 4.1+ or Svelte to 4.0+
+				if (
+					viteVersion.startsWith('4.0') &&
+					svelteVersion.startsWith('3') &&
+					ssr &&
+					importee === 'svelte'
+				) {
 					if (!resolvedSvelteSSR) {
 						resolvedSvelteSSR = this.resolve('svelte/ssr', undefined, { skipSelf: true }).then(
 							(svelteSSR) => {
