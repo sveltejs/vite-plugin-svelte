@@ -226,6 +226,21 @@ importers:
         specifier: ^4.2.1
         version: 4.2.1(@types/node@18.15.11)(sass@1.61.0)(stylus@0.59.0)
 
+  packages/e2e-tests/css-dev-sourcemap:
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: workspace:^
+        version: link:../../vite-plugin-svelte
+      sass:
+        specifier: ^1.61.0
+        version: 1.61.0
+      svelte:
+        specifier: ^3.58.0
+        version: 3.58.0
+      vite:
+        specifier: ^4.2.1
+        version: 4.2.1(@types/node@18.15.11)(sass@1.61.0)(stylus@0.59.0)
+
   packages/e2e-tests/css-none:
     devDependencies:
       '@sveltejs/vite-plugin-svelte':

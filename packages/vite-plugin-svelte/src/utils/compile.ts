@@ -9,7 +9,7 @@ import { StatCollection } from './vite-plugin-svelte-stats';
 //eslint-disable-next-line node/no-missing-import
 import type { Processed } from 'svelte/types/compiler/preprocess';
 import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess';
-import { mapSourcesToRelative } from './sourcemaps';
+import { mapToRelative } from './sourcemaps';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
@@ -95,7 +95,7 @@ const _createCompileSvelte = (makeHot: Function) => {
 			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 		}
 		if (typeof preprocessed?.map === 'object') {
-			mapSourcesToRelative(preprocessed?.map, filename);
+			mapToRelative(preprocessed?.map, filename);
 		}
 		if (raw && svelteRequest.query.type === 'preprocessed') {
 			// shortcut
@@ -132,8 +132,8 @@ const _createCompileSvelte = (makeHot: Function) => {
 		if (endStat) {
 			endStat();
 		}
-		mapSourcesToRelative(compiled.js?.map, filename);
-		mapSourcesToRelative(compiled.css?.map, filename);
+		mapToRelative(compiled.js?.map, filename);
+		mapToRelative(compiled.css?.map, filename);
 		if (!raw) {
 			// wire css import and code for hmr
 			const hasCss = compiled.css?.code?.trim().length > 0;

@@ -2,10 +2,12 @@ import { preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
 import type { ESBuildOptions, InlineConfig, ResolvedConfig } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import type { Preprocessor, PreprocessorGroup } from 'svelte/types/compiler/preprocess';
-import { mapSourcesToRelative } from './utils/sourcemaps';
+import { mapToRelative, removeLangSuffix } from './utils/sourcemaps';
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
+
+export const lang_sep = '.vite-preprocess.';
 
 export function vitePreprocess(opts?: {
 	script?: boolean;
@@ -39,7 +41,7 @@ function viteScript(): { script: Preprocessor } {
 				}
 			});
 
-			mapSourcesToRelative(map, filename);
+			mapToRelative(map, filename);
 
 			return {
 				code,
@@ -72,14 +74,16 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 			}
 			transform = getCssTransformFn(resolvedConfig);
 		}
-		const moduleId = `${filename}.${lang}`;
-		const { code, map } = await transform(content, moduleId);
-
-		mapSourcesToRelative(map, moduleId);
-
+		const suffix = `${lang_sep}${lang}`;
+		const moduleId = `${filename}${suffix}`;
+		const { code, map, deps } = await transform(content, moduleId);
+		removeLangSuffix(map, suffix);
+		mapToRelative(map, filename);
+		const dependencies = deps ? Array.from(deps).filter((d) => !d.endsWith(suffix)) : undefined;
 		return {
 			code,
-			map: map ?? undefined
+			map: map ?? undefined,
+			dependencies
 		};
 	};
 	// @ts-expect-error tag so can be found by v-p-s
@@ -87,8 +91,12 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 	return { style };
 }
 
-// eslint-disable-next-line no-unused-vars
-type CssTransform = (code: string, filename: string) => Promise<{ code: string; map?: any }>;
+type CssTransform = (
+	// eslint-disable-next-line no-unused-vars
+	code: string,
+	// eslint-disable-next-line no-unused-vars
+	filename: string
+) => Promise<{ code: string; map?: any; deps?: Set<string> }>;
 
 function getCssTransformFn(config: ResolvedConfig): CssTransform {
 	return async (code, filename) => {
