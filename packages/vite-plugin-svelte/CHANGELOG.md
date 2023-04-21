@@ -1,5 +1,21 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.1.0
+
+### Minor Changes
+
+- log warnings for packages that use the `svelte` field to resolve Svelte files differently than standard Vite resolve ([#510](https://github.com/sveltejs/vite-plugin-svelte/pull/510))
+
+### Patch Changes
+
+- fix(vitePreprocess): add dependencies to style preprocessor output ([#625](https://github.com/sveltejs/vite-plugin-svelte/pull/625))
+
+- Skip Vite resolve workaround on Vite 4.1+ or Svelte 4+ ([#622](https://github.com/sveltejs/vite-plugin-svelte/pull/622))
+
+- fix(vitePreprocess): use relative paths without lang suffix in sourcemaps to avoid missing source file errors. ([#625](https://github.com/sveltejs/vite-plugin-svelte/pull/625))
+
+- Log stats in debug mode and remove `experimental.disableCompileStats` option. Use `DEBUG="vite:vite-plugin-svelte:stats"` when starting the dev server or build to log the compile stats. ([#614](https://github.com/sveltejs/vite-plugin-svelte/pull/614))
+
 ## 2.0.4
 
 ### Patch Changes
