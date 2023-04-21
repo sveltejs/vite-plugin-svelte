@@ -1,5 +1,17 @@
 import { SvelteRequest } from './id';
 import { Code, CompileData } from './compile';
+import { readFileSync } from 'fs';
+import { dirname } from 'path';
+//eslint-disable-next-line node/no-missing-import
+import { findClosestPkgJsonPath } from 'vitefu';
+import { normalizePath } from 'vite';
+
+interface PackageInfo {
+	name: string;
+	version: string;
+	svelte?: string;
+	path: string;
+}
 
 export class VitePluginSvelteCache {
 	private _css = new Map<string, Code>();
@@ -8,6 +20,7 @@ export class VitePluginSvelteCache {
 	private _dependants = new Map<string, Set<string>>();
 	private _resolvedSvelteFields = new Map<string, string>();
 	private _errors = new Map<string, any>();
+	private _packageInfos: PackageInfo[] = [];
 
 	public update(compileData: CompileData) {
 		this._errors.delete(compileData.normalizedFilename);
@@ -110,6 +123,9 @@ export class VitePluginSvelteCache {
 		return this._resolvedSvelteFields.get(this._getResolvedSvelteFieldKey(name, importer));
 	}
 
+	public hasResolvedSvelteField(name: string, importer?: string) {
+		return this._resolvedSvelteFields.has(this._getResolvedSvelteFieldKey(name, importer));
+	}
 	public setResolvedSvelteField(
 		importee: string,
 		importer: string | undefined = undefined,
@@ -124,4 +140,43 @@ export class VitePluginSvelteCache {
 	private _getResolvedSvelteFieldKey(importee: string, importer?: string): string {
 		return importer ? `${importer} > ${importee}` : importee;
 	}
+
+	public async getPackageInfo(file: string): Promise<PackageInfo> {
+		let info = this._packageInfos.find((pi) => file.startsWith(pi.path));
+		if (!info) {
+			info = await findPackageInfo(file);
+			this._packageInfos.push(info);
+		}
+		return info;
+	}
+}
+
+/**
+ * utility to get some info from the closest package.json with a "name" set
+ *
+ * @param {string} file to find info for
+ * @returns {PackageInfo}
+ */
+async function findPackageInfo(file: string): Promise<PackageInfo> {
+	const info: PackageInfo = {
+		name: '$unknown',
+		version: '0.0.0-unknown',
+		path: '$unknown'
+	};
+	let path = await findClosestPkgJsonPath(file, (pkgPath) => {
+		const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+		if (pkg.name != null) {
+			info.name = pkg.name;
+			if (pkg.version != null) {
+				info.version = pkg.version;
+			}
+			info.svelte = pkg.svelte;
+			return true;
+		}
+		return false;
+	});
+	// return normalized path with appended '/' so .startsWith works for future file checks
+	path = normalizePath(dirname(path ?? file)) + '/';
+	info.path = path;
+	return info;
 }

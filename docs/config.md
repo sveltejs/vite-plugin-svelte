@@ -403,3 +403,10 @@ export default {
     rawWarnings: Warning[]; // raw compiler output
   };
   ```
+
+### disableSvelteResolveWarnings
+
+- **Type** `boolean`
+- **Default:** `false`
+
+  disable svelte resolve warnings. Note: this is highly discouraged and you should instead fix these packages which will break in the future.

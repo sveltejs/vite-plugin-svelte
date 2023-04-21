@@ -20,3 +20,6 @@ export const SVELTE_HMR_IMPORTS = [
 ];
 
 export const SVELTE_EXPORT_CONDITIONS = ['svelte'];
+
+export const FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE =
+	'https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#conflicts-in-svelte-resolve';

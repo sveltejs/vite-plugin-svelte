@@ -34,6 +34,7 @@ import {
 
 import { isCommonDepWithoutSvelteField } from './dependencies';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
+import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -178,7 +179,8 @@ function mergeConfigs<T>(...configs: (Partial<T> | undefined)[]): T {
 // also validates the final config.
 export function resolveOptions(
 	preResolveOptions: PreResolvedOptions,
-	viteConfig: ResolvedConfig
+	viteConfig: ResolvedConfig,
+	cache: VitePluginSvelteCache
 ): ResolvedOptions {
 	const css = preResolveOptions.emitCss ? 'external' : 'injected';
 	const defaultOptions: Partial<Options> = {
@@ -207,7 +209,7 @@ export function resolveOptions(
 	enforceOptionsForProduction(merged);
 	// mergeConfigs would mangle functions on the stats class, so do this afterwards
 	if (log.debug.enabled && isDebugNamespaceEnabled('stats')) {
-		merged.stats = new VitePluginSvelteStats();
+		merged.stats = new VitePluginSvelteStats(cache);
 	}
 	return merged;
 }
@@ -721,6 +723,13 @@ export interface ExperimentalOptions {
 	 *
 	 */
 	sendWarningsToBrowser?: boolean;
+
+	/**
+	 * disable svelte field resolve warnings
+	 *
+	 * @default false
+	 */
+	disableSvelteResolveWarnings?: boolean;
 }
 
 export interface InspectorOptions {

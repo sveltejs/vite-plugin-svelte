@@ -32,6 +32,7 @@ import { saveSvelteMetadata } from './utils/optimizer';
 import { svelteInspector } from './ui/inspector/plugin';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { loadRaw } from './utils/load-raw';
+import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants';
 
 interface PluginAPI {
 	/**
@@ -61,6 +62,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 	/* eslint-enable no-unused-vars */
 
 	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;
+	let packagesWithResolveWarnings: Set<string>;
 	const api: PluginAPI = {};
 	const plugins: Plugin[] = [
 		{
@@ -84,7 +86,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 
 			async configResolved(config) {
-				options = resolveOptions(options, config);
+				options = resolveOptions(options, config, cache);
 				patchResolvedViteConfig(config, options);
 				requestParser = buildIdParser(options);
 				compileSvelte = createCompileSvelte(options);
@@ -95,6 +97,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 
 			async buildStart() {
+				packagesWithResolveWarnings = new Set<string>();
 				if (!options.prebundleSvelteLibraries) return;
 				const isSvelteMetadataChanged = await saveSvelteMetadata(viteConfig.cacheDir, options);
 				if (isSvelteMetadataChanged) {
@@ -176,13 +179,36 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				// for ssr, during scanning and non-prebundled, we do it
 				if (ssr || scan || !isPrebundled) {
 					try {
+						const isFirstResolve = !cache.hasResolvedSvelteField(importee, importer);
 						const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
-						if (resolved) {
-							log.debug(
-								`resolveId resolved ${resolved} via package.json svelte field of ${importee}`
+						if (isFirstResolve && resolved) {
+							const packageInfo = await cache.getPackageInfo(resolved);
+							const packageVersion = `${packageInfo.name}@${packageInfo.version}`;
+							log.debug.once(
+								`resolveId resolved ${importee} to ${resolved} via package.json svelte field of ${packageVersion}`
 							);
-							return resolved;
+
+							try {
+								const viteResolved = (
+									await this.resolve(importee, importer, { ...opts, skipSelf: true })
+								)?.id;
+								if (resolved !== viteResolved) {
+									packagesWithResolveWarnings.add(packageVersion);
+									log.debug.enabled &&
+										log.debug.once(
+											`resolve difference for ${packageVersion} ${importee} - svelte: "${resolved}", vite: "${viteResolved}"`
+										);
+								}
+							} catch (e) {
+								packagesWithResolveWarnings.add(packageVersion);
+								log.debug.enabled &&
+									log.debug.once(
+										`resolve error for ${packageVersion} ${importee} - svelte: "${resolved}", vite: ERROR`,
+										e
+									);
+							}
 						}
+						return resolved;
 					} catch (e) {
 						log.debug.once(
 							`error trying to resolve ${importee} from ${importer} via package.json svelte field `,
@@ -236,6 +262,16 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 			async buildEnd() {
 				await options.stats?.finishAll();
+				if (
+					!options.experimental?.disableSvelteResolveWarnings &&
+					packagesWithResolveWarnings?.size > 0
+				) {
+					log.warn(
+						`WARNING: The following packages use a svelte resolve configuration in package.json that has conflicting results and is going to cause problems future.\n\n${[
+							...packagesWithResolveWarnings
+						].join('\n')}\n\nPlease see ${FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE} for details.`
+					);
+				}
 			}
 		}
 	];

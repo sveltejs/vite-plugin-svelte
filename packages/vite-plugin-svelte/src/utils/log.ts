@@ -79,7 +79,7 @@ function createLogger(level: string): LogFn {
 	const logFn: LogFn = _log.bind(null, logger) as LogFn;
 	const logged = new Set<String>();
 	const once = function (message: string, payload?: any, namespace?: string) {
-		if (logged.has(message)) {
+		if (!logger.enabled || logged.has(message)) {
 			return;
 		}
 		logged.add(message);
