@@ -5,10 +5,7 @@ import { normalizePath } from 'vite';
 import { fileURLToPath } from 'url';
 
 const fixtureDir = normalizePath(
-	path.relative(
-		process.cwd(),
-		path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'preprocess')
-	)
+	path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'preprocess')
 );
 
 describe('vitePreprocess', () => {
