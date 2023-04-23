@@ -273,12 +273,9 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					);
 				}
 			}
-		}
+		},
+		svelteInspector()
 	];
-	const inspector = svelteInspector();
-	if (inspector) {
-		plugins.push(inspector);
-	}
 	return plugins;
 }
 

@@ -16,7 +16,7 @@ test('should apply css compiled from scss', async () => {
 
 if (!isBuild) {
 	test('should generate sourcemap', async () => {
-		const style = await getText('style');
+		const style = await getText('style[data-vite-dev-id*="App.svelte"]');
 		const lines = style.split(`\n`).map((l) => l.trim());
 		const css = lines[0];
 		const mapComment = lines[1];
