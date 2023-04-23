@@ -2,7 +2,7 @@ import * as process from 'process';
 import { log } from '../../utils/log';
 import { loadEnv, ResolvedConfig } from 'vite';
 export const defaultInspectorOptions: InspectorOptions = {
-	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
+	toggleKeyCombo: process.platform === 'darwin' ? 'meta-shift' : 'control-shift',
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
 	openKey: 'Enter',
 	holdMode: true,
@@ -65,7 +65,7 @@ export function parseEnvironmentOptions(
 export interface InspectorOptions {
 	/**
 	 * define a key combo to toggle inspector,
-	 * @default 'control-shift' on windows, 'meta-shift' on other os
+	 * @default 'meta-shift' on mac, 'control-shift' on other os
 	 *
 	 * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
 	 * examples: control-shift, control-o, control-alt-s  meta-x control-meta

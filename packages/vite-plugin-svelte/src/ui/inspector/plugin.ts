@@ -11,12 +11,21 @@ function getInspectorPath() {
 	return pluginPath.replace(/\/vite-plugin-svelte\/dist$/, '/vite-plugin-svelte/src/ui/inspector/');
 }
 
-export function svelteInspector(): Plugin {
+export function svelteInspector(): Plugin | null {
 	const inspectorPath = getInspectorPath();
 	log.debug.enabled && log.debug(`svelte inspector path: ${inspectorPath}`);
 	let inspectorOptions: InspectorOptions;
 	let appendTo: string | undefined;
 	let disabled = false;
+
+	if (process?.env?.CI || process?.env?.SVELTE_INSPECTOR_OPTIONS === 'false') {
+		log.debug(
+			process?.env?.CI ? 'disabled in CI env' : 'disabled by user env',
+			undefined,
+			'inspector'
+		);
+		return null; // returning null here results in the Plugin not being added to vite config at all
+	}
 
 	return {
 		name: 'vite-plugin-svelte:inspector',

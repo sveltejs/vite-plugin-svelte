@@ -221,7 +221,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
   interface InspectorOptions {
     /**
      * define a key combo to toggle inspector,
-     * @default 'control-shift' on windows, 'meta-shift' on other os
+     * @default 'meta-shift' on mac, 'control-shift' on other os
      *
      * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
      * examples: control-shift, control-o, control-alt-s  meta-x control-meta
@@ -253,7 +253,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
     /**
      * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
-     * @default false
+     * @default true
      */
     holdMode?: boolean;
 
