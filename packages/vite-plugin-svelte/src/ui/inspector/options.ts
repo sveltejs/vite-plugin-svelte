@@ -1,3 +1,6 @@
+import * as process from 'process';
+import { log } from '../../utils/log';
+import { loadEnv, ResolvedConfig } from 'vite';
 export const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
@@ -7,6 +10,57 @@ export const defaultInspectorOptions: InspectorOptions = {
 	toggleButtonPos: 'top-right',
 	customStyles: true
 };
+
+export function parseEnvironmentOptions(
+	config: ResolvedConfig
+): Partial<InspectorOptions> | boolean {
+	const env = loadEnv(config.mode, config.envDir ?? process.cwd(), 'SVELTE_INSPECTOR');
+	const options = env?.SVELTE_INSPECTOR_OPTIONS;
+	const toggle = env?.SVELTE_INSPECTOR_TOGGLE;
+	if (options) {
+		try {
+			const parsed = JSON.parse(options);
+			const parsedType = typeof parsed;
+			if (parsedType === 'boolean') {
+				return parsed;
+			} else if (parsedType === 'object') {
+				if (Array.isArray(parsed)) {
+					throw new Error('invalid type, expected object map but got array');
+				}
+				const parsedKeys = Object.keys(parsed);
+				const defaultKeys = Object.keys(defaultInspectorOptions);
+				const unknownKeys = parsedKeys.filter((k) => !defaultKeys.includes(k));
+				if (unknownKeys.length) {
+					log.warn(
+						`ignoring unknown options in environment SVELTE_INSPECTOR_OPTIONS:  ${unknownKeys.join(
+							', '
+						)}.`,
+						undefined,
+						'inspector'
+					);
+					for (const key of unknownKeys) {
+						delete parsed[key];
+					}
+				}
+				log.debug('loaded environment config', parsed, 'inspector');
+				return parsed;
+			}
+		} catch (e) {
+			log.error(
+				`failed to parse inspector options from environment SVELTE_INSPECTOR_OPTIONS="${options}"`,
+				e,
+				'inspector'
+			);
+		}
+	} else if (toggle) {
+		const keyConfig = {
+			toggleKeyCombo: toggle
+		};
+		log.debug('loaded environment config', keyConfig, 'inspector');
+		return keyConfig;
+	}
+	return {};
+}
 
 export interface InspectorOptions {
 	/**

@@ -307,6 +307,27 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
   });
   ```
 
+#### Customizing Inspector options via environment
+
+Svelte Inspector toggle keys and other options are personal preferences. As such it isn't always convenient to define them in a shared svelte config file.
+To allow you to use your own setup, svelte inspector can be configured via environment variables, both from shell and dotenv files.
+
+```shell
+# just keycombo, unquoted string
+SVELTE_INSPECTOR_TOGGLE=control-shift
+
+# options object as json, all options except appendTo are supported
+SVELTE_INSPECTOR_OPTIONS='{"holdMode": false, "toggleButtonPos": "bottom-left"}'
+
+# disable completely
+SVELTE_INSPECTOR_OPTIONS=false
+
+# force default options
+SVELTE_INSPECTOR_OPTIONS=true
+```
+
+> Inspector options set on the environment take precedence over values set in svelte config
+
 ## Experimental options
 
 These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.

@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { idToFile } from './utils';
-import { defaultInspectorOptions, type InspectorOptions } from './options';
+import { defaultInspectorOptions, type InspectorOptions, parseEnvironmentOptions } from './options';
 
 function getInspectorPath() {
 	const pluginPath = normalizePath(path.dirname(fileURLToPath(import.meta.url)));
@@ -29,19 +29,24 @@ export function svelteInspector(): Plugin {
 				log.warn('vite-plugin-svelte is missing, inspector disabled', undefined, 'inspector');
 				disabled = true;
 			}
-			const options = vps?.api?.options?.inspector ?? defaultInspectorOptions;
-			if (options === false) {
+			const configFileOptions = vps?.api?.options?.inspector;
+			const environmentOptions = parseEnvironmentOptions(config);
+			if (configFileOptions === false || environmentOptions === false) {
 				log.debug('inspector disabled in options', undefined, 'inspector');
 				disabled = true;
 			}
 			if (disabled) {
 				return;
 			}
-			inspectorOptions = {
-				...defaultInspectorOptions,
-				...options
-			};
-
+			if (environmentOptions === true) {
+				inspectorOptions = defaultInspectorOptions;
+			} else {
+				inspectorOptions = {
+					...defaultInspectorOptions,
+					...configFileOptions,
+					...environmentOptions
+				};
+			}
 			inspectorOptions.__internal = {
 				base: config.base?.replace(/\/$/, '') || ''
 			};
