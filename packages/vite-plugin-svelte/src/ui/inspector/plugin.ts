@@ -35,10 +35,16 @@ export function svelteInspector(): Plugin {
 
 		configResolved(config) {
 			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
-			const options = vps?.api?.options?.inspector;
-			if (!vps || !options) {
-				log.debug('inspector disabled, could not find config');
+			if (!vps) {
+				log.warn('vite-plugin-svelte is missing, inspector disabled', undefined, 'inspector');
 				disabled = true;
+			}
+			const options = vps?.api?.options?.inspector ?? defaultInspectorOptions;
+			if (options === false) {
+				log.debug('inspector disabled in options', undefined, 'inspector');
+				disabled = true;
+			}
+			if (disabled) {
 				return;
 			}
 			inspectorOptions = {
@@ -62,7 +68,8 @@ export function svelteInspector(): Plugin {
 				return importee;
 			} else if (importee.startsWith('virtual:svelte-inspector-path:')) {
 				const resolved = importee.replace('virtual:svelte-inspector-path:', inspectorPath);
-				log.debug.enabled && log.debug(`resolved ${importee} with ${resolved}`);
+				log.debug.enabled &&
+					log.debug(`resolved ${importee} with ${resolved}`, undefined, 'inspector');
 				return resolved;
 			}
 		},
@@ -79,7 +86,11 @@ export function svelteInspector(): Plugin {
 				if (fs.existsSync(file)) {
 					return await fs.promises.readFile(file, 'utf-8');
 				} else {
-					log.error(`failed to find file for svelte-inspector: ${file}, referenced by id ${id}.`);
+					log.error(
+						`failed to find file for svelte-inspector: ${file}, referenced by id ${id}.`,
+						undefined,
+						'inspector'
+					);
 				}
 			}
 		},

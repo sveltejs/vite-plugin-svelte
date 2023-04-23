@@ -655,7 +655,7 @@ export interface PluginOptions {
 	/**
 	 * toggle/configure Svelte Inspector
 	 *
-	 * @default false
+	 * @default true
 	 */
 	inspector?: InspectorOptions | boolean;
 
