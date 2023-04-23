@@ -1,10 +1,10 @@
 import { Plugin, normalizePath } from 'vite';
 import { log } from '../../utils/log';
-import { InspectorOptions } from '../../utils/options';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { idToFile } from './utils';
+import { InspectorOptions } from './options';
 
 const defaultInspectorOptions: InspectorOptions = {
 	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
@@ -35,7 +35,7 @@ export function svelteInspector(): Plugin {
 
 		configResolved(config) {
 			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
-			const options = vps?.api?.options?.experimental?.inspector;
+			const options = vps?.api?.options?.inspector;
 			if (!vps || !options) {
 				log.debug('inspector disabled, could not find config');
 				disabled = true;

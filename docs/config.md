@@ -212,75 +212,10 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
   See the [FAQ](./faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies) for details and how to fine-tune it for huge libraries.
 
-## Experimental options
-
-These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.
-
-Either in Vite config:
-
-```js
-// vite.config.js
-export default defineConfig({
-  plugins: [
-    svelte({
-      experimental: {
-        // experimental options
-      }
-    })
-  ]
-});
-```
-
-or in Svelte config:
-
-```js
-// svelte.config.js
-export default {
-  vitePlugin: {
-    experimental: {
-      // experimental options
-    }
-  }
-};
-```
-
-### dynamicCompileOptions
-
-- **Type:**
-
-  ```ts
-  type DynamicCompileOptions = (data: {
-    filename: string; // The file to be compiled
-    code: string; // The preprocessed Svelte code
-    compileOptions: Partial<CompileOptions>; // The current compiler options
-  }) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
-  ```
-
-  A function to update the `compilerOptions` before compilation. To change part of the compiler options, return an object with the changes you need.
-
-  **Example:**
-
-  ```js
-  // vite.config.js
-  export default defineConfig({
-    plugins: [
-      svelte({
-        experimental: {
-          dynamicCompileOptions({ filename, compileOptions }) {
-            // Dynamically set hydration per Svelte file
-            if (compileWithHydratable(filename) && !compileOptions.hydratable) {
-              return { hydratable: true };
-            }
-          }
-        }
-      })
-    ]
-  });
-  ```
-
 ### inspector
 
 - **Type:**`InspectorOptions | boolean`
+- **Default:** `true` for dev, always `false` for build
 
   ```ts
   interface InspectorOptions {
@@ -350,9 +285,73 @@ export default {
   }
   ```
 
-  Set to `true` or customized `InspectorOptions` to enable svelte inspector during development.
+  Set to `false` to disable svelte inspector during development.
 
-  When enabled, inspector mode shows you the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.
+  Inspector mode shows you the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.
+
+  **Example:**
+
+  ```js
+  // vite.config.js
+  export default defineConfig({
+    plugins: [
+      svelte({
+        inspector: {
+          toggleKeyCombo: 'meta-shift',
+          holdMode: true,
+          showToggleButton: 'always',
+          toggleButtonPos: 'bottom-right'
+        }
+      })
+    ]
+  });
+  ```
+
+## Experimental options
+
+These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.
+
+Either in Vite config:
+
+```js
+// vite.config.js
+export default defineConfig({
+  plugins: [
+    svelte({
+      experimental: {
+        // experimental options
+      }
+    })
+  ]
+});
+```
+
+or in Svelte config:
+
+```js
+// svelte.config.js
+export default {
+  vitePlugin: {
+    experimental: {
+      // experimental options
+    }
+  }
+};
+```
+
+### dynamicCompileOptions
+
+- **Type:**
+
+  ```ts
+  type DynamicCompileOptions = (data: {
+    filename: string; // The file to be compiled
+    code: string; // The preprocessed Svelte code
+    compileOptions: Partial<CompileOptions>; // The current compiler options
+  }) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
+  ```
+
+  A function to update the `compilerOptions` before compilation. To change part of the compiler options, return an object with the changes you need.
 
   **Example:**
 
@@ -362,11 +361,11 @@ export default {
     plugins: [
       svelte({
         experimental: {
-          inspector: {
-            toggleKeyCombo: 'meta-shift',
-            holdMode: true,
-            showToggleButton: 'always',
-            toggleButtonPos: 'bottom-right'
+          dynamicCompileOptions({ filename, compileOptions }) {
+            // Dynamically set hydration per Svelte file
+            if (compileWithHydratable(filename) && !compileOptions.hydratable) {
+              return { hydratable: true };
+            }
           }
         }
       })
