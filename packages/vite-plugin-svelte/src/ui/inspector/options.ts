@@ -1,3 +1,13 @@
+export const defaultInspectorOptions: InspectorOptions = {
+	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
+	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
+	openKey: 'Enter',
+	holdMode: true,
+	showToggleButton: 'active',
+	toggleButtonPos: 'top-right',
+	customStyles: true
+};
+
 export interface InspectorOptions {
 	/**
 	 * define a key combo to toggle inspector,
@@ -38,7 +48,7 @@ export interface InspectorOptions {
 
 	/**
 	 * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
-	 * @default false
+	 * @default true
 	 */
 	holdMode?: boolean;
 	/**

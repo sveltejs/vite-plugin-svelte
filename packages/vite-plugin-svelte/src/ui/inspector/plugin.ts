@@ -4,17 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { idToFile } from './utils';
-import { InspectorOptions } from './options';
-
-const defaultInspectorOptions: InspectorOptions = {
-	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
-	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
-	openKey: 'Enter',
-	holdMode: false,
-	showToggleButton: 'active',
-	toggleButtonPos: 'top-right',
-	customStyles: true
-};
+import { defaultInspectorOptions, type InspectorOptions } from './options';
 
 function getInspectorPath() {
 	const pluginPath = normalizePath(path.dirname(fileURLToPath(import.meta.url)));
