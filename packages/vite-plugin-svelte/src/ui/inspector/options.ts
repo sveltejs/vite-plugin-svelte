@@ -76,4 +76,11 @@ export interface InspectorOptions {
 	 * Regular users of vite-plugin-svelte or SvelteKit do not need it
 	 */
 	appendTo?: string;
+	/**
+	 * internal options that are automatically set, not to be set or used by users
+	 */
+	__internal?: {
+		// vite base url
+		base: string;
+	};
 }

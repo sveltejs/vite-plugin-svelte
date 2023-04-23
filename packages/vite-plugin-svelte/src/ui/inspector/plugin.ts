@@ -41,6 +41,10 @@ export function svelteInspector(): Plugin {
 				...defaultInspectorOptions,
 				...options
 			};
+
+			inspectorOptions.__internal = {
+				base: config.base?.replace(/\/$/, '') || ''
+			};
 			const isSvelteKit = config.plugins.some((p) => p.name.startsWith('vite-plugin-sveltekit'));
 			if (isSvelteKit && !inspectorOptions.appendTo) {
 				// this could append twice if a user had a file that ends with /generated/root.svelte

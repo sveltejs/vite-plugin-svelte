@@ -124,7 +124,7 @@
 	function open_editor(event) {
 		if (file_loc) {
 			stop(event);
-			fetch(`/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
+			fetch(`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
 			hasOpened = true;
 			if (options.holdMode && is_holding()) {
 				disable();
