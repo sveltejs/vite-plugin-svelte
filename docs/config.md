@@ -215,7 +215,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 ### inspector
 
 - **Type:**`InspectorOptions | boolean`
-- **Default:** `true` for dev, always `false` for build
+- **Default:** `unset` for dev, always `false` for build
 
   ```ts
   interface InspectorOptions {
@@ -285,7 +285,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
   }
   ```
 
-  Set to `false` to disable svelte inspector during development.
+  Set to `true` or options object to enable svelte inspector during development.
 
   Inspector mode shows you the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.
 
@@ -326,7 +326,7 @@ SVELTE_INSPECTOR_OPTIONS=false
 SVELTE_INSPECTOR_OPTIONS=true
 ```
 
-> Inspector options set on the environment take precedence over values set in svelte config
+> Inspector options set on the environment take precedence over values set in svelte config and automatically enable svelte inspector during dev.
 
 ## Experimental options
 

@@ -32,13 +32,17 @@ export function svelteInspector(): Plugin {
 			}
 			const configFileOptions = vps?.api?.options?.inspector;
 			const environmentOptions = parseEnvironmentOptions(config);
-			if (configFileOptions === false || environmentOptions === false) {
-				log.debug('inspector disabled in options', undefined, 'inspector');
+			if (!configFileOptions && !environmentOptions) {
+				log.debug('no options found, inspector disabled', undefined, 'inspector');
 				disabled = true;
 				return;
 			}
 			if (config.command !== 'serve') {
-				log.debug(`inspector disabled for vite command ${config.command}`, undefined, 'inspector');
+				log.debug(
+					`inspector only works for vite 'serve', disabled for '${config.command}'`,
+					undefined,
+					'inspector'
+				);
 				disabled = true;
 				return;
 			}
