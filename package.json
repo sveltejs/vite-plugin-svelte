@@ -62,7 +62,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@sveltejs/vite-plugin-svelte": "workspace:^"
+      "@sveltejs/vite-plugin-svelte": "workspace:^",
+      "tsup>postcss-load-config@<4": "^4.0.0"
     },
     "peerDependencyRules": {
       "allowedVersions": {
