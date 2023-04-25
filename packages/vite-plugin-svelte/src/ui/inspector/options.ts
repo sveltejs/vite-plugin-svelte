@@ -13,7 +13,7 @@ export const defaultInspectorOptions: InspectorOptions = {
 
 export function parseEnvironmentOptions(
 	config: ResolvedConfig
-): Partial<InspectorOptions> | boolean {
+): Partial<InspectorOptions> | boolean | void {
 	const env = loadEnv(config.mode, config.envDir ?? process.cwd(), 'SVELTE_INSPECTOR');
 	const options = env?.SVELTE_INSPECTOR_OPTIONS;
 	const toggle = env?.SVELTE_INSPECTOR_TOGGLE;
@@ -59,7 +59,6 @@ export function parseEnvironmentOptions(
 		log.debug('loaded environment config', keyConfig, 'inspector');
 		return keyConfig;
 	}
-	return {};
 }
 
 export interface InspectorOptions {

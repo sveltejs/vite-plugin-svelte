@@ -52,7 +52,7 @@ export function svelteInspector(): Plugin {
 				inspectorOptions = {
 					...defaultInspectorOptions,
 					...configFileOptions,
-					...environmentOptions
+					...(environmentOptions || {})
 				};
 			}
 			inspectorOptions.__internal = {
