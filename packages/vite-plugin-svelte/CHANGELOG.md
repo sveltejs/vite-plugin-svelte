@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.1.1
+
+### Patch Changes
+
+- fix(resolve): normalize path resolved from "svelte" field to ensure consistency across operating systems ([#635](https://github.com/sveltejs/vite-plugin-svelte/pull/635))
+
 ## 2.1.0
 
 ### Minor Changes
