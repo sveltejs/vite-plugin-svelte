@@ -2,6 +2,7 @@ import path from 'path';
 import { builtinModules } from 'module';
 import { resolveDependencyData, isCommonDepWithoutSvelteField } from './dependencies';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
+import { normalizePath } from 'vite';
 
 export async function resolveViaPackageJsonSvelte(
 	importee: string,
@@ -22,7 +23,7 @@ export async function resolveViaPackageJsonSvelte(
 		if (pkgData) {
 			const { pkg, dir } = pkgData;
 			if (pkg.svelte) {
-				const result = path.resolve(dir, pkg.svelte);
+				const result = normalizePath(path.resolve(dir, pkg.svelte));
 				cache.setResolvedSvelteField(importee, importer, result);
 				return result;
 			}
