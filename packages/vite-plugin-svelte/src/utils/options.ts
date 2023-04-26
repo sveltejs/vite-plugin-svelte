@@ -49,12 +49,7 @@ const allowedPluginOptions = new Set([
 
 const knownRootOptions = new Set(['extensions', 'compilerOptions', 'preprocess', 'onwarn']);
 
-const allowedInlineOptions = new Set([
-	'configFile',
-	'kit', // only for internal use by sveltekit
-	...allowedPluginOptions,
-	...knownRootOptions
-]);
+const allowedInlineOptions = new Set(['configFile', ...allowedPluginOptions, ...knownRootOptions]);
 
 export function validateInlineOptions(inlineOptions?: Partial<Options>) {
 	const invalidKeys = Object.keys(inlineOptions || {}).filter(
@@ -203,7 +198,6 @@ export function resolveOptions(
 
 	removeIgnoredOptions(merged);
 	handleDeprecatedOptions(merged);
-	addSvelteKitOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged);
 	enforceOptionsForProduction(merged);
@@ -288,15 +282,6 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 			// @ts-expect-error string access
 			delete options.compilerOptions[ignored];
 		});
-	}
-}
-
-// some SvelteKit options need compilerOptions to work, so set them here.
-function addSvelteKitOptions(options: ResolvedOptions) {
-	// @ts-expect-error kit is not typed to avoid dependency on sveltekit
-	if (options?.kit != null && options.compilerOptions.hydratable == null) {
-		log.debug(`Setting compilerOptions.hydratable = true for SvelteKit`);
-		options.compilerOptions.hydratable = true;
 	}
 }
 
@@ -791,15 +776,6 @@ export interface InspectorOptions {
 	 * inject custom styles when inspector is active
 	 */
 	customStyles?: boolean;
-
-	/**
-	 * append an import to the module id ending with `appendTo` instead of adding a script into body
-	 * useful for frameworks that do not support trannsformIndexHtml hook
-	 *
-	 * WARNING: only set this if you know exactly what it does.
-	 * Regular users of vite-plugin-svelte or SvelteKit do not need it
-	 */
-	appendTo?: string;
 }
 
 export interface PreResolvedOptions extends Options {
