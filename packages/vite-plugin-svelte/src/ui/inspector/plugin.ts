@@ -25,7 +25,6 @@ export function svelteInspector(): Plugin {
 	const inspectorPath = getInspectorPath();
 	log.debug.enabled && log.debug(`svelte inspector path: ${inspectorPath}`);
 	let inspectorOptions: InspectorOptions;
-	let appendTo: string | undefined;
 	let disabled = false;
 
 	return {
@@ -45,13 +44,6 @@ export function svelteInspector(): Plugin {
 				...defaultInspectorOptions,
 				...options
 			};
-			const isSvelteKit = config.plugins.some((p) => p.name.startsWith('vite-plugin-sveltekit'));
-			if (isSvelteKit && !inspectorOptions.appendTo) {
-				// this could append twice if a user had a file that ends with /generated/root.svelte
-				// but that should be rare and inspector doesn't execute twice
-				inspectorOptions.appendTo = `/generated/root.svelte`;
-			}
-			appendTo = inspectorOptions.appendTo;
 		},
 
 		async resolveId(importee: string, importer, options) {
@@ -84,32 +76,10 @@ export function svelteInspector(): Plugin {
 			}
 		},
 
-		transform(code: string, id: string, options?: { ssr?: boolean }) {
-			if (options?.ssr || disabled || !appendTo) {
-				return;
+		transform(code: string, id: string) {
+			if (id.includes('vite/dist/client/client.mjs')) {
+				return { code: `${code}\nimport('virtual:svelte-inspector-path:load-inspector.js')` };
 			}
-			if (id.endsWith(appendTo)) {
-				return { code: `${code}\nimport 'virtual:svelte-inspector-path:load-inspector.js'` };
-			}
-		},
-		transformIndexHtml(html) {
-			if (disabled || appendTo) {
-				return;
-			}
-			return {
-				html,
-				tags: [
-					{
-						tag: 'script',
-						injectTo: 'body',
-						attrs: {
-							type: 'module',
-							// /@id/ is needed, otherwise the virtual: is seen as protocol by browser and cors error happens
-							src: '/@id/virtual:svelte-inspector-path:load-inspector.js'
-						}
-					}
-				]
-			};
 		}
 	};
 }

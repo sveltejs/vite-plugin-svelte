@@ -791,15 +791,6 @@ export interface InspectorOptions {
 	 * inject custom styles when inspector is active
 	 */
 	customStyles?: boolean;
-
-	/**
-	 * append an import to the module id ending with `appendTo` instead of adding a script into body
-	 * useful for frameworks that do not support trannsformIndexHtml hook
-	 *
-	 * WARNING: only set this if you know exactly what it does.
-	 * Regular users of vite-plugin-svelte or SvelteKit do not need it
-	 */
-	appendTo?: string;
 }
 
 export interface PreResolvedOptions extends Options {
