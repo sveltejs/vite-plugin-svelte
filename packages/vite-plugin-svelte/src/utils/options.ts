@@ -49,12 +49,7 @@ const allowedPluginOptions = new Set([
 
 const knownRootOptions = new Set(['extensions', 'compilerOptions', 'preprocess', 'onwarn']);
 
-const allowedInlineOptions = new Set([
-	'configFile',
-	'kit', // only for internal use by sveltekit
-	...allowedPluginOptions,
-	...knownRootOptions
-]);
+const allowedInlineOptions = new Set(['configFile', ...allowedPluginOptions, ...knownRootOptions]);
 
 export function validateInlineOptions(inlineOptions?: Partial<Options>) {
 	const invalidKeys = Object.keys(inlineOptions || {}).filter(
