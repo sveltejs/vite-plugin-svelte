@@ -76,7 +76,10 @@ export function svelteInspector(): Plugin {
 			}
 		},
 
-		transform(code: string, id: string) {
+		transform(code, id, options) {
+			if (options?.ssr || disabled) {
+				return;
+			}
 			if (id.includes('vite/dist/client/client.mjs')) {
 				return { code: `${code}\nimport('virtual:svelte-inspector-path:load-inspector.js')` };
 			}
