@@ -1,4 +1,4 @@
-import { getEl, getText, isBuild } from '~utils';
+import { getEl, getText, isBuild, page } from '~utils';
 
 describe('inspector-kit', () => {
 	it('should render page', async () => {
@@ -6,6 +6,7 @@ describe('inspector-kit', () => {
 	});
 	if (!isBuild) {
 		it('should show inspector toggle during dev', async () => {
+			await page.waitForLoadState('networkidle');
 			expect(await getEl('#svelte-inspector-toggle')).not.toBe(null);
 		});
 	} else {
