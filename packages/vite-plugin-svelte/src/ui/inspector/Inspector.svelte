@@ -296,7 +296,7 @@
 			if (toggle_combo) {
 				document.body.removeEventListener('keydown', keydown);
 				if (options.holdMode) {
-					document.body.addEventListener('keyup', keyup);
+					document.body.removeEventListener('keyup', keyup);
 				}
 			}
 			document.removeEventListener('visibilitychange', visibilityChange);
