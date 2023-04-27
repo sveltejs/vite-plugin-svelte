@@ -36,15 +36,6 @@ export function svelteInspector(): Plugin {
 				disabled = true;
 				return;
 			}
-			if (config.command !== 'serve') {
-				log.debug(
-					`inspector only works for vite 'serve', disabled for '${config.command}'`,
-					undefined,
-					'inspector'
-				);
-				disabled = true;
-				return;
-			}
 			if (environmentOptions === true) {
 				inspectorOptions = defaultInspectorOptions;
 			} else {
