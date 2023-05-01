@@ -1,5 +1,27 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.2.0
+
+### Minor Changes
+
+- feat(inspector): Promote experimental.inspector to regular option ([#631](https://github.com/sveltejs/vite-plugin-svelte/pull/631))
+
+- feat(inspector): allow configuration via environment SVELTE_INSPECTOR_OPTIONS or SVELTE_INSPECTOR_TOGGLE ([#631](https://github.com/sveltejs/vite-plugin-svelte/pull/631))
+
+- feat(inspector): enable holdMode by default ([#631](https://github.com/sveltejs/vite-plugin-svelte/pull/631))
+
+- Remove internal SvelteKit specific handling ([#638](https://github.com/sveltejs/vite-plugin-svelte/pull/638))
+
+### Patch Changes
+
+- fix(inspector): prepend vite base when calling \_\_openInEditor ([#631](https://github.com/sveltejs/vite-plugin-svelte/pull/631))
+
+- fix(inspector): after a file has been opened, automatically disable inspector on leaving browser ([#631](https://github.com/sveltejs/vite-plugin-svelte/pull/631))
+
+- fix(inspector): use control-shift as default keycombo on linux to avoid problems in firefox ([#631](https://github.com/sveltejs/vite-plugin-svelte/pull/631))
+
+- fix(svelte-inspector): mount outside body to avoid hydration claiming body removing it ([#631](https://github.com/sveltejs/vite-plugin-svelte/pull/631))
+
 ## 2.1.1
 
 ### Patch Changes
