@@ -6,6 +6,7 @@
 	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
 	const nav_keys = Object.values(options.navKeys).map((k) => k.toLowerCase());
 	let enabled = false;
+	let hasOpened = false;
 
 	const icon = `data:image/svg+xml;base64,${btoa(
 		`
@@ -123,7 +124,8 @@
 	function open_editor(event) {
 		if (file_loc) {
 			stop(event);
-			fetch(`/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
+			fetch(`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
+			hasOpened = true;
 			if (options.holdMode && is_holding()) {
 				disable();
 			}
@@ -247,6 +249,7 @@
 
 	function disable() {
 		enabled = false;
+		hasOpened = false;
 		enabled_ts = null;
 		const b = document.body;
 		listeners(b, enabled);
@@ -255,6 +258,18 @@
 			active_el?.classList.remove('svelte-inspector-active-target');
 		}
 		active_el = null;
+	}
+
+	function visibilityChange() {
+		if (document.visibilityState === 'hidden') {
+			onLeave();
+		}
+	}
+
+	function onLeave() {
+		if (hasOpened) {
+			disable();
+		}
 	}
 
 	onMount(() => {
@@ -269,6 +284,8 @@
 				document.body.addEventListener('keyup', keyup);
 			}
 		}
+		document.addEventListener('visibilitychange', visibilityChange);
+		document.documentElement.addEventListener('mouseleave', onLeave);
 		return () => {
 			// make sure we get rid of everything
 			disable();
@@ -279,9 +296,11 @@
 			if (toggle_combo) {
 				document.body.removeEventListener('keydown', keydown);
 				if (options.holdMode) {
-					document.body.addEventListener('keyup', keyup);
+					document.body.removeEventListener('keyup', keyup);
 				}
 			}
+			document.removeEventListener('visibilitychange', visibilityChange);
+			document.documentElement.removeEventListener('mouseleave', onLeave);
 		};
 	});
 </script>

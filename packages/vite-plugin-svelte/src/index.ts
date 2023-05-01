@@ -273,10 +273,10 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 					);
 				}
 			}
-		}
+		},
+		svelteInspector()
 	];
-	plugins.push(svelteInspector());
-	return plugins.filter(Boolean);
+	return plugins;
 }
 
 export { vitePreprocess } from './preprocess';

@@ -1,20 +1,10 @@
 import { Plugin, normalizePath } from 'vite';
 import { log } from '../../utils/log';
-import { InspectorOptions } from '../../utils/options';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { idToFile } from './utils';
-
-const defaultInspectorOptions: InspectorOptions = {
-	toggleKeyCombo: process.platform === 'win32' ? 'control-shift' : 'meta-shift',
-	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
-	openKey: 'Enter',
-	holdMode: false,
-	showToggleButton: 'active',
-	toggleButtonPos: 'top-right',
-	customStyles: true
-};
+import { defaultInspectorOptions, type InspectorOptions, parseEnvironmentOptions } from './options';
 
 function getInspectorPath() {
 	const pluginPath = normalizePath(path.dirname(fileURLToPath(import.meta.url)));
@@ -34,15 +24,29 @@ export function svelteInspector(): Plugin {
 
 		configResolved(config) {
 			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
-			const options = vps?.api?.options?.experimental?.inspector;
-			if (!vps || !options) {
-				log.debug('inspector disabled, could not find config');
+			if (!vps) {
+				log.warn('vite-plugin-svelte is missing, inspector disabled', undefined, 'inspector');
 				disabled = true;
 				return;
 			}
-			inspectorOptions = {
-				...defaultInspectorOptions,
-				...options
+			const configFileOptions = vps?.api?.options?.inspector;
+			const environmentOptions = parseEnvironmentOptions(config);
+			if (!configFileOptions && !environmentOptions) {
+				log.debug('no options found, inspector disabled', undefined, 'inspector');
+				disabled = true;
+				return;
+			}
+			if (environmentOptions === true) {
+				inspectorOptions = defaultInspectorOptions;
+			} else {
+				inspectorOptions = {
+					...defaultInspectorOptions,
+					...configFileOptions,
+					...(environmentOptions || {})
+				};
+			}
+			inspectorOptions.__internal = {
+				base: config.base?.replace(/\/$/, '') || ''
 			};
 		},
 
@@ -54,7 +58,8 @@ export function svelteInspector(): Plugin {
 				return importee;
 			} else if (importee.startsWith('virtual:svelte-inspector-path:')) {
 				const resolved = importee.replace('virtual:svelte-inspector-path:', inspectorPath);
-				log.debug.enabled && log.debug(`resolved ${importee} with ${resolved}`);
+				log.debug.enabled &&
+					log.debug(`resolved ${importee} with ${resolved}`, undefined, 'inspector');
 				return resolved;
 			}
 		},
@@ -71,7 +76,11 @@ export function svelteInspector(): Plugin {
 				if (fs.existsSync(file)) {
 					return await fs.promises.readFile(file, 'utf-8');
 				} else {
-					log.error(`failed to find file for svelte-inspector: ${file}, referenced by id ${id}.`);
+					log.error(
+						`failed to find file for svelte-inspector: ${file}, referenced by id ${id}.`,
+						undefined,
+						'inspector'
+					);
 				}
 			}
 		},

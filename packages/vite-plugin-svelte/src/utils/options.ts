@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { ConfigEnv, ResolvedConfig, UserConfig, ViteDevServer, normalizePath } from 'vite';
+import { ConfigEnv, normalizePath, ResolvedConfig, UserConfig, ViteDevServer } from 'vite';
 import { isDebugNamespaceEnabled, log } from './log';
 import { loadSvelteConfig } from './load-svelte-config';
 import {
@@ -35,6 +35,7 @@ import {
 import { isCommonDepWithoutSvelteField } from './dependencies';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
+import type { InspectorOptions } from '../ui/inspector/options';
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -44,6 +45,7 @@ const allowedPluginOptions = new Set([
 	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
 	'prebundleSvelteLibraries',
+	'inspector',
 	'experimental'
 ]);
 
@@ -286,14 +288,21 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 }
 
 function handleDeprecatedOptions(options: ResolvedOptions) {
-	if ((options.experimental as any)?.prebundleSvelteLibraries) {
-		options.prebundleSvelteLibraries = (options.experimental as any)?.prebundleSvelteLibraries;
-		log.warn(
-			'experimental.prebundleSvelteLibraries is no longer experimental and has moved to prebundleSvelteLibraries'
-		);
-	}
-	if ((options.experimental as any)?.generateMissingPreprocessorSourcemaps) {
-		log.warn('experimental.generateMissingPreprocessorSourcemaps has been removed.');
+	const experimental = options.experimental as any;
+	if (experimental) {
+		for (const promoted of ['prebundleSvelteLibraries', 'inspector']) {
+			if (experimental[promoted]) {
+				//@ts-expect-error untyped assign
+				options[promoted] = experimental[promoted];
+				delete experimental[promoted];
+				log.warn(
+					`Option "vitePlugin.experimental.${promoted}" is no longer experimental and has moved to "vitePlugin.${promoted}". Please update your svelte config.`
+				);
+			}
+		}
+		if (experimental.generateMissingPreprocessorSourcemaps) {
+			log.warn('experimental.generateMissingPreprocessorSourcemaps has been removed.');
+		}
 	}
 }
 
@@ -629,6 +638,13 @@ export interface PluginOptions {
 	prebundleSvelteLibraries?: boolean;
 
 	/**
+	 * toggle/configure Svelte Inspector
+	 *
+	 * @default true
+	 */
+	inspector?: InspectorOptions | boolean;
+
+	/**
 	 * These options are considered experimental and breaking changes to them can occur in any release
 	 */
 	experimental?: ExperimentalOptions;
@@ -699,11 +715,6 @@ export interface ExperimentalOptions {
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
 
 	/**
-	 * enable svelte inspector
-	 */
-	inspector?: InspectorOptions | boolean;
-
-	/**
 	 * send a websocket message with svelte compiler warnings during dev
 	 *
 	 */
@@ -715,67 +726,6 @@ export interface ExperimentalOptions {
 	 * @default false
 	 */
 	disableSvelteResolveWarnings?: boolean;
-}
-
-export interface InspectorOptions {
-	/**
-	 * define a key combo to toggle inspector,
-	 * @default 'control-shift' on windows, 'meta-shift' on other os
-	 *
-	 * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
-	 * examples: control-shift, control-o, control-alt-s  meta-x control-meta
-	 * Some keys have native behavior (e.g. alt-s opens history menu on firefox).
-	 * To avoid conflicts or accidentally typing into inputs, modifier only combinations are recommended.
-	 */
-	toggleKeyCombo?: string;
-
-	/**
-	 * define keys to select elements with via keyboard
-	 * @default {parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' }
-	 *
-	 * improves accessibility and also helps when you want to select elements that do not have a hoverable surface area
-	 * due to tight wrapping
-	 *
-	 * A note for users of screen-readers:
-	 * If you are using arrow keys to navigate the page itself, change the navKeys to avoid conflicts.
-	 * e.g. navKeys: {parent: 'w', prev: 'a', child: 's', next: 'd'}
-	 *
-	 *
-	 * parent: select closest parent
-	 * child: select first child (or grandchild)
-	 * next: next sibling (or parent if no next sibling exists)
-	 * prev: previous sibling (or parent if no prev sibling exists)
-	 */
-	navKeys?: { parent: string; child: string; next: string; prev: string };
-
-	/**
-	 * define key to open the editor for the currently selected dom node
-	 *
-	 * @default 'Enter'
-	 */
-	openKey?: string;
-
-	/**
-	 * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
-	 * @default false
-	 */
-	holdMode?: boolean;
-	/**
-	 * when to show the toggle button
-	 * @default 'active'
-	 */
-	showToggleButton?: 'always' | 'active' | 'never';
-
-	/**
-	 * where to display the toggle button
-	 * @default top-right
-	 */
-	toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
-
-	/**
-	 * inject custom styles when inspector is active
-	 */
-	customStyles?: boolean;
 }
 
 export interface PreResolvedOptions extends Options {

@@ -8,7 +8,7 @@ function create_inspector_host() {
 	}
 	const el = document.createElement('div');
 	el.setAttribute('id', id);
-	document.getElementsByTagName('body')[0].appendChild(el);
+	document.documentElement.appendChild(el);
 	return el;
 }
 
