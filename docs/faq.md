@@ -95,8 +95,6 @@ const vitePluginCoolCss = {
 };
 ```
 
-For reference, check out [windicss](https://github.com/windicss/vite-plugin-windicss/blob/517eca0cebc879d931c6578a08accadfb112157c/packages/vite-plugin-windicss/src/index.ts#L167).
-
 ### What is going on with Vite and `Pre-bundling dependencies:`?
 
 Prebundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html).
