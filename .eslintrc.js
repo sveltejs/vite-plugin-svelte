@@ -152,13 +152,6 @@ module.exports = {
 			}
 		},
 		{
-			/* required because App.svelte contains windicss rule that breaks the parser */
-			files: ['packages/playground/windicss/src/App.svelte'],
-			settings: {
-				'svelte3/ignore-styles': () => true
-			}
-		},
-		{
 			files: ['packages/playground/kit-demo-app/src/**'],
 			rules: {
 				/* required because $app and $lib are not known */
