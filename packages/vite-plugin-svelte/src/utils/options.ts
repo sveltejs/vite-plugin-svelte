@@ -18,6 +18,8 @@ import type {
 	Processed
 	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';
+// eslint-disable-next-line node/no-missing-import
+import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 
 import path from 'path';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
@@ -35,7 +37,6 @@ import {
 import { isCommonDepWithoutSvelteField } from './dependencies';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
-import type { InspectorOptions } from '../ui/inspector/options';
 
 const allowedPluginOptions = new Set([
 	'include',

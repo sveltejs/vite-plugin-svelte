@@ -1,67 +1,6 @@
-import * as process from 'process';
-import { log } from '../../utils/log';
-import { loadEnv, ResolvedConfig } from 'vite';
-export const defaultInspectorOptions: InspectorOptions = {
-	toggleKeyCombo: process.platform === 'darwin' ? 'meta-shift' : 'control-shift',
-	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
-	openKey: 'Enter',
-	holdMode: true,
-	showToggleButton: 'active',
-	toggleButtonPos: 'top-right',
-	customStyles: true
-};
+import type { Plugin } from 'vite';
 
-export function parseEnvironmentOptions(
-	config: ResolvedConfig
-): Partial<InspectorOptions> | boolean | void {
-	const env = loadEnv(config.mode, config.envDir ?? process.cwd(), 'SVELTE_INSPECTOR');
-	const options = env?.SVELTE_INSPECTOR_OPTIONS;
-	const toggle = env?.SVELTE_INSPECTOR_TOGGLE;
-	if (options) {
-		try {
-			const parsed = JSON.parse(options);
-			const parsedType = typeof parsed;
-			if (parsedType === 'boolean') {
-				return parsed;
-			} else if (parsedType === 'object') {
-				if (Array.isArray(parsed)) {
-					throw new Error('invalid type, expected object map but got array');
-				}
-				const parsedKeys = Object.keys(parsed);
-				const defaultKeys = Object.keys(defaultInspectorOptions);
-				const unknownKeys = parsedKeys.filter((k) => !defaultKeys.includes(k));
-				if (unknownKeys.length) {
-					log.warn(
-						`ignoring unknown options in environment SVELTE_INSPECTOR_OPTIONS:  ${unknownKeys.join(
-							', '
-						)}.`,
-						undefined,
-						'inspector'
-					);
-					for (const key of unknownKeys) {
-						delete parsed[key];
-					}
-				}
-				log.debug('loaded environment config', parsed, 'inspector');
-				return parsed;
-			}
-		} catch (e) {
-			log.error(
-				`failed to parse inspector options from environment SVELTE_INSPECTOR_OPTIONS="${options}"`,
-				e,
-				'inspector'
-			);
-		}
-	} else if (toggle) {
-		const keyConfig = {
-			toggleKeyCombo: toggle
-		};
-		log.debug('loaded environment config', keyConfig, 'inspector');
-		return keyConfig;
-	}
-}
-
-export interface InspectorOptions {
+export interface Options {
 	/**
 	 * define a key combo to toggle inspector,
 	 * @default 'meta-shift' on mac, 'control-shift' on other os
@@ -104,6 +43,7 @@ export interface InspectorOptions {
 	 * @default true
 	 */
 	holdMode?: boolean;
+
 	/**
 	 * when to show the toggle button
 	 * @default 'active'
@@ -129,3 +69,5 @@ export interface InspectorOptions {
 		base: string;
 	};
 }
+
+export declare function svelteInspector(options?: Options): Plugin;

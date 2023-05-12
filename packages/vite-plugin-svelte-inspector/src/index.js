@@ -1,20 +1,28 @@
-import { Plugin, normalizePath } from 'vite';
-import { log } from '../../utils/log';
+import { normalizePath } from 'vite';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fs from 'fs';
-import { idToFile } from './utils';
-import { defaultInspectorOptions, type InspectorOptions, parseEnvironmentOptions } from './options';
+import { debug } from './debug.js';
+import { defaultInspectorOptions, parseEnvironmentOptions } from './options.js';
+import { cleanUrl } from './utils.js';
 
 function getInspectorPath() {
 	const pluginPath = normalizePath(path.dirname(fileURLToPath(import.meta.url)));
-	return pluginPath.replace(/\/vite-plugin-svelte\/dist$/, '/vite-plugin-svelte/src/ui/inspector/');
+	return pluginPath.replace(
+		/\/vite-plugin-svelte-inspector\/src$/,
+		'/vite-plugin-svelte-inspector/src/runtime/'
+	);
 }
 
-export function svelteInspector(): Plugin {
+/** @type {import('.').svelteInspector} */
+export function svelteInspector(options) {
 	const inspectorPath = getInspectorPath();
-	log.debug.enabled && log.debug(`svelte inspector path: ${inspectorPath}`);
-	let inspectorOptions: InspectorOptions;
+	debug(`svelte inspector path: ${inspectorPath}`);
+
+	/** @type {import('vite').ResolvedConfig} */
+	let viteConfig;
+	/** @type {import('.').Options} */
+	let inspectorOptions;
 	let disabled = false;
 
 	return {
@@ -23,44 +31,44 @@ export function svelteInspector(): Plugin {
 		enforce: 'pre',
 
 		configResolved(config) {
+			viteConfig = config;
+
+			// TODO: Remove this special handling when vite-plugin-svelte reads the
+			// svelte config on plugin init in the future
 			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
-			if (!vps) {
-				log.warn('vite-plugin-svelte is missing, inspector disabled', undefined, 'inspector');
-				disabled = true;
-				return;
-			}
 			const configFileOptions = vps?.api?.options?.inspector;
+
 			const environmentOptions = parseEnvironmentOptions(config);
-			if (!configFileOptions && !environmentOptions) {
-				log.debug('no options found, inspector disabled', undefined, 'inspector');
+			if (environmentOptions === false) {
+				debug(`environment options set to false, inspector disabled`);
 				disabled = true;
 				return;
 			}
+
 			if (environmentOptions === true) {
 				inspectorOptions = defaultInspectorOptions;
 			} else {
 				inspectorOptions = {
 					...defaultInspectorOptions,
 					...configFileOptions,
+					...options,
 					...(environmentOptions || {})
 				};
 			}
+
 			inspectorOptions.__internal = {
 				base: config.base?.replace(/\/$/, '') || ''
 			};
 		},
 
-		async resolveId(importee: string, importer, options) {
+		async resolveId(importee, _, options) {
 			if (options?.ssr || disabled) {
 				return;
 			}
 			if (importee.startsWith('virtual:svelte-inspector-options')) {
 				return importee;
 			} else if (importee.startsWith('virtual:svelte-inspector-path:')) {
-				const resolved = importee.replace('virtual:svelte-inspector-path:', inspectorPath);
-				log.debug.enabled &&
-					log.debug(`resolved ${importee} with ${resolved}`, undefined, 'inspector');
-				return resolved;
+				return importee.replace('virtual:svelte-inspector-path:', inspectorPath);
 			}
 		},
 
@@ -72,14 +80,12 @@ export function svelteInspector(): Plugin {
 				return `export default ${JSON.stringify(inspectorOptions ?? {})}`;
 			} else if (id.startsWith(inspectorPath)) {
 				// read file ourselves to avoid getting shut out by vites fs.allow check
-				const file = idToFile(id);
-				if (fs.existsSync(file)) {
+				const file = cleanUrl(id);
+				if (fs.existsSync(id)) {
 					return await fs.promises.readFile(file, 'utf-8');
 				} else {
-					log.error(
-						`failed to find file for svelte-inspector: ${file}, referenced by id ${id}.`,
-						undefined,
-						'inspector'
+					viteConfig.logger.error(
+						`[vite-plugin-svelte-inspector] failed to find svelte-inspector: ${id}`
 					);
 				}
 			}
