@@ -26,21 +26,28 @@ export function svelteInspector(options) {
 	let disabled = false;
 
 	return {
-		name: 'vite-plugin-svelte:inspector',
+		name: 'vite-plugin-svelte-inspector',
 		apply: 'serve',
 		enforce: 'pre',
 
 		configResolved(config) {
 			viteConfig = config;
 
-			// TODO: Remove this special handling when vite-plugin-svelte reads the
-			// svelte config on plugin init in the future
-			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
-			const configFileOptions = vps?.api?.options?.inspector;
-
 			const environmentOptions = parseEnvironmentOptions(config);
 			if (environmentOptions === false) {
 				debug(`environment options set to false, inspector disabled`);
+				disabled = true;
+				return;
+			}
+
+			// Handle config from svelte.config.js through vite-plugin-svelte
+			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
+			const configFileOptions = vps?.api?.options?.inspector;
+
+			// vite-plugin-svelte can only pass options through it's `api` instead of `options`.
+			// that means this plugin could be created but should be disabled, so we check this case here.
+			if (vps && !options && !configFileOptions && !environmentOptions) {
+				debug(`vite-plugin-svelte didn't pass options, inspector disabled`);
 				disabled = true;
 				return;
 			}
