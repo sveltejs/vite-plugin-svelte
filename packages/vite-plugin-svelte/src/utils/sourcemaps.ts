@@ -1,10 +1,6 @@
 import path from 'path';
 const IS_WINDOWS = process.platform === 'win32';
-interface SourceMapFileRefs {
-	file?: string;
-	sources?: string[];
-	sourceRoot?: string;
-}
+import type { SourceMapFileRefs } from './sourcemaps.d';
 
 /**
  * convert absolute paths in sourcemap file refs to their relative equivalents to avoid leaking fs info

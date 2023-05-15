@@ -3,6 +3,7 @@ import type { ESBuildOptions, InlineConfig, ResolvedConfig } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import type { Preprocessor, PreprocessorGroup } from 'svelte/types/compiler/preprocess';
 import { mapToRelative, removeLangSuffix } from './utils/sourcemaps';
+import type { CssTransform } from './preprocess.d';
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
@@ -90,13 +91,6 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 	style.__resolvedConfig = null;
 	return { style };
 }
-
-type CssTransform = (
-	// eslint-disable-next-line no-unused-vars
-	code: string,
-	// eslint-disable-next-line no-unused-vars
-	filename: string
-) => Promise<{ code: string; map?: any; deps?: Set<string> }>;
 
 function getCssTransformFn(config: ResolvedConfig): CssTransform {
 	return async (code, filename) => {

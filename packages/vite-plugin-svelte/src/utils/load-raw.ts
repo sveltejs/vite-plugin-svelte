@@ -1,10 +1,9 @@
-import { ResolvedOptions } from './options';
 import fs from 'fs';
 import { toRollupError } from './error';
 import { log } from './log';
 import type { SvelteRequest } from './id';
-import { type CompileData, CompileSvelte } from './compile';
-
+import type { CompileData, CompileSvelte } from './compile.d';
+import type { ResolvedOptions } from './options.d';
 /**
  * utility function to compile ?raw and ?direct requests in load hook
  */

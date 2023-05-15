@@ -2,39 +2,12 @@ import { log } from './log';
 import { performance } from 'perf_hooks';
 import { normalizePath } from 'vite';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
-
-interface Stat {
-	file: string;
-	pkg?: string;
-	start: number;
-	end: number;
-}
-
-export interface StatCollection {
-	name: string;
-	options: CollectionOptions;
-	//eslint-disable-next-line no-unused-vars
-	start: (file: string) => () => void;
-	stats: Stat[];
-	packageStats?: PackageStats[];
-	collectionStart: number;
-	duration?: number;
-	finish: () => Promise<void> | void;
-	finished: boolean;
-}
-
-interface PackageStats {
-	pkg: string;
-	files: number;
-	duration: number;
-}
-
-export interface CollectionOptions {
-	//eslint-disable-next-line no-unused-vars
-	logInProgress: (collection: StatCollection, now: number) => boolean;
-	//eslint-disable-next-line no-unused-vars
-	logResult: (collection: StatCollection) => boolean;
-}
+import {
+	CollectionOptions,
+	PackageStats,
+	Stat,
+	StatCollection
+} from './vite-plugin-svelte-stats.d';
 
 const defaultCollectionOptions: CollectionOptions = {
 	// log after 500ms and more than one file processed

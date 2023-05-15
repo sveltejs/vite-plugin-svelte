@@ -1,8 +1,10 @@
 /* eslint-disable no-unused-vars,no-console */
-import { cyan, yellow, red } from 'kleur/colors';
+import { cyan, red, yellow } from 'kleur/colors';
 import debug from 'debug';
-import { ResolvedOptions, Warning } from './options';
+import { Warning, ResolvedOptions } from './options.d';
 import { SvelteRequest } from './id';
+import { LogFn, SvelteWarningsMessage } from './log.d';
+
 const levels: string[] = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
 const loggers: { [key: string]: any } = {
@@ -68,12 +70,6 @@ function _log(logger: any, message: string, payload?: any, namespace?: string) {
 	}
 }
 
-export interface LogFn {
-	(message: string, payload?: any, namespace?: string): void;
-	enabled: boolean;
-	once: (message: string, payload?: any, namespace?: string) => void;
-}
-
 function createLogger(level: string): LogFn {
 	const logger = loggers[level];
 	const logFn: LogFn = _log.bind(null, logger) as LogFn;
@@ -104,16 +100,6 @@ export const log = {
 	warn: createLogger('warn'),
 	error: createLogger('error'),
 	setLevel
-};
-
-export type SvelteWarningsMessage = {
-	id: string;
-	filename: string;
-	normalizedFilename: string;
-	timestamp: number;
-	warnings: Warning[]; // allWarnings filtered by warnings where onwarn did not call the default handler
-	allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite plugin svelte warnings
-	rawWarnings: Warning[]; // raw compiler output
 };
 
 export function logCompilerWarnings(

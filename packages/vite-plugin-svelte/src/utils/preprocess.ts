@@ -1,6 +1,7 @@
 import type { ResolvedConfig, Plugin } from 'vite';
 import MagicString from 'magic-string';
-import { PreprocessorGroup, ResolvedOptions } from './options';
+import type { PreprocessorGroup } from './options.d';
+import type { ResolvedOptions } from './options.d';
 import { log } from './log';
 import path from 'path';
 

@@ -12,13 +12,13 @@ import {
 import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update';
 import { log, logCompilerWarnings } from './utils/log';
-import { type CompileSvelte, createCompileSvelte } from './utils/compile';
+import { createCompileSvelte } from './utils/compile';
+import { type CompileSvelte } from './utils/compile.d';
 import { buildIdParser, IdParser } from './utils/id';
+import type { ResolvedOptions, Options } from './utils/options.d';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
-	Options,
-	ResolvedOptions,
 	resolveOptions,
 	patchResolvedViteConfig,
 	preResolveOptions
@@ -33,16 +33,7 @@ import { svelteInspector } from './ui/inspector/plugin';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { loadRaw } from './utils/load-raw';
 import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants';
-
-interface PluginAPI {
-	/**
-	 * must not be modified, should not be used outside of vite-plugin-svelte repo
-	 * @internal
-	 * @experimental
-	 */
-	options?: ResolvedOptions;
-	// TODO expose compile cache here so other utility plugins can use it
-}
+import type { PluginAPI } from './plugin-api.d';
 
 const isVite4_0 = viteVersion.startsWith('4.0');
 const isSvelte3 = svelteVersion.startsWith('3');
@@ -281,20 +272,3 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 
 export { vitePreprocess } from './preprocess';
 export { loadSvelteConfig } from './utils/load-svelte-config';
-
-export {
-	Options,
-	PluginOptions,
-	SvelteOptions,
-	Preprocessor,
-	PreprocessorGroup,
-	CompileOptions,
-	CssHashGetter,
-	Arrayable,
-	MarkupPreprocessor,
-	ModuleFormat,
-	Processed,
-	Warning
-} from './utils/options';
-
-export { SvelteWarningsMessage } from './utils/log';

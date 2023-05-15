@@ -1,11 +1,12 @@
 import { RollupError } from 'rollup';
-import { ResolvedOptions, Warning } from './options';
+import type { Warning, ResolvedOptions } from './options.d';
 import { buildExtendedLogMessage } from './log';
 import { PartialMessage } from 'esbuild';
 
 /**
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
  * @param error a svelte compiler error, which is a mix of Warning and an error
+ * @param options {ResolvedOptions}
  * @returns {RollupError} the converted error
  */
 export function toRollupError(error: Warning & Error, options: ResolvedOptions): RollupError {

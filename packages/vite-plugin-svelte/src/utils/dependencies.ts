@@ -2,11 +2,7 @@ import path from 'path';
 import fs from 'fs/promises';
 // eslint-disable-next-line node/no-missing-import
 import { findDepPkgJsonPath } from 'vitefu';
-
-interface DependencyData {
-	dir: string;
-	pkg: Record<string, any>;
-}
+import type { DependencyData } from './dependencies.d';
 
 export async function resolveDependencyData(
 	dep: string,

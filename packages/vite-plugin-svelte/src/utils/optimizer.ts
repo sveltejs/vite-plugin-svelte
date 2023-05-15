@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { ResolvedOptions } from './options';
+import type { ResolvedOptions } from './options.d';
 
 // List of options that changes the prebundling result
 const PREBUNDLE_SENSITIVE_OPTIONS: (keyof ResolvedOptions)[] = [

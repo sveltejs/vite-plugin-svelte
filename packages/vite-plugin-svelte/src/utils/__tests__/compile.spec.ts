@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { createCompileSvelte } from '../compile';
-import { ResolvedOptions } from '../options';
 const options: ResolvedOptions = {
 	compilerOptions: {
 		dev: false,

@@ -3,9 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import { pathToFileURL } from 'url';
 import { log } from './log';
-import { Options, SvelteOptions } from './options';
-import { UserConfig } from 'vite';
-
+import type { UserConfig } from 'vite';
+import type { Options, SvelteOptions } from './options.d';
 // used to require cjs config in esm.
 // NOTE dynamic import() cjs technically works, but timestamp query cache bust
 // have no effect, likely because it has another internal cache?

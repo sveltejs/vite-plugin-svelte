@@ -1,17 +1,11 @@
-import { SvelteRequest } from './id';
-import { Code, CompileData } from './compile';
+import { SvelteRequest } from './id.d';
 import { readFileSync } from 'fs';
 import { dirname } from 'path';
 //eslint-disable-next-line node/no-missing-import
 import { findClosestPkgJsonPath } from 'vitefu';
 import { normalizePath } from 'vite';
-
-interface PackageInfo {
-	name: string;
-	version: string;
-	svelte?: string;
-	path: string;
-}
+import type { Code, CompileData } from './compile.d';
+import type { PackageInfo } from './vite-plugin-svelte-cache.d';
 
 export class VitePluginSvelteCache {
 	private _css = new Map<string, Code>();

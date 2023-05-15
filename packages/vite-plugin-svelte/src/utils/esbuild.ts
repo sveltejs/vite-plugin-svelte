@@ -1,11 +1,11 @@
 import { readFileSync } from 'fs';
 import { compile, preprocess } from 'svelte/compiler';
 import { DepOptimizationOptions } from 'vite';
-import { Compiled } from './compile';
 import { log } from './log';
-import { CompileOptions, ResolvedOptions } from './options';
+import { CompileOptions, ResolvedOptions } from './options.d';
 import { toESBuildError } from './error';
-import { StatCollection } from './vite-plugin-svelte-stats';
+import type { StatCollection } from './vite-plugin-svelte-stats.d';
+import type { Compiled } from './compile.d';
 
 type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
 type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];

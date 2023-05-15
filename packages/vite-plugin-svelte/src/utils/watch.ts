@@ -2,11 +2,10 @@ import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 import fs from 'fs';
 import { log } from './log';
 import { IdParser } from './id';
-import { ResolvedOptions } from './options';
 import { knownSvelteConfigNames } from './load-svelte-config';
 import path from 'path';
 import { FSWatcher } from 'vite';
-
+import type { ResolvedOptions } from './options.d';
 export function setupWatchers(
 	options: ResolvedOptions,
 	cache: VitePluginSvelteCache,

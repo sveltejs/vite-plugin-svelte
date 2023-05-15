@@ -1,11 +1,10 @@
 import { ModuleNode, HmrContext } from 'vite';
-import { Code, CompileData } from './utils/compile';
 import { log, logCompilerWarnings } from './utils/log';
 import { SvelteRequest } from './utils/id';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
-import { ResolvedOptions } from './utils/options';
 import { toRollupError } from './utils/error';
-
+import type { Code, CompileData } from './utils/compile.d';
+import type { ResolvedOptions } from './utils/options.d';
 /**
  * Vite-specific HMR handling
  */

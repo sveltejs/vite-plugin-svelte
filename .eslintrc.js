@@ -159,6 +159,12 @@ module.exports = {
 				/* required because URL wasn't in node8 */
 				'node/no-unsupported-features/node-builtins': 'off'
 			}
+		},
+		{
+			files: ['**/*.d.ts'],
+			rules: {
+				'no-unused-vars': 'off'
+			}
 		}
 	]
 };

@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { createFilter } from 'vite';
-import { Arrayable, ResolvedOptions } from './options';
-import { normalizePath } from 'vite';
+import { createFilter, normalizePath } from 'vite';
 import * as fs from 'fs';
-//eslint-disable-next-line node/no-missing-import
-import { CompileOptions } from 'svelte/types/compiler/interfaces';
+
 import { log } from './log';
+import type { Arrayable, ResolvedOptions } from './options.d';
+import type { RequestQuery, SvelteQueryTypes, SvelteRequest } from './id.d';
 
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
@@ -20,34 +19,6 @@ const SUPPORTED_COMPILER_OPTIONS = [
 	'enableSourcemap'
 ];
 const TYPES_WITH_COMPILER_OPTIONS = ['style', 'script', 'all'];
-
-export type SvelteQueryTypes = 'style' | 'script' | 'preprocessed' | 'all';
-
-export interface RequestQuery {
-	// our own
-	svelte?: boolean;
-	type?: SvelteQueryTypes;
-	sourcemap?: boolean;
-	compilerOptions?: Pick<
-		CompileOptions,
-		'generate' | 'dev' | 'css' | 'hydratable' | 'customElement' | 'immutable' | 'enableSourcemap'
-	>;
-	// vite specific
-	url?: boolean;
-	raw?: boolean;
-	direct?: boolean;
-}
-
-export interface SvelteRequest {
-	id: string;
-	cssId: string;
-	filename: string;
-	normalizedFilename: string;
-	query: RequestQuery;
-	timestamp: number;
-	ssr: boolean;
-	raw: boolean;
-}
 
 function splitId(id: string) {
 	const parts = id.split(`?`, 2);
