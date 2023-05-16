@@ -11,11 +11,13 @@ Note that `@sveltejs/vite-plugin-svelte` needs to be installed as a peer depende
 ```js
 // svelte.config.js
 export default {
-  // set to true for defaults,  options to customize, see full list below
-  inspector: {
-    toggleKeyCombo: 'meta-shift',
-    showToggleButton: 'always',
-    toggleButtonPos: 'bottom-right'
+  vitePlugin: {
+    // set to true for defaults or customize with object
+    inspector: {
+      toggleKeyCombo: 'meta-shift',
+      showToggleButton: 'always',
+      toggleButtonPos: 'bottom-right'
+    }
   }
 };
 ```
