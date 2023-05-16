@@ -31,7 +31,7 @@ export default defineConfig({
 ## Documentation
 
 - [Plugin options](./docs/config.md)
-- [Inspector options](./docs/inspector.md)
+- [Svelte Inspector](./docs/inspector.md)
 - [FAQ](./docs/faq.md)
 
 ## Packages

@@ -4,6 +4,43 @@
 
 Note that `@sveltejs/vite-plugin-svelte` needs to be installed as a peer dependency as the inspector brings in Svelte components to be compiled.
 
+## Setup
+
+### with Svelte config
+
+```js
+// svelte.config.js
+export default {
+  // set to true for defaults,  options to customize, see full list below
+  inspector: {
+    toggleKeyCombo: 'meta-shift',
+    showToggleButton: 'always',
+    toggleButtonPos: 'bottom-right'
+  }
+};
+```
+
+### with environment variables
+
+Svelte Inspector toggle keys and other options are personal preferences. As such it isn't always convenient to define them in a shared svelte config file.
+To allow you to use your own setup, svelte inspector can be configured via environment variables, both from shell and dotenv files.
+
+```shell
+# just keycombo, unquoted string
+SVELTE_INSPECTOR_TOGGLE=control-shift
+
+# options object as json
+SVELTE_INSPECTOR_OPTIONS='{"holdMode": false, "toggleButtonPos": "bottom-left"}'
+
+# disable completely
+SVELTE_INSPECTOR_OPTIONS=false
+
+# force default options
+SVELTE_INSPECTOR_OPTIONS=true
+```
+
+> Inspector options set on the environment take precedence over values set in svelte config and automatically enable svelte inspector during dev.
+
 ## Plugin options
 
 ### toggleKeyCombo
