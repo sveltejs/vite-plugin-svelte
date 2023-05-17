@@ -31,13 +31,15 @@ export default defineConfig({
 ## Documentation
 
 - [Plugin options](./docs/config.md)
+- [Svelte Inspector](./docs/inspector.md)
 - [FAQ](./docs/faq.md)
 
 ## Packages
 
-| Package                                                     | Changelog                                             |
-| ----------------------------------------------------------- | ----------------------------------------------------- |
-| [@sveltejs/vite-plugin-svelte](packages/vite-plugin-svelte) | [Changelog](packages/vite-plugin-svelte/CHANGELOG.md) |
+| Package                                                                         | Changelog                                                       |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| [@sveltejs/vite-plugin-svelte](packages/vite-plugin-svelte)                     | [Changelog](packages/vite-plugin-svelte/CHANGELOG.md)           |
+| [@sveltejs/vite-plugin-svelte-inspector](packages/vite-plugin-svelte-inspector) | [Changelog](packages/vite-plugin-svelte-inspector/CHANGELOG.md) |
 
 ## Got a question? / Need help?
 
