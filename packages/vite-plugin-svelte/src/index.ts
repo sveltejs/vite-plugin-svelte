@@ -9,6 +9,8 @@ import {
 	version as viteVersion
 } from 'vite';
 // eslint-disable-next-line node/no-missing-import
+import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
+// eslint-disable-next-line node/no-missing-import
 import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update';
 import { log, logCompilerWarnings } from './utils/log';
@@ -29,7 +31,6 @@ import { resolveViaPackageJsonSvelte } from './utils/resolve';
 import { PartialResolvedId } from 'rollup';
 import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
-import { svelteInspector } from './ui/inspector/plugin';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { loadRaw } from './utils/load-raw';
 import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants';

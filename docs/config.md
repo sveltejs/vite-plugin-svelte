@@ -214,110 +214,12 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
 ### inspector
 
-- **Type:**`InspectorOptions | boolean`
+- **Type:** `InspectorOptions | boolean`
 - **Default:** `unset` for dev, always `false` for build
 
-  ```ts
-  interface InspectorOptions {
-    /**
-     * define a key combo to toggle inspector,
-     * @default 'meta-shift' on mac, 'control-shift' on other os
-     *
-     * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
-     * examples: control-shift, control-o, control-alt-s  meta-x control-meta
-     * Some keys have native behavior (e.g. alt-s opens history menu on firefox).
-     * To avoid conflicts or accidentally typing into inputs, modifier only combinations are recommended.
-     */
-    toggleKeyCombo?: string;
-
-    /**
-     * define keys to select elements with via keyboard
-     * @default {parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' }
-     *
-     * improves accessibility and also helps when you want to select elements that do not have a hoverable surface area
-     * due to tight wrapping
-     *
-     * parent: select closest parent
-     * child: select first child (or grandchild)
-     * next: next sibling (or parent if no next sibling exists)
-     * prev: previous sibling (or parent if no prev sibling exists)
-     */
-    navKeys?: { parent: string; child: string; next: string; prev: string };
-
-    /**
-     * define key to open the editor for the currently selected dom node
-     *
-     * @default 'Enter'
-     */
-    openKey?: string;
-
-    /**
-     * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
-     * @default true
-     */
-    holdMode?: boolean;
-
-    /**
-     * when to show the toggle button
-     * @default 'active'
-     */
-    showToggleButton?: 'always' | 'active' | 'never';
-
-    /**
-     * where to display the toggle button
-     * @default top-right
-     */
-    toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
-
-    /**
-     * inject custom styles when inspector is active
-     */
-    customStyles?: boolean;
-  }
-  ```
-
-  Set to `true` or options object to enable svelte inspector during development.
+  Set to `true` or options object to enable svelte inspector during development. See the [inspector docs](./inspector.md) for the full configuration options.
 
   Inspector mode shows you the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.
-
-  **Example:**
-
-  ```js
-  // vite.config.js
-  export default defineConfig({
-    plugins: [
-      svelte({
-        inspector: {
-          toggleKeyCombo: 'meta-shift',
-          holdMode: true,
-          showToggleButton: 'always',
-          toggleButtonPos: 'bottom-right'
-        }
-      })
-    ]
-  });
-  ```
-
-#### Customizing Inspector options via environment
-
-Svelte Inspector toggle keys and other options are personal preferences. As such it isn't always convenient to define them in a shared svelte config file.
-To allow you to use your own setup, svelte inspector can be configured via environment variables, both from shell and dotenv files.
-
-```shell
-# just keycombo, unquoted string
-SVELTE_INSPECTOR_TOGGLE=control-shift
-
-# options object as json, all options except appendTo are supported
-SVELTE_INSPECTOR_OPTIONS='{"holdMode": false, "toggleButtonPos": "bottom-left"}'
-
-# disable completely
-SVELTE_INSPECTOR_OPTIONS=false
-
-# force default options
-SVELTE_INSPECTOR_OPTIONS=true
-```
-
-> Inspector options set on the environment take precedence over values set in svelte config and automatically enable svelte inspector during dev.
 
 ## Experimental options
 

@@ -70,9 +70,15 @@ module.exports = {
 			}
 		},
 		{
-			files: ['packages/vite-plugin-svelte/src/ui/inspector/load-inspector.js'],
+			files: ['packages/vite-plugin-svelte-inspector/src/runtime/load-inspector.js'],
 			env: {
 				browser: true
+			}
+		},
+		{
+			files: ['**/*.d.ts'],
+			rules: {
+				'no-unused-vars': 'off'
 			}
 		},
 		{

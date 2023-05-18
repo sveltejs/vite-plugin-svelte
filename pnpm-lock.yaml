@@ -747,6 +747,9 @@ importers:
 
   packages/vite-plugin-svelte:
     dependencies:
+      '@sveltejs/vite-plugin-svelte-inspector':
+        specifier: workspace:^
+        version: link:../vite-plugin-svelte-inspector
       debug:
         specifier: ^4.3.4
         version: 4.3.4
@@ -781,6 +784,25 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(typescript@5.0.4)
+      vite:
+        specifier: ^4.3.5
+        version: 4.3.5(@types/node@18.16.8)(sass@1.62.1)(stylus@0.59.0)
+
+  packages/vite-plugin-svelte-inspector:
+    dependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: ^2.2.0
+        version: link:../vite-plugin-svelte
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.4
+    devDependencies:
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
+      svelte:
+        specifier: ^3.59.1
+        version: 3.59.1
       vite:
         specifier: ^4.3.5
         version: 4.3.5(@types/node@18.16.8)(sass@1.62.1)(stylus@0.59.0)

@@ -4,9 +4,10 @@ import type { ViteDevServer } from 'vite';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
 // eslint-disable-next-line node/no-missing-import
 import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess';
-import type { InspectorOptions } from '../ui/inspector/options';
 // eslint-disable-next-line node/no-missing-import
 export type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
+// eslint-disable-next-line node/no-missing-import
+import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 
 export type {
 	MarkupPreprocessor,
