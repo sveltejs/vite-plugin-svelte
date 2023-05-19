@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { normalizePath } from 'vite';
-import { isDebugNamespaceEnabled, log } from './log';
-import { loadSvelteConfig } from './load-svelte-config';
+import { isDebugNamespaceEnabled, log } from './log.js';
+import { loadSvelteConfig } from './load-svelte-config.js';
 import {
 	SVELTE_EXPORT_CONDITIONS,
 	SVELTE_HMR_IMPORTS,
@@ -11,8 +11,8 @@ import {
 } from './constants';
 
 import path from 'path';
-import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild';
-import { addExtraPreprocessors } from './preprocess';
+import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild.js';
+import { addExtraPreprocessors } from './preprocess.js';
 import deepmerge from 'deepmerge';
 import {
 	crawlFrameworkPkgs,
@@ -23,7 +23,7 @@ import {
 	// eslint-disable-next-line node/no-missing-import
 } from 'vitefu';
 
-import { isCommonDepWithoutSvelteField } from './dependencies';
+import { isCommonDepWithoutSvelteField } from './dependencies.js';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats.js';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache.js';
 
@@ -212,7 +212,11 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 		root: viteConfig.root,
 		isProduction: viteConfig.isProduction
 	};
-	const merged = mergeConfigs(defaultOptions, preResolveOptions, extraOptions);
+	const merged = /** @type {import('./options.d').ResolvedOptions}*/ mergeConfigs(
+		defaultOptions,
+		preResolveOptions,
+		extraOptions
+	);
 
 	removeIgnoredOptions(merged);
 	handleDeprecatedOptions(merged);
@@ -226,7 +230,10 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 	return merged;
 }
 
-function enforceOptionsForHmr(options: ResolvedOptions) {
+/**
+ * @param {import('./options.d').ResolvedOptions} options
+ */
+function enforceOptionsForHmr(options) {
 	if (options.hot) {
 		if (!options.compilerOptions.dev) {
 			log.warn('hmr is enabled but compilerOptions.dev is false, forcing it to true');
@@ -268,7 +275,10 @@ function enforceOptionsForHmr(options: ResolvedOptions) {
 	}
 }
 
-function enforceOptionsForProduction(options: ResolvedOptions) {
+/**
+ * @param {import('./options.d').ResolvedOptions} options
+ */
+function enforceOptionsForProduction(options) {
 	if (options.isProduction) {
 		if (options.hot) {
 			log.warn('options.hot is enabled but does not work on production build, forcing it to false');
@@ -283,7 +293,10 @@ function enforceOptionsForProduction(options: ResolvedOptions) {
 	}
 }
 
-function removeIgnoredOptions(options: ResolvedOptions) {
+/**
+ * @param {import('./options.d').ResolvedOptions} options
+ */
+function removeIgnoredOptions(options) {
 	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
 	if (options.hot && options.emitCss) {
 		ignoredCompilerOptions.push('cssHash');
@@ -303,8 +316,11 @@ function removeIgnoredOptions(options: ResolvedOptions) {
 	}
 }
 
-function handleDeprecatedOptions(options: ResolvedOptions) {
-	const experimental = options.experimental as any;
+/**
+ * @param {import('./options.d').ResolvedOptions} options
+ */
+function handleDeprecatedOptions(options) {
+	const experimental = /** @type {Record<string,any>} */ options.experimental;
 	if (experimental) {
 		for (const promoted of ['prebundleSvelteLibraries', 'inspector']) {
 			if (experimental[promoted]) {
@@ -322,17 +338,26 @@ function handleDeprecatedOptions(options: ResolvedOptions) {
 	}
 }
 
-// vite passes unresolved `root`option to config hook but we need the resolved value, so do it here
-// https://github.com/sveltejs/vite-plugin-svelte/issues/113
-// https://github.com/vitejs/vite/blob/43c957de8a99bb326afd732c962f42127b0a4d1e/packages/vite/src/node/config.ts#L293
-function resolveViteRoot(viteConfig: UserConfig): string | undefined {
+/**
+ * vite passes unresolved `root`option to config hook but we need the resolved value, so do it here
+ *
+ * @see https://github.com/sveltejs/vite-plugin-svelte/issues/113
+ * @see https://github.com/vitejs/vite/blob/43c957de8a99bb326afd732c962f42127b0a4d1e/packages/vite/src/node/config.ts#L293
+ *
+ * @param {import('vite').UserConfig} viteConfig
+ * @returns {string|undefined}
+ */
+function resolveViteRoot(viteConfig) {
 	return normalizePath(viteConfig.root ? path.resolve(viteConfig.root) : process.cwd());
 }
 
-export async function buildExtraViteConfig(
-	options: PreResolvedOptions,
-	config: UserConfig
-): Promise<Partial<UserConfig>> {
+/**
+ *
+ * @param {import('./options.d').PreResolvedOptions} options
+ * @param {import('vite').UserConfig} config
+ * @returns {Promise<Partial<import('vite').UserConfig>>}
+ */
+export async function buildExtraViteConfig(config, options) {
 	// make sure we only readd vite default mainFields when no other plugin has changed the config already
 	// see https://github.com/sveltejs/vite-plugin-svelte/issues/581
 	if (!config.resolve) {
@@ -343,7 +368,8 @@ export async function buildExtraViteConfig(
 		...(config.resolve.mainFields ?? VITE_RESOLVE_MAIN_FIELDS)
 	];
 
-	const extraViteConfig: Partial<UserConfig> = {
+	/** @type {Partial<import('vite').UserConfig>} */
+	const extraViteConfig = {
 		resolve: {
 			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS],
 			conditions: [...SVELTE_EXPORT_CONDITIONS]
@@ -417,16 +443,19 @@ export async function buildExtraViteConfig(
 	return extraViteConfig;
 }
 
-function validateViteConfig(
-	extraViteConfig: Partial<UserConfig>,
-	config: UserConfig,
-	options: PreResolvedOptions
-) {
+/**
+ *
+ * @param {Partial<import('vite').UserConfig>} extraViteConfig
+ * @param {import('vite').UserConfig} config
+ * @param {import('./options.d').PreResolvedOptions} options
+ */
+function validateViteConfig(extraViteConfig, config, options) {
 	const { prebundleSvelteLibraries, isBuild } = options;
 	if (prebundleSvelteLibraries) {
-		const isEnabled = (option: 'dev' | 'build' | boolean) =>
-			option !== true && option !== (isBuild ? 'build' : 'dev');
-		const logWarning = (name: string, value: 'dev' | 'build' | boolean, recommendation: string) =>
+		/** @type {(option: 'dev' | 'build' | boolean)=> boolean} */
+		const isEnabled = (option) => option !== true && option !== (isBuild ? 'build' : 'dev');
+		/** @type {(name: string,value: 'dev' | 'build' | boolean, recommendation: string)=> void} */
+		const logWarning = (name, value, recommendation) =>
 			log.warn.once(
 				`Incompatible options: \`prebundleSvelteLibraries: true\` and vite \`${name}: ${JSON.stringify(
 					value
@@ -440,7 +469,10 @@ function validateViteConfig(
 				viteOptimizeDepsDisabled,
 				'Forcing `optimizeDeps.disabled: "build"`. Disable prebundleSvelteLibraries or update your vite config to enable optimizeDeps during dev.'
 			);
-			extraViteConfig.optimizeDeps!.disabled = 'build';
+			if (!extraViteConfig.optimizeDeps) {
+				extraViteConfig.optimizeDeps = {};
+			}
+			extraViteConfig.optimizeDeps.disabled = 'build';
 		} else if (isBuild && isOptimizeDepsEnabled) {
 			logWarning(
 				'optimizeDeps.disabled',
@@ -451,7 +483,13 @@ function validateViteConfig(
 	}
 }
 
-async function buildExtraConfigForDependencies(options: PreResolvedOptions, config: UserConfig) {
+/**
+ *
+ * @param {import('./options.d').PreResolvedOptions} options
+ * @param {import('vite').UserConfig} config
+ * @returns {Promise<import('vitefu').CrawlFrameworkPkgsResult>}
+ */
+async function buildExtraConfigForDependencies(options, config) {
 	// extra handling for svelte dependencies in the project
 	const depsConfig = await crawlFrameworkPkgs({
 		root: options.root,
@@ -492,7 +530,7 @@ async function buildExtraConfigForDependencies(options: PreResolvedOptions, conf
 		const userExclude = config.optimizeDeps?.exclude;
 		depsConfig.optimizeDeps.include = !userExclude
 			? []
-			: depsConfig.optimizeDeps.include.filter((dep: string) => {
+			: depsConfig.optimizeDeps.include.filter((dep) => {
 					// reincludes look like this: foo > bar > baz
 					// in case foo or bar are excluded, we have to retain the reinclude even with prebundling
 					return (
@@ -522,10 +560,16 @@ async function buildExtraConfigForDependencies(options: PreResolvedOptions, conf
 	return depsConfig;
 }
 
-function buildExtraConfigForSvelte(config: UserConfig) {
+/**
+ *
+ * @param {import('vite').UserConfig} config
+ * @returns {import('vite').UserConfig & { optimizeDeps: { include: string[], exclude:string[] }, ssr: { noExternal:(string|RegExp)[], external: string[] } } }
+ */
+function buildExtraConfigForSvelte(config) {
 	// include svelte imports for optimization unless explicitly excluded
-	const include: string[] = [];
-	const exclude: string[] = ['svelte-hmr'];
+	/** @type {string[]} */
+	const include = [];
+	const exclude = ['svelte-hmr'];
 	if (!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
 		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
 		log.debug(
@@ -535,8 +579,10 @@ function buildExtraConfigForSvelte(config: UserConfig) {
 	} else {
 		log.debug('"svelte" is excluded in optimizeDeps.exclude, skipped adding it to include.');
 	}
-	const noExternal: (string | RegExp)[] = [];
-	const external: string[] = [];
+	/** @type {(string|RegExp)[]} */
+	const noExternal = [];
+	/** @type {string[]} */
+	const external = [];
 	// add svelte to ssr.noExternal unless it is present in ssr.external
 	// so we can resolve it with svelte/ssr
 	if (!isDepExternaled('svelte', config.ssr?.external ?? [])) {
@@ -545,7 +591,12 @@ function buildExtraConfigForSvelte(config: UserConfig) {
 	return { optimizeDeps: { include, exclude }, ssr: { noExternal, external } };
 }
 
-export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: ResolvedOptions) {
+/**
+ *
+ * @param {import('vite').ResolvedConfig} viteConfig
+ * @param {import('./options.d').ResolvedOptions} options
+ */
+export function patchResolvedViteConfig(viteConfig, options) {
 	if (options.preprocess) {
 		for (const preprocessor of arraify(options.preprocess)) {
 			if (preprocessor.style && '__resolvedConfig' in preprocessor.style) {
@@ -563,6 +614,11 @@ export function patchResolvedViteConfig(viteConfig: ResolvedConfig, options: Res
 	}
 }
 
-function arraify<T>(value: T | T[]): T[] {
+/**
+ * @template T
+ * @param {T|T[]} value
+ * @returns {T[]}
+ */
+function arraify(value) {
 	return Array.isArray(value) ? value : [value];
 }

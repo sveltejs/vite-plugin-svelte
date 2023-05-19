@@ -111,7 +111,7 @@ function createLogger(level) {
 			return once;
 		}
 	});
-	return logFn;
+	return /** @type {import('./log.d').LogFn}*/ logFn;
 }
 
 export const log = {
