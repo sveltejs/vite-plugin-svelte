@@ -15,9 +15,7 @@ import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update';
 import { log, logCompilerWarnings } from './utils/log';
 import { createCompileSvelte } from './utils/compile';
-import { type CompileSvelte } from './utils/compile.d';
 import { buildIdParser, IdParser } from './utils/id';
-import type { ResolvedOptions, Options } from './utils/options.d';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
@@ -28,41 +26,53 @@ import {
 
 import { ensureWatchedFile, setupWatchers } from './utils/watch';
 import { resolveViaPackageJsonSvelte } from './utils/resolve';
-import { PartialResolvedId } from 'rollup';
+
 import { toRollupError } from './utils/error';
 import { saveSvelteMetadata } from './utils/optimizer';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
 import { loadRaw } from './utils/load-raw';
 import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants';
-import type { PluginAPI } from './plugin-api.d';
 
 const isVite4_0 = viteVersion.startsWith('4.0');
 const isSvelte3 = svelteVersion.startsWith('3');
 
-export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
+/**
+ *
+ * @param {Partial<import('./utils/options.d'>).Options=} inlineOptions
+ * @returns {import('vite').Plugin[]}
+ */
+export function svelte(inlineOptions) {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
 	}
 	validateInlineOptions(inlineOptions);
 	const cache = new VitePluginSvelteCache();
 	// updated in configResolved hook
-	let requestParser: IdParser;
-	let options: ResolvedOptions;
-	let viteConfig: ResolvedConfig;
+	/** @type {import('./utils/id.d').IdParser} */
+	let requestParser;
+	/** @type {import('./utils/options.d').ResolvedOptions} */
+	let options;
+	/** @type {import('vite').ResolvedConfig */
+	let viteConfig;
 	/* eslint-disable no-unused-vars */
-	let compileSvelte: CompileSvelte;
+	/** @type {import('./utils/compile.d').CompileSvelte} */
+	let compileSvelte;
 	/* eslint-enable no-unused-vars */
 
-	let resolvedSvelteSSR: Promise<PartialResolvedId | null>;
-	let packagesWithResolveWarnings: Set<string>;
-	const api: PluginAPI = {};
-	const plugins: Plugin[] = [
+	/** @type {Promise<import('rollup').PartialResolvedId | null>} */
+	let resolvedSvelteSSR;
+	/** @type {Set<string>} */
+	let packagesWithResolveWarnings;
+	/** @type {import('./plugin-api.d').PluginAPI} */
+	const api = {};
+	/** @type {import('vite').Plugin[]} */
+	const plugins = [
 		{
 			name: 'vite-plugin-svelte',
 			// make sure our resolver runs before vite internal resolver to resolve svelte field correctly
 			enforce: 'pre',
 			api,
-			async config(config, configEnv): Promise<Partial<UserConfig>> {
+			async config(config, configEnv) {
 				// setup logger
 				if (process.env.DEBUG) {
 					log.setLevel('debug');
@@ -89,7 +99,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 			},
 
 			async buildStart() {
-				packagesWithResolveWarnings = new Set<string>();
+				packagesWithResolveWarnings = new Set();
 				if (!options.prebundleSvelteLibraries) return;
 				const isSvelteMetadataChanged = await saveSvelteMetadata(viteConfig.cacheDir, options);
 				if (isSvelteMetadataChanged) {
@@ -229,7 +239,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				cache.update(compileData);
 				if (compileData.dependencies?.length && options.server) {
 					compileData.dependencies.forEach((d) => {
-						ensureWatchedFile(options.server!.watcher, d, options.root);
+						ensureWatchedFile(options.server.watcher, d, options.root);
 					});
 				}
 				log.debug(`transform returns compiled js for ${svelteRequest.filename}`);
@@ -243,7 +253,7 @@ export function svelte(inlineOptions?: Partial<Options>): Plugin[] {
 				};
 			},
 
-			handleHotUpdate(ctx: HmrContext): void | Promise<Array<ModuleNode> | void> {
+			handleHotUpdate(ctx) {
 				if (!options.hot || !options.emitCss) {
 					return;
 				}

@@ -20,7 +20,8 @@
   "scripts": {
     "dev": "pnpm build:ci --sourcemap --watch src",
     "build:ci": "rimraf dist && tsup-node src/index.ts --format esm",
-    "build": "pnpm build:ci --dts --sourcemap"
+    "build": "pnpm build:ci --dts --sourcemap",
+		"typecheck": "tsc --noEmit --allowJs --checkJs"
   },
   "engines": {
     "node": "^14.18.0 || >= 16"

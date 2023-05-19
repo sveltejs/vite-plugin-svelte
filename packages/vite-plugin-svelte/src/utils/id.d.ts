@@ -28,3 +28,5 @@ export interface SvelteRequest {
 	ssr: boolean;
 	raw: boolean;
 }
+
+export type IdParser = (id: string, ssr: boolean, timestamp?: number) => SvelteRequest | undefined;

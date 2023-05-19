@@ -1,5 +1,3 @@
-import { VitePluginSvelteStats as clazz } from './vite-plugin-svelte-stats';
-
 export interface Stat {
 	file: string;
 	pkg?: string;
@@ -32,5 +30,3 @@ export interface CollectionOptions {
 	//eslint-disable-next-line no-unused-vars
 	logResult: (collection: StatCollection) => boolean;
 }
-
-export type VitePluginSvelteStats = typeof clazz;

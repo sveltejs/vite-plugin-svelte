@@ -2,26 +2,31 @@ import { log } from './log';
 import { performance } from 'perf_hooks';
 import { normalizePath } from 'vite';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
-import {
-	CollectionOptions,
-	PackageStats,
-	Stat,
-	StatCollection
-} from './vite-plugin-svelte-stats.d';
 
-const defaultCollectionOptions: CollectionOptions = {
+/** @type {import('./vite-plugin-svelte-stats.d').CollectionOptions} */
+const defaultCollectionOptions = {
 	// log after 500ms and more than one file processed
 	logInProgress: (c, now) => now - c.collectionStart > 500 && c.stats.length > 1,
 	// always log results
 	logResult: () => true
 };
 
-function humanDuration(n: number) {
+/**
+ *
+ * @param {number} n
+ * @returns
+ */
+function humanDuration(n) {
 	// 99.9ms  0.10s
 	return n < 100 ? `${n.toFixed(1)}ms` : `${(n / 1000).toFixed(2)}s`;
 }
 
-function formatPackageStats(pkgStats: PackageStats[]) {
+/**
+ *
+ * @param {import('./vite-plugin-svelte-stats.d').PackageStats[]} pkgStats
+ * @returns {string}
+ */
+function formatPackageStats(pkgStats) {
 	const statLines = pkgStats.map((pkgStat) => {
 		const duration = pkgStat.duration;
 		const avg = duration / pkgStat.files;
@@ -29,7 +34,7 @@ function formatPackageStats(pkgStats: PackageStats[]) {
 	});
 	statLines.unshift(['package', 'files', 'time', 'avg']);
 	const columnWidths = statLines.reduce(
-		(widths: number[], row) => {
+		(widths, row) => {
 			for (let i = 0; i < row.length; i++) {
 				const cell = row[i];
 				if (widths[i] < cell.length) {
@@ -42,9 +47,9 @@ function formatPackageStats(pkgStats: PackageStats[]) {
 	);
 
 	const table = statLines
-		.map((row: string[]) =>
+		.map((row) =>
 			row
-				.map((cell: string, i: number) => {
+				.map((cell, i) => {
 					if (i === 0) {
 						return cell.padEnd(columnWidths[i], ' ');
 					} else {
@@ -57,23 +62,40 @@ function formatPackageStats(pkgStats: PackageStats[]) {
 	return table;
 }
 
+/**
+ * @class
+ */
 export class VitePluginSvelteStats {
 	// package directory -> package name
-	private _cache: VitePluginSvelteCache;
-	private _collections: StatCollection[] = [];
-	constructor(cache: VitePluginSvelteCache) {
-		this._cache = cache;
+	/** @type {import('./vite-plugin-svelte-cache.js').VitePluginSvelteCache} */
+	#cache;
+	/** @type {import('./vite-plugin-svelte-stats.d').StatCollection[]} */
+	#collections = [];
+	/**
+	 *
+	 * @param {import('./vite-plugin-svelte-cache.js').VitePluginSvelteCache} cache
+	 */
+	constructor(cache) {
+		this.#cache = cache;
 	}
-	startCollection(name: string, opts?: Partial<CollectionOptions>) {
+	/**
+	 *
+	 * @param {string} name
+	 * @param {Partial<import('./vite-plugin-svelte-stats.d').CollectionOptions>=} opts
+	 * @returns {import('./vite-plugin-svelte-stats.d').StatCollection}
+	 */
+	startCollection(name, opts) {
 		const options = {
 			...defaultCollectionOptions,
 			...opts
 		};
-		const stats: Stat[] = [];
+		/** @type {import('./vite-plugin-svelte-stats.d').Stat[]} */
+		const stats = [];
 		const collectionStart = performance.now();
 		const _this = this;
 		let hasLoggedProgress = false;
-		const collection: StatCollection = {
+		/** @type {import('./vite-plugin-svelte-stats.d').StatCollection} */
+		const collection = {
 			name,
 			options,
 			stats,
@@ -85,7 +107,8 @@ export class VitePluginSvelteStats {
 				}
 				file = normalizePath(file);
 				const start = performance.now();
-				const stat: Stat = { file, start, end: start };
+				/** @type {import('./vite-plugin-svelte-stats.d').Stat} */
+				const stat = { file, start, end: start };
 				return () => {
 					const now = performance.now();
 					stat.end = now;
@@ -97,34 +120,40 @@ export class VitePluginSvelteStats {
 				};
 			},
 			async finish() {
-				await _this._finish(collection);
+				await _this.#finish(collection);
 			}
 		};
-		_this._collections.push(collection);
+		_this.#collections.push(collection);
 		return collection;
 	}
 
-	public async finishAll() {
-		await Promise.all(this._collections.map((c) => c.finish()));
+	async finishAll() {
+		await Promise.all(this.#collections.map((c) => c.finish()));
 	}
 
-	private async _finish(collection: StatCollection) {
+	/**
+	 *
+	 * @param {import('./vite-plugin-svelte-stats.d').StatCollection} collection
+	 */
+	async #finish(collection) {
 		try {
 			collection.finished = true;
 			const now = performance.now();
 			collection.duration = now - collection.collectionStart;
 			const logResult = collection.options.logResult(collection);
 			if (logResult) {
-				await this._aggregateStatsResult(collection);
+				await this.#aggregateStatsResult(collection);
 				log.debug(
-					`${collection.name} done.\n${formatPackageStats(collection.packageStats!)}`,
+					`${collection.name} done.\n${formatPackageStats(
+						/** @type {import('./vite-plugin-svelte-stats.d').PackageStats[]}*/ collection.packageStats
+					)}`,
 					undefined,
 					'stats'
 				);
 			}
 			// cut some ties to free it for garbage collection
-			const index = this._collections.indexOf(collection);
-			this._collections.splice(index, 1);
+			const index = this.#collections.indexOf(collection);
+			this.#collections.splice(index, 1);
 			collection.stats.length = 0;
 			collection.stats = [];
 			if (collection.packageStats) {
@@ -139,16 +168,21 @@ export class VitePluginSvelteStats {
 		}
 	}
 
-	private async _aggregateStatsResult(collection: StatCollection) {
+	/**
+	 *
+	 * @param {import('./vite-plugin-svelte-stats.d').StatCollection} collection
+	 */
+	async #aggregateStatsResult(collection) {
 		const stats = collection.stats;
 		for (const stat of stats) {
-			stat.pkg = (await this._cache.getPackageInfo(stat.file)).name;
+			stat.pkg = (await this.#cache.getPackageInfo(stat.file)).name;
 		}
 
 		// group stats
-		const grouped: { [key: string]: PackageStats } = {};
+		/** @type {Record<string,import('./vite-plugin-svelte-stats.d').PackageStats>} */
+		const grouped = {};
 		stats.forEach((stat) => {
-			const pkg = stat.pkg!;
+			const pkg = /** @type {string} */ stat.pkg;
 			let group = grouped[pkg];
 			if (!group) {
 				group = grouped[pkg] = {

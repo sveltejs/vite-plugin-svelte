@@ -1,10 +1,14 @@
 import type { Warning } from './options.d';
 
-export interface LogFn {
+export interface LogFn extends SimpleLogFn {
 	(message: string, payload?: any, namespace?: string): void;
 
 	enabled: boolean;
-	once: (message: string, payload?: any, namespace?: string) => void;
+	once: SimpleLogFn;
+}
+
+export interface SimpleLogFn {
+	(message: string, payload?: any, namespace?: string): void;
 }
 
 export type SvelteWarningsMessage = {
@@ -16,3 +20,5 @@ export type SvelteWarningsMessage = {
 	allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite plugin svelte warnings
 	rawWarnings: Warning[]; // raw compiler output
 };
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';

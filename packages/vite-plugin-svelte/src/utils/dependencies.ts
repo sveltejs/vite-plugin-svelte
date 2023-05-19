@@ -2,12 +2,14 @@ import path from 'path';
 import fs from 'fs/promises';
 // eslint-disable-next-line node/no-missing-import
 import { findDepPkgJsonPath } from 'vitefu';
-import type { DependencyData } from './dependencies.d';
 
-export async function resolveDependencyData(
-	dep: string,
-	parent: string
-): Promise<DependencyData | undefined> {
+/**
+ *
+ * @param {string} dep
+ * @param {string} parent
+ * @returns {Promise<import('./dependencies.d').DependencyData|undefined>}
+ */
+export async function resolveDependencyData(dep, parent) {
 	const depDataPath = await findDepPkgJsonPath(dep, parent);
 	if (!depDataPath) return undefined;
 	try {
@@ -65,10 +67,10 @@ const COMMON_PREFIXES_WITHOUT_SVELTE_FIELD = [
  *
  * This speeds up the find process as we don't have to try and require the package.json for all of them
  *
- * @param dependency {string}
+ * @param {string} dependency
  * @returns {boolean} true if it is a dependency without a svelte field
  */
-export function isCommonDepWithoutSvelteField(dependency: string): boolean {
+export function isCommonDepWithoutSvelteField(dependency) {
 	return (
 		COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD.includes(dependency) ||
 		COMMON_PREFIXES_WITHOUT_SVELTE_FIELD.some(

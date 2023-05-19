@@ -1,17 +1,16 @@
 import fs from 'fs';
 import { toRollupError } from './error';
 import { log } from './log';
-import type { SvelteRequest } from './id';
-import type { CompileData, CompileSvelte } from './compile.d';
-import type { ResolvedOptions } from './options.d';
+
 /**
  * utility function to compile ?raw and ?direct requests in load hook
+ *
+ * @param {import('./id.d').SvelteRequest} svelteRequest
+ * @param {import('./compile.d').CompileSvelte} compileSvelte
+ * @param {import('./options.d').ResolvedOptions} options
+ * @returns {Promise<string>}
  */
-export async function loadRaw(
-	svelteRequest: SvelteRequest,
-	compileSvelte: CompileSvelte,
-	options: ResolvedOptions
-) {
+export async function loadRaw(svelteRequest, compileSvelte, options) {
 	const { id, filename, query } = svelteRequest;
 
 	// raw svelte subrequest, compile on the fly and return requested subpart
@@ -87,12 +86,13 @@ export async function loadRaw(
 /**
  * turn compileData and source into a flat list of raw exports
  *
- * @param compileData
- * @param source
+ * @param {import('./compile.d').CompileData} compileData
+ * @param {string} source
  */
-function allToRawExports(compileData: CompileData, source: string) {
+function allToRawExports(compileData, source) {
 	// flatten CompileData
-	const exports: Partial<CompileData & { source: string }> = {
+	/** @type {Partial<import('./compile.d').CompileData & { source: string }>} */
+	const exports = {
 		...compileData,
 		...compileData.compiled,
 		source
@@ -114,9 +114,10 @@ function allToRawExports(compileData: CompileData, source: string) {
  *  export const foo='bar'
  *  export default code
  *  ```
- * @param object
+ * @param {object} object
+ * @returns {string}
  */
-function toRawExports(object: object) {
+function toRawExports(object) {
 	let exports =
 		Object.entries(object)
 			//eslint-disable-next-line no-unused-vars
