@@ -1,14 +1,16 @@
 import path from 'path';
 import { builtinModules } from 'module';
 import { resolveDependencyData, isCommonDepWithoutSvelteField } from './dependencies';
-import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 import { normalizePath } from 'vite';
 
-export async function resolveViaPackageJsonSvelte(
-	importee: string,
-	importer: string | undefined,
-	cache: VitePluginSvelteCache
-): Promise<string | void> {
+/**
+ *
+ * @param {string} importee
+ * @param {string|undefined} importer
+ * @param {import('./vite-plugin-svelte-cache').VitePluginSvelteCache} cache
+ * @returns {Promise<string|void>}
+ */
+export async function resolveViaPackageJsonSvelte(importee, importer, cache) {
 	if (
 		importer &&
 		isBareImport(importee) &&
@@ -31,11 +33,21 @@ export async function resolveViaPackageJsonSvelte(
 	}
 }
 
-function isNodeInternal(importee: string) {
+/**
+ *
+ * @param {string} importee
+ * @returns {boolean}
+ */
+function isNodeInternal(importee) {
 	return importee.startsWith('node:') || builtinModules.includes(importee);
 }
 
-function isBareImport(importee: string): boolean {
+/**
+ *
+ * @param {string} importee
+ * @returns {boolean}
+ */
+function isBareImport(importee) {
 	if (
 		!importee ||
 		importee[0] === '.' ||

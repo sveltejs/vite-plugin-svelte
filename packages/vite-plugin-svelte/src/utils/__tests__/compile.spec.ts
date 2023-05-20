@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createCompileSvelte } from '../compile';
-const options: ResolvedOptions = {
+/** @type {import('../options.d').ResolvedOptions} */
+const options = {
 	compilerOptions: {
 		dev: false,
 		format: 'esm',

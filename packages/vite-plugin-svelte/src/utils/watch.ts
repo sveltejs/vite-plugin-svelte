@@ -1,24 +1,24 @@
-import { VitePluginSvelteCache } from './vite-plugin-svelte-cache';
 import fs from 'fs';
 import { log } from './log';
-import { IdParser } from './id';
 import { knownSvelteConfigNames } from './load-svelte-config';
 import path from 'path';
-import { FSWatcher } from 'vite';
-import type { ResolvedOptions } from './options.d';
-export function setupWatchers(
-	options: ResolvedOptions,
-	cache: VitePluginSvelteCache,
-	requestParser: IdParser
-) {
+
+/**
+ *
+ * @param {import('./options.d').ResolvedOptions} options
+ * @param {import('./vite-plugin-svelte-cache').VitePluginSvelteCache} cache
+ * @param {import('./id.d').IdParser} requestParser
+ * @returns
+ */
+export function setupWatchers(options, cache, requestParser) {
 	const { server, configFile: svelteConfigFile } = options;
 	if (!server) {
 		return;
 	}
 	const { watcher, ws } = server;
 	const { root, server: serverConfig } = server.config;
-
-	const emitChangeEventOnDependants = (filename: string) => {
+	/**@type {(filename: string)=>void} */
+	const emitChangeEventOnDependants = (filename) => {
 		const dependants = cache.getDependants(filename);
 		dependants.forEach((dependant) => {
 			if (fs.existsSync(dependant)) {
@@ -29,8 +29,8 @@ export function setupWatchers(
 			}
 		});
 	};
-
-	const removeUnlinkedFromCache = (filename: string) => {
+	/**@type {(filename: string)=>void} */
+	const removeUnlinkedFromCache = (filename) => {
 		const svelteRequest = requestParser(filename, false);
 		if (svelteRequest) {
 			const removedFromCache = cache.remove(svelteRequest);
@@ -39,8 +39,8 @@ export function setupWatchers(
 			}
 		}
 	};
-
-	const triggerViteRestart = (filename: string) => {
+	/**@type {(filename: string)=>void} */
+	const triggerViteRestart = (filename) => {
 		if (serverConfig.middlewareMode) {
 			// in middlewareMode we can't restart the server automatically
 			// show the user an overlay instead
@@ -58,8 +58,9 @@ export function setupWatchers(
 	};
 
 	// collection of watcher listeners by event
+	/** @type {Record<string,Function[]>} */
 	const listenerCollection = {
-		add: [] as Array<Function>,
+		add: [],
 		change: [emitChangeEventOnDependants],
 		unlink: [removeUnlinkedFromCache, emitChangeEventOnDependants]
 	};
@@ -67,13 +68,15 @@ export function setupWatchers(
 	if (svelteConfigFile !== false) {
 		// configFile false means we ignore the file and external process is responsible
 		const possibleSvelteConfigs = knownSvelteConfigNames.map((cfg) => path.join(root, cfg));
-		const restartOnConfigAdd = (filename: string) => {
+		/**@type {(filename: string)=>void} */
+		const restartOnConfigAdd = (filename) => {
 			if (possibleSvelteConfigs.includes(filename)) {
 				triggerViteRestart(filename);
 			}
 		};
 
-		const restartOnConfigChange = (filename: string) => {
+		/**@type {(filename: string)=>void} */
+		const restartOnConfigChange = (filename) => {
 			if (filename === svelteConfigFile) {
 				triggerViteRestart(filename);
 			}
@@ -93,8 +96,15 @@ export function setupWatchers(
 		}
 	});
 }
-// taken from vite utils
-export function ensureWatchedFile(watcher: FSWatcher, file: string | null, root: string): void {
+
+/**
+ * taken from vite utils
+ * @param {import('vite').FSWatcher} watcher
+ * @param {string | null} file
+ * @param {string} root
+ * @returns void
+ */
+export function ensureWatchedFile(watcher, file, root) {
 	if (
 		file &&
 		// only need to watch if out of root
