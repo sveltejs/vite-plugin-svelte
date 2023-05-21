@@ -1,44 +1,37 @@
 import fs from 'fs';
 import { VERSION as svelteVersion } from 'svelte/compiler';
-import {
-	HmrContext,
-	ModuleNode,
-	Plugin,
-	ResolvedConfig,
-	UserConfig,
-	version as viteVersion
-} from 'vite';
+import { version as viteVersion } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 // eslint-disable-next-line node/no-missing-import
 import { isDepExcluded } from 'vitefu';
-import { handleHotUpdate } from './handle-hot-update';
-import { log, logCompilerWarnings } from './utils/log';
-import { createCompileSvelte } from './utils/compile';
-import { buildIdParser, IdParser } from './utils/id';
+import { handleHotUpdate } from './handle-hot-update.js';
+import { log, logCompilerWarnings } from './utils/log.js';
+import { createCompileSvelte } from './utils/compile.js';
+import { buildIdParser } from './utils/id.js';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
 	resolveOptions,
 	patchResolvedViteConfig,
 	preResolveOptions
-} from './utils/options';
+} from './utils/options.js';
 
-import { ensureWatchedFile, setupWatchers } from './utils/watch';
-import { resolveViaPackageJsonSvelte } from './utils/resolve';
+import { ensureWatchedFile, setupWatchers } from './utils/watch.js';
+import { resolveViaPackageJsonSvelte } from './utils/resolve.js';
 
-import { toRollupError } from './utils/error';
-import { saveSvelteMetadata } from './utils/optimizer';
-import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
-import { loadRaw } from './utils/load-raw';
-import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants';
+import { toRollupError } from './utils/error.js';
+import { saveSvelteMetadata } from './utils/optimizer.js';
+import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
+import { loadRaw } from './utils/load-raw.js';
+import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants.js';
 
 const isVite4_0 = viteVersion.startsWith('4.0');
 const isSvelte3 = svelteVersion.startsWith('3');
 
 /**
  *
- * @param {Partial<import('./utils/options.d'>).Options=} inlineOptions
+ * @param {Partial<import('./utils/options-types.d').Options>=} inlineOptions
  * @returns {import('vite').Plugin[]}
  */
 export function svelte(inlineOptions) {
@@ -48,14 +41,14 @@ export function svelte(inlineOptions) {
 	validateInlineOptions(inlineOptions);
 	const cache = new VitePluginSvelteCache();
 	// updated in configResolved hook
-	/** @type {import('./utils/id.d').IdParser} */
+	/** @type {import('./utils/id-types.d').IdParser} */
 	let requestParser;
-	/** @type {import('./utils/options.d').ResolvedOptions} */
+	/** @type {import('./utils/options-types.d').ResolvedOptions} */
 	let options;
-	/** @type {import('vite').ResolvedConfig */
+	/** @type {import('vite').ResolvedConfig} */
 	let viteConfig;
 	/* eslint-disable no-unused-vars */
-	/** @type {import('./utils/compile.d').CompileSvelte} */
+	/** @type {import('./utils/compile-types.d').CompileSvelte} */
 	let compileSvelte;
 	/* eslint-enable no-unused-vars */
 
@@ -63,7 +56,7 @@ export function svelte(inlineOptions) {
 	let resolvedSvelteSSR;
 	/** @type {Set<string>} */
 	let packagesWithResolveWarnings;
-	/** @type {import('./plugin-api.d').PluginAPI} */
+	/** @type {import('./plugin-api-types.d').PluginAPI} */
 	const api = {};
 	/** @type {import('vite').Plugin[]} */
 	const plugins = [
@@ -239,7 +232,11 @@ export function svelte(inlineOptions) {
 				cache.update(compileData);
 				if (compileData.dependencies?.length && options.server) {
 					compileData.dependencies.forEach((d) => {
-						ensureWatchedFile(options.server.watcher, d, options.root);
+						ensureWatchedFile(
+							/** @type {import('vite').ViteDevServer} */ (options.server).watcher,
+							d,
+							options.root
+						);
 					});
 				}
 				log.debug(`transform returns compiled js for ${svelteRequest.filename}`);
@@ -281,5 +278,5 @@ export function svelte(inlineOptions) {
 	return plugins;
 }
 
-export { vitePreprocess } from './preprocess';
-export { loadSvelteConfig } from './utils/load-svelte-config';
+export { vitePreprocess } from './preprocess.js';
+export { loadSvelteConfig } from './utils/load-svelte-config.js';

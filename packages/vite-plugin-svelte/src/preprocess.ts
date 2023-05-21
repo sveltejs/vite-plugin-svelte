@@ -1,5 +1,5 @@
 import { preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
-import { mapToRelative, removeLangSuffix } from './utils/sourcemaps';
+import { mapToRelative, removeLangSuffix } from './utils/sourcemaps.js';
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
@@ -8,7 +8,7 @@ export const lang_sep = '.vite-preprocess.';
 
 /**
  *
- * @param {import('./preprocess.d').VitePreprocessOptions=} opts
+ * @param {import('./preprocess-types.d').VitePreprocessOptions=} opts
  * @returns {import('svelte/types/compiler/preprocess').PreprocessorGroup}
  */
 export function vitePreprocess(opts) {
@@ -31,10 +31,10 @@ export function vitePreprocess(opts) {
 function viteScript() {
 	return {
 		async script({ attributes, content, filename = '' }) {
-			const lang = /** @type {string} */ attributes.lang;
+			const lang = /** @type {string} */ (attributes.lang);
 			if (!supportedScriptLangs.includes(lang)) return;
 			const { code, map } = await transformWithEsbuild(content, filename, {
-				loader: /** @type {import('vite').ESBuildOptions['loader']} */ lang,
+				loader: /** @type {import('vite').ESBuildOptions['loader']} */ (lang),
 				target: 'esnext',
 				tsconfigRaw: {
 					compilerOptions: {
@@ -60,11 +60,11 @@ function viteScript() {
  * @returns {{style:import('svelte/types/compiler/preprocess').Preprocessor}}
  */
 function viteStyle(config = {}) {
-	/** @type import('./preprocess.d').CssTransform */
+	/** @type import('./preprocess-types.d').CssTransform */
 	let transform;
 	/** @type import('svelte/types/compiler/preprocess').Preprocessor */
 	const style = async ({ attributes, content, filename = '' }) => {
-		const lang = /** @type {string} */ attributes.lang;
+		const lang = /** @type {string} */ (attributes.lang);
 		if (!supportedStyleLangs.includes(lang)) return;
 		if (!transform) {
 			/** @type {import('vite').ResolvedConfig} */
@@ -102,7 +102,7 @@ function viteStyle(config = {}) {
 
 /**
  * @param {import('vite').ResolvedConfig} config
- * @returns {import('./preprocess.d').CssTransform}
+ * @returns {import('./preprocess-types.d').CssTransform}
  */
 function getCssTransformFn(config) {
 	return async (code, filename) => {

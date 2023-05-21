@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { vitePreprocess } from '../preprocess';
+import { vitePreprocess } from '../preprocess.js';
 import path from 'path';
 import { normalizePath } from 'vite';
 import { fileURLToPath } from 'url';
@@ -18,7 +18,11 @@ describe('vitePreprocess', () => {
 
 	describe('style', async () => {
 		it('produces sourcemap with relative filename', async () => {
-			const { style } = vitePreprocess({ style: { css: { devSourcemap: true } } });
+			const preprocessorGroup = vitePreprocess({ style: { css: { devSourcemap: true } } });
+			const style = /**@type {import('svelte/types/compiler/preprocess').Preprocessor} */ (
+				preprocessorGroup.style
+			);
+			expect(style).toBeDefined();
 			const scss = `
 			  @import './foo';
 				.foo {

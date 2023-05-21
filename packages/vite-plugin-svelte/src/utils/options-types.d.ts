@@ -1,7 +1,7 @@
 // eslint-disable-next-line node/no-missing-import
 import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
 import type { ViteDevServer } from 'vite';
-import { VitePluginSvelteStats } from './vite-plugin-svelte-stats';
+import { VitePluginSvelteStats } from './vite-plugin-svelte-stats.js';
 // eslint-disable-next-line node/no-missing-import
 import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess';
 // eslint-disable-next-line node/no-missing-import

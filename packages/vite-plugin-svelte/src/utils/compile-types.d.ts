@@ -1,7 +1,7 @@
 // eslint-disable-next-line node/no-missing-import
 import type { Processed } from 'svelte/types/compiler/preprocess';
-import type { SvelteRequest } from './id.d';
-import type { ResolvedOptions } from './options.d';
+import type { SvelteRequest } from './id-types.d';
+import type { ResolvedOptions } from './options-types.d';
 export type CompileSvelte = (
 	svelteRequest: SvelteRequest,
 	code: string,

@@ -1,6 +1,6 @@
 import path from 'path';
 import { builtinModules } from 'module';
-import { resolveDependencyData, isCommonDepWithoutSvelteField } from './dependencies';
+import { resolveDependencyData, isCommonDepWithoutSvelteField } from './dependencies.js';
 import { normalizePath } from 'vite';
 
 /**

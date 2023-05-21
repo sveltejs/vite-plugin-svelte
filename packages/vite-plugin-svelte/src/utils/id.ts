@@ -2,7 +2,7 @@
 import { createFilter, normalizePath } from 'vite';
 import * as fs from 'fs';
 
-import { log } from './log';
+import { log } from './log.js';
 
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
@@ -38,7 +38,7 @@ function splitId(id) {
  * @param {string} root
  * @param {number} timestamp
  * @param {boolean} ssr
- * @returns {import('./id').SvelteRequest | undefined}
+ * @returns {import('./id-types.d').SvelteRequest | undefined}
  */
 function parseToSvelteRequest(id, filename, rawQuery, root, timestamp, ssr) {
 	const query = parseRequestQuery(rawQuery);
@@ -67,7 +67,7 @@ function parseToSvelteRequest(id, filename, rawQuery, root, timestamp, ssr) {
  *
  * @param {string} filename
  * @param {string} root
- * @param {import('./id.d').SvelteQueryTypes} type
+ * @param {import('./id-types.d').SvelteQueryTypes} type
  * @returns {string}
  */
 function createVirtualImportId(filename, root, type) {
@@ -89,7 +89,7 @@ function createVirtualImportId(filename, root, type) {
 /**
  *
  * @param {string} rawQuery
- * @returns {import('./id.d').RequestQuery}
+ * @returns {import('./id-types.d').RequestQuery}
  */
 function parseRequestQuery(rawQuery) {
 	const query = Object.fromEntries(new URLSearchParams(rawQuery));
@@ -127,7 +127,7 @@ function parseRequestQuery(rawQuery) {
 		}
 	}
 
-	return /** @type {import('./id.d').RequestQuery}*/ query;
+	return /** @type {import('./id-types.d').RequestQuery}*/ query;
 }
 
 /**
@@ -168,8 +168,8 @@ function stripRoot(normalizedFilename, normalizedRoot) {
 
 /**
  *
- * @param {import('./options.d').Arrayable<string> | undefined} include
- * @param {import('./options.d').Arrayable<string> | undefined} exclude
+ * @param {import('./options-types.d').Arrayable<string> | undefined} include
+ * @param {import('./options-types.d').Arrayable<string> | undefined} exclude
  * @param {string[]} extensions
  * @returns {(filename:string)=>boolean}
  */
@@ -180,13 +180,13 @@ function buildFilter(include, exclude, extensions) {
 
 /**
  *
- * @param {import('./options.d').ResolvedOptions} options
- * @returns {import('./id.d').IdParser}
+ * @param {import('./options-types.d').ResolvedOptions} options
+ * @returns {import('./id-types.d').IdParser}
  */
 export function buildIdParser(options) {
 	const { include, exclude, extensions, root } = options;
 	const normalizedRoot = normalizePath(root);
-	const filter = buildFilter(include, exclude, /**@type {string[]} */ extensions);
+	const filter = buildFilter(include, exclude, /**@type {string[]} */ (extensions));
 	return (id, ssr, timestamp = Date.now()) => {
 		const { filename, rawQuery } = splitId(id);
 		if (filter(filename)) {

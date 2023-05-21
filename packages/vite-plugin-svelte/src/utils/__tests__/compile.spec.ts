@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { createCompileSvelte } from '../compile';
-/** @type {import('../options.d').ResolvedOptions} */
+import { createCompileSvelte } from '../compile.js';
+/** @type {import('../options-types.d').ResolvedOptions} */
 const options = {
 	compilerOptions: {
 		dev: false,
@@ -32,7 +32,7 @@ describe('createCompileSvelte', () => {
 			const output = await compileSvelte(
 				{
 					cssId: 'svelte-xxxxx',
-					query: undefined,
+					query: {},
 					raw: false,
 					ssr: false,
 					timestamp: Date.now(),

@@ -1,5 +1,5 @@
 import MagicString from 'magic-string';
-import { log } from './log';
+import { log } from './log.js';
 import path from 'path';
 
 /**
@@ -8,7 +8,7 @@ import path from 'path';
  *
  * only used during dev with enabled css hmr
  *
- * @returns {import('./options.d').PreprocessorGroup}
+ * @returns {import('./options-types.d').PreprocessorGroup}
  */
 export function createInjectScopeEverythingRulePreprocessorGroup() {
 	return {
@@ -28,14 +28,14 @@ export function createInjectScopeEverythingRulePreprocessorGroup() {
 
 /**
  *
- * @param {import('./options').ResolvedOptions} options
+ * @param {import('./options-types.d').ResolvedOptions} options
  * @param {import('vite').ResolvedConfig} config
- * @returns {{ prependPreprocessors:import('./options.d').PreprocessorGroup[], appendPreprocessors:import('./options.d').PreprocessorGroup[] }}
+ * @returns {{ prependPreprocessors:import('./options-types.d').PreprocessorGroup[], appendPreprocessors:import('./options-types.d').PreprocessorGroup[] }}
  */
 function buildExtraPreprocessors(options, config) {
-	/** @type {import('./options.d').PreprocessorGroup[]} */
+	/** @type {import('./options-types.d').PreprocessorGroup[]} */
 	const prependPreprocessors = [];
-	/** @type {import('./options.d').PreprocessorGroup[]} */
+	/** @type {import('./options-types.d').PreprocessorGroup[]} */
 	const appendPreprocessors = [];
 
 	// @ts-ignore
@@ -99,7 +99,7 @@ function buildExtraPreprocessors(options, config) {
 
 /**
  *
- * @param {import('./options.d').ResolvedOptions} options
+ * @param {import('./options-types.d').ResolvedOptions} options
  * @param {import('vite').ResolvedConfig} config
  */
 export function addExtraPreprocessors(options, config) {

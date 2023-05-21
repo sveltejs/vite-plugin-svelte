@@ -1,14 +1,14 @@
-import { log, logCompilerWarnings } from './utils/log';
-import { toRollupError } from './utils/error';
+import { log, logCompilerWarnings } from './utils/log.js';
+import { toRollupError } from './utils/error.js';
 
 /**
  * Vite-specific HMR handling
  *
  * @param {Function} compileSvelte
  * @param {import('vite').HmrContext} ctx
- * @param {import('./utils/id.d').SvelteRequest} svelteRequest
+ * @param {import('./utils/id-types.d').SvelteRequest} svelteRequest
  * @param {import('./utils/vite-plugin-svelte-cache').VitePluginSvelteCache} cache
- * @param options {import('./utils/options.d').ResolvedOptions}
+ * @param options {import('./utils/options-types.d').ResolvedOptions}
  * @returns {Promise<import('vite').ModuleNode[] | void>}
  */
 export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options) {
@@ -23,7 +23,7 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 	const cachedCss = cache.getCSS(svelteRequest);
 
 	const content = await read();
-	/** @type {import('./utils/compile.d').CompileData} */
+	/** @type {import('./utils/compile-types.d').CompileData} */
 	let compileData;
 	try {
 		compileData = await compileSvelte(svelteRequest, content, options);
@@ -71,8 +71,8 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 }
 
 /**
- * @param {import('./utils/compile.d').Code=} prev
- * @param {import('./utils/compile.d').Code=} next
+ * @param {import('./utils/compile-types.d').Code=} prev
+ * @param {import('./utils/compile-types.d').Code=} next
  * @returns {boolean}
  */
 function cssChanged(prev, next) {
@@ -80,8 +80,8 @@ function cssChanged(prev, next) {
 }
 
 /**
- * @param {import('./utils/compile.d').Code=} prev
- * @param {import('./utils/compile.d').Code=} next
+ * @param {import('./utils/compile-types.d').Code=} prev
+ * @param {import('./utils/compile-types.d').Code=} next
  * @param {string=} filename
  * @returns {boolean}
  */

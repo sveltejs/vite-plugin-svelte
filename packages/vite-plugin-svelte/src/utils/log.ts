@@ -2,10 +2,10 @@
 import { cyan, red, yellow } from 'kleur/colors';
 import debug from 'debug';
 
-/** @type {import('./log.d').LogLevel[]} */
+/** @type {import('./log-types.d').LogLevel[]} */
 const levels = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
-/** @type {Record<import('./log.d').LogLevel,any>} */
+/** @type {Record<import('./log-types.d').LogLevel,any>} */
 const loggers = {
 	debug: {
 		log: debug(`vite:${prefix}`),
@@ -32,11 +32,11 @@ const loggers = {
 	}
 };
 
-/** @type {import('./log.d').LogLevel} */
+/** @type {import('./log-types.d').LogLevel} */
 let _level = 'info';
 /**
  *
- * @param {import('./log.d').LogLevel} level
+ * @param {import('./log-types.d').LogLevel} level
  * @returns {void}
  */
 function setLevel(level) {
@@ -85,15 +85,15 @@ function _log(logger, message, payload, namespace) {
 
 /**
  *
- * @param {import('./log.d').LogLevel} level
- * @returns {import('./log.d').LogFn}
+ * @param {import('./log-types.d').LogLevel} level
+ * @returns {import('./log-types.d').LogFn}
  */
 function createLogger(level) {
 	const logger = loggers[level];
-	const logFn = /** @type {import('./log.d').LogFn}*/ _log.bind(null, logger);
+	const logFn = /** @type {import('./log-types.d').LogFn}*/ _log.bind(null, logger);
 	/**@type {Set<string>} */
 	const logged = new Set();
-	/**@type {import('./log.d').SimpleLogFn} */
+	/**@type {import('./log-types.d').SimpleLogFn} */
 	const once = function (message, payload, namespace) {
 		if (!logger.enabled || logged.has(message)) {
 			return;
@@ -111,7 +111,7 @@ function createLogger(level) {
 			return once;
 		}
 	});
-	return /** @type {import('./log.d').LogFn}*/ logFn;
+	return /** @type {import('./log-types.d').LogFn}*/ (logFn);
 }
 
 export const log = {
@@ -124,22 +124,22 @@ export const log = {
 
 /**
  *
- * @param {import('./id.d').SvelteRequest} svelteRequest
- * @param {import('./options.d').Warning[]} warnings
- * @param {import('./options.d').ResolvedOptions} options
+ * @param {import('./id-types.d').SvelteRequest} svelteRequest
+ * @param {import('./options-types.d').Warning[]} warnings
+ * @param {import('./options-types.d').ResolvedOptions} options
  */
 export function logCompilerWarnings(svelteRequest, warnings, options) {
 	const { emitCss, onwarn, isBuild } = options;
 	const sendViaWS = !isBuild && options.experimental?.sendWarningsToBrowser;
 	let warn = isBuild ? warnBuild : warnDev;
-	/** @type {import('./options.d').Warning[]} */
+	/** @type {import('./options-types.d').Warning[]} */
 	const handledByDefaultWarn = [];
 	const notIgnored = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
 	const extra = buildExtraWarnings(warnings, isBuild);
 	const allWarnings = [...notIgnored, ...extra];
 	if (sendViaWS) {
 		const _warn = warn;
-		/** @type {(w:import('./options.d').Warning ) => void} */
+		/** @type {(w:import('./options-types.d').Warning ) => void} */
 		warn = (w) => {
 			handledByDefaultWarn.push(w);
 			_warn(w);
@@ -153,7 +153,7 @@ export function logCompilerWarnings(svelteRequest, warnings, options) {
 		}
 	});
 	if (sendViaWS) {
-		/** @type {import('./log.d').SvelteWarningsMessage} */
+		/** @type {import('./log-types.d').SvelteWarningsMessage} */
 		const message = {
 			id: svelteRequest.id,
 			filename: svelteRequest.filename,
@@ -170,7 +170,7 @@ export function logCompilerWarnings(svelteRequest, warnings, options) {
 
 /**
  *
- * @param {import('./options.d').Warning} warning
+ * @param {import('./options-types.d').Warning} warning
  * @param {boolean} isBuild
  * @param {boolean=} emitCss
  * @returns
@@ -184,7 +184,7 @@ function ignoreCompilerWarning(warning, isBuild, emitCss) {
 
 /**
  *
- * @param {import('./options.d').Warning} warning
+ * @param {import('./options-types.d').Warning} warning
  * @returns {boolean}
  */
 function isNoScopableElementWarning(warning) {
@@ -194,9 +194,9 @@ function isNoScopableElementWarning(warning) {
 
 /**
  *
- * @param {import('./options.d').Warning[]} warnings
+ * @param {import('./options-types.d').Warning[]} warnings
  * @param {boolean} isBuild
- * @returns {import('./options.d').Warning[]}
+ * @returns {import('./options-types.d').Warning[]}
  */
 function buildExtraWarnings(warnings, isBuild) {
 	const extraWarnings = [];
@@ -218,7 +218,7 @@ function buildExtraWarnings(warnings, isBuild) {
 
 /**
  *
- * @param {import('./options.d').Warning} w
+ * @param {import('./options-types.d').Warning} w
  */
 function warnDev(w) {
 	log.info.enabled && log.info(buildExtendedLogMessage(w));
@@ -226,7 +226,7 @@ function warnDev(w) {
 
 /**
  *
- * @param {import('./options.d').Warning} w
+ * @param {import('./options-types.d').Warning} w
  */
 function warnBuild(w) {
 	log.warn.enabled && log.warn(buildExtendedLogMessage(w), w.frame);
@@ -234,7 +234,7 @@ function warnBuild(w) {
 
 /**
  *
- * @param {import('./options.d').Warning} w
+ * @param {import('./options-types.d').Warning} w
  */
 export function buildExtendedLogMessage(w) {
 	const parts = [];

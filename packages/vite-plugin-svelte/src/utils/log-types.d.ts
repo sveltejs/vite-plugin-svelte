@@ -1,4 +1,4 @@
-import type { Warning } from './options.d';
+import type { Warning } from './options-types.d';
 
 export interface LogFn extends SimpleLogFn {
 	(message: string, payload?: any, namespace?: string): void;

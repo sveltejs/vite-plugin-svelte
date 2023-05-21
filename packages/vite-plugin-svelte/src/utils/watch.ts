@@ -1,13 +1,13 @@
 import fs from 'fs';
-import { log } from './log';
-import { knownSvelteConfigNames } from './load-svelte-config';
+import { log } from './log.js';
+import { knownSvelteConfigNames } from './load-svelte-config.js';
 import path from 'path';
 
 /**
  *
- * @param {import('./options.d').ResolvedOptions} options
+ * @param {import('./options-types.d').ResolvedOptions} options
  * @param {import('./vite-plugin-svelte-cache').VitePluginSvelteCache} cache
- * @param {import('./id.d').IdParser} requestParser
+ * @param {import('./id-types.d').IdParser} requestParser
  * @returns
  */
 export function setupWatchers(options, cache, requestParser) {

@@ -2,7 +2,7 @@ import { createRequire } from 'module';
 import path from 'path';
 import fs from 'fs';
 import { pathToFileURL } from 'url';
-import { log } from './log';
+import { log } from './log.js';
 
 // used to require cjs config in esm.
 // NOTE dynamic import() cjs technically works, but timestamp query cache bust
@@ -28,8 +28,8 @@ const dynamicImportDefault = new Function(
 /**
  *
  * @param {import('vite').UserConfig | undefined} viteConfig
- * @param {Partial<import('./options.d').Options>} inlineOptions
- * @returns {Promise<Partial<import('./options.d').SvelteOptions> | undefined>}
+ * @param {Partial<import('./options-types.d').Options>} inlineOptions
+ * @returns {Promise<Partial<import('./options-types.d').SvelteOptions> | undefined>}
  */
 export async function loadSvelteConfig(viteConfig, inlineOptions) {
 	if (inlineOptions?.configFile === false) {
@@ -92,7 +92,7 @@ export async function loadSvelteConfig(viteConfig, inlineOptions) {
 /**
  *
  * @param {import('vite').UserConfig | undefined} viteConfig
- * @param {Partial<import('./options.d').Options> | undefined} inlineOptions
+ * @param {Partial<import('./options-types.d').Options> | undefined} inlineOptions
  * @returns {string | undefined}
  */
 function findConfigToLoad(viteConfig, inlineOptions) {

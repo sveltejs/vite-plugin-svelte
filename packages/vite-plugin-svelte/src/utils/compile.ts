@@ -1,24 +1,24 @@
 import { compile, preprocess, walk } from 'svelte/compiler';
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr';
-import { safeBase64Hash } from './hash';
-import { log } from './log';
+import { safeBase64Hash } from './hash.js';
+import { log } from './log.js';
 //eslint-disable-next-line node/no-missing-import
-import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess';
-import { mapToRelative } from './sourcemaps';
+import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess.js';
+import { mapToRelative } from './sourcemaps.js';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
 /**
  *
  * @param {Function=} makeHot
- * @returns {import('./compile.d').CompileSvelte}
+ * @returns {import('./compile-types.d').CompileSvelte}
  */
 export const _createCompileSvelte = (makeHot) => {
-	/** @type {import('./vite-plugin-svelte-stats.d').StatCollection | undefined} */
+	/** @type {import('./vite-plugin-svelte-stats-types.d').StatCollection | undefined} */
 	let stats;
 	const devStylePreprocessor = createInjectScopeEverythingRulePreprocessorGroup();
-	/**@type {import('./compile.d').CompileSvelte} */
+	/**@type {import('./compile-types.d').CompileSvelte} */
 	return async function compileSvelte(svelteRequest, code, options) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
@@ -48,7 +48,7 @@ export const _createCompileSvelte = (makeHot) => {
 				// also they for hmr updates too
 			}
 		}
-		/** @type {import('./options.d').CompileOptions} */
+		/** @type {import('./options-types.d').CompileOptions} */
 		const compileOptions = {
 			...options.compilerOptions,
 			filename: normalizedFilename, // use normalized here to avoid bleeding absolute fs path
@@ -96,9 +96,9 @@ export const _createCompileSvelte = (makeHot) => {
 		}
 		if (raw && svelteRequest.query.type === 'preprocessed') {
 			// shortcut
-			return /**@type {import('./compile.d').CompileData} */ {
+			return /**@type {import('./compile-types.d').CompileData} */ ({
 				preprocessed: preprocessed ?? { code }
-			};
+			});
 		}
 		const finalCode = preprocessed ? preprocessed.code : code;
 		const dynamicCompileOptions = await options.experimental?.dynamicCompileOptions?.({
@@ -172,7 +172,7 @@ export const _createCompileSvelte = (makeHot) => {
 };
 /**
  *
- * @param {import('./options.d').ResolvedOptions} options
+ * @param {import('./options-types.d').ResolvedOptions} options
  * @returns {Function|undefined}
  */
 function buildMakeHot(options) {
@@ -186,14 +186,14 @@ function buildMakeHot(options) {
 			walk,
 			hotApi,
 			adapter,
-			hotOptions: { noOverlay: true, .../** @type {object} */ options.hot }
+			hotOptions: { noOverlay: true, .../** @type {object} */ (options.hot) }
 		});
 	}
 }
 /**
  *
- * @param {import('./options.d').ResolvedOptions} options
- * @returns {import('./compile.d').CompileSvelte}
+ * @param {import('./options-types.d').ResolvedOptions} options
+ * @returns {import('./compile-types.d').CompileSvelte}
  */
 export function createCompileSvelte(options) {
 	const makeHot = buildMakeHot(options);

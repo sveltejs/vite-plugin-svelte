@@ -1,13 +1,13 @@
 import fs from 'fs';
-import { toRollupError } from './error';
-import { log } from './log';
+import { toRollupError } from './error.js';
+import { log } from './log.js';
 
 /**
  * utility function to compile ?raw and ?direct requests in load hook
  *
- * @param {import('./id.d').SvelteRequest} svelteRequest
- * @param {import('./compile.d').CompileSvelte} compileSvelte
- * @param {import('./options.d').ResolvedOptions} options
+ * @param {import('./id-types.d').SvelteRequest} svelteRequest
+ * @param {import('./compile-types.d').CompileSvelte} compileSvelte
+ * @param {import('./options-types.d').ResolvedOptions} options
  * @returns {Promise<string>}
  */
 export async function loadRaw(svelteRequest, compileSvelte, options) {
@@ -86,12 +86,12 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 /**
  * turn compileData and source into a flat list of raw exports
  *
- * @param {import('./compile.d').CompileData} compileData
+ * @param {import('./compile-types.d').CompileData} compileData
  * @param {string} source
  */
 function allToRawExports(compileData, source) {
 	// flatten CompileData
-	/** @type {Partial<import('./compile.d').CompileData & { source: string }>} */
+	/** @type {Partial<import('./compile-types.d').CompileData & { source: string }>} */
 	const exports = {
 		...compileData,
 		...compileData.compiled,
