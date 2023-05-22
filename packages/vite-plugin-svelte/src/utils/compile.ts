@@ -157,7 +157,7 @@ const _createCompileSvelte = (makeHot: Function) => {
 			}
 		}
 
-		compiled.js.dependencies = dependencies;
+		(compiled.js as any).dependencies = dependencies;
 
 		return {
 			filename,
