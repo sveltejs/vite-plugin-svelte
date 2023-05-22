@@ -156,8 +156,6 @@ export const _createCompileSvelte = (makeHot) => {
 			}
 		}
 
-		compiled.js.dependencies = dependencies;
-
 		return {
 			filename,
 			normalizedFilename,

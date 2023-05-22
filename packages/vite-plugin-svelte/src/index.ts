@@ -230,14 +230,16 @@ export function svelte(inlineOptions) {
 				}
 				logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
 				cache.update(compileData);
-				if (compileData.dependencies?.length && options.server) {
-					compileData.dependencies.forEach((d) => {
-						ensureWatchedFile(
-							/** @type {import('vite').ViteDevServer} */ (options.server).watcher,
-							d,
-							options.root
-						);
-					});
+				if (compileData.dependencies?.length) {
+					if (options.server) {
+						for (const dep of compileData.dependencies) {
+							ensureWatchedFile(options.server.watcher, dep, options.root);
+						}
+					} else if (options.isBuild && viteConfig.build.watch) {
+						for (const dep of compileData.dependencies) {
+							this.addWatchFile(dep);
+						}
+					}
 				}
 				log.debug(`transform returns compiled js for ${svelteRequest.filename}`);
 				return {
