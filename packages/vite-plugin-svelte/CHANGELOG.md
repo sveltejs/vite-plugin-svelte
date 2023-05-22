@@ -1,5 +1,20 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.3.0
+
+### Minor Changes
+
+- Refactor Svelte inspector as a separate package ([#646](https://github.com/sveltejs/vite-plugin-svelte/pull/646))
+
+### Patch Changes
+
+- remove unused invalid property Code.dependencies on compiler ouput type ([#652](https://github.com/sveltejs/vite-plugin-svelte/pull/652))
+
+- fix(build): watch preprocessor dependencies during build --watch ([#653](https://github.com/sveltejs/vite-plugin-svelte/pull/653))
+
+- Updated dependencies [[`1dd6933`](https://github.com/sveltejs/vite-plugin-svelte/commit/1dd69334240cea76e7db57b5ef1d70ed7f02c8f4)]:
+  - @sveltejs/vite-plugin-svelte-inspector@1.0.1
+
 ## 2.2.0
 
 ### Minor Changes
