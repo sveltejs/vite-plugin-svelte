@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { removeLangSuffix, mapToRelative } from '../sourcemaps.js';
-import { lang_sep } from '../../preprocess.js';
+import { removeLangSuffix, mapToRelative } from '../src/utils/sourcemaps.js';
+import { lang_sep } from '../src/preprocess.js';
 import { normalizePath } from 'vite';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';

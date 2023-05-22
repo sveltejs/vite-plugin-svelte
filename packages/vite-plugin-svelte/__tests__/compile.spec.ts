@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createCompileSvelte } from '../compile.js';
+import { createCompileSvelte } from '../src/utils/compile.js';
 /** @type {import('../../types/options.d.ts').ResolvedOptions} */
 const options = {
 	compilerOptions: {

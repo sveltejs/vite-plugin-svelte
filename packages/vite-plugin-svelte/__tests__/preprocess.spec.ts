@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { vitePreprocess } from '../preprocess.js';
+import { vitePreprocess } from '../src/preprocess.js';
 import path from 'path';
 import { normalizePath } from 'vite';
 import { fileURLToPath } from 'url';
