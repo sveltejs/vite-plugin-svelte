@@ -1,11 +1,9 @@
-// eslint-disable-next-line node/no-missing-import
 import type { CompileOptions } from 'svelte/types/compiler/interfaces';
 import type { ViteDevServer } from 'vite';
 import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
-// eslint-disable-next-line node/no-missing-import
-import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
-import type {Options} from '../index.d';
 
+import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
+import type { Options } from '../index.d.ts';
 
 export interface PreResolvedOptions extends Options {
 	// these options are non-nullable after resolve
@@ -22,5 +20,3 @@ export interface ResolvedOptions extends PreResolvedOptions {
 	server?: ViteDevServer;
 	stats?: VitePluginSvelteStats;
 }
-
-

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { createFilter, normalizePath } from 'vite';
 import * as fs from 'fs';
 
@@ -186,7 +185,7 @@ function buildFilter(include, exclude, extensions) {
 export function buildIdParser(options) {
 	const { include, exclude, extensions, root } = options;
 	const normalizedRoot = normalizePath(root);
-	const filter = buildFilter(include, exclude, /**@type {string[]} */ (extensions));
+	const filter = buildFilter(include, exclude, /**@type {string[]} */ extensions);
 	return (id, ssr, timestamp = Date.now()) => {
 		const { filename, rawQuery } = splitId(id);
 		if (filter(filename)) {

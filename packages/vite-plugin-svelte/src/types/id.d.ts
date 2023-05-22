@@ -1,4 +1,3 @@
-//eslint-disable-next-line node/no-missing-import
 import type { CompileOptions } from 'svelte/types/compiler/interfaces';
 
 export type SvelteQueryTypes = 'style' | 'script' | 'preprocessed' | 'all';

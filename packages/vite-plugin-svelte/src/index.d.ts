@@ -1,9 +1,9 @@
 import { InlineConfig, ResolvedConfig, UserConfig, Plugin } from 'vite';
-// eslint-disable-next-line node/no-missing-import
+
 import { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
-// eslint-disable-next-line node/no-missing-import
+
 import { PreprocessorGroup } from 'svelte/types/compiler/preprocess';
-// eslint-disable-next-line node/no-missing-import
+
 import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 
 type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
@@ -179,14 +179,12 @@ interface VitePreprocessOptions {
 	style?: boolean | InlineConfig | ResolvedConfig;
 }
 
-
 declare function vitePreprocess(opts?: VitePreprocessOptions): PreprocessorGroup;
 
 declare function loadSvelteConfig(
 	viteConfig?: UserConfig,
 	inlineOptions?: Partial<Options>
 ): Promise<Partial<SvelteOptions> | undefined>;
-
 
 declare function svelte(inlineOptions?: Partial<Options>): Plugin[];
 
@@ -205,7 +203,6 @@ export {
 
 // reexported types
 
-// eslint-disable-next-line node/no-missing-import
 export { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
 
 export {
@@ -213,5 +210,4 @@ export {
 	Preprocessor,
 	PreprocessorGroup,
 	Processed
-	// eslint-disable-next-line node/no-missing-import
 } from 'svelte/types/compiler/preprocess';

@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs/promises';
-// eslint-disable-next-line node/no-missing-import
+
 import { findDepPkgJsonPath } from 'vitefu';
 
 /**

@@ -8,7 +8,7 @@ export interface Stat {
 export interface StatCollection {
 	name: string;
 	options: CollectionOptions;
-	//eslint-disable-next-line no-unused-vars
+
 	start: (file: string) => () => void;
 	stats: Stat[];
 	packageStats?: PackageStats[];
@@ -25,8 +25,7 @@ export interface PackageStats {
 }
 
 export interface CollectionOptions {
-	//eslint-disable-next-line no-unused-vars
 	logInProgress: (collection: StatCollection, now: number) => boolean;
-	//eslint-disable-next-line no-unused-vars
+
 	logResult: (collection: StatCollection) => boolean;
 }

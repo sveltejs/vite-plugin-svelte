@@ -20,7 +20,6 @@ import {
 	isDepExternaled,
 	isDepIncluded,
 	isDepNoExternaled
-	// eslint-disable-next-line node/no-missing-import
 } from 'vitefu';
 
 import { isCommonDepWithoutSvelteField } from './dependencies.js';
@@ -153,8 +152,11 @@ export async function preResolveOptions(inlineOptions, viteUserConfig, viteEnv) 
 		isDebug: process.env.DEBUG != null
 	};
 
-	const merged = /** @type {import('../types/options.d.ts').PreResolvedOptions}*/ (
-		mergeConfigs(defaultOptions, svelteConfig, inlineOptions, extraOptions)
+	const merged = /** @type {import('../types/options.d.ts').PreResolvedOptions}*/ mergeConfigs(
+		defaultOptions,
+		svelteConfig,
+		inlineOptions,
+		extraOptions
 	);
 	// configFile of svelteConfig contains the absolute path it was loaded from,
 	// prefer it over the possibly relative inline path
@@ -173,7 +175,7 @@ function mergeConfigs(...configs) {
 	/** @type {Partial<T>} */
 	let result = {};
 	for (const config of configs.filter((x) => x != null)) {
-		result = deepmerge(result, /**@type {Partial<T>} */ (config), {
+		result = deepmerge(result, /**@type {Partial<T>} */ config, {
 			// replace arrays
 			arrayMerge: (target, source) => source ?? target
 		});
@@ -209,8 +211,10 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 		root: viteConfig.root,
 		isProduction: viteConfig.isProduction
 	};
-	const merged = /** @type {import('../types/options.d.ts').ResolvedOptions}*/ (
-		mergeConfigs(defaultOptions, preResolveOptions, extraOptions)
+	const merged = /** @type {import('../types/options.d.ts').ResolvedOptions}*/ mergeConfigs(
+		defaultOptions,
+		preResolveOptions,
+		extraOptions
 	);
 
 	removeIgnoredOptions(merged);
@@ -315,7 +319,7 @@ function removeIgnoredOptions(options) {
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  */
 function handleDeprecatedOptions(options) {
-	const experimental = /** @type {Record<string,any>} */ (options.experimental);
+	const experimental = /** @type {Record<string,any>} */ options.experimental;
 	if (experimental) {
 		for (const promoted of ['prebundleSvelteLibraries', 'inspector']) {
 			if (experimental[promoted]) {

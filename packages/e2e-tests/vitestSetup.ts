@@ -222,7 +222,6 @@ export async function waitForViteConnect(page: Page, timeoutMS = 5000) {
 	let timerId;
 	let pageConsoleListener;
 	const timeoutPromise = new Promise(
-		// eslint-disable-next-line no-unused-vars
 		(_, reject) =>
 			(timerId = setTimeout(() => {
 				reject(`vite client not connected after ${timeoutMS}ms. url: ${page.url()}`);

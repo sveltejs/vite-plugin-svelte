@@ -1,6 +1,5 @@
 import { readFileSync } from 'fs';
 import { dirname } from 'path';
-//eslint-disable-next-line node/no-missing-import
 import { findClosestPkgJsonPath } from 'vitefu';
 import { normalizePath } from 'vite';
 
@@ -86,10 +85,10 @@ export class VitePluginSvelteCache {
 			if (!this.#dependants.has(d)) {
 				this.#dependants.set(d, new Set());
 			}
-			/** @type {Set<string>} */ (this.#dependants.get(d)).add(compileData.filename);
+			/** @type {Set<string>} */ this.#dependants.get(d).add(compileData.filename);
 		});
 		removed.forEach((d) => {
-			/** @type {Set<string>} */ (this.#dependants.get(d)).delete(compileData.filename);
+			/** @type {Set<string>} */ this.#dependants.get(d).delete(compileData.filename);
 		});
 	}
 

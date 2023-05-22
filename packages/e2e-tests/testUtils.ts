@@ -16,9 +16,9 @@ import {
 	browserLogs,
 	e2eServer,
 	waitForViteConnect
-} from './vitestSetup';
+} from './vitestSetup.js';
 
-export * from './vitestSetup';
+export * from './vitestSetup.js';
 
 export const hmrUpdateTimeout = 10000;
 

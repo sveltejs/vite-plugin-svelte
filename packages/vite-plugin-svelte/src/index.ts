@@ -1,9 +1,9 @@
 import fs from 'fs';
 import { VERSION as svelteVersion } from 'svelte/compiler';
 import { version as viteVersion } from 'vite';
-// eslint-disable-next-line node/no-missing-import
+
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
-// eslint-disable-next-line node/no-missing-import
+
 import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings } from './utils/log.js';
@@ -47,7 +47,7 @@ export function svelte(inlineOptions) {
 	let options;
 	/** @type {import('vite').ResolvedConfig} */
 	let viteConfig;
-	/* eslint-disable no-unused-vars */
+
 	/** @type {import('./types/compile.d.ts').CompileSvelte} */
 	let compileSvelte;
 	/* eslint-enable no-unused-vars */
@@ -103,7 +103,6 @@ export function svelte(inlineOptions) {
 			},
 
 			configureServer(server) {
-				// eslint-disable-next-line no-unused-vars
 				options.server = server;
 				setupWatchers(options, cache, requestParser);
 			},

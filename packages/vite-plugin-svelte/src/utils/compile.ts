@@ -3,7 +3,7 @@ import { compile, preprocess, walk } from 'svelte/compiler';
 import { createMakeHot } from 'svelte-hmr';
 import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
-//eslint-disable-next-line node/no-missing-import
+
 import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
 
@@ -96,9 +96,9 @@ export const _createCompileSvelte = (makeHot) => {
 		}
 		if (raw && svelteRequest.query.type === 'preprocessed') {
 			// shortcut
-			return /**@type {import('../types/compile.d.ts').CompileData} */ ({
+			return /**@type {import('../types/compile.d.ts').CompileData} */ {
 				preprocessed: preprocessed ?? { code }
-			});
+			};
 		}
 		const finalCode = preprocessed ? preprocessed.code : code;
 		const dynamicCompileOptions = await options.experimental?.dynamicCompileOptions?.({
@@ -184,7 +184,7 @@ function buildMakeHot(options) {
 			walk,
 			hotApi,
 			adapter,
-			hotOptions: { noOverlay: true, .../** @type {object} */ (options.hot) }
+			hotOptions: { noOverlay: true, .../** @type {object} */ options.hot }
 		});
 	}
 }

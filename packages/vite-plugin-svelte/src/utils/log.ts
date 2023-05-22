@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars,no-console */
+/* eslint-disable no-console */
 import { cyan, red, yellow } from 'kleur/colors';
 import debug from 'debug';
 
@@ -111,7 +111,7 @@ function createLogger(level) {
 			return once;
 		}
 	});
-	return /** @type {import('../types/log.d.ts').LogFn}*/ (logFn);
+	return /** @type {import('../types/log.d.ts').LogFn}*/ logFn;
 }
 
 export const log = {
