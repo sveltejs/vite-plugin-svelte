@@ -6,7 +6,7 @@ describe('inspector-kit', () => {
 	});
 	if (!isBuild) {
 		it('should show inspector toggle during dev', async () => {
-			await page.waitForLoadState('networkidle');
+			await page.locator('#svelte-inspector-toggle').waitFor({ state: 'visible', timeout: 500 });
 			expect(await getEl('#svelte-inspector-toggle')).not.toBe(null);
 		});
 	} else {
