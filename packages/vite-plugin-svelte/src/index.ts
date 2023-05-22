@@ -31,7 +31,7 @@ const isSvelte3 = svelteVersion.startsWith('3');
 
 /**
  *
- * @param {Partial<import('./utils/options-types.d').Options>=} inlineOptions
+ * @param {Partial<import('./index.d.ts').Options>=} inlineOptions
  * @returns {import('vite').Plugin[]}
  */
 export function svelte(inlineOptions) {
@@ -41,14 +41,14 @@ export function svelte(inlineOptions) {
 	validateInlineOptions(inlineOptions);
 	const cache = new VitePluginSvelteCache();
 	// updated in configResolved hook
-	/** @type {import('./utils/id-types.d').IdParser} */
+	/** @type {import('./types/id.d.ts').IdParser} */
 	let requestParser;
-	/** @type {import('./utils/options-types.d').ResolvedOptions} */
+	/** @type {import('./types/options.d.ts').ResolvedOptions} */
 	let options;
 	/** @type {import('vite').ResolvedConfig} */
 	let viteConfig;
 	/* eslint-disable no-unused-vars */
-	/** @type {import('./utils/compile-types.d').CompileSvelte} */
+	/** @type {import('./types/compile.d.ts').CompileSvelte} */
 	let compileSvelte;
 	/* eslint-enable no-unused-vars */
 
@@ -56,7 +56,7 @@ export function svelte(inlineOptions) {
 	let resolvedSvelteSSR;
 	/** @type {Set<string>} */
 	let packagesWithResolveWarnings;
-	/** @type {import('./plugin-api-types.d').PluginAPI} */
+	/** @type {import('./types/plugin-api.d.ts').PluginAPI} */
 	const api = {};
 	/** @type {import('vite').Plugin[]} */
 	const plugins = [

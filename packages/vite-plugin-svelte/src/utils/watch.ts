@@ -5,9 +5,9 @@ import path from 'path';
 
 /**
  *
- * @param {import('./options-types.d').ResolvedOptions} options
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {import('./vite-plugin-svelte-cache').VitePluginSvelteCache} cache
- * @param {import('./id-types.d').IdParser} requestParser
+ * @param {import('../types/id.d.ts').IdParser} requestParser
  * @returns
  */
 export function setupWatchers(options, cache, requestParser) {

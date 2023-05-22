@@ -6,7 +6,7 @@ const IS_WINDOWS = process.platform === 'win32';
  *
  * map is modified in place.
  *
- * @param {import('./sourcemaps-types.d').SourceMapFileRefs | undefined} map sourcemap
+ * @param {import('../types/sourcemaps.d.ts').SourceMapFileRefs | undefined} map sourcemap
  * @param {string} filename absolute path to file the sourcemap is for
  */
 export function mapToRelative(map, filename) {
@@ -54,7 +54,7 @@ export function mapToRelative(map, filename) {
  *
  * map is modified in place.
  *
- * @param {import('./sourcemaps-types.d').SourceMapFileRefs | undefined} map the output sourcemap
+ * @param {import('../types/sourcemaps.d.ts').SourceMapFileRefs | undefined} map the output sourcemap
  * @param {string} suffix the suffix to remove
  */
 export function removeLangSuffix(map, suffix) {

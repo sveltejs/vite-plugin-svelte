@@ -38,7 +38,7 @@ function splitId(id) {
  * @param {string} root
  * @param {number} timestamp
  * @param {boolean} ssr
- * @returns {import('./id-types.d').SvelteRequest | undefined}
+ * @returns {import('../types/id.d.ts').SvelteRequest | undefined}
  */
 function parseToSvelteRequest(id, filename, rawQuery, root, timestamp, ssr) {
 	const query = parseRequestQuery(rawQuery);
@@ -67,7 +67,7 @@ function parseToSvelteRequest(id, filename, rawQuery, root, timestamp, ssr) {
  *
  * @param {string} filename
  * @param {string} root
- * @param {import('./id-types.d').SvelteQueryTypes} type
+ * @param {import('../types/id.d.ts').SvelteQueryTypes} type
  * @returns {string}
  */
 function createVirtualImportId(filename, root, type) {
@@ -89,7 +89,7 @@ function createVirtualImportId(filename, root, type) {
 /**
  *
  * @param {string} rawQuery
- * @returns {import('./id-types.d').RequestQuery}
+ * @returns {import('../types/id.d.ts').RequestQuery}
  */
 function parseRequestQuery(rawQuery) {
 	const query = Object.fromEntries(new URLSearchParams(rawQuery));
@@ -127,7 +127,7 @@ function parseRequestQuery(rawQuery) {
 		}
 	}
 
-	return /** @type {import('./id-types.d').RequestQuery}*/ query;
+	return /** @type {import('../types/id.d.ts').RequestQuery}*/ query;
 }
 
 /**
@@ -168,8 +168,8 @@ function stripRoot(normalizedFilename, normalizedRoot) {
 
 /**
  *
- * @param {import('./options-types.d').Arrayable<string> | undefined} include
- * @param {import('./options-types.d').Arrayable<string> | undefined} exclude
+ * @param {import('../index.d.ts').Arrayable<string> | undefined} include
+ * @param {import('../index.d.ts').Arrayable<string> | undefined} exclude
  * @param {string[]} extensions
  * @returns {(filename:string)=>boolean}
  */
@@ -180,8 +180,8 @@ function buildFilter(include, exclude, extensions) {
 
 /**
  *
- * @param {import('./options-types.d').ResolvedOptions} options
- * @returns {import('./id-types.d').IdParser}
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {import('../types/id.d.ts').IdParser}
  */
 export function buildIdParser(options) {
 	const { include, exclude, extensions, root } = options;

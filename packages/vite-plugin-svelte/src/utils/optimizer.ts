@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 // List of options that changes the prebundling result
-/** @type {(keyof import('./options-types.d').ResolvedOptions)[]} */
+/** @type {(keyof import('../types/options.d.ts').ResolvedOptions)[]} */
 const PREBUNDLE_SENSITIVE_OPTIONS = [
 	'compilerOptions',
 	'configFile',
@@ -14,7 +14,7 @@ const PREBUNDLE_SENSITIVE_OPTIONS = [
 
 /**
  * @param {string} cacheDir
- * @param {import('./options-types.d').ResolvedOptions} options
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {Promise<boolean>} Whether the Svelte metadata has changed
  */
 export async function saveSvelteMetadata(cacheDir, options) {
@@ -41,8 +41,8 @@ export async function saveSvelteMetadata(cacheDir, options) {
 
 /**
  *
- * @param {import('./options-types.d').ResolvedOptions} options
- * @returns {Partial<import('./options-types.d').ResolvedOptions>}
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {Partial<import('../types/options.d.ts').ResolvedOptions>}
  */
 function generateSvelteMetadata(options) {
 	/** @type {Record<string,any>} */

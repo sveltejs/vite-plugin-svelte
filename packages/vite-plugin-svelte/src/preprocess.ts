@@ -8,7 +8,7 @@ export const lang_sep = '.vite-preprocess.';
 
 /**
  *
- * @param {import('./preprocess-types.d').VitePreprocessOptions=} opts
+ * @param {import('./index.d.ts').VitePreprocessOptions=} opts
  * @returns {import('svelte/types/compiler/preprocess').PreprocessorGroup}
  */
 export function vitePreprocess(opts) {
@@ -60,7 +60,7 @@ function viteScript() {
  * @returns {{style:import('svelte/types/compiler/preprocess').Preprocessor}}
  */
 function viteStyle(config = {}) {
-	/** @type import('./preprocess-types.d').CssTransform */
+	/** @type import('./types/preprocess.d.ts').CssTransform */
 	let transform;
 	/** @type import('svelte/types/compiler/preprocess').Preprocessor */
 	const style = async ({ attributes, content, filename = '' }) => {
@@ -102,7 +102,7 @@ function viteStyle(config = {}) {
 
 /**
  * @param {import('vite').ResolvedConfig} config
- * @returns {import('./preprocess-types.d').CssTransform}
+ * @returns {import('./types/preprocess.d.ts').CssTransform}
  */
 function getCssTransformFn(config) {
 	return async (code, filename) => {

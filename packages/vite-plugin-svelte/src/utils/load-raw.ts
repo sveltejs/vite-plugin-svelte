@@ -5,9 +5,9 @@ import { log } from './log.js';
 /**
  * utility function to compile ?raw and ?direct requests in load hook
  *
- * @param {import('./id-types.d').SvelteRequest} svelteRequest
- * @param {import('./compile-types.d').CompileSvelte} compileSvelte
- * @param {import('./options-types.d').ResolvedOptions} options
+ * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
+ * @param {import('../types/compile.d.ts').CompileSvelte} compileSvelte
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {Promise<string>}
  */
 export async function loadRaw(svelteRequest, compileSvelte, options) {
@@ -86,12 +86,12 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 /**
  * turn compileData and source into a flat list of raw exports
  *
- * @param {import('./compile-types.d').CompileData} compileData
+ * @param {import('../types/compile.d.ts').CompileData} compileData
  * @param {string} source
  */
 function allToRawExports(compileData, source) {
 	// flatten CompileData
-	/** @type {Partial<import('./compile-types.d').CompileData & { source: string }>} */
+	/** @type {Partial<import('../types/compile.d.ts').CompileData & { source: string }>} */
 	const exports = {
 		...compileData,
 		...compileData.compiled,

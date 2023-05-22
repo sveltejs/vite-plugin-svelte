@@ -1,4 +1,4 @@
-import { ResolvedOptions } from './utils/options-types.d';
+import type { ResolvedOptions } from './options.d.ts';
 
 export interface PluginAPI {
 	/**

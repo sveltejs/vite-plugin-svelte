@@ -6,7 +6,3 @@ export type CssTransform = (
 	filename: string
 ) => Promise<{ code: string; map?: any; deps?: Set<string> }>;
 
-export interface VitePreprocessOptions {
-	script?: boolean;
-	style?: boolean | InlineConfig | ResolvedConfig;
-}

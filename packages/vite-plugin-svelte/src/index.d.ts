@@ -2,17 +2,7 @@ import { InlineConfig, ResolvedConfig, UserConfig, Plugin } from 'vite';
 // eslint-disable-next-line node/no-missing-import
 import { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
 // eslint-disable-next-line node/no-missing-import
-export { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
-// eslint-disable-next-line node/no-missing-import
 import { PreprocessorGroup } from 'svelte/types/compiler/preprocess';
-// eslint-disable-next-line node/no-missing-import
-export {
-	MarkupPreprocessor,
-	Preprocessor,
-	PreprocessorGroup,
-	Processed
-} from 'svelte/types/compiler/preprocess';
-
 // eslint-disable-next-line node/no-missing-import
 import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 
@@ -184,25 +174,19 @@ type ModuleFormat = NonNullable<CompileOptions['format']>;
 type CssHashGetter = NonNullable<CompileOptions['cssHash']>;
 type Arrayable<T> = T | T[];
 
-declare function vitePreprocess(opts?: {
+interface VitePreprocessOptions {
 	script?: boolean;
 	style?: boolean | InlineConfig | ResolvedConfig;
-}): PreprocessorGroup;
+}
+
+
+declare function vitePreprocess(opts?: VitePreprocessOptions): PreprocessorGroup;
 
 declare function loadSvelteConfig(
 	viteConfig?: UserConfig,
 	inlineOptions?: Partial<Options>
 ): Promise<Partial<SvelteOptions> | undefined>;
 
-type SvelteWarningsMessage = {
-	id: string;
-	filename: string;
-	normalizedFilename: string;
-	timestamp: number;
-	warnings: Warning[];
-	allWarnings: Warning[];
-	rawWarnings: Warning[];
-};
 
 declare function svelte(inlineOptions?: Partial<Options>): Plugin[];
 
@@ -213,8 +197,21 @@ export {
 	Options,
 	PluginOptions,
 	SvelteOptions,
-	SvelteWarningsMessage,
 	loadSvelteConfig,
 	svelte,
+	VitePreprocessOptions,
 	vitePreprocess
 };
+
+// reexported types
+
+// eslint-disable-next-line node/no-missing-import
+export { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
+
+export {
+	MarkupPreprocessor,
+	Preprocessor,
+	PreprocessorGroup,
+	Processed
+	// eslint-disable-next-line node/no-missing-import
+} from 'svelte/types/compiler/preprocess';

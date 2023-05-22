@@ -8,7 +8,7 @@ import path from 'path';
  *
  * only used during dev with enabled css hmr
  *
- * @returns {import('./options-types.d').PreprocessorGroup}
+ * @returns {import('../index.d.ts').PreprocessorGroup}
  */
 export function createInjectScopeEverythingRulePreprocessorGroup() {
 	return {
@@ -28,14 +28,14 @@ export function createInjectScopeEverythingRulePreprocessorGroup() {
 
 /**
  *
- * @param {import('./options-types.d').ResolvedOptions} options
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {import('vite').ResolvedConfig} config
- * @returns {{ prependPreprocessors:import('./options-types.d').PreprocessorGroup[], appendPreprocessors:import('./options-types.d').PreprocessorGroup[] }}
+ * @returns {{ prependPreprocessors:import('../index.d.ts').PreprocessorGroup[], appendPreprocessors:import('../index.d.ts').PreprocessorGroup[] }}
  */
 function buildExtraPreprocessors(options, config) {
-	/** @type {import('./options-types.d').PreprocessorGroup[]} */
+	/** @type {import('../index.d.ts').PreprocessorGroup[]} */
 	const prependPreprocessors = [];
-	/** @type {import('./options-types.d').PreprocessorGroup[]} */
+	/** @type {import('../index.d.ts').PreprocessorGroup[]} */
 	const appendPreprocessors = [];
 
 	// @ts-ignore
@@ -99,7 +99,7 @@ function buildExtraPreprocessors(options, config) {
 
 /**
  *
- * @param {import('./options-types.d').ResolvedOptions} options
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {import('vite').ResolvedConfig} config
  */
 export function addExtraPreprocessors(options, config) {

@@ -7,8 +7,8 @@ export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
 
 /**
  *
- * @param {import('./options-types.d').ResolvedOptions} options
- * @returns {import('./esbuild-types.d').EsbuildPlugin}
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {import('../types/esbuild.d.ts').EsbuildPlugin}
  */
 export function esbuildSveltePlugin(options) {
 	return {
@@ -20,7 +20,7 @@ export function esbuildSveltePlugin(options) {
 
 			const svelteExtensions = (options.extensions ?? ['.svelte']).map((ext) => ext.slice(1));
 			const svelteFilter = new RegExp(`\\.(` + svelteExtensions.join('|') + `)(\\?.*)?$`);
-			/** @type {import('./vite-plugin-svelte-stats-types.d').StatCollection | undefined} */
+			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 			let statsCollection;
 			build.onStart(() => {
 				statsCollection = options.stats?.startCollection('prebundle libraries', {
@@ -45,9 +45,9 @@ export function esbuildSveltePlugin(options) {
 
 /**
  *
- * @param {import('./options-types.d').ResolvedOptions} options
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {{ filename: string; code: string }} input
- * @param {import('./vite-plugin-svelte-stats-types.d').StatCollection=} statsCollection
+ * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection=} statsCollection
  * @returns {Promise<string>}
  */
 async function compileSvelte(options, { filename, code }, statsCollection) {
@@ -56,7 +56,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
 		css = 'injected';
 	}
-	/** @type {import('./options-types.d').CompileOptions} */
+	/** @type {import('../index.d.ts').CompileOptions} */
 	const compileOptions = {
 		...options.compilerOptions,
 		css,
@@ -96,7 +96,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		  }
 		: compileOptions;
 	const endStat = statsCollection?.start(filename);
-	const compiled = /** @type {import('./compile-types.d').Compiled}*/ compile(
+	const compiled = /** @type {import('../types/compile.d.ts').Compiled}*/ compile(
 		finalCode,
 		finalCompileOptions
 	);

@@ -6,9 +6,9 @@ import { toRollupError } from './utils/error.js';
  *
  * @param {Function} compileSvelte
  * @param {import('vite').HmrContext} ctx
- * @param {import('./utils/id-types.d').SvelteRequest} svelteRequest
+ * @param {import('./types/id.d.ts').SvelteRequest} svelteRequest
  * @param {import('./utils/vite-plugin-svelte-cache').VitePluginSvelteCache} cache
- * @param options {import('./utils/options-types.d').ResolvedOptions}
+ * @param options {import('./types/options.d.ts').ResolvedOptions}
  * @returns {Promise<import('vite').ModuleNode[] | void>}
  */
 export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options) {
@@ -23,7 +23,7 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 	const cachedCss = cache.getCSS(svelteRequest);
 
 	const content = await read();
-	/** @type {import('./utils/compile-types.d').CompileData} */
+	/** @type {import('./types/compile.d.ts').CompileData} */
 	let compileData;
 	try {
 		compileData = await compileSvelte(svelteRequest, content, options);
@@ -71,8 +71,8 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 }
 
 /**
- * @param {import('./utils/compile-types.d').Code=} prev
- * @param {import('./utils/compile-types.d').Code=} next
+ * @param {import('./types/compile.d.ts').Code=} prev
+ * @param {import('./types/compile.d.ts').Code=} next
  * @returns {boolean}
  */
 function cssChanged(prev, next) {
@@ -80,8 +80,8 @@ function cssChanged(prev, next) {
 }
 
 /**
- * @param {import('./utils/compile-types.d').Code=} prev
- * @param {import('./utils/compile-types.d').Code=} next
+ * @param {import('./types/compile.d.ts').Code=} prev
+ * @param {import('./types/compile.d.ts').Code=} next
  * @param {string=} filename
  * @returns {boolean}
  */

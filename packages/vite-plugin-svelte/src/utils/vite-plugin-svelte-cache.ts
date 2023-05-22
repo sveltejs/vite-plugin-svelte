@@ -8,9 +8,9 @@ import { normalizePath } from 'vite';
  * @class
  */
 export class VitePluginSvelteCache {
-	/**@type {Map<string,import('./compile-types.d').Code>} */
+	/**@type {Map<string,import('../types/compile.d.ts').Code>} */
 	#css = new Map();
-	/**@type {Map<string,import('./compile-types.d').Code>} */
+	/**@type {Map<string,import('../types/compile.d.ts').Code>} */
 	#js = new Map();
 	/**@type {Map<string, string[]>} */
 	#dependencies = new Map();
@@ -20,11 +20,11 @@ export class VitePluginSvelteCache {
 	#resolvedSvelteFields = new Map();
 	/**@type {Map<string, any>} */
 	#errors = new Map();
-	/**@type {import('./vite-plugin-svelte-cache-types.d').PackageInfo[]} */
+	/**@type {import('../types/vite-plugin-svelte-cache.d.ts').PackageInfo[]} */
 	#packageInfos = [];
 
 	/**
-	 * @param {import('./compile-types.d').CompileData} compileData
+	 * @param {import('../types/compile.d.ts').CompileData} compileData
 	 */
 	update(compileData) {
 		this.#errors.delete(compileData.normalizedFilename);
@@ -35,7 +35,7 @@ export class VitePluginSvelteCache {
 
 	/**
 	 *
-	 * @param {import('./id-types.d').SvelteRequest} svelteRequest
+	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
 	 * @returns {boolean}
 	 */
 	has(svelteRequest) {
@@ -45,7 +45,7 @@ export class VitePluginSvelteCache {
 
 	/**
 	 *
-	 * @param {import('./id-types.d').SvelteRequest} svelteRequest
+	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
 	 * @param {any} error
 	 */
 	setError(svelteRequest, error) {
@@ -56,14 +56,14 @@ export class VitePluginSvelteCache {
 	}
 
 	/**
-	 * @param {import('./compile-types.d').CompileData} compileData
+	 * @param {import('../types/compile.d.ts').CompileData} compileData
 	 */
 	#updateCSS(compileData) {
 		this.#css.set(compileData.normalizedFilename, compileData.compiled.css);
 	}
 
 	/**
-	 * @param {import('./compile-types.d').CompileData} compileData
+	 * @param {import('../types/compile.d.ts').CompileData} compileData
 	 */
 	#updateJS(compileData) {
 		if (!compileData.ssr) {
@@ -73,7 +73,7 @@ export class VitePluginSvelteCache {
 	}
 
 	/**
-	 * @param {import('./compile-types.d').CompileData} compileData
+	 * @param {import('../types/compile.d.ts').CompileData} compileData
 	 */
 	#updateDependencies(compileData) {
 		const id = compileData.normalizedFilename;
@@ -95,7 +95,7 @@ export class VitePluginSvelteCache {
 
 	/**
 	 *
-	 * @param {import('./id-types.d').SvelteRequest} svelteRequest
+	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
 	 * @param {boolean=} keepDependencies
 	 * @returns {boolean}
 	 */
@@ -129,16 +129,16 @@ export class VitePluginSvelteCache {
 	}
 
 	/**
-	 * @param {import('./id-types.d').SvelteRequest} svelteRequest
-	 * @returns {import('./compile-types.d').Code | undefined}
+	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
+	 * @returns {import('../types/compile.d.ts').Code | undefined}
 	 */
 	getCSS(svelteRequest) {
 		return this.#css.get(svelteRequest.normalizedFilename);
 	}
 
 	/**
-	 * @param {import('./id-types.d').SvelteRequest} svelteRequest
-	 * @returns {import('./compile-types.d').Code | undefined}
+	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
+	 * @returns {import('../types/compile.d.ts').Code | undefined}
 	 */
 	getJS(svelteRequest) {
 		if (!svelteRequest.ssr) {
@@ -147,7 +147,7 @@ export class VitePluginSvelteCache {
 		}
 	}
 	/**
-	 * @param {import('./id-types.d').SvelteRequest} svelteRequest
+	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
 	 * @returns {any}
 	 */
 	getError(svelteRequest) {
@@ -204,7 +204,7 @@ export class VitePluginSvelteCache {
 
 	/**
 	 * @param {string} file
-	 * @returns {Promise<import('./vite-plugin-svelte-cache-types.d').PackageInfo>}
+	 * @returns {Promise<import('../types/vite-plugin-svelte-cache.d.ts').PackageInfo>}
 	 */
 	async getPackageInfo(file) {
 		let info = this.#packageInfos.find((pi) => file.startsWith(pi.path));
@@ -220,10 +220,10 @@ export class VitePluginSvelteCache {
  * utility to get some info from the closest package.json with a "name" set
  *
  * @param {string} file to find info for
- * @returns {Promise<import('./vite-plugin-svelte-cache-types.d').PackageInfo>}
+ * @returns {Promise<import('../types/vite-plugin-svelte-cache.d.ts').PackageInfo>}
  */
 async function findPackageInfo(file) {
-	/** @type {import('./vite-plugin-svelte-cache-types.d').PackageInfo} */
+	/** @type {import('../types/vite-plugin-svelte-cache.d.ts').PackageInfo} */
 	const info = {
 		name: '$unknown',
 		version: '0.0.0-unknown',
