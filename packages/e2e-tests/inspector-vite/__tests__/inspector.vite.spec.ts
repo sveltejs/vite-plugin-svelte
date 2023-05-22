@@ -1,4 +1,4 @@
-import { getEl, getText, isBuild, page } from '~utils';
+import { getEl, getText, isBuild, page, isCI } from '~utils';
 
 describe('inspector-vite', () => {
 	it('should render page', async () => {
@@ -6,7 +6,9 @@ describe('inspector-vite', () => {
 	});
 	if (!isBuild) {
 		it('should show inspector toggle during dev', async () => {
-			await page.locator('#svelte-inspector-toggle').waitFor({ state: 'visible', timeout: 500 });
+			await page
+				.locator('#svelte-inspector-toggle')
+				.waitFor({ state: 'visible', timeout: isCI ? 2000 : 500 });
 			expect(await getEl('#svelte-inspector-toggle')).not.toBe(null);
 		});
 	} else {
