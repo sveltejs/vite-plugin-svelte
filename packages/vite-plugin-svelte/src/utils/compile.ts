@@ -157,8 +157,6 @@ const _createCompileSvelte = (makeHot: Function) => {
 			}
 		}
 
-		compiled.js.dependencies = dependencies;
-
 		return {
 			filename,
 			normalizedFilename,
@@ -195,7 +193,6 @@ export function createCompileSvelte(options: ResolvedOptions) {
 export interface Code {
 	code: string;
 	map?: any;
-	dependencies?: any[];
 }
 
 export interface Compiled {
