@@ -11,7 +11,6 @@ const defaultCollectionOptions = {
 };
 
 /**
- *
  * @param {number} n
  * @returns
  */
@@ -21,7 +20,6 @@ function humanDuration(n) {
 }
 
 /**
- *
  * @param {import('../types/vite-plugin-svelte-stats.d.ts').PackageStats[]} pkgStats
  * @returns {string}
  */
@@ -70,17 +68,17 @@ export class VitePluginSvelteStats {
 	#cache;
 	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection[]} */
 	#collections = [];
+
 	/**
-	 *
 	 * @param {import('./vite-plugin-svelte-cache.js').VitePluginSvelteCache} cache
 	 */
 	constructor(cache) {
 		this.#cache = cache;
 	}
+
 	/**
-	 *
 	 * @param {string} name
-	 * @param {Partial<import('../types/vite-plugin-svelte-stats.d.ts').CollectionOptions>=} opts
+	 * @param {Partial<import('../types/vite-plugin-svelte-stats.d.ts').CollectionOptions>} [opts]
 	 * @returns {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection}
 	 */
 	startCollection(name, opts) {
@@ -131,7 +129,6 @@ export class VitePluginSvelteStats {
 	}
 
 	/**
-	 *
 	 * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} collection
 	 */
 	async #finish(collection) {
@@ -170,7 +167,6 @@ export class VitePluginSvelteStats {
 	}
 
 	/**
-	 *
 	 * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} collection
 	 */
 	async #aggregateStatsResult(collection) {
@@ -180,7 +176,7 @@ export class VitePluginSvelteStats {
 		}
 
 		// group stats
-		/** @type {Record<string,import('../types/vite-plugin-svelte-stats.d.ts').PackageStats>} */
+		/** @type {Record<string, import('../types/vite-plugin-svelte-stats.d.ts').PackageStats>} */
 		const grouped = {};
 		stats.forEach((stat) => {
 			const pkg = /** @type {string} */ (stat.pkg);

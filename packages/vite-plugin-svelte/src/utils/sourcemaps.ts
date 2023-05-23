@@ -1,12 +1,21 @@
 import path from 'path';
+
 const IS_WINDOWS = process.platform === 'win32';
+
+/**
+ * @typedef {{
+ *  file?: string;
+ *  sources?: string[];
+ *  sourceRoot?: string;
+ * }} SourceMapFileRefs
+ */
 
 /**
  * convert absolute paths in sourcemap file refs to their relative equivalents to avoid leaking fs info
  *
  * map is modified in place.
  *
- * @param {import('../types/sourcemaps.d.ts').SourceMapFileRefs | undefined} map sourcemap
+ * @param {SourceMapFileRefs | undefined} map sourcemap
  * @param {string} filename absolute path to file the sourcemap is for
  */
 export function mapToRelative(map, filename) {
@@ -16,7 +25,7 @@ export function mapToRelative(map, filename) {
 	const sourceRoot = map.sourceRoot;
 	const dirname = path.dirname(filename);
 
-	/** @type {(s:string)=> string} */
+	/** @type {(s: string) => string} */
 	const toRelative = (s) => {
 		if (!s) {
 			return s;
@@ -54,7 +63,7 @@ export function mapToRelative(map, filename) {
  *
  * map is modified in place.
  *
- * @param {import('../types/sourcemaps.d.ts').SourceMapFileRefs | undefined} map the output sourcemap
+ * @param {SourceMapFileRefs | undefined} map the output sourcemap
  * @param {string} suffix the suffix to remove
  */
 export function removeLangSuffix(map, suffix) {

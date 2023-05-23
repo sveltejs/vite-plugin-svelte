@@ -40,12 +40,11 @@ export async function saveSvelteMetadata(cacheDir, options) {
 }
 
 /**
- *
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {Partial<import('../types/options.d.ts').ResolvedOptions>}
  */
 function generateSvelteMetadata(options) {
-	/** @type {Record<string,any>} */
+	/** @type {Record<string, any>} */
 	const metadata = {};
 	for (const key of PREBUNDLE_SENSITIVE_OPTIONS) {
 		metadata[key] = options[key];

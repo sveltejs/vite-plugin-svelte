@@ -10,15 +10,14 @@ import { mapToRelative } from './sourcemaps.js';
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
 /**
- *
- * @param {Function=} makeHot
+ * @param {Function} [makeHot]
  * @returns {import('../types/compile.d.ts').CompileSvelte}
  */
 export const _createCompileSvelte = (makeHot) => {
 	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 	let stats;
 	const devStylePreprocessor = createInjectScopeEverythingRulePreprocessorGroup();
-	/**@type {import('../types/compile.d.ts').CompileSvelte} */
+	/** @type {import('../types/compile.d.ts').CompileSvelte} */
 	return async function compileSvelte(svelteRequest, code, options) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
@@ -95,8 +94,8 @@ export const _createCompileSvelte = (makeHot) => {
 			mapToRelative(preprocessed?.map, filename);
 		}
 		if (raw && svelteRequest.query.type === 'preprocessed') {
-			// shortcut
-			return /**@type {import('../types/compile.d.ts').CompileData} */ {
+			// @ts-expect-error shortcut
+			return /** @type {import('../types/compile.d.ts').CompileData} */ {
 				preprocessed: preprocessed ?? { code }
 			};
 		}
@@ -168,10 +167,10 @@ export const _createCompileSvelte = (makeHot) => {
 		};
 	};
 };
+
 /**
- *
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {Function|undefined}
+ * @returns {Function | undefined}
  */
 function buildMakeHot(options) {
 	const needsMakeHot = options.hot !== false && options.isServe && !options.isProduction;
@@ -184,12 +183,12 @@ function buildMakeHot(options) {
 			walk,
 			hotApi,
 			adapter,
-			hotOptions: { noOverlay: true, .../** @type {object} */ options.hot }
+			hotOptions: { noOverlay: true, .../** @type {object} */ (options.hot) }
 		});
 	}
 }
+
 /**
- *
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {import('../types/compile.d.ts').CompileSvelte}
  */

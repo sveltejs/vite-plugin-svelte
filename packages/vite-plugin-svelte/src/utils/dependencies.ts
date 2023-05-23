@@ -1,13 +1,18 @@
 import path from 'path';
 import fs from 'fs/promises';
-
 import { findDepPkgJsonPath } from 'vitefu';
 
 /**
- *
+ * @typedef {{
+ *  dir: string;
+ *	pkg: Record<string, any>;
+ * }} DependencyData
+ */
+
+/**
  * @param {string} dep
  * @param {string} parent
- * @returns {Promise<import('../types/dependencies.d.ts').DependencyData|undefined>}
+ * @returns {Promise<DependencyData | undefined>}
  */
 export async function resolveDependencyData(dep, parent) {
 	const depDataPath = await findDepPkgJsonPath(dep, parent);

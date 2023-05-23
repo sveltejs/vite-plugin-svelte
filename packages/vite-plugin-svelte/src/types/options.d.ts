@@ -1,8 +1,6 @@
 import type { CompileOptions } from 'svelte/types/compiler/interfaces';
 import type { ViteDevServer } from 'vite';
 import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
-
-import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 import type { Options } from '../index.d.ts';
 
 export interface PreResolvedOptions extends Options {

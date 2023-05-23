@@ -2,13 +2,13 @@ import { buildExtendedLogMessage } from './log.js';
 
 /**
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
- * @param {import('../index.d.ts').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('svelte/types/compiler/interfaces').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {import('rollup').RollupError} the converted error
  */
 export function toRollupError(error, options) {
 	const { filename, frame, start, code, name, stack } = error;
-	/** @type  {import('rollup').RollupError} */
+	/** @type {import('rollup').RollupError} */
 	const rollupError = {
 		name, // needed otherwise sveltekit coalesce_to_error turns it into a string
 		id: filename,
@@ -29,7 +29,7 @@ export function toRollupError(error, options) {
 
 /**
  * convert an error thrown by svelte.compile to an esbuild PartialMessage
- * @param {import('../index.d.ts').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('svelte/types/compiler/interfaces').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {import('esbuild').PartialMessage} the converted error
  */
@@ -57,7 +57,7 @@ export function toESBuildError(error, options) {
  * extract line with number from codeframe
  *
  * @param {number} lineNo
- * @param {string=} frame
+ * @param {string} [frame]
  * @returns {string}
  */
 function lineFromFrame(lineNo, frame) {
@@ -88,8 +88,8 @@ function lineFromFrame(lineNo, frame) {
  *  3 | baz
  * ```
  * @see https://github.com/vitejs/vite/blob/96591bf9989529de839ba89958755eafe4c445ae/packages/vite/src/client/overlay.ts#L116
- * @param {string=} frame
- * @returns string
+ * @param {string} [frame]
+ * @returns {string}
  */
 function formatFrameForVite(frame) {
 	if (!frame) {

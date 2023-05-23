@@ -1,6 +1,7 @@
 import type { Processed } from 'svelte/types/compiler/preprocess';
 import type { SvelteRequest } from './id.d.ts';
 import type { ResolvedOptions } from './options.d.ts';
+
 export type CompileSvelte = (
 	svelteRequest: SvelteRequest,
 	code: string,

@@ -4,11 +4,10 @@ import { knownSvelteConfigNames } from './load-svelte-config.js';
 import path from 'path';
 
 /**
- *
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {import('./vite-plugin-svelte-cache').VitePluginSvelteCache} cache
  * @param {import('../types/id.d.ts').IdParser} requestParser
- * @returns
+ * @returns {void}
  */
 export function setupWatchers(options, cache, requestParser) {
 	const { server, configFile: svelteConfigFile } = options;
@@ -17,7 +16,7 @@ export function setupWatchers(options, cache, requestParser) {
 	}
 	const { watcher, ws } = server;
 	const { root, server: serverConfig } = server.config;
-	/**@type {(filename: string)=>void} */
+	/** @type {(filename: string) => void} */
 	const emitChangeEventOnDependants = (filename) => {
 		const dependants = cache.getDependants(filename);
 		dependants.forEach((dependant) => {
@@ -29,7 +28,7 @@ export function setupWatchers(options, cache, requestParser) {
 			}
 		});
 	};
-	/**@type {(filename: string)=>void} */
+	/** @type {(filename: string) => void} */
 	const removeUnlinkedFromCache = (filename) => {
 		const svelteRequest = requestParser(filename, false);
 		if (svelteRequest) {
@@ -39,7 +38,7 @@ export function setupWatchers(options, cache, requestParser) {
 			}
 		}
 	};
-	/**@type {(filename: string)=>void} */
+	/** @type {(filename: string) => void} */
 	const triggerViteRestart = (filename) => {
 		if (serverConfig.middlewareMode) {
 			// in middlewareMode we can't restart the server automatically
@@ -58,7 +57,7 @@ export function setupWatchers(options, cache, requestParser) {
 	};
 
 	// collection of watcher listeners by event
-	/** @type {Record<string,Function[]>} */
+	/** @type {Record<string, Function[]>} */
 	const listenerCollection = {
 		add: [],
 		change: [emitChangeEventOnDependants],
@@ -68,14 +67,14 @@ export function setupWatchers(options, cache, requestParser) {
 	if (svelteConfigFile !== false) {
 		// configFile false means we ignore the file and external process is responsible
 		const possibleSvelteConfigs = knownSvelteConfigNames.map((cfg) => path.join(root, cfg));
-		/**@type {(filename: string)=>void} */
+		/** @type {(filename: string) => void} */
 		const restartOnConfigAdd = (filename) => {
 			if (possibleSvelteConfigs.includes(filename)) {
 				triggerViteRestart(filename);
 			}
 		};
 
-		/**@type {(filename: string)=>void} */
+		/** @type {(filename: string) => void} */
 		const restartOnConfigChange = (filename) => {
 			if (filename === svelteConfigFile) {
 				triggerViteRestart(filename);
@@ -102,7 +101,7 @@ export function setupWatchers(options, cache, requestParser) {
  * @param {import('vite').FSWatcher} watcher
  * @param {string | null} file
  * @param {string} root
- * @returns void
+ * @returns {void}
  */
 export function ensureWatchedFile(watcher, file, root) {
 	if (

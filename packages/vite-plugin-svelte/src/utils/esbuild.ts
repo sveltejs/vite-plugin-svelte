@@ -3,12 +3,16 @@ import { compile, preprocess } from 'svelte/compiler';
 import { log } from './log.js';
 import { toESBuildError } from './error.js';
 
+/**
+ * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
+ * @typedef {NonNullable<EsbuildOptions['plugins']>[number]} EsbuildPlugin
+ */
+
 export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
 
 /**
- *
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {import('../types/esbuild.d.ts').EsbuildPlugin}
+ * @returns {EsbuildPlugin}
  */
 export function esbuildSveltePlugin(options) {
 	return {
@@ -44,10 +48,9 @@ export function esbuildSveltePlugin(options) {
 }
 
 /**
- *
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {{ filename: string; code: string }} input
- * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection=} statsCollection
+ * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
  * @returns {Promise<string>}
  */
 async function compileSvelte(options, { filename, code }, statsCollection) {
@@ -96,10 +99,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		  }
 		: compileOptions;
 	const endStat = statsCollection?.start(filename);
-	const compiled = /** @type {import('../types/compile.d.ts').Compiled}*/ compile(
-		finalCode,
-		finalCompileOptions
-	);
+	const compiled = compile(finalCode, finalCompileOptions);
 	if (endStat) {
 		endStat();
 	}
