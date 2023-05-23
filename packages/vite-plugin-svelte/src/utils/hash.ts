@@ -25,7 +25,7 @@ export function safeBase64Hash(input) {
 	return hash;
 }
 
-/** @type {Record<string,string>} */
+/** @type {Record<string, string>} */
 const replacements = {
 	'+': '-',
 	'/': '_',
@@ -35,7 +35,6 @@ const replacements = {
 const replaceRE = new RegExp(`[${Object.keys(replacements).join('')}]`, 'g');
 
 /**
- *
  * @param {string} base64
  * @returns {string}
  */

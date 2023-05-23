@@ -8,7 +8,7 @@ import path from 'path';
  *
  * only used during dev with enabled css hmr
  *
- * @returns {import('../index.d.ts').PreprocessorGroup}
+ * @returns {import('svelte/types/compiler/preprocess').PreprocessorGroup}
  */
 export function createInjectScopeEverythingRulePreprocessorGroup() {
 	return {
@@ -27,15 +27,17 @@ export function createInjectScopeEverythingRulePreprocessorGroup() {
 }
 
 /**
- *
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {import('vite').ResolvedConfig} config
- * @returns {{ prependPreprocessors:import('../index.d.ts').PreprocessorGroup[], appendPreprocessors:import('../index.d.ts').PreprocessorGroup[] }}
+ * @returns {{
+ * 	prependPreprocessors: import('svelte/types/compiler/preprocess').PreprocessorGroup[],
+ * 	appendPreprocessors: import('svelte/types/compiler/preprocess').PreprocessorGroup[]
+ * }}
  */
 function buildExtraPreprocessors(options, config) {
-	/** @type {import('../index.d.ts').PreprocessorGroup[]} */
+	/** @type {import('svelte/types/compiler/preprocess').PreprocessorGroup[]} */
 	const prependPreprocessors = [];
-	/** @type {import('../index.d.ts').PreprocessorGroup[]} */
+	/** @type {import('svelte/types/compiler/preprocess').PreprocessorGroup[]} */
 	const appendPreprocessors = [];
 
 	// @ts-ignore
@@ -98,7 +100,6 @@ function buildExtraPreprocessors(options, config) {
 }
 
 /**
- *
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {import('vite').ResolvedConfig} config
  */

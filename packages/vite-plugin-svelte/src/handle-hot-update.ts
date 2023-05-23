@@ -8,7 +8,7 @@ import { toRollupError } from './utils/error.js';
  * @param {import('vite').HmrContext} ctx
  * @param {import('./types/id.d.ts').SvelteRequest} svelteRequest
  * @param {import('./utils/vite-plugin-svelte-cache').VitePluginSvelteCache} cache
- * @param options {import('./types/options.d.ts').ResolvedOptions}
+ * @param {import('./types/options.d.ts').ResolvedOptions} options
  * @returns {Promise<import('vite').ModuleNode[] | void>}
  */
 export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options) {
@@ -71,8 +71,8 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 }
 
 /**
- * @param {import('./types/compile.d.ts').Code=} prev
- * @param {import('./types/compile.d.ts').Code=} next
+ * @param {import('./types/compile.d.ts').Code} [prev]
+ * @param {import('./types/compile.d.ts').Code} [next]
  * @returns {boolean}
  */
 function cssChanged(prev, next) {
@@ -80,9 +80,9 @@ function cssChanged(prev, next) {
 }
 
 /**
- * @param {import('./types/compile.d.ts').Code=} prev
- * @param {import('./types/compile.d.ts').Code=} next
- * @param {string=} filename
+ * @param {import('./types/compile.d.ts').Code} [prev]
+ * @param {import('./types/compile.d.ts').Code} [next]
+ * @param {string} [filename]
  * @returns {boolean}
  */
 function jsChanged(prev, next, filename) {
@@ -102,8 +102,8 @@ function jsChanged(prev, next, filename) {
 }
 
 /**
- * @param {string=} prev
- * @param {string=} next
+ * @param {string} [prev]
+ * @param {string} [next]
  * @returns {boolean}
  */
 function isCodeEqual(prev, next) {
@@ -121,7 +121,8 @@ function isCodeEqual(prev, next) {
  *
  * 1) add_location() calls. These add location metadata to elements, only used by some dev tools
  * 2) ... maybe more (or less) in the future
- * @param {string=} code
+ *
+ * @param {string} [code]
  * @returns {string | undefined}
  */
 function normalizeJsCode(code) {

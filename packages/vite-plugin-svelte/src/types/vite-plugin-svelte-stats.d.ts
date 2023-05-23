@@ -26,6 +26,5 @@ export interface PackageStats {
 
 export interface CollectionOptions {
 	logInProgress: (collection: StatCollection, now: number) => boolean;
-
 	logResult: (collection: StatCollection) => boolean;
 }

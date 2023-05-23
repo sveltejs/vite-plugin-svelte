@@ -4,22 +4,31 @@ import { findClosestPkgJsonPath } from 'vitefu';
 import { normalizePath } from 'vite';
 
 /**
+ * @typedef {{
+ * 	name: string;
+ * 	version: string;
+ * 	svelte?: string;
+ * 	path: string;
+ * }} PackageInfo
+ */
+
+/**
  * @class
  */
 export class VitePluginSvelteCache {
-	/**@type {Map<string,import('../types/compile.d.ts').Code>} */
+	/** @type {Map<string, import('../types/compile.d.ts').Code>} */
 	#css = new Map();
-	/**@type {Map<string,import('../types/compile.d.ts').Code>} */
+	/** @type {Map<string, import('../types/compile.d.ts').Code>} */
 	#js = new Map();
-	/**@type {Map<string, string[]>} */
+	/** @type {Map<string, string[]>} */
 	#dependencies = new Map();
-	/**@type {Map<string, Set<string>>} */
+	/** @type {Map<string, Set<string>>} */
 	#dependants = new Map();
-	/**@type {Map<string, string>} */
+	/** @type {Map<string, string>} */
 	#resolvedSvelteFields = new Map();
-	/**@type {Map<string, any>} */
+	/** @type {Map<string, any>} */
 	#errors = new Map();
-	/**@type {import('../types/vite-plugin-svelte-cache.d.ts').PackageInfo[]} */
+	/** @type {PackageInfo[]} */
 	#packageInfos = [];
 
 	/**
@@ -33,7 +42,6 @@ export class VitePluginSvelteCache {
 	}
 
 	/**
-	 *
 	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
 	 * @returns {boolean}
 	 */
@@ -43,7 +51,6 @@ export class VitePluginSvelteCache {
 	}
 
 	/**
-	 *
 	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
 	 * @param {any} error
 	 */
@@ -85,17 +92,16 @@ export class VitePluginSvelteCache {
 			if (!this.#dependants.has(d)) {
 				this.#dependants.set(d, new Set());
 			}
-			/** @type {Set<string>} */ this.#dependants.get(d).add(compileData.filename);
+			/** @type {Set<string>} */ (this.#dependants.get(d)).add(compileData.filename);
 		});
 		removed.forEach((d) => {
-			/** @type {Set<string>} */ this.#dependants.get(d).delete(compileData.filename);
+			/** @type {Set<string>} */ (this.#dependants.get(d)).delete(compileData.filename);
 		});
 	}
 
 	/**
-	 *
 	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
-	 * @param {boolean=} keepDependencies
+	 * @param {boolean} [keepDependencies]
 	 * @returns {boolean}
 	 */
 	remove(svelteRequest, keepDependencies = false) {
@@ -164,7 +170,7 @@ export class VitePluginSvelteCache {
 
 	/**
 	 * @param {string} name
-	 * @param {string=} importer
+	 * @param {string} [importer]
 	 * @returns {string|void}
 	 */
 	getResolvedSvelteField(name, importer) {
@@ -173,7 +179,7 @@ export class VitePluginSvelteCache {
 
 	/**
 	 * @param {string} name
-	 * @param {string=} importer
+	 * @param {string} [importer]
 	 * @returns {boolean}
 	 */
 	hasResolvedSvelteField(name, importer) {
@@ -203,7 +209,7 @@ export class VitePluginSvelteCache {
 
 	/**
 	 * @param {string} file
-	 * @returns {Promise<import('../types/vite-plugin-svelte-cache.d.ts').PackageInfo>}
+	 * @returns {Promise<PackageInfo>}
 	 */
 	async getPackageInfo(file) {
 		let info = this.#packageInfos.find((pi) => file.startsWith(pi.path));
@@ -219,10 +225,10 @@ export class VitePluginSvelteCache {
  * utility to get some info from the closest package.json with a "name" set
  *
  * @param {string} file to find info for
- * @returns {Promise<import('../types/vite-plugin-svelte-cache.d.ts').PackageInfo>}
+ * @returns {Promise<PackageInfo>}
  */
 async function findPackageInfo(file) {
-	/** @type {import('../types/vite-plugin-svelte-cache.d.ts').PackageInfo} */
+	/** @type {PackageInfo} */
 	const info = {
 		name: '$unknown',
 		version: '0.0.0-unknown',

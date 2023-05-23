@@ -4,11 +4,10 @@ import { resolveDependencyData, isCommonDepWithoutSvelteField } from './dependen
 import { normalizePath } from 'vite';
 
 /**
- *
  * @param {string} importee
- * @param {string|undefined} importer
+ * @param {string | undefined} importer
  * @param {import('./vite-plugin-svelte-cache').VitePluginSvelteCache} cache
- * @returns {Promise<string|void>}
+ * @returns {Promise<string | void>}
  */
 export async function resolveViaPackageJsonSvelte(importee, importer, cache) {
 	if (
@@ -34,7 +33,6 @@ export async function resolveViaPackageJsonSvelte(importee, importer, cache) {
 }
 
 /**
- *
  * @param {string} importee
  * @returns {boolean}
  */
@@ -43,7 +41,6 @@ function isNodeInternal(importee) {
 }
 
 /**
- *
  * @param {string} importee
  * @returns {boolean}
  */

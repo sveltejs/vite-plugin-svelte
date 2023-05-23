@@ -1,6 +1,5 @@
 import { createFilter, normalizePath } from 'vite';
 import * as fs from 'fs';
-
 import { log } from './log.js';
 
 const VITE_FS_PREFIX = '/@fs/';
@@ -18,9 +17,8 @@ const SUPPORTED_COMPILER_OPTIONS = [
 const TYPES_WITH_COMPILER_OPTIONS = ['style', 'script', 'all'];
 
 /**
- *
  * @param {string} id
- * @returns {{filename: string, rawQuery: string}}
+ * @returns {{ filename: string, rawQuery: string }}
  */
 function splitId(id) {
 	const parts = id.split(`?`, 2);
@@ -30,7 +28,6 @@ function splitId(id) {
 }
 
 /**
- *
  * @param {string} id
  * @param {string} filename
  * @param {string} rawQuery
@@ -63,7 +60,6 @@ function parseToSvelteRequest(id, filename, rawQuery, root, timestamp, ssr) {
 }
 
 /**
- *
  * @param {string} filename
  * @param {string} root
  * @param {import('../types/id.d.ts').SvelteQueryTypes} type
@@ -86,7 +82,6 @@ function createVirtualImportId(filename, root, type) {
 }
 
 /**
- *
  * @param {string} rawQuery
  * @returns {import('../types/id.d.ts').RequestQuery}
  */
@@ -141,7 +136,6 @@ function normalize(filename, normalizedRoot) {
 }
 
 /**
- *
  * @param {string} filename
  * @param {string} root
  * @returns {boolean}
@@ -154,7 +148,6 @@ function existsInRoot(filename, root) {
 }
 
 /**
- *
  * @param {string} normalizedFilename
  * @param {string} normalizedRoot
  * @returns {string}
@@ -166,11 +159,10 @@ function stripRoot(normalizedFilename, normalizedRoot) {
 }
 
 /**
- *
  * @param {import('../index.d.ts').Arrayable<string> | undefined} include
  * @param {import('../index.d.ts').Arrayable<string> | undefined} exclude
  * @param {string[]} extensions
- * @returns {(filename:string)=>boolean}
+ * @returns {(filename: string) => boolean}
  */
 function buildFilter(include, exclude, extensions) {
 	const rollupFilter = createFilter(include, exclude);
@@ -178,14 +170,13 @@ function buildFilter(include, exclude, extensions) {
 }
 
 /**
- *
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {import('../types/id.d.ts').IdParser}
  */
 export function buildIdParser(options) {
 	const { include, exclude, extensions, root } = options;
 	const normalizedRoot = normalizePath(root);
-	const filter = buildFilter(include, exclude, /**@type {string[]} */ extensions);
+	const filter = buildFilter(include, exclude, extensions ?? []);
 	return (id, ssr, timestamp = Date.now()) => {
 		const { filename, rawQuery } = splitId(id);
 		if (filter(filename)) {

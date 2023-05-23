@@ -1,12 +1,10 @@
-import { InlineConfig, ResolvedConfig, UserConfig, Plugin } from 'vite';
-
-import { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
-
-import { PreprocessorGroup } from 'svelte/types/compiler/preprocess';
-
+import type { InlineConfig, ResolvedConfig, UserConfig, Plugin } from 'vite';
+import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
+import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess';
 import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 
 type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
+
 interface PluginOptionsInline extends PluginOptions {
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
@@ -17,6 +15,7 @@ interface PluginOptionsInline extends PluginOptions {
 	 */
 	configFile?: string | false;
 }
+
 interface PluginOptions {
 	/**
 	 * A `picomatch` pattern, or array of patterns, which specifies the files the plugin should
@@ -100,6 +99,7 @@ interface PluginOptions {
 	 */
 	experimental?: ExperimentalOptions;
 }
+
 interface SvelteOptions {
 	/**
 	 * A list of file extensions to be compiled by Svelte
@@ -130,6 +130,7 @@ interface SvelteOptions {
 	 */
 	vitePlugin?: PluginOptions;
 }
+
 /**
  * These options are considered experimental and breaking changes to them can occur in any release
  */
@@ -170,6 +171,7 @@ interface ExperimentalOptions {
 	 */
 	disableSvelteResolveWarnings?: boolean;
 }
+
 type ModuleFormat = NonNullable<CompileOptions['format']>;
 type CssHashGetter = NonNullable<CompileOptions['cssHash']>;
 type Arrayable<T> = T | T[];
