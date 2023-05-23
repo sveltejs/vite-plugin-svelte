@@ -112,7 +112,7 @@ jobs:
         if: matrix.node == 14
         run: pnpm install --no-frozen-lockfile --prefer-offline --ignore-scripts
       - name: build
-        run: pnpm build:ci
+        run: pnpm build
       - name: install playwright chromium
         run: pnpm playwright install chromium
       - name: run tests
