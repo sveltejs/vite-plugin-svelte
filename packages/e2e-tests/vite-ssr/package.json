@@ -6,7 +6,7 @@
     "dev": "node server",
     "build": "pnpm build:client && pnpm build:server",
     "build:client": "vite build --ssrManifest --outDir dist/client",
-    "build:server": "vite build --ssr src/entry-server.js --outDir dist/server",
+    "build:server": "vite build --ssr src/entry-server.mjs --outDir dist/server",
     "preview": "cross-env NODE_ENV=production node server",
     "debug": "node --inspect-brk server"
   },

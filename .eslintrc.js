@@ -43,7 +43,7 @@ module.exports = {
 		'n/no-extraneous-import': [
 			'error',
 			{
-				allowModules: ['vite']
+				allowModules: ['vite', 'vitest']
 			}
 		],
 		'n/no-extraneous-require': [
