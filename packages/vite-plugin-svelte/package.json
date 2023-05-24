@@ -7,10 +7,10 @@
     "src"
   ],
   "type": "module",
-  "types": "src/index.d.ts",
+  "types": "types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
+      "types": "./types/index.d.ts",
       "import": "./src/index.js"
     },
     "./package.json": "./package.json"
@@ -18,7 +18,7 @@
   "scripts": {
     "dev": "pnpm typecheck --watch",
     "build": "pnpm typecheck",
-		"typecheck": "tsc --noEmit --allowJs --checkJs"
+    "typecheck": "node scripts/generate-dts.js"
   },
   "engines": {
     "node": "^14.18.0 || >= 16"
@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "dts-buddy": "^0.0.9",
     "esbuild": "^0.17.18",
     "rollup": "^3.21.6",
     "svelte": "^3.59.1",

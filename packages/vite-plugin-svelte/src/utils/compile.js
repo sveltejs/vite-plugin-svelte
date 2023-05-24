@@ -47,7 +47,7 @@ export const _createCompileSvelte = (makeHot) => {
 				// also they for hmr updates too
 			}
 		}
-		/** @type {import('../index.d.ts').CompileOptions} */
+		/** @type {import('../public.d.ts').CompileOptions} */
 		const compileOptions = {
 			...options.compilerOptions,
 			filename: normalizedFilename, // use normalized here to avoid bleeding absolute fs path

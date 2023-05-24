@@ -29,7 +29,10 @@ import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants.js';
 const isVite4_0 = viteVersion.startsWith('4.0');
 const isSvelte3 = svelteVersion.startsWith('3');
 
-/** @type {import('./index.d.ts').svelte} */
+/**
+ * @param {Partial<import('./public').Options>} inlineOptions
+ * @returns {import('vite').Plugin[]}
+ */
 export function svelte(inlineOptions) {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');

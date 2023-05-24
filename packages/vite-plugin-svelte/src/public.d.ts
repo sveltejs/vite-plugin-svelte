@@ -181,15 +181,6 @@ interface VitePreprocessOptions {
 	style?: boolean | InlineConfig | ResolvedConfig;
 }
 
-declare function vitePreprocess(opts?: VitePreprocessOptions): PreprocessorGroup;
-
-declare function loadSvelteConfig(
-	viteConfig?: UserConfig,
-	inlineOptions?: Partial<Options>
-): Promise<Partial<SvelteOptions> | undefined>;
-
-declare function svelte(inlineOptions?: Partial<Options>): Plugin[];
-
 export {
 	Arrayable,
 	CssHashGetter,
@@ -213,3 +204,5 @@ export {
 	PreprocessorGroup,
 	Processed
 } from 'svelte/types/compiler/preprocess';
+
+export * from './index.js';

@@ -10,7 +10,10 @@ const supportedScriptLangs = ['ts'];
 
 export const lang_sep = '.vite-preprocess.';
 
-/** @type {import('./index.d.ts').vitePreprocess} */
+/**
+ * @param {import('./public').VitePreprocessOptions} opts
+ * @returns {import('./public').PreprocessorGroup}
+ */
 export function vitePreprocess(opts) {
 	/** @type {import('svelte/types/compiler/preprocess').PreprocessorGroup} */
 	const preprocessor = {};
