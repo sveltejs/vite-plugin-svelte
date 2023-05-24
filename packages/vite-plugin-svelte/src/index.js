@@ -48,7 +48,7 @@ export function svelte(inlineOptions) {
 	let compileSvelte;
 	/* eslint-enable no-unused-vars */
 
-	/** @type {Promise<import('rollup').PartialResolvedId | null>} */
+	/** @type {Promise<import('vite').Rollup.PartialResolvedId | null>} */
 	let resolvedSvelteSSR;
 	/** @type {Set<string>} */
 	let packagesWithResolveWarnings;
