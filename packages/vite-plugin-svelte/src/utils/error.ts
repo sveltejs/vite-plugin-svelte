@@ -1,16 +1,15 @@
-import { RollupError } from 'rollup';
-import { ResolvedOptions, Warning } from './options';
-import { buildExtendedLogMessage } from './log';
-import { PartialMessage } from 'esbuild';
+import { buildExtendedLogMessage } from './log.js';
 
 /**
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
- * @param error a svelte compiler error, which is a mix of Warning and an error
- * @returns {RollupError} the converted error
+ * @param {import('svelte/types/compiler/interfaces').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {import('rollup').RollupError} the converted error
  */
-export function toRollupError(error: Warning & Error, options: ResolvedOptions): RollupError {
+export function toRollupError(error, options) {
 	const { filename, frame, start, code, name, stack } = error;
-	const rollupError: RollupError = {
+	/** @type {import('rollup').RollupError} */
+	const rollupError = {
 		name, // needed otherwise sveltekit coalesce_to_error turns it into a string
 		id: filename,
 		message: buildExtendedLogMessage(error), // include filename:line:column so that it's clickable
@@ -30,12 +29,14 @@ export function toRollupError(error: Warning & Error, options: ResolvedOptions):
 
 /**
  * convert an error thrown by svelte.compile to an esbuild PartialMessage
- * @param error a svelte compiler error, which is a mix of Warning and an error
- * @returns {PartialMessage} the converted error
+ * @param {import('svelte/types/compiler/interfaces').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {import('esbuild').PartialMessage} the converted error
  */
-export function toESBuildError(error: Warning & Error, options: ResolvedOptions): PartialMessage {
+export function toESBuildError(error, options) {
 	const { filename, frame, start, stack } = error;
-	const partialMessage: PartialMessage = {
+	/** @type {import('esbuild').PartialMessage} */
+	const partialMessage = {
 		text: buildExtendedLogMessage(error)
 	};
 	if (start) {
@@ -54,8 +55,12 @@ export function toESBuildError(error: Warning & Error, options: ResolvedOptions)
 
 /**
  * extract line with number from codeframe
+ *
+ * @param {number} lineNo
+ * @param {string} [frame]
+ * @returns {string}
  */
-function lineFromFrame(lineNo: number, frame?: string): string {
+function lineFromFrame(lineNo, frame) {
 	if (!frame) {
 		return '';
 	}
@@ -83,8 +88,10 @@ function lineFromFrame(lineNo: number, frame?: string): string {
  *  3 | baz
  * ```
  * @see https://github.com/vitejs/vite/blob/96591bf9989529de839ba89958755eafe4c445ae/packages/vite/src/client/overlay.ts#L116
+ * @param {string} [frame]
+ * @returns {string}
  */
-function formatFrameForVite(frame?: string): string {
+function formatFrameForVite(frame) {
 	if (!frame) {
 		return '';
 	}

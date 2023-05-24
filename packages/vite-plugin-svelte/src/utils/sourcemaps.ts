@@ -1,30 +1,37 @@
 import path from 'path';
+
 const IS_WINDOWS = process.platform === 'win32';
-interface SourceMapFileRefs {
-	file?: string;
-	sources?: string[];
-	sourceRoot?: string;
-}
+
+/**
+ * @typedef {{
+ *  file?: string;
+ *  sources?: string[];
+ *  sourceRoot?: string;
+ * }} SourceMapFileRefs
+ */
 
 /**
  * convert absolute paths in sourcemap file refs to their relative equivalents to avoid leaking fs info
  *
  * map is modified in place.
  *
- * @param map sourcemap
- * @param filename absolute path to file the sourcemap is for
+ * @param {SourceMapFileRefs | undefined} map sourcemap
+ * @param {string} filename absolute path to file the sourcemap is for
  */
-export function mapToRelative(map: SourceMapFileRefs | undefined, filename: string) {
+export function mapToRelative(map, filename) {
 	if (!map) {
 		return;
 	}
 	const sourceRoot = map.sourceRoot;
 	const dirname = path.dirname(filename);
-	const toRelative = (s: string) => {
+
+	/** @type {(s: string) => string} */
+	const toRelative = (s) => {
 		if (!s) {
 			return s;
 		}
-		let sourcePath: string;
+		/** @type {string} */
+		let sourcePath;
 		if (s.startsWith('file:///')) {
 			// windows has file:///C:/foo and posix has file:///foo, so we have to remove one extra on windows
 			sourcePath = s.slice(IS_WINDOWS ? 8 : 7);
@@ -56,14 +63,15 @@ export function mapToRelative(map: SourceMapFileRefs | undefined, filename: stri
  *
  * map is modified in place.
  *
- * @param map the output sourcemap
- * @param suffix the suffix to remove
+ * @param {SourceMapFileRefs | undefined} map the output sourcemap
+ * @param {string} suffix the suffix to remove
  */
-export function removeLangSuffix(map: SourceMapFileRefs | undefined, suffix: string) {
+export function removeLangSuffix(map, suffix) {
 	if (!map) {
 		return;
 	}
-	const removeSuffix = (s: string) => (s?.endsWith(suffix) ? s.slice(0, -1 * suffix.length) : s);
+	/** @type {(s:string)=> string} */
+	const removeSuffix = (s) => (s?.endsWith(suffix) ? s.slice(0, -1 * suffix.length) : s);
 	if (map.file) {
 		map.file = removeSuffix(map.file);
 	}

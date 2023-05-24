@@ -1,18 +1,20 @@
 import { readFileSync } from 'fs';
 import { compile, preprocess } from 'svelte/compiler';
-import { DepOptimizationOptions } from 'vite';
-import { Compiled } from './compile';
-import { log } from './log';
-import { CompileOptions, ResolvedOptions } from './options';
-import { toESBuildError } from './error';
-import { StatCollection } from './vite-plugin-svelte-stats';
+import { log } from './log.js';
+import { toESBuildError } from './error.js';
 
-type EsbuildOptions = NonNullable<DepOptimizationOptions['esbuildOptions']>;
-type EsbuildPlugin = NonNullable<EsbuildOptions['plugins']>[number];
+/**
+ * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
+ * @typedef {NonNullable<EsbuildOptions['plugins']>[number]} EsbuildPlugin
+ */
 
 export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
 
-export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {EsbuildPlugin}
+ */
+export function esbuildSveltePlugin(options) {
 	return {
 		name: 'vite-plugin-svelte:optimize-svelte',
 		setup(build) {
@@ -22,7 +24,8 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 
 			const svelteExtensions = (options.extensions ?? ['.svelte']).map((ext) => ext.slice(1));
 			const svelteFilter = new RegExp(`\\.(` + svelteExtensions.join('|') + `)(\\?.*)?$`);
-			let statsCollection: StatCollection | undefined;
+			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+			let statsCollection;
 			build.onStart(() => {
 				statsCollection = options.stats?.startCollection('prebundle libraries', {
 					logResult: (c) => c.stats.length > 1
@@ -44,17 +47,20 @@ export function esbuildSveltePlugin(options: ResolvedOptions): EsbuildPlugin {
 	};
 }
 
-async function compileSvelte(
-	options: ResolvedOptions,
-	{ filename, code }: { filename: string; code: string },
-	statsCollection?: StatCollection
-): Promise<string> {
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {{ filename: string; code: string }} input
+ * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
+ * @returns {Promise<string>}
+ */
+async function compileSvelte(options, { filename, code }, statsCollection) {
 	let css = options.compilerOptions.css;
 	if (css !== 'none') {
 		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
 		css = 'injected';
 	}
-	const compileOptions: CompileOptions = {
+	/** @type {import('../index.d.ts').CompileOptions} */
+	const compileOptions = {
 		...options.compilerOptions,
 		css,
 		filename,
@@ -93,7 +99,7 @@ async function compileSvelte(
 		  }
 		: compileOptions;
 	const endStat = statsCollection?.start(filename);
-	const compiled = compile(finalCode, finalCompileOptions) as Compiled;
+	const compiled = compile(finalCode, finalCompileOptions);
 	if (endStat) {
 		endStat();
 	}

@@ -2,7 +2,7 @@ module.exports = {
 	root: true,
 	extends: [
 		'eslint:recommended',
-		'plugin:node/recommended',
+		'plugin:n/recommended',
 		'plugin:@typescript-eslint/eslint-recommended',
 		'prettier'
 	],
@@ -24,42 +24,40 @@ module.exports = {
 	rules: {
 		'no-console': 'off',
 		'no-debugger': 'error',
-		'node/no-missing-import': [
+		'n/no-missing-import': [
 			'error',
 			{
-				allowModules: ['types', 'estree', 'testUtils', '@sveltejs/vite-plugin-svelte'],
-				tryExtensions: ['.ts', '.js', '.jsx', '.tsx']
+				allowModules: ['types', 'estree', 'testUtils', '@sveltejs/vite-plugin-svelte', 'svelte']
 			}
 		],
-		'node/no-missing-require': [
+		'n/no-missing-require': [
 			'error',
 			{
 				// for try-catching yarn pnp
-				allowModules: ['pnpapi'],
-				tryExtensions: ['.ts', '.js', '.jsx', '.tsx']
+				allowModules: ['pnpapi']
 			}
 		],
 
-		'node/no-extraneous-import': [
+		'n/no-extraneous-import': [
 			'error',
 			{
 				allowModules: ['vite']
 			}
 		],
-		'node/no-extraneous-require': [
+		'n/no-extraneous-require': [
 			'error',
 			{
 				allowModules: ['vite']
 			}
 		],
-		'node/no-deprecated-api': 'off',
+		'n/no-deprecated-api': 'off',
 		'no-restricted-properties': [
 			'error',
 			{ property: 'substr', message: 'Use .slice instead of .substr.' }
 		],
-		'node/no-unpublished-import': 'off',
-		'node/no-unpublished-require': 'off',
-		'node/no-unsupported-features/es-syntax': 'off',
+		'n/no-unpublished-import': 'off',
+		'n/no-unpublished-require': 'off',
+		'n/no-unsupported-features/es-syntax': 'off',
 		'no-process-exit': 'off'
 	},
 	overrides: [
@@ -84,8 +82,8 @@ module.exports = {
 		{
 			files: ['packages/e2e-tests/**', 'packages/playground/**'],
 			rules: {
-				'node/no-extraneous-import': 'off',
-				'node/no-extraneous-require': 'off',
+				'n/no-extraneous-import': 'off',
+				'n/no-extraneous-require': 'off',
 				'no-unused-vars': 'off'
 			},
 			env: {
@@ -96,7 +94,7 @@ module.exports = {
 			files: ['packages/e2e-tests/**/vite.config.js', 'packages/playground/**'],
 			rules: {
 				'no-unused-vars': 'off',
-				'node/no-missing-require': 'off'
+				'n/no-missing-require': 'off'
 			}
 		},
 		{
@@ -112,7 +110,7 @@ module.exports = {
 				'import/no-duplicates': 'off',
 				'import/no-mutable-exports': 'off',
 				'import/no-unresolved': 'off',
-				'node/no-missing-import': 'off' // doesn't work with typescript's "import from 'src/foo.js'" for src/foo.ts
+				'n/no-missing-import': 'off' // doesn't work with typescript's "import from 'src/foo.js'" for src/foo.ts
 			}
 		},
 		{
@@ -124,10 +122,10 @@ module.exports = {
 				'no-unused-labels': 'off',
 				'no-console': 'off',
 				'padded-blocks': 'off',
-				'node/no-missing-import': 'off',
-				'node/no-extraneous-require': 'off',
+				'n/no-missing-import': 'off',
+				'n/no-extraneous-require': 'off',
 				'import/no-unresolved': 'off',
-				'node/no-missing-require': 'off'
+				'n/no-missing-require': 'off'
 			}
 		},
 		{
@@ -138,10 +136,10 @@ module.exports = {
 				'no-unused-labels': 'off',
 				'no-console': 'off',
 				'padded-blocks': 'off',
-				'node/no-missing-import': 'off',
-				'node/no-extraneous-require': 'off',
+				'n/no-missing-import': 'off',
+				'n/no-extraneous-require': 'off',
 				'import/no-unresolved': 'off',
-				'node/no-missing-require': 'off'
+				'n/no-missing-require': 'off'
 			}
 		},
 		{
@@ -152,18 +150,24 @@ module.exports = {
 				browser: true
 			},
 			rules: {
-				'node/no-extraneous-import': 'off',
-				'node/no-missing-import': 'off',
-				'node/no-unused-import': 'off'
+				'n/no-extraneous-import': 'off',
+				'n/no-missing-import': 'off',
+				'n/no-unused-import': 'off'
 			}
 		},
 		{
 			files: ['packages/playground/kit-demo-app/src/**'],
 			rules: {
 				/* required because $app and $lib are not known */
-				'node/no-missing-import': 'off',
+				'n/no-missing-import': 'off',
 				/* required because URL wasn't in node8 */
-				'node/no-unsupported-features/node-builtins': 'off'
+				'n/no-unsupported-features/node-builtins': 'off'
+			}
+		},
+		{
+			files: ['**/*.d.ts'],
+			rules: {
+				'no-unused-vars': 'off'
 			}
 		}
 	]

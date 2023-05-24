@@ -1,7 +1,7 @@
 <script>
 	// do not use TS here so that this component works in non-ts projects too
 	import { onMount } from 'svelte';
-	// eslint-disable-next-line node/no-missing-import
+
 	import options from 'virtual:svelte-inspector-options';
 	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
 	const nav_keys = Object.values(options.navKeys).map((k) => k.toLowerCase());

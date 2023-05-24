@@ -1,28 +1,24 @@
-import { CompileOptions, ResolvedOptions } from './options';
 import { compile, preprocess, walk } from 'svelte/compiler';
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr';
-import { SvelteRequest } from './id';
-import { safeBase64Hash } from './hash';
-import { log } from './log';
-import { StatCollection } from './vite-plugin-svelte-stats';
-//eslint-disable-next-line node/no-missing-import
-import type { Processed } from 'svelte/types/compiler/preprocess';
-import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess';
-import { mapToRelative } from './sourcemaps';
+import { safeBase64Hash } from './hash.js';
+import { log } from './log.js';
+
+import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess.js';
+import { mapToRelative } from './sourcemaps.js';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
-export type CompileSvelte = ReturnType<typeof _createCompileSvelte>;
-
-const _createCompileSvelte = (makeHot: Function) => {
-	let stats: StatCollection | undefined;
+/**
+ * @param {Function} [makeHot]
+ * @returns {import('../types/compile.d.ts').CompileSvelte}
+ */
+export const _createCompileSvelte = (makeHot) => {
+	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+	let stats;
 	const devStylePreprocessor = createInjectScopeEverythingRulePreprocessorGroup();
-	return async function compileSvelte(
-		svelteRequest: SvelteRequest,
-		code: string,
-		options: Partial<ResolvedOptions>
-	): Promise<CompileData> {
+	/** @type {import('../types/compile.d.ts').CompileSvelte} */
+	return async function compileSvelte(svelteRequest, code, options) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
 		const dependencies = [];
@@ -51,8 +47,8 @@ const _createCompileSvelte = (makeHot: Function) => {
 				// also they for hmr updates too
 			}
 		}
-
-		const compileOptions: CompileOptions = {
+		/** @type {import('../index.d.ts').CompileOptions} */
+		const compileOptions = {
 			...options.compilerOptions,
 			filename: normalizedFilename, // use normalized here to avoid bleeding absolute fs path
 			generate: ssr ? 'ssr' : 'dom',
@@ -98,8 +94,10 @@ const _createCompileSvelte = (makeHot: Function) => {
 			mapToRelative(preprocessed?.map, filename);
 		}
 		if (raw && svelteRequest.query.type === 'preprocessed') {
-			// shortcut
-			return { preprocessed: preprocessed ?? { code } } as CompileData;
+			// @ts-expect-error shortcut
+			return /** @type {import('../types/compile.d.ts').CompileData} */ {
+				preprocessed: preprocessed ?? { code }
+			};
 		}
 		const finalCode = preprocessed ? preprocessed.code : code;
 		const dynamicCompileOptions = await options.experimental?.dynamicCompileOptions?.({
@@ -169,7 +167,12 @@ const _createCompileSvelte = (makeHot: Function) => {
 		};
 	};
 };
-function buildMakeHot(options: ResolvedOptions) {
+
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {Function | undefined}
+ */
+function buildMakeHot(options) {
 	const needsMakeHot = options.hot !== false && options.isServe && !options.isProduction;
 	if (needsMakeHot) {
 		// @ts-ignore
@@ -180,50 +183,16 @@ function buildMakeHot(options: ResolvedOptions) {
 			walk,
 			hotApi,
 			adapter,
-			hotOptions: { noOverlay: true, ...(options.hot as object) }
+			hotOptions: { noOverlay: true, .../** @type {object} */ (options.hot) }
 		});
 	}
 }
 
-export function createCompileSvelte(options: ResolvedOptions) {
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {import('../types/compile.d.ts').CompileSvelte}
+ */
+export function createCompileSvelte(options) {
 	const makeHot = buildMakeHot(options);
 	return _createCompileSvelte(makeHot);
-}
-
-export interface Code {
-	code: string;
-	map?: any;
-}
-
-export interface Compiled {
-	js: Code;
-	css: Code;
-	ast: any; // TODO type
-	warnings: any[]; // TODO type
-	vars: {
-		name: string;
-		export_name: string;
-		injected: boolean;
-		module: boolean;
-		mutated: boolean;
-		reassigned: boolean;
-		referenced: boolean;
-		writable: boolean;
-		referenced_from_script: boolean;
-	}[];
-	stats: {
-		timings: {
-			total: number;
-		};
-	};
-}
-
-export interface CompileData {
-	filename: string;
-	normalizedFilename: string;
-	lang: string;
-	compiled: Compiled;
-	ssr: boolean | undefined;
-	dependencies: string[];
-	preprocessed: Processed;
 }

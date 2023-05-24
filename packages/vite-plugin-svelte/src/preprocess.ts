@@ -1,19 +1,19 @@
 import { preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
-import type { ESBuildOptions, InlineConfig, ResolvedConfig } from 'vite';
-// eslint-disable-next-line node/no-missing-import
-import type { Preprocessor, PreprocessorGroup } from 'svelte/types/compiler/preprocess';
-import { mapToRelative, removeLangSuffix } from './utils/sourcemaps';
+import { mapToRelative, removeLangSuffix } from './utils/sourcemaps.js';
+
+/**
+ * @typedef {(code: string, filename: string) => Promise<{ code: string; map?: any; deps?: Set<string> }>} CssTransform
+ */
 
 const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
 
 export const lang_sep = '.vite-preprocess.';
 
-export function vitePreprocess(opts?: {
-	script?: boolean;
-	style?: boolean | InlineConfig | ResolvedConfig;
-}) {
-	const preprocessor: PreprocessorGroup = {};
+/** @type {import('./index.d.ts').vitePreprocess} */
+export function vitePreprocess(opts) {
+	/** @type {import('svelte/types/compiler/preprocess').PreprocessorGroup} */
+	const preprocessor = {};
 	if (opts?.script !== false) {
 		preprocessor.script = viteScript().script;
 	}
@@ -24,13 +24,16 @@ export function vitePreprocess(opts?: {
 	return preprocessor;
 }
 
-function viteScript(): { script: Preprocessor } {
+/**
+ * @returns {{ script: import('svelte/types/compiler/preprocess').Preprocessor }}
+ */
+function viteScript() {
 	return {
 		async script({ attributes, content, filename = '' }) {
-			const lang = attributes.lang as string;
+			const lang = /** @type {string} */ (attributes.lang);
 			if (!supportedScriptLangs.includes(lang)) return;
 			const { code, map } = await transformWithEsbuild(content, filename, {
-				loader: lang as ESBuildOptions['loader'],
+				loader: /** @type {import('vite').ESBuildOptions['loader']} */ (lang),
 				target: 'esnext',
 				tsconfigRaw: {
 					compilerOptions: {
@@ -51,15 +54,20 @@ function viteScript(): { script: Preprocessor } {
 	};
 }
 
-function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
-	style: Preprocessor;
-} {
-	let transform: CssTransform;
-	const style: Preprocessor = async ({ attributes, content, filename = '' }) => {
-		const lang = attributes.lang as string;
+/**
+ * @param {import('vite').ResolvedConfig | import('vite').InlineConfig} config
+ * @returns {{ style: import('svelte/types/compiler/preprocess').Preprocessor }}
+ */
+function viteStyle(config = {}) {
+	/** @type {CssTransform} */
+	let transform;
+	/** @type {import('svelte/types/compiler/preprocess').Preprocessor} */
+	const style = async ({ attributes, content, filename = '' }) => {
+		const lang = /** @type {string} */ (attributes.lang);
 		if (!supportedStyleLangs.includes(lang)) return;
 		if (!transform) {
-			let resolvedConfig: ResolvedConfig;
+			/** @type {import('vite').ResolvedConfig} */
+			let resolvedConfig;
 			// @ts-expect-error special prop added if running in v-p-s
 			if (style.__resolvedConfig) {
 				// @ts-expect-error
@@ -91,19 +99,20 @@ function viteStyle(config: InlineConfig | ResolvedConfig = {}): {
 	return { style };
 }
 
-type CssTransform = (
-	// eslint-disable-next-line no-unused-vars
-	code: string,
-	// eslint-disable-next-line no-unused-vars
-	filename: string
-) => Promise<{ code: string; map?: any; deps?: Set<string> }>;
-
-function getCssTransformFn(config: ResolvedConfig): CssTransform {
+/**
+ * @param {import('vite').ResolvedConfig} config
+ * @returns {CssTransform}
+ */
+function getCssTransformFn(config) {
 	return async (code, filename) => {
 		return preprocessCSS(code, filename, config);
 	};
 }
 
-function isResolvedConfig(config: any): config is ResolvedConfig {
+/**
+ * @param {any} config
+ * @returns {config is import('vite').ResolvedConfig}
+ */
+function isResolvedConfig(config) {
 	return !!config.inlineConfig;
 }

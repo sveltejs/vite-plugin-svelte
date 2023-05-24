@@ -1,7 +1,5 @@
-import type { ResolvedConfig, Plugin } from 'vite';
 import MagicString from 'magic-string';
-import { PreprocessorGroup, ResolvedOptions } from './options';
-import { log } from './log';
+import { log } from './log.js';
 import path from 'path';
 
 /**
@@ -9,8 +7,10 @@ import path from 'path';
  * That means adding/removing class rules from <style> node won't trigger js updates as the scope classes are not changed
  *
  * only used during dev with enabled css hmr
+ *
+ * @returns {import('svelte/types/compiler/preprocess').PreprocessorGroup}
  */
-export function createInjectScopeEverythingRulePreprocessorGroup(): PreprocessorGroup {
+export function createInjectScopeEverythingRulePreprocessorGroup() {
 	return {
 		style({ content, filename }) {
 			const s = new MagicString(content);
@@ -26,9 +26,19 @@ export function createInjectScopeEverythingRulePreprocessorGroup(): Preprocessor
 	};
 }
 
-function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
-	const prependPreprocessors: PreprocessorGroup[] = [];
-	const appendPreprocessors: PreprocessorGroup[] = [];
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {import('vite').ResolvedConfig} config
+ * @returns {{
+ * 	prependPreprocessors: import('svelte/types/compiler/preprocess').PreprocessorGroup[],
+ * 	appendPreprocessors: import('svelte/types/compiler/preprocess').PreprocessorGroup[]
+ * }}
+ */
+function buildExtraPreprocessors(options, config) {
+	/** @type {import('svelte/types/compiler/preprocess').PreprocessorGroup[]} */
+	const prependPreprocessors = [];
+	/** @type {import('svelte/types/compiler/preprocess').PreprocessorGroup[]} */
+	const appendPreprocessors = [];
 
 	// @ts-ignore
 	const pluginsWithPreprocessorsDeprecated = config.plugins.filter((p) => p?.sveltePreprocess);
@@ -53,10 +63,12 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 			}
 		});
 	}
-
-	const pluginsWithPreprocessors: Plugin[] = config.plugins.filter((p) => p?.api?.sveltePreprocess);
-	const ignored: Plugin[] = [],
-		included: Plugin[] = [];
+	/** @type {import('vite').Plugin[]} */
+	const pluginsWithPreprocessors = config.plugins.filter((p) => p?.api?.sveltePreprocess);
+	/** @type {import('vite').Plugin[]} */
+	const ignored = [];
+	/** @type {import('vite').Plugin[]} */
+	const included = [];
 	for (const p of pluginsWithPreprocessors) {
 		if (
 			options.ignorePluginPreprocessors === true ||
@@ -87,7 +99,11 @@ function buildExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfi
 	return { prependPreprocessors, appendPreprocessors };
 }
 
-export function addExtraPreprocessors(options: ResolvedOptions, config: ResolvedConfig) {
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {import('vite').ResolvedConfig} config
+ */
+export function addExtraPreprocessors(options, config) {
 	const { prependPreprocessors, appendPreprocessors } = buildExtraPreprocessors(options, config);
 	if (prependPreprocessors.length > 0 || appendPreprocessors.length > 0) {
 		if (!options.preprocess) {

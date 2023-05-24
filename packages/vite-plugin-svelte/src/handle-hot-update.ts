@@ -1,21 +1,17 @@
-import { ModuleNode, HmrContext } from 'vite';
-import { Code, CompileData } from './utils/compile';
-import { log, logCompilerWarnings } from './utils/log';
-import { SvelteRequest } from './utils/id';
-import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache';
-import { ResolvedOptions } from './utils/options';
-import { toRollupError } from './utils/error';
+import { log, logCompilerWarnings } from './utils/log.js';
+import { toRollupError } from './utils/error.js';
 
 /**
  * Vite-specific HMR handling
+ *
+ * @param {Function} compileSvelte
+ * @param {import('vite').HmrContext} ctx
+ * @param {import('./types/id.d.ts').SvelteRequest} svelteRequest
+ * @param {import('./utils/vite-plugin-svelte-cache').VitePluginSvelteCache} cache
+ * @param {import('./types/options.d.ts').ResolvedOptions} options
+ * @returns {Promise<import('vite').ModuleNode[] | void>}
  */
-export async function handleHotUpdate(
-	compileSvelte: Function,
-	ctx: HmrContext,
-	svelteRequest: SvelteRequest,
-	cache: VitePluginSvelteCache,
-	options: ResolvedOptions
-): Promise<ModuleNode[] | void> {
+export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options) {
 	if (!cache.has(svelteRequest)) {
 		// file hasn't been requested yet (e.g. async component)
 		log.debug(`handleHotUpdate called before initial transform for ${svelteRequest.id}`);
@@ -27,7 +23,8 @@ export async function handleHotUpdate(
 	const cachedCss = cache.getCSS(svelteRequest);
 
 	const content = await read();
-	let compileData: CompileData;
+	/** @type {import('./types/compile.d.ts').CompileData} */
+	let compileData;
 	try {
 		compileData = await compileSvelte(svelteRequest, content, options);
 		cache.update(compileData);
@@ -73,11 +70,22 @@ export async function handleHotUpdate(
 	return affectedModules;
 }
 
-function cssChanged(prev?: Code, next?: Code): boolean {
+/**
+ * @param {import('./types/compile.d.ts').Code} [prev]
+ * @param {import('./types/compile.d.ts').Code} [next]
+ * @returns {boolean}
+ */
+function cssChanged(prev, next) {
 	return !isCodeEqual(prev?.code, next?.code);
 }
 
-function jsChanged(prev?: Code, next?: Code, filename?: string): boolean {
+/**
+ * @param {import('./types/compile.d.ts').Code} [prev]
+ * @param {import('./types/compile.d.ts').Code} [next]
+ * @param {string} [filename]
+ * @returns {boolean}
+ */
+function jsChanged(prev, next, filename) {
 	const prevJs = prev?.code;
 	const nextJs = next?.code;
 	const isStrictEqual = isCodeEqual(prevJs, nextJs);
@@ -93,7 +101,12 @@ function jsChanged(prev?: Code, next?: Code, filename?: string): boolean {
 	return !isLooseEqual;
 }
 
-function isCodeEqual(prev?: string, next?: string): boolean {
+/**
+ * @param {string} [prev]
+ * @param {string} [next]
+ * @returns {boolean}
+ */
+function isCodeEqual(prev, next) {
 	if (!prev && !next) {
 		return true;
 	}
@@ -108,9 +121,11 @@ function isCodeEqual(prev?: string, next?: string): boolean {
  *
  * 1) add_location() calls. These add location metadata to elements, only used by some dev tools
  * 2) ... maybe more (or less) in the future
- * @param code
+ *
+ * @param {string} [code]
+ * @returns {string | undefined}
  */
-function normalizeJsCode(code?: string): string | undefined {
+function normalizeJsCode(code) {
 	if (!code) {
 		return code;
 	}

@@ -5,7 +5,13 @@ const hashes = Object.create(null);
 //TODO shorter?
 const hash_length = 12;
 
-export function safeBase64Hash(input: string) {
+/**
+ * replaces +/= in base64 output so they don't interfere
+ *
+ * @param {string} input
+ * @returns {string} base64 hash safe to use in any context
+ */
+export function safeBase64Hash(input) {
 	if (hashes[input]) {
 		return hashes[input];
 	}
@@ -19,7 +25,8 @@ export function safeBase64Hash(input: string) {
 	return hash;
 }
 
-const replacements: { [key: string]: string } = {
+/** @type {Record<string, string>} */
+const replacements = {
 	'+': '-',
 	'/': '_',
 	'=': ''
@@ -27,6 +34,10 @@ const replacements: { [key: string]: string } = {
 
 const replaceRE = new RegExp(`[${Object.keys(replacements).join('')}]`, 'g');
 
-function toSafe(base64: string) {
+/**
+ * @param {string} base64
+ * @returns {string}
+ */
+function toSafe(base64) {
 	return base64.replace(replaceRE, (x) => replacements[x]);
 }

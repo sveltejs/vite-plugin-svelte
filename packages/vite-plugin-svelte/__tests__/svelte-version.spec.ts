@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { compareToSvelte, atLeastSvelte, parseVersion } from '../svelte-version';
+import { compareToSvelte, atLeastSvelte, parseVersion } from '../src/utils/svelte-version.js';
 import { VERSION } from 'svelte/compiler';
 const svelteVersion = parseVersion(VERSION);
 describe('svelte-version', () => {

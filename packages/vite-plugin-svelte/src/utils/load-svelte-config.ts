@@ -2,14 +2,13 @@ import { createRequire } from 'module';
 import path from 'path';
 import fs from 'fs';
 import { pathToFileURL } from 'url';
-import { log } from './log';
-import { Options, SvelteOptions } from './options';
-import { UserConfig } from 'vite';
+import { log } from './log.js';
 
 // used to require cjs config in esm.
 // NOTE dynamic import() cjs technically works, but timestamp query cache bust
 // have no effect, likely because it has another internal cache?
-let esmRequire: NodeRequire;
+/** @type {NodeRequire}*/
+let esmRequire;
 
 export const knownSvelteConfigNames = [
 	'svelte.config.js',
@@ -26,10 +25,8 @@ const dynamicImportDefault = new Function(
 	'return import(path + "?t=" + timestamp).then(m => m.default)'
 );
 
-export async function loadSvelteConfig(
-	viteConfig?: UserConfig,
-	inlineOptions?: Partial<Options>
-): Promise<Partial<SvelteOptions> | undefined> {
+/** @type {import('../index.d.ts').loadSvelteConfig} */
+export async function loadSvelteConfig(viteConfig, inlineOptions) {
 	if (inlineOptions?.configFile === false) {
 		return;
 	}
@@ -87,7 +84,12 @@ export async function loadSvelteConfig(
 	}
 }
 
-function findConfigToLoad(viteConfig?: UserConfig, inlineOptions?: Partial<Options>) {
+/**
+ * @param {import('vite').UserConfig | undefined} viteConfig
+ * @param {Partial<import('../index.d.ts').Options> | undefined} inlineOptions
+ * @returns {string | undefined}
+ */
+function findConfigToLoad(viteConfig, inlineOptions) {
 	const root = viteConfig?.root || process.cwd();
 	if (inlineOptions?.configFile) {
 		const abolutePath = path.isAbsolute(inlineOptions.configFile)

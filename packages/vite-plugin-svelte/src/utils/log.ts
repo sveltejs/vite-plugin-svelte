@@ -1,11 +1,12 @@
-/* eslint-disable no-unused-vars,no-console */
-import { cyan, yellow, red } from 'kleur/colors';
+/* eslint-disable no-console */
+import { cyan, red, yellow } from 'kleur/colors';
 import debug from 'debug';
-import { ResolvedOptions, Warning } from './options';
-import { SvelteRequest } from './id';
-const levels: string[] = ['debug', 'info', 'warn', 'error', 'silent'];
+
+/** @type {import('../types/log.d.ts').LogLevel[]} */
+const levels = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
-const loggers: { [key: string]: any } = {
+/** @type {Record<import('../types/log.d.ts').LogLevel, any>} */
+const loggers = {
 	debug: {
 		log: debug(`vite:${prefix}`),
 		enabled: false,
@@ -31,8 +32,13 @@ const loggers: { [key: string]: any } = {
 	}
 };
 
-let _level: string = 'info';
-function setLevel(level: string) {
+/** @type {import('../types/log.d.ts').LogLevel} */
+let _level = 'info';
+/**
+ * @param {import('../types/log.d.ts').LogLevel} level
+ * @returns {void}
+ */
+function setLevel(level) {
 	if (level === _level) {
 		return;
 	}
@@ -47,7 +53,14 @@ function setLevel(level: string) {
 	}
 }
 
-function _log(logger: any, message: string, payload?: any, namespace?: string) {
+/**
+ * @param {any} logger
+ * @param {string} message
+ * @param {any} [payload]
+ * @param {string} [namespace]
+ * @returns
+ */
+function _log(logger, message, payload, namespace) {
 	if (!logger.enabled) {
 		return;
 	}
@@ -68,17 +81,17 @@ function _log(logger: any, message: string, payload?: any, namespace?: string) {
 	}
 }
 
-export interface LogFn {
-	(message: string, payload?: any, namespace?: string): void;
-	enabled: boolean;
-	once: (message: string, payload?: any, namespace?: string) => void;
-}
-
-function createLogger(level: string): LogFn {
+/**
+ * @param {import('../types/log.d.ts').LogLevel} level
+ * @returns {import('../types/log.d.ts').LogFn}
+ */
+function createLogger(level) {
 	const logger = loggers[level];
-	const logFn: LogFn = _log.bind(null, logger) as LogFn;
-	const logged = new Set<String>();
-	const once = function (message: string, payload?: any, namespace?: string) {
+	const logFn = /** @type {import('../types/log.d.ts').LogFn} */ (_log.bind(null, logger));
+	/** @type {Set<string>} */
+	const logged = new Set();
+	/** @type {import('../types/log.d.ts').SimpleLogFn} */
+	const once = function (message, payload, namespace) {
 		if (!logger.enabled || logged.has(message)) {
 			return;
 		}
@@ -106,31 +119,24 @@ export const log = {
 	setLevel
 };
 
-export type SvelteWarningsMessage = {
-	id: string;
-	filename: string;
-	normalizedFilename: string;
-	timestamp: number;
-	warnings: Warning[]; // allWarnings filtered by warnings where onwarn did not call the default handler
-	allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite plugin svelte warnings
-	rawWarnings: Warning[]; // raw compiler output
-};
-
-export function logCompilerWarnings(
-	svelteRequest: SvelteRequest,
-	warnings: Warning[],
-	options: ResolvedOptions
-) {
+/**
+ * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
+ * @param {import('svelte/types/compiler/interfaces').Warning[]} warnings
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ */
+export function logCompilerWarnings(svelteRequest, warnings, options) {
 	const { emitCss, onwarn, isBuild } = options;
 	const sendViaWS = !isBuild && options.experimental?.sendWarningsToBrowser;
 	let warn = isBuild ? warnBuild : warnDev;
-	const handledByDefaultWarn: Warning[] = [];
+	/** @type {import('svelte/types/compiler/interfaces').Warning[]} */
+	const handledByDefaultWarn = [];
 	const notIgnored = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
 	const extra = buildExtraWarnings(warnings, isBuild);
 	const allWarnings = [...notIgnored, ...extra];
 	if (sendViaWS) {
 		const _warn = warn;
-		warn = (w: Warning) => {
+		/** @type {(w: import('svelte/types/compiler/interfaces').Warning) => void} */
+		warn = (w) => {
 			handledByDefaultWarn.push(w);
 			_warn(w);
 		};
@@ -143,7 +149,8 @@ export function logCompilerWarnings(
 		}
 	});
 	if (sendViaWS) {
-		const message: SvelteWarningsMessage = {
+		/** @type {import('../types/log.d.ts').SvelteWarningsMessage} */
+		const message = {
 			id: svelteRequest.id,
 			filename: svelteRequest.filename,
 			normalizedFilename: svelteRequest.normalizedFilename,
@@ -157,23 +164,36 @@ export function logCompilerWarnings(
 	}
 }
 
-function ignoreCompilerWarning(
-	warning: Warning,
-	isBuild: boolean,
-	emitCss: boolean | undefined
-): boolean {
+/**
+ * @param {import('svelte/types/compiler/interfaces').Warning} warning
+ * @param {boolean} isBuild
+ * @param {boolean} [emitCss]
+ * @returns {boolean}
+ */
+function ignoreCompilerWarning(warning, isBuild, emitCss) {
 	return (
 		(!emitCss && warning.code === 'css-unused-selector') || // same as rollup-plugin-svelte
 		(!isBuild && isNoScopableElementWarning(warning))
 	);
 }
 
-function isNoScopableElementWarning(warning: Warning) {
+/**
+ *
+ * @param {import('svelte/types/compiler/interfaces').Warning} warning
+ * @returns {boolean}
+ */
+function isNoScopableElementWarning(warning) {
 	// see https://github.com/sveltejs/vite-plugin-svelte/issues/153
 	return warning.code === 'css-unused-selector' && warning.message.includes('"*"');
 }
 
-function buildExtraWarnings(warnings: Warning[], isBuild: boolean): Warning[] {
+/**
+ *
+ * @param {import('svelte/types/compiler/interfaces').Warning[]} warnings
+ * @param {boolean} isBuild
+ * @returns {import('svelte/types/compiler/interfaces').Warning[]}
+ */
+function buildExtraWarnings(warnings, isBuild) {
 	const extraWarnings = [];
 	if (!isBuild) {
 		const noScopableElementWarnings = warnings.filter((w) => isNoScopableElementWarning(w));
@@ -191,15 +211,24 @@ function buildExtraWarnings(warnings: Warning[], isBuild: boolean): Warning[] {
 	return extraWarnings;
 }
 
-function warnDev(w: Warning) {
+/**
+ * @param {import('svelte/types/compiler/interfaces').Warning} w
+ */
+function warnDev(w) {
 	log.info.enabled && log.info(buildExtendedLogMessage(w));
 }
 
-function warnBuild(w: Warning) {
+/**
+ * @param {import('svelte/types/compiler/interfaces').Warning} w
+ */
+function warnBuild(w) {
 	log.warn.enabled && log.warn(buildExtendedLogMessage(w), w.frame);
 }
 
-export function buildExtendedLogMessage(w: Warning) {
+/**
+ * @param {import('svelte/types/compiler/interfaces').Warning} w
+ */
+export function buildExtendedLogMessage(w) {
 	const parts = [];
 	if (w.filename) {
 		parts.push(w.filename);
@@ -216,6 +245,10 @@ export function buildExtendedLogMessage(w: Warning) {
 	return parts.join('');
 }
 
-export function isDebugNamespaceEnabled(namespace: string) {
+/**
+ * @param {string} namespace
+ * @returns {boolean}
+ */
+export function isDebugNamespaceEnabled(namespace) {
 	return debug.enabled(`vite:${prefix}:${namespace}`);
 }
