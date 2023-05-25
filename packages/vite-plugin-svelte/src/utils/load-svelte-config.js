@@ -58,7 +58,7 @@ export async function loadSvelteConfig(viteConfig, inlineOptions) {
 			try {
 				// identify which require function to use (esm and cjs mode)
 				const _require = import.meta.url
-					? (esmRequire ??= createRequire(import.meta.url))
+					? esmRequire ?? (esmRequire = createRequire(import.meta.url))
 					: require;
 
 				// avoid loading cached version on reload

@@ -3,7 +3,6 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --dir packages/vite-plugin-svelte dev",
-    "build:ci": "pnpm --dir packages/vite-plugin-svelte build:ci",
     "build": "pnpm --dir packages/vite-plugin-svelte build",
     "test": "run-s -c test:unit test:build test:serve",
     "test:unit": "vitest run",

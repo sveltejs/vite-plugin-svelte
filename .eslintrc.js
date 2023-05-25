@@ -22,6 +22,8 @@ module.exports = {
 		ecmaVersion: 2020
 	},
 	rules: {
+		'n/no-unsupported-features/es-builtins': 'error',
+		'n/no-unsupported-features/es-syntax': 'error',
 		'no-console': 'off',
 		'no-debugger': 'error',
 		'n/no-missing-import': [
@@ -57,7 +59,6 @@ module.exports = {
 		],
 		'n/no-unpublished-import': 'off',
 		'n/no-unpublished-require': 'off',
-		'n/no-unsupported-features/es-syntax': 'off',
 		'no-process-exit': 'off'
 	},
 	overrides: [
