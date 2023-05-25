@@ -54,21 +54,22 @@ jobs:
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
-      - name: build
-        id: build
-        run: pnpm build
+      - name: format
+        run: pnpm check:format
       - name: lint
         if: (${{ success() }} || ${{ failure() }})
-        run: pnpm lint
+        run: pnpm check:lint
+      - name: types
+        if: (${{ success() }} || ${{ failure() }})
+        run: pnpm check:types
       - name: audit
         if: (${{ success() }} || ${{ failure() }})
-        run: pnpm audit
+        run: pnpm check:audit
+      - name: publint
+        if: (${{ success() }} || ${{ failure() }})
+        run: pnpm check:publint
 
-  # this is the test matrix, it runs with node16 on linux,windows,macos + node14,18 on linux
-  # it is skipped if the build step of the checks job wasn't successful (still runs if lint or audit fail)
   test:
-    needs: checks
-    if: (${{ success() }} || ${{ failure() }}) && (${{ needs.checks.output.build_successful }})
     timeout-minutes: 10
     runs-on: ${{ matrix.os }}
     strategy:
@@ -111,8 +112,6 @@ jobs:
       - name: install for node14
         if: matrix.node == 14
         run: pnpm install --no-frozen-lockfile --prefer-offline --ignore-scripts
-      - name: build
-        run: pnpm build:ci
       - name: install playwright chromium
         run: pnpm playwright install chromium
       - name: run tests

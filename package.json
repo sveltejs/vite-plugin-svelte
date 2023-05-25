@@ -2,19 +2,20 @@
   "name": "vite-plugin-svelte-monorepo",
   "private": true,
   "scripts": {
-    "dev": "pnpm --dir packages/vite-plugin-svelte dev",
-    "build:ci": "pnpm --dir packages/vite-plugin-svelte build:ci",
-    "build": "pnpm --dir packages/vite-plugin-svelte build",
     "test": "run-s -c test:unit test:build test:serve",
     "test:unit": "vitest run",
     "test:serve": "vitest run -c vitest.config.e2e.ts",
     "test:build": "cross-env TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
-    "lint": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
-    "lint:fix": "pnpm lint --fix",
-    "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
-    "format:fix": "pnpm format --write",
-    "fixup": "run-s lint:fix format:fix",
-    "release": "pnpm build && pnpm changeset publish",
+    "check": "run-p -c check:*",
+    "check:audit": "pnpm audit --prod",
+    "check:publint": "pnpm --filter \"./packages/*\" --parallel check:publint",
+    "check:types": "pnpm --filter \"./packages/*\" --parallel check:types",
+    "check:lint": "eslint --cache --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
+    "check:format": "prettier --cache --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
+    "lint": "pnpm check:lint --fix",
+    "format": "pnpm check:format --write",
+    "fixup": "run-s lint format",
+    "release": "pnpm changeset publish",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -31,7 +32,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-markdown": "^3.0.0",
-    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-n": "^16.0.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-svelte3": "^4.0.0",
     "execa": "^7.1.1",
@@ -43,6 +44,7 @@
     "playwright-core": "^1.33.0",
     "prettier": "^2.8.8",
     "prettier-plugin-svelte": "^2.10.0",
+    "publint": "^0.1.12",
     "rimraf": "^5.0.0",
     "svelte": "^3.59.1",
     "typescript": "^5.0.4",
@@ -50,9 +52,9 @@
     "vitest": "^0.31.0"
   },
   "lint-staged": {
-    "*.{js,ts,svelte,html,md,svx}": "eslint --fix",
+    "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
     "*.{css,scss,svelte,html,js,ts,svx,md}": [
-      "prettier --write"
+      "prettier --cache --write"
     ]
   },
   "packageManager": "pnpm@8.5.0",
@@ -62,8 +64,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@sveltejs/vite-plugin-svelte": "workspace:^",
-      "tsup>postcss-load-config@<4": "^4.0.0"
+      "@sveltejs/vite-plugin-svelte": "workspace:^"
     },
     "peerDependencyRules": {
       "allowedVersions": {

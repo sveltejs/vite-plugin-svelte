@@ -1,9 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { addMessages, init, _ } from 'svelte-i18n';
-	// eslint-disable-next-line node/no-missing-import
 	import Counter from '$lib/Counter.svelte';
-	// eslint-disable-next-line node/no-missing-import
 	import Child from '$lib/Child.svelte';
 	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
 	export let data = {};

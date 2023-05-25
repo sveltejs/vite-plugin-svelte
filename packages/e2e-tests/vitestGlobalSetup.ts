@@ -14,12 +14,6 @@ const preserveArtifacts = !!process.env.TEST_PRESERVE_ARTIFACTS || isCI;
 
 const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
 
-const buildPackagesUnderTest = async () => {
-	console.log('building packages');
-	await execa('pnpm', ['build:ci'], { stdio: 'inherit' });
-	console.log('building packages done');
-};
-
 const syncNodeModules = async () => {
 	// tests use symbolic linked node_modules directories. make sure the workspace is up for it
 	console.log('syncing node_modules');
@@ -50,7 +44,6 @@ export async function setup() {
 		console.log('');
 		console.log('preparing non ci env...');
 		await syncNodeModules();
-		await buildPackagesUnderTest();
 		console.log('preparations done');
 	}
 	console.log('Starting playwright server ...');

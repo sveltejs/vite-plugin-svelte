@@ -20,7 +20,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 
 	const manifest = isProd
 		? // @ts-ignore
-		  // eslint-disable-next-line node/no-missing-require
+
 		  JSON.parse(fs.readFileSync(resolve('dist/client/ssr-manifest.json'), 'utf-8'))
 		: {};
 
@@ -103,6 +103,7 @@ createServer().then(({ app }) => {
 				console.log('ssr server closed');
 			});
 		} finally {
+			// eslint-disable-next-line n/no-process-exit
 			process.exit(0);
 		}
 	};

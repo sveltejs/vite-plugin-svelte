@@ -17,7 +17,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 
 	const manifest = isProd
 		? // @ts-ignore
-		  // eslint-disable-next-line node/no-missing-require
+		  // eslint-disable-next-line n/no-missing-require
 		  require('./dist/client/ssr-manifest.json')
 		: {};
 
@@ -62,11 +62,11 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 				// always read fresh template in dev
 				template = fs.readFileSync(resolve('index.html'), 'utf-8');
 				template = await vite.transformIndexHtml(url, template);
-				render = (await vite.ssrLoadModule('/src/entry-server.js')).render;
+				render = (await vite.ssrLoadModule('/src/entry-server.mjs')).render;
 			} else {
 				template = indexProd;
 				// @ts-ignore
-				// eslint-disable-next-line node/no-missing-require
+				// eslint-disable-next-line n/no-missing-require
 				render = require('./dist/server/entry-server.js').render;
 			}
 			const rendered = await render(req.originalUrl, manifest);
@@ -101,6 +101,7 @@ createServer().then(({ app }) => {
 				console.log('ssr server closed');
 			});
 		} finally {
+			// eslint-disable-next-line n/no-process-exit
 			process.exit(0);
 		}
 	};

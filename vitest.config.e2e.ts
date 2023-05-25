@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as os from 'os';
-// eslint-disable-next-line node/no-missing-import
+
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'url';
 

@@ -1,5 +1,5 @@
 import App from './App.svelte';
-import { Hello } from './types';
+import { Hello } from './types.js';
 
 const hello: Hello = 'Hello';
 

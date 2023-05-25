@@ -1,4 +1,5 @@
-// eslint-disable-next-line node/no-missing-import
+// @ts-expect-error missing
+// eslint-disable-next-line n/no-missing-import
 import Inspector from 'virtual:svelte-inspector-path:Inspector.svelte';
 
 function create_inspector_host() {

@@ -1,7 +1,7 @@
 <script>
 	import Foo from './components/Foo.svelte';
 	import logo from './assets/logo.png';
-	// eslint-disable-next-line node/no-missing-import
+
 	import { esm } from 'e2e-test-dep-esm-only';
 	export let world = 'world'; // edit world and save to see hmr update
 	export let foo = 'foo';
