@@ -1,3 +1,4 @@
+// @ts-expect-error missing
 // eslint-disable-next-line n/no-missing-import
 import Inspector from 'virtual:svelte-inspector-path:Inspector.svelte';
 

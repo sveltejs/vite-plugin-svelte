@@ -4,11 +4,11 @@ import { buildExtendedLogMessage } from './log.js';
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
  * @param {import('svelte/types/compiler/interfaces').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {import('rollup').RollupError} the converted error
+ * @returns {import('vite').Rollup.RollupError} the converted error
  */
 export function toRollupError(error, options) {
 	const { filename, frame, start, code, name, stack } = error;
-	/** @type {import('rollup').RollupError} */
+	/** @type {import('vite').Rollup.RollupError} */
 	const rollupError = {
 		name, // needed otherwise sveltekit coalesce_to_error turns it into a string
 		id: filename,

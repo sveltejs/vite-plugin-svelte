@@ -2,7 +2,7 @@
   "include": ["src"],
   "exclude": ["**/*.spec.ts"],
   "compilerOptions": {
-    "outDir": "dist",
+    "noEmit": true,
     "target": "ES2020",
     "module": "ES2020",
     "moduleResolution": "node",
@@ -14,6 +14,8 @@
     "baseUrl": ".",
     "resolveJsonModule": true,
 		// see https://devblogs.microsoft.com/typescript/announcing-typescript-4-4-beta/#use-unknown-catch-variables
-		"useUnknownInCatchVariables": false
+		"useUnknownInCatchVariables": false,
+		"allowJs": true,
+		"checkJs": true
   }
 }
