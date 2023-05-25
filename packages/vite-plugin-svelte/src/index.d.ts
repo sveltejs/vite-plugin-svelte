@@ -172,7 +172,7 @@ interface ExperimentalOptions {
 	disableSvelteResolveWarnings?: boolean;
 }
 
-type ModuleFormat = NonNullable<CompileOptions['format']>;
+type ModuleFormat = NonNullable<'esm'>;
 type CssHashGetter = NonNullable<CompileOptions['cssHash']>;
 type Arrayable<T> = T | T[];
 
