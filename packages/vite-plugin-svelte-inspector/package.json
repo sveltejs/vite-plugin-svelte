@@ -15,9 +15,8 @@
     }
   },
 	"scripts": {
-		"dev": "pnpm typecheck --watch",
-		"build": "pnpm typecheck",
-		"typecheck": "tsc --noEmit"
+		"check:publint": "publint --strict",
+		"check:types": "tsc --noEmit"
 	},
   "engines": {
     "node": "^14.18.0 || >= 16"
