@@ -1,0 +1,13 @@
+<script lang="ts">export let name;
+let clicks = 0;
+</script>
+
+<button
+	on:click={() => {
+		clicks++;
+	}}>{name} clicks: {clicks}</button
+>
+
+<style lang="scss">button {
+  color: #000099;
+}</style>
