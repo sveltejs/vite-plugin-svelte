@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { compile, preprocess } from 'svelte/compiler';
 import { log } from './log.js';
 import { toESBuildError } from './error.js';
+import { isSvelte3 } from './svelte-version.js';
 
 /**
  * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
@@ -64,10 +65,12 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		...options.compilerOptions,
 		css,
 		filename,
-		format: 'esm',
 		generate: 'dom'
 	};
-
+	if (isSvelte3) {
+		// @ts-ignore
+		compileOptions.format = 'esm';
+	}
 	let preprocessed;
 
 	if (options.preprocess) {

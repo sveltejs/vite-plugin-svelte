@@ -1,5 +1,4 @@
 import fs from 'fs';
-import { VERSION as svelteVersion } from 'svelte/compiler';
 import { version as viteVersion } from 'vite';
 
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
@@ -25,9 +24,9 @@ import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants.js';
+import { isSvelte3 } from './utils/svelte-version.js';
 
 const isVite4_0 = viteVersion.startsWith('4.0');
-const isSvelte3 = svelteVersion.startsWith('3');
 
 /** @type {import('./index.d.ts').svelte} */
 export function svelte(inlineOptions) {
