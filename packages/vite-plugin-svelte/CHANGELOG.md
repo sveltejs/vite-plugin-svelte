@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.4.0
+
+### Minor Changes
+
+- refactor: release vite-plugin-svelte as unbundled javascript with jsdoc types ([#657](https://github.com/sveltejs/vite-plugin-svelte/pull/657))
+
 ## 2.3.0
 
 ### Minor Changes
