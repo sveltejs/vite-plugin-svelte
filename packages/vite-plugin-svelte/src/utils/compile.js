@@ -56,7 +56,7 @@ export const _createCompileSvelte = (makeHot) => {
 			generate: ssr ? 'ssr' : 'dom'
 		};
 		if (isSvelte3) {
-			//@ts-expect-error only valid for svelte3
+			// @ts-ignore
 			compileOptions.format = 'esm';
 		}
 		if (options.hot && options.emitCss) {

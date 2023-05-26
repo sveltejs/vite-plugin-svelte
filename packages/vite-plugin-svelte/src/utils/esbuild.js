@@ -68,7 +68,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		generate: 'dom'
 	};
 	if (isSvelte3) {
-		// @ts-expect-error only exists for svelte-3
+		// @ts-ignore
 		compileOptions.format = 'esm';
 	}
 	let preprocessed;
