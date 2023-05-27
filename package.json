@@ -11,7 +11,7 @@
     "check:publint": "pnpm --filter \"./packages/*\" --parallel check:publint",
     "check:types": "pnpm --filter \"./packages/*\" --parallel check:types",
     "check:lint": "eslint --cache --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
-    "check:format": "prettier --cache --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
+    "check:format": "prettier --cache --ignore-path .gitignore . --ignore-unknown --check",
     "lint": "pnpm check:lint --fix",
     "format": "pnpm check:format --write",
     "fixup": "run-s lint format",
@@ -53,8 +53,8 @@
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
-    "*.{css,scss,svelte,html,js,ts,svx,md}": [
-      "prettier --cache --write"
+    "*": [
+      "prettier --cache --ignore-unknown --write"
     ]
   },
   "packageManager": "pnpm@8.5.0",
