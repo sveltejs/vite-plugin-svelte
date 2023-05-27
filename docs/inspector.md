@@ -108,3 +108,7 @@ SVELTE_INSPECTOR_OPTIONS=true
   Inject custom styles when inspector is active. This is useful if you want to customize the inspector styles to match your app.
 
   When the inspector is active, the `svelte-inspector-enabled` class is added to the `body` element, and the `svelte-inspector-active-target` class is added to the current active target (e.g. via hover or keyboard).
+
+## Editors
+
+If your editor is not [supported out of the box](https://github.com/yyx990803/launch-editor#supported-editors), you can follow [the instructions here](https://github.com/yyx990803/launch-editor#custom-editor-support) to add it.
