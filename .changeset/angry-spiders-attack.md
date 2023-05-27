@@ -1,8 +1,8 @@
 ---
-'@sveltejs/vite-plugin-svelte-inspector': minor
-'@sveltejs/vite-plugin-svelte': minor
+'@sveltejs/vite-plugin-svelte-inspector': patch
+'@sveltejs/vite-plugin-svelte': patch
 ---
 
-Add support for svelte-4 prereleases
+Ensure compatibility with Svelte 4 prereleases
 
-Note: We are going to remove `^4.0.0-next` from the peerDependency range in another minor release after svelte `4.0.0` final has been released.
+Note: We are going to remove `-next` from the Svelte peerDependency range in a minor release once Svelte `4.0.0` final has been released.
