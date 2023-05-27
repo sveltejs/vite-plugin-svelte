@@ -1,18 +1,18 @@
 {
-	extends: [
-		'config:base',
-		'schedule:weekly', // each monday
-		'group:allNonMajor', // batch non-majors into one PR
-		':semanticCommits' // nicer commit messages
+	"extends": [
+		"config:base",
+		"schedule:weekly", // each monday
+		"group:allNonMajor", // batch non-majors into one PR
+		":semanticCommits" // nicer commit messages
 	],
-	labels: ['dependencies'],
-	pin: false,
-	rangeStrategy: 'bump',
-	node: false,
-	packageRules: [
+	"labels": ["dependencies"],
+	"pin": false,
+	"rangeStrategy": "bump",
+	"node": false,
+	"packageRules": [
 		{
-			matchDepTypes: ['peerDependencies', 'engines'],
-			enabled: false
+			"matchDepTypes": ["peerDependencies","engines"],
+			"enabled": false
 		}
 	]
 }

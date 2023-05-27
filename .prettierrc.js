@@ -14,7 +14,7 @@ module.exports = {
 			options: { parser: 'typescript' }
 		},
 		{
-			files: '**/CHANGELOG.md',
+			files: ['**/CHANGELOG.md', '.github/renovate.json5'],
 			options: {
 				requirePragma: true
 			}

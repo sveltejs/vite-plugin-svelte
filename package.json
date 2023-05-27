@@ -53,7 +53,7 @@
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
-    "*.{css,scss,svelte,html,js,ts,svx,md}": [
+    "*": [
       "prettier --cache --ignore-unknown --write"
     ]
   },
