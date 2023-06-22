@@ -3,6 +3,7 @@ module.exports = {
 	extends: [
 		'eslint:recommended',
 		'plugin:n/recommended',
+		'plugin:svelte/recommended',
 		'plugin:@typescript-eslint/eslint-recommended',
 		'prettier'
 	],
@@ -10,16 +11,12 @@ module.exports = {
 		Atomics: 'readonly',
 		SharedArrayBuffer: 'readonly'
 	},
-	plugins: ['@typescript-eslint', 'svelte3', 'html', 'markdown'],
-	settings: {
-		'svelte3/typescript': require('typescript'),
-		'svelte3/ignore-styles': (attrs) =>
-			(attrs.type && attrs.type !== 'text/css') || (attrs.lang && attrs.lang !== 'css')
-	},
+	plugins: ['@typescript-eslint', 'html', 'markdown'],
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
 		sourceType: 'module',
-		ecmaVersion: 2020
+		ecmaVersion: 2020,
+		extraFileExtensions: ['.svelte']
 	},
 	rules: {
 		'n/no-unsupported-features/es-builtins': 'error',
@@ -105,7 +102,10 @@ module.exports = {
 				browser: true,
 				node: false
 			},
-			processor: 'svelte3/svelte3',
+			parser: 'svelte-eslint-parser',
+			parserOptions: {
+				parser: '@typescript-eslint/parser'
+			},
 			rules: {
 				'import/first': 'off',
 				'import/no-duplicates': 'off',
