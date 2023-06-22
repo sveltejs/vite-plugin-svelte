@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 1.0.3
+
+### Patch Changes
+
+- Bump supported Svelte 4 version to `^4.0.0` ([#675](https://github.com/sveltejs/vite-plugin-svelte/pull/675))
+
+- Updated dependencies [[`ad56417`](https://github.com/sveltejs/vite-plugin-svelte/commit/ad564173abd60d2d095a60a31dbd026d92e307b3), [`ffbe8d3`](https://github.com/sveltejs/vite-plugin-svelte/commit/ffbe8d3ebf8b726a31b7614a38ce4b3a0fad7776)]:
+  - @sveltejs/vite-plugin-svelte@2.4.2
+
 ## 1.0.2
 
 ### Patch Changes
