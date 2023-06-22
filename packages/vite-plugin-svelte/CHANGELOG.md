@@ -1,5 +1,16 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.4.2
+
+### Patch Changes
+
+- fix: remove pure comments only for Svelte 3 ([#673](https://github.com/sveltejs/vite-plugin-svelte/pull/673))
+
+- Bump supported Svelte 4 version to `^4.0.0` ([#675](https://github.com/sveltejs/vite-plugin-svelte/pull/675))
+
+- Updated dependencies [[`ffbe8d3`](https://github.com/sveltejs/vite-plugin-svelte/commit/ffbe8d3ebf8b726a31b7614a38ce4b3a0fad7776)]:
+  - @sveltejs/vite-plugin-svelte-inspector@1.0.3
+
 ## 2.4.1
 
 ### Patch Changes
