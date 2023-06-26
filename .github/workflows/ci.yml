@@ -115,9 +115,9 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
-        if: matrix.node != 14
+        if: matrix.node != 14 && matrix.svelte != 3
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
-      - name: install for node14
+      - name: install for node14 or svelte3
         if: matrix.node == 14 || matrix.svelte == 3
         run: pnpm install --no-frozen-lockfile --prefer-offline --ignore-scripts
       - name: install playwright chromium
