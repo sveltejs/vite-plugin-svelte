@@ -14,6 +14,8 @@ import {
 	text
 } from "svelte/internal";
 
+import "svelte/internal/disclose-version";
+
 function create_fragment(ctx) {
 	let button;
 	let t0;
@@ -48,7 +50,10 @@ function create_fragment(ctx) {
 		i: noop,
 		o: noop,
 		d(detaching) {
-			if (detaching) detach(button);
+			if (detaching) {
+				detach(button);
+			}
+
 			mounted = false;
 			dispose();
 		}
