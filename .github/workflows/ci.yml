@@ -85,6 +85,9 @@ jobs:
           - node: 16
             os: ubuntu-latest
             svelte: 3
+          - node: 16
+            os: ubuntu-latest
+            svelte: 4
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
