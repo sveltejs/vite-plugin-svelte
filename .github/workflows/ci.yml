@@ -108,7 +108,8 @@ jobs:
           tmppkg="$(jq '.engines.pnpm = "^7.33.0"' package.json)" && echo -E "${tmppkg}" > package.json && tmppkg=""
       - name: use svelte 3
         if: matrix.svelte == 3
-        run: cat package.json | jq '.devDependencies.svelte = "^3.59.2"' | tee package.json
+        run: |
+          tmppkg="$(jq '.devDependencies.svelte = "^3.59.2"' package.json)" && echo -E "${tmppkg}" > package.json && tmppkg=""
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -131,7 +132,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}
+          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}-${{ matrix.svelte }}
           path: |
             test-temp.tar
             pnpm-debug.log
