@@ -14,6 +14,8 @@ import {
 	text
 } from "/node_modules/.vite/deps/svelte_internal.js?v=XXX";
 
+import "/node_modules/.vite/deps/svelte_internal_disclose-version.js?v=XXX";
+
 function create_fragment(ctx) {
 	let button;
 	let t0;
@@ -48,7 +50,10 @@ function create_fragment(ctx) {
 		i: noop,
 		o: noop,
 		d(detaching) {
-			if (detaching) detach(button);
+			if (detaching) {
+				detach(button);
+			}
+
 			mounted = false;
 			dispose();
 		}
@@ -79,4 +84,4 @@ class Dummy extends SvelteComponent {
 
 export default Dummy;
 
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O3NCQVFLLEdBQUk7YUFBQyxXQUFTO3dCQUFDLEdBQU07Ozs7R0FIMUIsTUFJQTs7Ozs7Ozs7Ozs7aURBREssR0FBSTtxREFBVyxHQUFNOzs7Ozs7Ozs7Ozs7O09BUGQ7S0FDUCxTQUFTOzs7a0JBS1osTUFBTSIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJEdW1teS5zdmVsdGUiXX0=
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7c0JBUUssR0FBSTthQUFDLFdBQVM7d0JBQUMsR0FBTTs7OztHQUgxQixNQUlBOzs7Ozs7Ozs7OztpREFESyxHQUFJO3FEQUFXLEdBQU07Ozs7Ozs7Ozs7Ozs7Ozs7T0FQZDtLQUNQLFNBQVM7OztrQkFLWixNQUFNIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbIkR1bW15LnN2ZWx0ZSJdfQ==

@@ -17,6 +17,8 @@ import {
 	text
 } from "svelte/internal";
 
+import "svelte/internal/disclose-version";
+
 function add_css(target) {
 	append_styles(target, "svelte-d8vj6a", "button.svelte-d8vj6a{color:#000099}");
 }
@@ -55,7 +57,10 @@ function create_fragment(ctx) {
 		i: noop,
 		o: noop,
 		d(detaching) {
-			if (detaching) detach(button);
+			if (detaching) {
+				detach(button);
+			}
+
 			mounted = false;
 			dispose();
 		}
