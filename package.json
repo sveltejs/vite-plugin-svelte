@@ -44,7 +44,7 @@
     "prettier": "^2.8.8",
     "prettier-plugin-svelte": "^2.10.1",
     "publint": "^0.1.12",
-    "svelte": "^3.59.2",
+    "svelte": "^4.0.0",
     "typescript": "^5.1.3",
     "vite": "^4.3.9",
     "vitest": "^0.32.2"
@@ -62,7 +62,9 @@
   },
   "pnpm": {
     "overrides": {
-      "@sveltejs/vite-plugin-svelte": "workspace:^"
+      "@sveltejs/vite-plugin-svelte": "workspace:^",
+      "svelte": "$svelte",
+      "vite": "$vite"
     }
   }
 }
