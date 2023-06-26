@@ -79,16 +79,13 @@ jobs:
         include:
           - node: 14
             os: ubuntu-latest
-            svelte: 4
+            svelte: 3
           - node: 18
             os: ubuntu-latest
             svelte: 4
           - node: 20
             os: ubuntu-latest
             svelte: 4
-          - node: 16
-            os: ubuntu-latest
-            svelte: 3
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
