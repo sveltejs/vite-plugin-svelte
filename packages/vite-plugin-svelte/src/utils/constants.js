@@ -6,6 +6,7 @@ export const SVELTE_IMPORTS = [
 	'svelte/animate',
 	'svelte/easing',
 	'svelte/internal',
+	'svelte/internal/disclose-version',
 	'svelte/motion',
 	'svelte/ssr',
 	'svelte/store',
