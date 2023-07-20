@@ -111,7 +111,7 @@ to get output with different compilerOptions, append them as json like this:
 
 ```js
 //get ssr output of svelte.compile js as {code, map, dependencies}
-import script from 'File.svelte?raw&svelte&type=script&compilerOptions={generate:"ssr"}';
+import script from 'File.svelte?raw&svelte&type=script&compilerOptions={"generate":"ssr"}';
 ```
 
 only a subset of compilerOptions is supported
