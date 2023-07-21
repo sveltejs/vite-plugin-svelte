@@ -1,3 +1,5 @@
+import { isSvelte3 } from './svelte-version.js';
+
 export const VITE_RESOLVE_MAIN_FIELDS = ['module', 'jsnext:main', 'jsnext'];
 
 export const SVELTE_RESOLVE_MAIN_FIELDS = ['svelte'];
@@ -12,6 +14,10 @@ export const SVELTE_IMPORTS = [
 	'svelte/transition',
 	'svelte'
 ];
+// TODO add to global list after dropping svelte 3
+if (!isSvelte3) {
+	SVELTE_IMPORTS.push('svelte/internal/disclose-version');
+}
 
 export const SVELTE_HMR_IMPORTS = [
 	'svelte-hmr/runtime/hot-api-esm.js',
