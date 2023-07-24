@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.4.3
+
+### Patch Changes
+
+- add svelte/internal/disclose-version to vite config optimizeDeps.include by default ([#692](https://github.com/sveltejs/vite-plugin-svelte/pull/692))
+
 ## 2.4.2
 
 ### Patch Changes
