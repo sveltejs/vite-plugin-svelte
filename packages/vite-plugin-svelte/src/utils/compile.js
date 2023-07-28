@@ -52,7 +52,7 @@ export const _createCompileSvelte = (makeHot) => {
 		/** @type {import('../index.d.ts').CompileOptions} */
 		const compileOptions = {
 			...options.compilerOptions,
-			filename: normalizedFilename, // use normalized here to avoid bleeding absolute fs path
+			filename,
 			generate: ssr ? 'ssr' : 'dom'
 		};
 		if (isSvelte3) {
