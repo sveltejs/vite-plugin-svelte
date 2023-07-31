@@ -118,7 +118,7 @@ describe('kit-node', () => {
 						`These build output files leak parent dir: "${dir}"\n\t${leakingFiles.join('\n\t')}`
 					);
 				}
-				expect(leakingFiles).toBe([]);
+				expect(leakingFiles).toEqual([]);
 			});
 		}
 
