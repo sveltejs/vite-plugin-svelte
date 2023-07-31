@@ -12,7 +12,8 @@ const config = {
 		}
 	},
 	build: {
-		minify: false
+		minify: false,
+		sourcemap: true // must be true for hermetic build test!
 	},
 	plugins: [transformValidation(), sveltekit()],
 	optimizeDeps: {
