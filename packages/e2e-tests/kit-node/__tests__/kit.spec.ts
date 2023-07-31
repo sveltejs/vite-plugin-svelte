@@ -113,7 +113,12 @@ describe('kit-node', () => {
 				const leakingFiles = outputFiles.filter(
 					(f) => !f.endsWith('.png') && readFileContent(f).includes(dir)
 				);
-				expect(leakingFiles).toEqual([]);
+				if (leakingFiles.length > 0) {
+					console.error(
+						`These build output files leak parent dir: "${dir}"\n\t${leakingFiles.join('\n\t')}`
+					);
+				}
+				expect(leakingFiles).toBe([]);
 			});
 		}
 
