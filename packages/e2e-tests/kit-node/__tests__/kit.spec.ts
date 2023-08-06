@@ -1,5 +1,4 @@
 import {
-	editFile,
 	editFileAndWaitForHmrComplete,
 	getColor,
 	getEl,
@@ -8,14 +7,15 @@ import {
 	testDir,
 	sleep,
 	untilMatches,
-	waitForNavigation,
 	page,
 	browserLogs,
 	fetchPageText,
-	reloadPage
+	reloadPage,
+	readFileContent
 } from '~utils';
 
 import glob from 'tiny-glob';
+import path from 'path';
 
 describe('kit-node', () => {
 	describe('index route', () => {
@@ -104,6 +104,21 @@ describe('kit-node', () => {
 					file.includes('client-only-module')
 				);
 				expect(includesClientOnlyModule).toBe(true);
+			});
+
+			it('should produce hermetic build', async () => {
+				const outputFiles = await glob('./build/**/*', { cwd: testDir, filesOnly: true });
+				expect(outputFiles.length).toBeGreaterThan(10);
+				const dir = path.basename(testDir);
+				const leakingFiles = outputFiles.filter(
+					(f) => !f.endsWith('.png') && readFileContent(f).includes(dir)
+				);
+				if (leakingFiles.length > 0) {
+					console.error(
+						`These build output files leak parent dir: "${dir}"\n\t${leakingFiles.join('\n\t')}`
+					);
+				}
+				expect(leakingFiles).toEqual([]);
 			});
 		}
 

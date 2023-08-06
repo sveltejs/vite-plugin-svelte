@@ -85,7 +85,10 @@ export async function serve(root, isBuild, port) {
 		try {
 			const buildProcess = execa('pnpm', ['build'], {
 				cwd: root,
-				stdio: 'pipe'
+				stdio: 'pipe',
+				env: {
+					NODE_ENV: 'production'
+				}
 			});
 			logs.build = { out, err };
 			collectLogs(buildProcess, logs.build);
