@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.4.4
+
+### Patch Changes
+
+- fix links in error handling (console and vite overlay) ([#700](https://github.com/sveltejs/vite-plugin-svelte/pull/700))
+
 ## 2.4.3
 
 ### Patch Changes
