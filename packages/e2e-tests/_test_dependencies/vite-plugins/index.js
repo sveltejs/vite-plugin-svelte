@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 /**
  * Ensure transform flow is not interrupted
  * @returns {import('vite').Plugin[]}
@@ -39,3 +41,36 @@ function transformValidation() {
 }
 
 module.exports.transformValidation = transformValidation;
+
+/**
+ * write resolved config
+ * @returns {import('vite').Plugin}
+ */
+function writeResolvedConfig() {
+	let cmd;
+	return {
+		name: 'writeResolvedConfig',
+		enforce: 'post',
+		config(_, { command }) {
+			cmd = command;
+		},
+		configResolved(config) {
+			function replacer(key, value) {
+				if (value instanceof RegExp) return value.toString();
+				else return value;
+			}
+			const serializableConfig = {
+				...config,
+				plugins: config.plugins.map((p) => p.name)
+			};
+			const dir = path.join(config.root, 'logs', 'resolved-configs');
+			if (!fs.existsSync(dir)) {
+				fs.mkdirSync(dir);
+			}
+			const filename = path.join(dir, `vite.config.${cmd}${config.build.ssr ? '.ssr' : ''}.json`);
+			fs.writeFileSync(filename, JSON.stringify(serializableConfig, replacer, `\t`), 'utf-8');
+		}
+	};
+}
+
+module.exports.writeResolvedConfig = writeResolvedConfig;

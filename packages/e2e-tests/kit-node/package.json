@@ -7,11 +7,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./jsconfig.json",
-    "check:watch": "svelte-check --tsconfig ./jsconfig.json --watch"
+    "check:watch": "svelte-check --tsconfig ./jsconfig.json --watch",
+    "package": "svelte-package && echo just here for testing, don't remove svelte-package!"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^1.3.1",
     "@sveltejs/kit": "^1.22.4",
+    "@sveltejs/package": "^2.2.0",
     "e2e-test-dep-svelte-api-only": "file:../_test_dependencies/svelte-api-only",
     "e2e-test-dep-vite-plugins": "file:../_test_dependencies/vite-plugins",
     "svelte": "^4.1.2",

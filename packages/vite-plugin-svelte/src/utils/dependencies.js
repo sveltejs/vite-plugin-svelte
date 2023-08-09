@@ -30,8 +30,9 @@ export async function resolveDependencyData(dep, parent) {
 const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'@lukeed/uuid',
 	'@playwright/test',
-	'@sveltejs/vite-plugin-svelte',
 	'@sveltejs/kit',
+	'@sveltejs/package',
+	'@sveltejs/vite-plugin-svelte',
 	'autoprefixer',
 	'cookie',
 	'dotenv',
@@ -43,6 +44,7 @@ const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'postcss',
 	'prettier',
 	'svelte',
+	'svelte2tsx',
 	'svelte-check',
 	'svelte-hmr',
 	'svelte-preprocess',

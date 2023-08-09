@@ -16,6 +16,7 @@ import {
 
 import glob from 'tiny-glob';
 import path from 'path';
+import { describe, expect } from 'vitest';
 
 describe('kit-node', () => {
 	describe('index route', () => {
@@ -85,7 +86,7 @@ describe('kit-node', () => {
 			expect(browserLogs.some((x) => x === 'onMount dynamic imported isSSR: false')).toBe(true);
 		});
 
-		test('should respect transforms', async () => {
+		it('should respect transforms', async () => {
 			expect(await getText('#js-transform')).toBe('Hello world');
 			expect(await getColor('#css-transform')).toBe('red');
 		});
@@ -104,21 +105,6 @@ describe('kit-node', () => {
 					file.includes('client-only-module')
 				);
 				expect(includesClientOnlyModule).toBe(true);
-			});
-
-			it('should produce hermetic build', async () => {
-				const outputFiles = await glob('./build/**/*', { cwd: testDir, filesOnly: true });
-				expect(outputFiles.length).toBeGreaterThan(10);
-				const dir = path.basename(testDir);
-				const leakingFiles = outputFiles.filter(
-					(f) => !f.endsWith('.png') && readFileContent(f).includes(dir)
-				);
-				if (leakingFiles.length > 0) {
-					console.error(
-						`These build output files leak parent dir: "${dir}"\n\t${leakingFiles.join('\n\t')}`
-					);
-				}
-				expect(leakingFiles).toEqual([]);
 			});
 		}
 
@@ -261,4 +247,126 @@ describe('kit-node', () => {
 			});
 		}
 	});
+	describe('resolved config', () => {
+		it('should have generated values', async () => {
+			const configs = [];
+			if (isBuild) {
+				configs.push('serve', 'build', 'build.ssr');
+			} else {
+				configs.push('serve');
+			}
+			const expectArrayEqual = (a: string[], b: string[], message: string) => {
+				const aSorted = a.slice().sort();
+				const bSorted = b.slice().sort();
+				expect(aSorted, message).toEqual(bSorted);
+			};
+			for (const pattern of configs) {
+				const filename = `vite.config.${pattern}.json`;
+				const config = JSON.parse(
+					await readFileContent(path.join('logs', 'resolved-configs', filename))
+				);
+				const isServe = pattern === 'serve';
+				expectArrayEqual(
+					config.ssr.external,
+					isServe
+						? [
+								'deepmerge',
+								'estree-walker',
+								'intl-messageformat',
+								'sade',
+								'cli-color',
+								'tiny-glob',
+								'cookie',
+								'set-cookie-parser'
+						  ]
+						: [],
+					`ssr.external in ${filename}`
+				);
+				expectArrayEqual(
+					config.ssr.noExternal,
+					[
+						'svelte',
+						'/^svelte\\//', // serialized with toString
+						'e2e-test-dep-svelte-api-only',
+						'svelte-i18n',
+						'esm-env',
+						'@sveltejs/kit'
+					],
+					`ssr.noExternal in ${filename}`
+				);
+				expectArrayEqual(
+					config.optimizeDeps.exclude,
+					['svelte-hmr', '@sveltejs/kit', '$app', '$env'],
+					`optimizeDeps.exclude in ${filename}`
+				);
+				const expectedIncludes = [
+					'svelte-i18n',
+					'e2e-test-dep-svelte-api-only',
+					'svelte/animate',
+					'svelte/easing',
+					'svelte/internal',
+					'svelte/motion',
+					'svelte/store',
+					'svelte/transition',
+					'svelte',
+					'svelte/internal/disclose-version',
+					'svelte-i18n > deepmerge',
+					'svelte-i18n > cli-color',
+					'svelte-i18n > tiny-glob'
+				].filter((item) => !(isServe && item.startsWith('svelte-i18n >')));
+				expectArrayEqual(
+					config.optimizeDeps.include,
+					expectedIncludes,
+					`optimizeDeps.include in ${filename}`
+				);
+
+				expectArrayEqual(
+					config.resolve.dedupe,
+					[
+						'svelte/animate',
+						'svelte/easing',
+						'svelte/internal',
+						'svelte/motion',
+						'svelte/ssr',
+						'svelte/store',
+						'svelte/transition',
+						'svelte',
+						'svelte/internal/disclose-version',
+						'svelte-hmr/runtime/hot-api-esm.js',
+						'svelte-hmr/runtime/proxy-adapter-dom.js',
+						'svelte-hmr'
+					],
+					`resolve.dedupe in ${filename}`
+				);
+				expectArrayEqual(
+					config.resolve.mainFields,
+					['svelte', 'module', 'jsnext:main', 'jsnext'],
+					`resolve.mainFields in ${filename}`
+				);
+				expectArrayEqual(
+					config.resolve.conditions,
+					['svelte'],
+					`resolve.conditions in ${filename}`
+				);
+			}
+		});
+	});
+	if (isBuild) {
+		describe('output', () => {
+			it('should produce hermetic build', async () => {
+				const outputFiles = await glob('./build/**/*', { cwd: testDir, filesOnly: true });
+				expect(outputFiles.length).toBeGreaterThan(10);
+				const dir = path.basename(testDir);
+				const leakingFiles = outputFiles.filter(
+					(f) => !f.endsWith('.png') && readFileContent(f).includes(dir)
+				);
+				if (leakingFiles.length > 0) {
+					console.error(
+						`These build output files leak parent dir: "${dir}"\n\t${leakingFiles.join('\n\t')}`
+					);
+				}
+				expect(leakingFiles).toEqual([]);
+			});
+		});
+	}
 });
