@@ -1,5 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { transformValidation } from 'e2e-test-dep-vite-plugins';
+import { transformValidation, writeResolvedConfig } from 'e2e-test-dep-vite-plugins';
 
 /** @type {import('vite').UserConfig} */
 const config = {
@@ -15,7 +15,7 @@ const config = {
 		minify: false,
 		sourcemap: true // must be true for hermetic build test!
 	},
-	plugins: [transformValidation(), sveltekit()],
+	plugins: [transformValidation(), sveltekit(), writeResolvedConfig()],
 	optimizeDeps: {
 		// eagerly include these, otherwise vite optimizer might interfere with restarting while the test is running
 		include: ['svelte-i18n', 'e2e-test-dep-svelte-api-only']
