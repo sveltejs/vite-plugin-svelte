@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.4.5
+
+### Patch Changes
+
+- fix(config): ignore @sveltejs/package and svelte2tsx for optimizeDeps.include and ssr.noExternal generated config ([#711](https://github.com/sveltejs/vite-plugin-svelte/pull/711))
+
 ## 2.4.4
 
 ### Patch Changes
