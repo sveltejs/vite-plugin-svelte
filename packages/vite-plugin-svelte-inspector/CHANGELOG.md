@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 1.0.4
+
+### Patch Changes
+
+- fix: while combo is held, disable inspector when additional keys are pressed or leaving browser ([#716](https://github.com/sveltejs/vite-plugin-svelte/pull/716))
+
 ## 1.0.3
 
 ### Patch Changes
