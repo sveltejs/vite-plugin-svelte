@@ -6,7 +6,7 @@
 	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
 	const nav_keys = Object.values(options.navKeys).map((k) => k.toLowerCase());
 	let enabled = false;
-	let hasOpened = false;
+	let has_opened = false;
 
 	const icon = `data:image/svg+xml;base64,${btoa(
 		`
@@ -27,7 +27,7 @@
 
 	let active_el;
 
-	let enabled_ts;
+	let hold_start_ts;
 
 	$: show_toggle =
 		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled);
@@ -125,7 +125,7 @@
 		if (file_loc) {
 			stop(event);
 			fetch(`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
-			hasOpened = true;
+			has_opened = true;
 			if (options.holdMode && is_holding()) {
 				disable();
 			}
@@ -145,7 +145,11 @@
 	}
 
 	function is_combo(event) {
-		return toggle_combo?.every((key) => is_key_active(key, event));
+		return is_toggle(event) && toggle_combo?.every((key) => is_key_active(key, event));
+	}
+
+	function is_toggle(event) {
+		return toggle_combo?.includes(event.key.toLowerCase());
 	}
 
 	function is_nav(event) {
@@ -157,7 +161,7 @@
 	}
 
 	function is_holding() {
-		return enabled_ts && Date.now() - enabled_ts > 250;
+		return hold_start_ts && Date.now() - hold_start_ts > 250;
 	}
 
 	function stop(event) {
@@ -167,14 +171,13 @@
 	}
 
 	function keydown(event) {
-		if (event.repeat || event.key == null) {
+		if (event.repeat || event.key == null || (!enabled && !is_toggle(event))) {
 			return;
 		}
-
 		if (is_combo(event)) {
 			toggle();
 			if (options.holdMode && enabled) {
-				enabled_ts = Date.now();
+				hold_start_ts = Date.now();
 			}
 		} else if (enabled) {
 			if (is_nav(event)) {
@@ -185,19 +188,23 @@
 				}
 			} else if (is_open(event)) {
 				open_editor(event);
+			} else if (is_holding()) {
+				// unhandled additional key pressed while holding, possibly another shortcut, disable again
+				disable();
 			}
 		}
 	}
 
 	function keyup(event) {
-		if (event.repeat || event.key == null) {
+		if (event.repeat || event.key == null || !enabled) {
 			return;
 		}
-		const k = event.key.toLowerCase();
-		if (enabled && is_holding() && toggle_combo.includes(k)) {
-			disable();
-		} else {
-			enabled_ts = null;
+		if (is_toggle(event)) {
+			if (is_holding()) {
+				disable();
+			} else {
+				hold_start_ts = null;
+			}
 		}
 	}
 
@@ -249,8 +256,8 @@
 
 	function disable() {
 		enabled = false;
-		hasOpened = false;
-		enabled_ts = null;
+		has_opened = false;
+		hold_start_ts = null;
 		const b = document.body;
 		listeners(b, enabled);
 		if (options.customStyles) {
@@ -267,7 +274,8 @@
 	}
 
 	function onLeave() {
-		if (hasOpened) {
+		// disable if a file has been opened or combo is held
+		if (enabled && (has_opened || hold_start_ts)) {
 			disable();
 		}
 	}
