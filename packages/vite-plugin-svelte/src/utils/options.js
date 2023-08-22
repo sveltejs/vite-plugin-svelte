@@ -10,7 +10,7 @@ import {
 	VITE_RESOLVE_MAIN_FIELDS
 } from './constants.js';
 
-import path from 'path';
+import path from 'node:path';
 import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild.js';
 import { addExtraPreprocessors } from './preprocess.js';
 import deepmerge from 'deepmerge';

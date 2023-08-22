@@ -1,7 +1,7 @@
-import { createRequire } from 'module';
-import path from 'path';
-import fs from 'fs';
-import { pathToFileURL } from 'url';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import fs from 'node:fs';
+import { pathToFileURL } from 'node:url';
 import { log } from './log.js';
 
 // used to require cjs config in esm.

@@ -1,7 +1,7 @@
 import { normalizePath } from 'vite';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { debug } from './debug.js';
 import { defaultInspectorOptions, parseEnvironmentOptions } from './options.js';
 import { cleanUrl } from './utils.js';
@@ -35,7 +35,7 @@ export function svelteInspector(options) {
 
 			const environmentOptions = parseEnvironmentOptions(config);
 			if (environmentOptions === false) {
-				debug(`environment options set to false, inspector disabled`);
+				debug('environment options set to false, inspector disabled');
 				disabled = true;
 				return;
 			}
@@ -47,7 +47,7 @@ export function svelteInspector(options) {
 			// vite-plugin-svelte can only pass options through it's `api` instead of `options`.
 			// that means this plugin could be created but should be disabled, so we check this case here.
 			if (vps && !options && !configFileOptions && !environmentOptions) {
-				debug(`vite-plugin-svelte didn't pass options, inspector disabled`);
+				debug("vite-plugin-svelte didn't pass options, inspector disabled");
 				disabled = true;
 				return;
 			}

@@ -1,7 +1,7 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import { log } from './log.js';
 import { knownSvelteConfigNames } from './load-svelte-config.js';
-import path from 'path';
+import path from 'node:path';
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options

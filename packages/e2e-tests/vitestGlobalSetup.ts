@@ -1,9 +1,9 @@
-import os from 'os';
+import os from 'node:os';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 import { chromium } from 'playwright-core';
 import { execa } from 'execa';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 const tempTestDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'temp');
 

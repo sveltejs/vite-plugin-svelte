@@ -1,5 +1,5 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 /**
  * Ensure transform flow is not interrupted
  * @returns {import('vite').Plugin[]}
@@ -68,7 +68,7 @@ function writeResolvedConfig() {
 				fs.mkdirSync(dir);
 			}
 			const filename = path.join(dir, `vite.config.${cmd}${config.build.ssr ? '.ssr' : ''}.json`);
-			fs.writeFileSync(filename, JSON.stringify(serializableConfig, replacer, `\t`), 'utf-8');
+			fs.writeFileSync(filename, JSON.stringify(serializableConfig, replacer, '\t'), 'utf-8');
 		}
 	};
 }

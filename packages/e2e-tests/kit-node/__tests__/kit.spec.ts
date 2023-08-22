@@ -15,7 +15,7 @@ import {
 } from '~utils';
 
 import glob from 'tiny-glob';
-import path from 'path';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('kit-node', () => {
@@ -120,7 +120,7 @@ describe('kit-node', () => {
 						'<div id="hmr-test">foo</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 					)
 				);
-				expect(await getText(`#hmr-test`)).toBe('foo');
+				expect(await getText('#hmr-test')).toBe('foo');
 
 				// add div 2
 				expect(await getEl('#hmr-test2')).toBe(null);
@@ -130,12 +130,12 @@ describe('kit-node', () => {
 						'<div id="hmr-test2">bar</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 					)
 				);
-				expect(await getText(`#hmr-test`)).toBe('foo');
-				expect(await getText(`#hmr-test2`)).toBe('bar');
+				expect(await getText('#hmr-test')).toBe('foo');
+				expect(await getText('#hmr-test2')).toBe('bar');
 				// remove div 1
 				await updatePage((content) => content.replace('<div id="hmr-test">foo</div>\n', ''));
-				expect(await getText(`#hmr-test`)).toBe(null);
-				expect(await getText(`#hmr-test2`)).toBe('bar');
+				expect(await getText('#hmr-test')).toBe(null);
+				expect(await getText('#hmr-test2')).toBe('bar');
 			});
 
 			it('should render additional child components', async () => {
@@ -162,19 +162,19 @@ describe('kit-node', () => {
 			});
 
 			it('should apply changed styles', async () => {
-				expect(await getColor(`h1`)).toBe('rgb(255, 62, 0)');
+				expect(await getColor('h1')).toBe('rgb(255, 62, 0)');
 				await updatePage((content) => content.replace('color: #ff3e00', 'color: blue'));
-				expect(await getColor(`h1`)).toBe('blue');
+				expect(await getColor('h1')).toBe('blue');
 				await updatePage((content) => content.replace('color: blue', 'color: green'));
-				expect(await getColor(`h1`)).toBe('green');
+				expect(await getColor('h1')).toBe('green');
 			});
 
 			it('should serve changes even after page reload', async () => {
-				expect(await getColor(`h1`)).toBe('green');
-				expect(await getText(`#hmr-test2`)).toBe('bar');
+				expect(await getColor('h1')).toBe('green');
+				expect(await getText('#hmr-test2')).toBe('bar');
 				await reloadPage();
-				expect(await getColor(`h1`)).toBe('green');
-				expect(await getText(`#hmr-test2`)).toBe('bar');
+				expect(await getColor('h1')).toBe('green');
+				expect(await getText('#hmr-test2')).toBe('bar');
 			});
 
 			describe('child component update', () => {
@@ -207,7 +207,7 @@ describe('kit-node', () => {
 							'<div id="hmr-test3">foo</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 						)
 					);
-					expect(await getText(`#hmr-test3`)).toBe('foo');
+					expect(await getText('#hmr-test3')).toBe('foo');
 
 					// add div 2
 					expect(await getEl('#hmr-test4')).toBe(null);
@@ -217,20 +217,20 @@ describe('kit-node', () => {
 							'<div id="hmr-test4">bar</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 						)
 					);
-					expect(await getText(`#hmr-test3`)).toBe('foo');
-					expect(await getText(`#hmr-test4`)).toBe('bar');
+					expect(await getText('#hmr-test3')).toBe('foo');
+					expect(await getText('#hmr-test4')).toBe('bar');
 					// remove div 1
 					await updateCounter((content) => content.replace('<div id="hmr-test3">foo</div>\n', ''));
-					expect(await getText(`#hmr-test3`)).toBe(null);
-					expect(await getText(`#hmr-test4`)).toBe('bar');
+					expect(await getText('#hmr-test3')).toBe(null);
+					expect(await getText('#hmr-test4')).toBe('bar');
 				});
 
 				it('should apply changed styles', async () => {
-					expect(await getColor(`button`)).toBe('rgb(255, 62, 0)');
+					expect(await getColor('button')).toBe('rgb(255, 62, 0)');
 					await updateCounter((content) => content.replace('color: #ff3e00', 'color: blue'));
-					expect(await getColor(`button`)).toBe('blue');
+					expect(await getColor('button')).toBe('blue');
 					await updateCounter((content) => content.replace('color: blue', 'color: green'));
-					expect(await getColor(`button`)).toBe('green');
+					expect(await getColor('button')).toBe('green');
 				});
 
 				it('should apply changed initial state', async () => {

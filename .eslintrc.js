@@ -11,7 +11,7 @@ module.exports = {
 		Atomics: 'readonly',
 		SharedArrayBuffer: 'readonly'
 	},
-	plugins: ['@typescript-eslint', 'html', 'markdown'],
+	plugins: ['@typescript-eslint', 'html', 'markdown', 'unicorn'],
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
 		sourceType: 'module',
@@ -56,7 +56,9 @@ module.exports = {
 		],
 		'n/no-unpublished-import': 'off',
 		'n/no-unpublished-require': 'off',
-		'no-process-exit': 'off'
+		'no-process-exit': 'off',
+		quotes: ['error', 'single', { avoidEscape: true }],
+		'unicorn/prefer-node-protocol': 'error'
 	},
 	overrides: [
 		{

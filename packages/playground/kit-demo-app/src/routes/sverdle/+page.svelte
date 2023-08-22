@@ -120,7 +120,7 @@
 				<p>the answer was "{data.answer}"</p>
 			{/if}
 			<button data-key="enter" class="restart" formaction="?/restart">
-				{won ? 'you won :)' : `game over :(`} play again?
+				{won ? 'you won :)' : 'game over :('} play again?
 			</button>
 		{:else}
 			<div class="keyboard">

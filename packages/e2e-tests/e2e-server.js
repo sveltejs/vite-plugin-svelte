@@ -1,8 +1,8 @@
 // script to start package.json dev/build/preview scripts with execa for e2e tests
 import { execa } from 'execa';
 import treeKill from 'tree-kill';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 const isWin = process.platform === 'win32';
 
 async function startedOnPort(serverProcess, port, timeout) {

@@ -1,5 +1,5 @@
-import { readFileSync } from 'fs';
-import { dirname } from 'path';
+import { readFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { findClosestPkgJsonPath } from 'vitefu';
 import { normalizePath } from 'vite';
 

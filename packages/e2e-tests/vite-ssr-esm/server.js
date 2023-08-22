@@ -1,7 +1,7 @@
 // @ts-check
-import fs from 'fs';
-import path from 'path';
-import { pathToFileURL } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import express from 'express';
 import compression from 'compression';
 import serveStatic from 'serve-static';
@@ -76,8 +76,8 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 			const headElements = rendered.head || '';
 			// TODO what do we do with rendered.css here. find out if emitCss was used and vite took care of it
 			const html = template
-				.replace(`<!--head-outlet-->`, headElements)
-				.replace(`<!--app-outlet-->`, appHtml);
+				.replace('<!--head-outlet-->', headElements)
+				.replace('<!--app-outlet-->', appHtml);
 
 			res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
 		} catch (e) {

@@ -39,7 +39,7 @@ describe('raw', () => {
 		expect(result).toMatchFileSnapshot(snapshotFilename('preprocessed'));
 	});
 
-	test(`Dummy.svelte?raw&svelte&type=script`, async () => {
+	test('Dummy.svelte?raw&svelte&type=script', async () => {
 		const result = await getText('#script');
 		expect(normalizeSnapshot(result)).toMatchFileSnapshot(snapshotFilename('script'));
 	});

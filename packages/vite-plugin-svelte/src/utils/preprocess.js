@@ -1,6 +1,6 @@
 import MagicString from 'magic-string';
 import { log } from './log.js';
-import path from 'path';
+import path from 'node:path';
 
 /**
  * this appends a *{} rule to component styles to force the svelte compiler to add style classes to all nodes

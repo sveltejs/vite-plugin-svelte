@@ -1,5 +1,5 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 
 // List of options that changes the prebundling result
 /** @type {(keyof import('../types/options.d.ts').ResolvedOptions)[]} */
