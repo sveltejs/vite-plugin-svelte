@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { foobar } from './foobar.js';
-	let s: string = 'world';
+	const s: string = 'world';
 </script>
 
 <div id="hello">Hello {s}</div>

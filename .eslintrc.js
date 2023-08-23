@@ -57,6 +57,7 @@ module.exports = {
 		'n/no-unpublished-import': 'off',
 		'n/no-unpublished-require': 'off',
 		'no-process-exit': 'off',
+		'prefer-const': ['error', { destructuring: 'all' }],
 		quotes: ['error', 'single', { avoidEscape: true }],
 		'unicorn/prefer-node-protocol': 'error'
 	},

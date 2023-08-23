@@ -1,10 +1,10 @@
 <script context="module">
-	export let y = 1;
+	export const y = 1;
 </script>
 
 <script>
 	export let id;
-	let x = 0;
+	const x = 0;
 </script>
 
 <pre {id}>

@@ -19,7 +19,7 @@ export interface Compiled {
 	css: Code;
 	ast: any; // TODO type
 	warnings: any[]; // TODO type
-	vars: {
+	vars: Array<{
 		name: string;
 		export_name: string;
 		injected: boolean;
@@ -29,7 +29,7 @@ export interface Compiled {
 		referenced: boolean;
 		writable: boolean;
 		referenced_from_script: boolean;
-	}[];
+	}>;
 	stats: {
 		timings: {
 			total: number;
