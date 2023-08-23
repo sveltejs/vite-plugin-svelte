@@ -1,8 +1,8 @@
-import * as path from 'path';
-import * as os from 'os';
+import * as path from 'node:path';
+import * as os from 'node:os';
 
 import { defineConfig } from 'vitest/config';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 const timeout = process.env.CI ? 50000 : 30000;
 const __dir = path.dirname(fileURLToPath(import.meta.url));

@@ -1,5 +1,5 @@
 import { log } from './log.js';
-import { performance } from 'perf_hooks';
+import { performance } from 'node:perf_hooks';
 import { normalizePath } from 'vite';
 
 /** @type {import('../types/vite-plugin-svelte-stats.d.ts').CollectionOptions} */

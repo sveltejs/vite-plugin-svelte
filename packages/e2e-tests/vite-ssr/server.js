@@ -1,6 +1,6 @@
 // @ts-check
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const express = require('express');
 
 let port = 3000;
@@ -74,8 +74,8 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 			const headElements = rendered.head || '';
 			// TODO what do we do with rendered.css here. find out if emitCss was used and vite took care of it
 			const html = template
-				.replace(`<!--head-outlet-->`, headElements)
-				.replace(`<!--app-outlet-->`, appHtml);
+				.replace('<!--head-outlet-->', headElements)
+				.replace('<!--app-outlet-->', appHtml);
 
 			res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
 		} catch (e) {

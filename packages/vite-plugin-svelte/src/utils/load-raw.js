@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import { toRollupError } from './error.js';
 import { log } from './log.js';
 
@@ -126,7 +126,7 @@ function toRawExports(object) {
 			.map(([key, value]) => `export const ${key}=${JSON.stringify(value)}`)
 			.join('\n') + '\n';
 	if (Object.prototype.hasOwnProperty.call(object, 'code')) {
-		exports += `export default code\n`;
+		exports += 'export default code\n';
 	}
 	return exports;
 }

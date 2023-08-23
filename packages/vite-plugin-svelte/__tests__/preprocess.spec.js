@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { vitePreprocess } from '../src/preprocess.js';
-import path from 'path';
+import path from 'node:path';
 import { normalizePath } from 'vite';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 const fixtureDir = normalizePath(
 	path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'preprocess')

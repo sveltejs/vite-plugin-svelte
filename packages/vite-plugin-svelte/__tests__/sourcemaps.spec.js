@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { removeLangSuffix, mapToRelative } from '../src/utils/sourcemaps.js';
 import { lang_sep } from '../src/preprocess.js';
 import { normalizePath } from 'vite';
-import path from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const fixtureDir = normalizePath(
 	path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'preprocess')
@@ -66,7 +66,7 @@ describe('mapToRelative', () => {
 		const map = {
 			file,
 			sourceRoot: './some-path/..',
-			sources: [`foo.scss`, `File.svelte`, `${pathToFileURL(`${fixtureDir}/bar.scss`)}`]
+			sources: ['foo.scss', 'File.svelte', `${pathToFileURL(`${fixtureDir}/bar.scss`)}`]
 		};
 		mapToRelative(map, file);
 		expect(map.file).toBe('File.svelte');

@@ -1,8 +1,8 @@
 // test utils used in e2e tests
 // this can be directly imported in any e2e tests as 'testUtils', e.g.
 // `import { getColor } from 'testUtils'`
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 import fetch from 'node-fetch';

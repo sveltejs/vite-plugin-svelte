@@ -59,17 +59,17 @@ if (!isBuild) {
 					'<div id="hmr-test">foo</div>\n<!-- HMR-TEMPLATE-INJECT -->'
 				)
 			);
-			await untilMatches(() => getText(`#hmr-test`), 'foo', '#hmr-test contains text foo');
+			await untilMatches(() => getText('#hmr-test'), 'foo', '#hmr-test contains text foo');
 		});
 		test('should apply style update', async () => {
-			expect(await getColor(`h1`)).toBe('green');
+			expect(await getColor('h1')).toBe('green');
 			await updateApp((content) => content.replace('color: green', 'color: red'));
 			await untilMatches(() => getColor('h1'), 'red', 'h1 has color red');
 		});
 		test('should not preserve state of updated props', async () => {
-			expect(await getText(`#foo`)).toBe('foo');
+			expect(await getText('#foo')).toBe('foo');
 			await updateApp((content) => content.replace("foo = 'foo'", "foo = 'bar'"));
-			await untilMatches(() => getText(`#foo`), 'bar', '#foo contains text bar');
+			await untilMatches(() => getText('#foo'), 'bar', '#foo contains text bar');
 		});
 	});
 }

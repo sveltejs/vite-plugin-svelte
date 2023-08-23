@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
 import { compile, preprocess } from 'svelte/compiler';
 import { log } from './log.js';
 import { toESBuildError } from './error.js';
@@ -24,7 +24,7 @@ export function esbuildSveltePlugin(options) {
 			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
 
 			const svelteExtensions = (options.extensions ?? ['.svelte']).map((ext) => ext.slice(1));
-			const svelteFilter = new RegExp(`\\.(` + svelteExtensions.join('|') + `)(\\?.*)?$`);
+			const svelteFilter = new RegExp('\\.(' + svelteExtensions.join('|') + ')(\\?.*)?$');
 			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 			let statsCollection;
 			build.onStart(() => {

@@ -1,5 +1,5 @@
 import { createFilter, normalizePath } from 'vite';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { log } from './log.js';
 
 const VITE_FS_PREFIX = '/@fs/';
@@ -21,7 +21,7 @@ const TYPES_WITH_COMPILER_OPTIONS = ['style', 'script', 'all'];
  * @returns {{ filename: string, rawQuery: string }}
  */
 function splitId(id) {
-	const parts = id.split(`?`, 2);
+	const parts = id.split('?', 2);
 	const filename = parts[0];
 	const rawQuery = parts[1];
 	return { filename, rawQuery };
