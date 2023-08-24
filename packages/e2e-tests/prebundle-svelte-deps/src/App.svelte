@@ -6,7 +6,7 @@
 	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
 	import { getContext } from 'svelte';
 	setSomeContext();
-	let apiOnlyLoaded = !!getContext('svelte-api-only');
+	const apiOnlyLoaded = !!getContext('svelte-api-only');
 </script>
 
 <main>

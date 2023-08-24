@@ -1,5 +1,5 @@
 <script lang="ts">
-	let foo: string = 'stylus';
+	const foo: string = 'stylus';
 	export let bla: string = 'blub';
 	console.log('pure test 1', new Date());
 	console.log('pure test 2');

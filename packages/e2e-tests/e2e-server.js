@@ -79,8 +79,8 @@ export async function serve(root, isBuild, port) {
 	if (isBuild) {
 		let buildResult;
 		let hasErr = false;
-		let out = [];
-		let err = [];
+		const out = [];
+		const err = [];
 
 		try {
 			const buildProcess = execa('pnpm', ['build'], {

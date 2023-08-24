@@ -1,5 +1,5 @@
 <script>
-	let bar = 'bar';
+	const bar = 'bar';
 </script>
 
 <div class="blue">Foo bar={bar}</div>
