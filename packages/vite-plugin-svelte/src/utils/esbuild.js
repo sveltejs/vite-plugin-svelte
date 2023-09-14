@@ -106,5 +106,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 	if (endStat) {
 		endStat();
 	}
-	return compiled.js.code + '//# sourceMappingURL=' + compiled.js.map.toUrl();
+	return compiled.js.map
+		? compiled.js.code + '//# sourceMappingURL=' + compiled.js.map.toUrl()
+		: compiled.js.code;
 }
