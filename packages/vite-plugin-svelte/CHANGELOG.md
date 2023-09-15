@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.4.6
+
+### Patch Changes
+
+- fix(prebundleSvelteLibraries): don't try to append missing sourcemap ([#737](https://github.com/sveltejs/vite-plugin-svelte/pull/737))
+
 ## 2.4.5
 
 ### Patch Changes
