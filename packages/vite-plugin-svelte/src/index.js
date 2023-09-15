@@ -102,7 +102,14 @@ export function svelte(inlineOptions) {
 				if (svelteRequest) {
 					const { filename, query, raw } = svelteRequest;
 					if (raw) {
-						return loadRaw(svelteRequest, compileSvelte, options);
+						const code = await loadRaw(svelteRequest, compileSvelte, options);
+						// prevent vite from injecting sourcemaps in the results.
+						return {
+							code,
+							map: {
+								mappings: ''
+							}
+						};
 					} else {
 						if (query.svelte && query.type === 'style') {
 							const css = cache.getCSS(svelteRequest);
