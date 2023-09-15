@@ -56,7 +56,6 @@ export const _createCompileSvelte = (makeHot) => {
 
 		if (options.hot && options.emitCss) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`, undefined, 'hmr');
 			compileOptions.cssHash = () => hash;
 		}
 		if (ssr && compileOptions.enableSourcemap !== false) {
