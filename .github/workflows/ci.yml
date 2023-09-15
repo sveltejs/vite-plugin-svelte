@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         # pseudo-matrix for convenience, NEVER use more than a single combination
-        node: [16]
+        node: [18]
         os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
@@ -73,16 +73,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [16]
+        node: [18]
         os: [ubuntu-latest, macos-latest, windows-latest]
         svelte: [4]
         include:
-          - node: 14
-            os: ubuntu-latest
-            svelte: 3
-          - node: 18
-            os: ubuntu-latest
-            svelte: 4
           - node: 20
             os: ubuntu-latest
             svelte: 4
@@ -92,17 +86,11 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: install pnpm
-        if: matrix.node != 14
         shell: bash
         run: |
           PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
           echo installing pnpm version $PNPM_VER
           npm i -g pnpm@$PNPM_VER
-      - name: install legacy pnpm for node14
-        if: matrix.node == 14
-        run: |
-          npm i -g pnpm@^7.33.0
-          tmppkg="$(jq '.engines.pnpm = "^7.33.0"' package.json)" && echo -E "${tmppkg}" > package.json && tmppkg=""
       - name: use svelte 3
         if: matrix.svelte == 3
         run: |
@@ -113,11 +101,7 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
-        if: matrix.node != 14 && matrix.svelte != 3
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
-      - name: install for node14 or svelte3
-        if: matrix.node == 14 || matrix.svelte == 3
-        run: pnpm install --no-frozen-lockfile --prefer-offline --ignore-scripts
       - name: install playwright chromium
         run: pnpm playwright install chromium
       - name: run tests
