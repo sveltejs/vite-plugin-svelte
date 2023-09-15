@@ -24,8 +24,6 @@ export class VitePluginSvelteCache {
 	#dependencies = new Map();
 	/** @type {Map<string, Set<string>>} */
 	#dependants = new Map();
-	/** @type {Map<string, string>} */
-	#resolvedSvelteFields = new Map();
 	/** @type {Map<string, any>} */
 	#errors = new Map();
 	/** @type {PackageInfo[]} */
@@ -166,45 +164,6 @@ export class VitePluginSvelteCache {
 	getDependants(path) {
 		const dependants = this.#dependants.get(path);
 		return dependants ? [...dependants] : [];
-	}
-
-	/**
-	 * @param {string} name
-	 * @param {string} [importer]
-	 * @returns {string|void}
-	 */
-	getResolvedSvelteField(name, importer) {
-		return this.#resolvedSvelteFields.get(this.#getResolvedSvelteFieldKey(name, importer));
-	}
-
-	/**
-	 * @param {string} name
-	 * @param {string} [importer]
-	 * @returns {boolean}
-	 */
-	hasResolvedSvelteField(name, importer) {
-		return this.#resolvedSvelteFields.has(this.#getResolvedSvelteFieldKey(name, importer));
-	}
-	/**
-	 *
-	 * @param {string} importee
-	 * @param {string | undefined} importer
-	 * @param {string} resolvedSvelte
-	 */
-	setResolvedSvelteField(importee, importer, resolvedSvelte) {
-		this.#resolvedSvelteFields.set(
-			this.#getResolvedSvelteFieldKey(importee, importer),
-			resolvedSvelte
-		);
-	}
-
-	/**
-	 * @param {string} importee
-	 * @param {string | undefined} importer
-	 * @returns {string}
-	 */
-	#getResolvedSvelteFieldKey(importee, importer) {
-		return importer ? `${importer} > ${importee}` : importee;
 	}
 
 	/**

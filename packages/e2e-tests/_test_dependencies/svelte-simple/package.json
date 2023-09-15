@@ -8,6 +8,13 @@
     "src",
     "index.js"
   ],
+  "exports": {
+    ".": {
+      "import": {
+        "svelte": "./index.js"
+      }
+    }
+  },
   "dependencies": {
     "e2e-test-dep-cjs-only": "file:../cjs-only"
   },

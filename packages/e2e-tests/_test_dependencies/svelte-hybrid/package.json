@@ -10,6 +10,13 @@
     "index.js",
     "cli.js"
   ],
+  "exports": {
+    ".": {
+      "import": {
+        "svelte": "./index.js"
+      }
+    }
+  },
   "dependencies": {
     "@types/node": "^18.17.15",
     "e2e-test-dep-cjs-only": "file:../cjs-only"
