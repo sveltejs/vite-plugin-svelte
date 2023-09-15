@@ -75,11 +75,9 @@ jobs:
       matrix:
         node: [18]
         os: [ubuntu-latest, macos-latest, windows-latest]
-        svelte: [4]
         include:
           - node: 20
             os: ubuntu-latest
-            svelte: 4
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -91,10 +89,6 @@ jobs:
           PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
           echo installing pnpm version $PNPM_VER
           npm i -g pnpm@$PNPM_VER
-      - name: use svelte 3
-        if: matrix.svelte == 3
-        run: |
-          tmppkg="$(jq '.devDependencies.svelte = "^3.59.2"' package.json)" && echo -E "${tmppkg}" > package.json && tmppkg=""
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -113,7 +107,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}-${{ matrix.svelte }}
+          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}
           path: |
             test-temp.tar
             pnpm-debug.log
