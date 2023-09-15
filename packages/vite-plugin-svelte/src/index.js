@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import { version as viteVersion } from 'vite';
 
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 
@@ -24,9 +23,6 @@ import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants.js';
-import { isSvelte3 } from './utils/svelte-version.js';
-
-const isVite4_0 = viteVersion.startsWith('4.0');
 
 /** @type {import('./index.d.ts').svelte} */
 export function svelte(inlineOptions) {
@@ -47,8 +43,6 @@ export function svelte(inlineOptions) {
 	let compileSvelte;
 	/* eslint-enable no-unused-vars */
 
-	/** @type {Promise<import('vite').Rollup.PartialResolvedId | null>} */
-	let resolvedSvelteSSR;
 	/** @type {Set<string>} */
 	let packagesWithResolveWarnings;
 	/** @type {import('./types/plugin-api.d.ts').PluginAPI} */
@@ -145,25 +139,6 @@ export function svelte(inlineOptions) {
 					}
 				}
 
-				// TODO: remove this after bumping peerDep on Vite to 4.1+ or Svelte to 4.0+
-				if (isVite4_0 && isSvelte3 && ssr && importee === 'svelte') {
-					if (!resolvedSvelteSSR) {
-						resolvedSvelteSSR = this.resolve('svelte/ssr', undefined, { skipSelf: true }).then(
-							(svelteSSR) => {
-								log.debug('resolved svelte to svelte/ssr');
-								return svelteSSR;
-							},
-							(err) => {
-								log.debug(
-									'failed to resolve svelte to svelte/ssr. Update svelte to a version that exports it',
-									err
-								);
-								return null; // returning null here leads to svelte getting resolved regularly
-							}
-						);
-					}
-					return resolvedSvelteSSR;
-				}
 				//@ts-expect-error scan
 				const scan = !!opts?.scan; // scanner phase of optimizeDeps
 				const isPrebundled =

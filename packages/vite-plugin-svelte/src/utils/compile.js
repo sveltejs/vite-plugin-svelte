@@ -9,8 +9,6 @@ import { mapToRelative } from './sourcemaps.js';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
-import { isSvelte3 } from './svelte-version.js';
-
 /**
  * @param {Function} [makeHot]
  * @returns {import('../types/compile.d.ts').CompileSvelte}
@@ -55,10 +53,7 @@ export const _createCompileSvelte = (makeHot) => {
 			filename,
 			generate: ssr ? 'ssr' : 'dom'
 		};
-		if (isSvelte3) {
-			// @ts-ignore
-			compileOptions.format = 'esm';
-		}
+
 		if (options.hot && options.emitCss) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
 			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
@@ -125,15 +120,6 @@ export const _createCompileSvelte = (makeHot) => {
 		const endStat = stats?.start(filename);
 		const compiled = compile(finalCode, finalCompileOptions);
 
-		if (isSvelte3) {
-			// prevent dangling pure comments
-			// see https://github.com/sveltejs/kit/issues/9492#issuecomment-1487704985
-			// uses regex replace with whitespace to keep sourcemap/character count unmodified
-			compiled.js.code = compiled.js.code.replace(
-				/\/\* [@#]__PURE__ \*\/(\s*)$/gm,
-				'               $1'
-			);
-		}
 		if (endStat) {
 			endStat();
 		}
