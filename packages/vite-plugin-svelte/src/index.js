@@ -2,7 +2,6 @@ import fs from 'node:fs';
 
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 
-import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
@@ -16,13 +15,10 @@ import {
 } from './utils/options.js';
 
 import { ensureWatchedFile, setupWatchers } from './utils/watch.js';
-import { resolveViaPackageJsonSvelte } from './utils/resolve.js';
-
 import { toRollupError } from './utils/error.js';
 import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
-import { FAQ_LINK_MISSING_EXPORTS_CONDITION } from './utils/constants.js';
 
 /** @type {import('./index.d.ts').svelte} */
 export function svelte(inlineOptions) {
@@ -38,13 +34,9 @@ export function svelte(inlineOptions) {
 	let options;
 	/** @type {import('vite').ResolvedConfig} */
 	let viteConfig;
-
 	/** @type {import('./types/compile.d.ts').CompileSvelte} */
 	let compileSvelte;
 	/* eslint-enable no-unused-vars */
-
-	/** @type {Set<string>} */
-	let packagesWithoutSvelteExportsCondition;
 	/** @type {import('./types/plugin-api.d.ts').PluginAPI} */
 	const api = {};
 	/** @type {import('vite').Plugin[]} */
@@ -81,7 +73,6 @@ export function svelte(inlineOptions) {
 			},
 
 			async buildStart() {
-				packagesWithoutSvelteExportsCondition = new Set();
 				if (!options.prebundleSvelteLibraries) return;
 				const isSvelteMetadataChanged = await saveSvelteMetadata(viteConfig.cacheDir, options);
 				if (isSvelteMetadataChanged) {
@@ -138,31 +129,6 @@ export function svelte(inlineOptions) {
 						return svelteRequest.cssId;
 					}
 				}
-
-				//@ts-expect-error scan
-				const scan = !!opts?.scan; // scanner phase of optimizeDeps
-				const isPrebundled =
-					options.prebundleSvelteLibraries &&
-					viteConfig.optimizeDeps?.disabled !== true &&
-					viteConfig.optimizeDeps?.disabled !== (options.isBuild ? 'build' : 'dev') &&
-					!isDepExcluded(importee, viteConfig.optimizeDeps?.exclude ?? []);
-				// for prebundled libraries we let vite resolve the prebundling result
-				// for ssr, during scanning and non-prebundled, we do it to be able to fall back to svelte field resolve
-				if (ssr || scan || !isPrebundled) {
-					try {
-						return await this.resolve(importee, importer, { ...opts, skipSelf: true });
-					} catch (e) {
-						// vite didn't resolve it, we have to check svelte field
-						const isFirstResolve = !cache.hasResolvedSvelteField(importee, importer);
-						const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
-						if (isFirstResolve && resolved) {
-							const packageInfo = await cache.getPackageInfo(resolved);
-							const packageVersion = `${packageInfo.name}@${packageInfo.version}`;
-							packagesWithoutSvelteExportsCondition.add(packageVersion);
-						}
-						return resolved;
-					}
-				}
 			},
 
 			async transform(code, id, opts) {
@@ -213,16 +179,6 @@ export function svelte(inlineOptions) {
 			},
 			async buildEnd() {
 				await options.stats?.finishAll();
-				if (
-					!options.experimental?.disableSvelteResolveWarnings &&
-					packagesWithoutSvelteExportsCondition?.size > 0
-				) {
-					log.warn(
-						`WARNING: The following packages have a svelte field in their package.json but no exports condition for svelte.\n\n${[
-							...packagesWithoutSvelteExportsCondition
-						].join('\n')}\n\nPlease see ${FAQ_LINK_MISSING_EXPORTS_CONDITION} for details.`
-					);
-				}
 			}
 		},
 		svelteInspector()
