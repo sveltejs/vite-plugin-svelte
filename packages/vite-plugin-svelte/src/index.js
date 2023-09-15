@@ -22,7 +22,7 @@ import { toRollupError } from './utils/error.js';
 import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
-import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants.js';
+import { FAQ_LINK_MISSING_EXPORTS_CONDITION } from './utils/constants.js';
 
 /** @type {import('./index.d.ts').svelte} */
 export function svelte(inlineOptions) {
@@ -44,7 +44,7 @@ export function svelte(inlineOptions) {
 	/* eslint-enable no-unused-vars */
 
 	/** @type {Set<string>} */
-	let packagesWithResolveWarnings;
+	let packagesWithoutSvelteExportsCondition;
 	/** @type {import('./types/plugin-api.d.ts').PluginAPI} */
 	const api = {};
 	/** @type {import('vite').Plugin[]} */
@@ -81,7 +81,7 @@ export function svelte(inlineOptions) {
 			},
 
 			async buildStart() {
-				packagesWithResolveWarnings = new Set();
+				packagesWithoutSvelteExportsCondition = new Set();
 				if (!options.prebundleSvelteLibraries) return;
 				const isSvelteMetadataChanged = await saveSvelteMetadata(viteConfig.cacheDir, options);
 				if (isSvelteMetadataChanged) {
@@ -147,46 +147,20 @@ export function svelte(inlineOptions) {
 					viteConfig.optimizeDeps?.disabled !== (options.isBuild ? 'build' : 'dev') &&
 					!isDepExcluded(importee, viteConfig.optimizeDeps?.exclude ?? []);
 				// for prebundled libraries we let vite resolve the prebundling result
-				// for ssr, during scanning and non-prebundled, we do it
+				// for ssr, during scanning and non-prebundled, we do it to be able to fall back to svelte field resolve
 				if (ssr || scan || !isPrebundled) {
 					try {
+						return await this.resolve(importee, importer, { ...opts, skipSelf: true });
+					} catch (e) {
+						// vite didn't resolve it, we have to check svelte field
 						const isFirstResolve = !cache.hasResolvedSvelteField(importee, importer);
 						const resolved = await resolveViaPackageJsonSvelte(importee, importer, cache);
 						if (isFirstResolve && resolved) {
 							const packageInfo = await cache.getPackageInfo(resolved);
 							const packageVersion = `${packageInfo.name}@${packageInfo.version}`;
-							log.debug.once(
-								`resolveId resolved ${importee} to ${resolved} via package.json svelte field of ${packageVersion}`
-							);
-
-							try {
-								const viteResolved = (
-									await this.resolve(importee, importer, { ...opts, skipSelf: true })
-								)?.id;
-								if (resolved !== viteResolved) {
-									packagesWithResolveWarnings.add(packageVersion);
-									log.debug.enabled &&
-										log.debug.once(
-											`resolve difference for ${packageVersion} ${importee} - svelte: "${resolved}", vite: "${viteResolved}"`
-										);
-								}
-							} catch (e) {
-								packagesWithResolveWarnings.add(packageVersion);
-								log.debug.enabled &&
-									log.debug.once(
-										`resolve error for ${packageVersion} ${importee} - svelte: "${resolved}", vite: ERROR`,
-										e
-									);
-							}
+							packagesWithoutSvelteExportsCondition.add(packageVersion);
 						}
 						return resolved;
-					} catch (e) {
-						log.debug.once(
-							`error trying to resolve ${importee} from ${importer} via package.json svelte field `,
-							e
-						);
-						// this error most likely happens due to non-svelte related importee/importers so swallow it here
-						// in case it really way a svelte library, users will notice anyway. (lib not working due to failed resolve)
 					}
 				}
 			},
@@ -241,12 +215,12 @@ export function svelte(inlineOptions) {
 				await options.stats?.finishAll();
 				if (
 					!options.experimental?.disableSvelteResolveWarnings &&
-					packagesWithResolveWarnings?.size > 0
+					packagesWithoutSvelteExportsCondition?.size > 0
 				) {
 					log.warn(
-						`WARNING: The following packages use a svelte resolve configuration in package.json that has conflicting results and is going to cause problems future.\n\n${[
-							...packagesWithResolveWarnings
-						].join('\n')}\n\nPlease see ${FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE} for details.`
+						`WARNING: The following packages have a svelte field in their package.json but no exports condition for svelte.\n\n${[
+							...packagesWithoutSvelteExportsCondition
+						].join('\n')}\n\nPlease see ${FAQ_LINK_MISSING_EXPORTS_CONDITION} for details.`
 					);
 				}
 			}

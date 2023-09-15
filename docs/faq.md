@@ -209,13 +209,12 @@ module.exports = {
 
 <!-- the following header generates an anchor that is used in logging, do not modify!-->
 
-### conflicts in svelte resolve
+### missing exports condition
 
 | If you see a warning logged for this when using a Svelte library, please tell the library maintainers.
 
-In the past, Svelte recommended using the custom `svelte` field in `package.json` to allow libraries to point at `.svelte` source files.
-This field requires a custom implementation to resolve, so you have to use a bundler plugin and this plugin needs to implement resolving.
-Since then, Node has added support for [conditional exports](https://nodejs.org/api/packages.html#conditional-exports), which have more generic support in bundlers and Node itself. So to increase the compatibility with the wider ecosystem and reduce the implementation needs for current and future bundler plugins, it is recommended that packages use the `svelte` exports condition.
+Using the `svelte` field in `package.json` to point at `.svelte` source files is **deprecated** and you must use a `svelte` [export condition](https://nodejs.org/api/packages.html#conditional-exports).
+vite-plugin-svelte 3 still resolves it as a fallback, but in a future major release this is going to be removed and without exports condition resolving the library is going to fail.
 
 Example:
 

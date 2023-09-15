@@ -9,7 +9,12 @@
     "src"
   ],
   "exports": {
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "svelte": "./src/index.js"
+      }
+    }
   },
   "dependencies": {
     "e2e-test-dep-svelte-simple": "file:../svelte-simple",
