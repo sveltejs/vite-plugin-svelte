@@ -167,7 +167,7 @@ export default {
 There is no golden rule, but you can follow these recommendations:
 
 1. **Never** combine plugins or preprocessors that rewrite imports with prebundling
-2. Start with index imports and if your dev-server or build process feels slow, run the process with `DEBUG="vite:vite-plugin-svelte:stats"` to check compile stats to see if switching to deep imports can improve the experience.
+2. Start with index imports and if your dev-server or build process feels slow, run the process with `DEBUG="vite-plugin-svelte:stats"` to check compile stats to see if switching to deep imports can improve the experience.
 3. Do not mix deep and index imports for the same library, use one style consistently.
 4. Use different import styles for different libraries where it helps. E.g. deep imports for the few icons of that one huge icon library, but index import for the component library that is heavily used.
 
