@@ -8,7 +8,7 @@ const prefix = 'vite-plugin-svelte';
 /** @type {Record<import('../types/log.d.ts').LogLevel, any>} */
 const loggers = {
 	debug: {
-		log: debug(`vite:${prefix}`),
+		log: debug(`${prefix}`),
 		enabled: false,
 		isDebug: true
 	},
@@ -65,7 +65,13 @@ function _log(logger, message, payload, namespace) {
 		return;
 	}
 	if (logger.isDebug) {
-		const log = namespace ? logger.log.extend(namespace) : logger.log;
+		let log = logger.log;
+		if (namespace) {
+			if (!isDebugNamespaceEnabled(namespace)) {
+				return;
+			}
+			log = logger.log.extend(namespace);
+		}
 		payload !== undefined ? log(message, payload) : log(message);
 	} else {
 		logger.log(
@@ -251,5 +257,5 @@ export function buildExtendedLogMessage(w) {
  * @returns {boolean}
  */
 export function isDebugNamespaceEnabled(namespace) {
-	return debug.enabled(`vite:${prefix}:${namespace}`);
+	return debug.enabled(`${prefix}:${namespace}`);
 }

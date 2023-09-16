@@ -56,7 +56,6 @@ export const _createCompileSvelte = (makeHot) => {
 
 		if (options.hot && options.emitCss) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
 			compileOptions.cssHash = () => hash;
 		}
 		if (ssr && compileOptions.enableSourcemap !== false) {
@@ -107,7 +106,9 @@ export const _createCompileSvelte = (makeHot) => {
 		});
 		if (dynamicCompileOptions && log.debug.enabled) {
 			log.debug(
-				`dynamic compile options for  ${filename}: ${JSON.stringify(dynamicCompileOptions)}`
+				`dynamic compile options for  ${filename}: ${JSON.stringify(dynamicCompileOptions)}`,
+				undefined,
+				'compile'
 			);
 		}
 		const finalCompileOptions = dynamicCompileOptions

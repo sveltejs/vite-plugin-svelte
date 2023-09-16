@@ -14,7 +14,11 @@ import { toRollupError } from './utils/error.js';
 export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options) {
 	if (!cache.has(svelteRequest)) {
 		// file hasn't been requested yet (e.g. async component)
-		log.debug(`handleHotUpdate called before initial transform for ${svelteRequest.id}`);
+		log.debug(
+			`handleHotUpdate called before initial transform for ${svelteRequest.id}`,
+			undefined,
+			'hmr'
+		);
 		return;
 	}
 	const { read, server, modules } = ctx;
@@ -39,7 +43,7 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 	if (cssIdx > -1) {
 		const cssUpdated = cssChanged(cachedCss, compileData.compiled.css);
 		if (!cssUpdated) {
-			log.debug(`skipping unchanged css for ${svelteRequest.cssId}`);
+			log.debug(`skipping unchanged css for ${svelteRequest.cssId}`, undefined, 'hmr');
 			affectedModules.splice(cssIdx, 1);
 		}
 	}
@@ -47,7 +51,7 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 	if (jsIdx > -1) {
 		const jsUpdated = jsChanged(cachedJS, compileData.compiled.js, svelteRequest.filename);
 		if (!jsUpdated) {
-			log.debug(`skipping unchanged js for ${svelteRequest.id}`);
+			log.debug(`skipping unchanged js for ${svelteRequest.id}`, undefined, 'hmr');
 			affectedModules.splice(jsIdx, 1);
 			// transform won't be called, log warnings here
 			logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
@@ -57,14 +61,20 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 	// TODO is this enough? see also: https://github.com/vitejs/vite/issues/2274
 	const ssrModulesToInvalidate = affectedModules.filter((m) => !!m.ssrTransformResult);
 	if (ssrModulesToInvalidate.length > 0) {
-		log.debug(`invalidating modules ${ssrModulesToInvalidate.map((m) => m.id).join(', ')}`);
+		log.debug(
+			`invalidating modules ${ssrModulesToInvalidate.map((m) => m.id).join(', ')}`,
+			undefined,
+			'hmr'
+		);
 		ssrModulesToInvalidate.forEach((moduleNode) => server.moduleGraph.invalidateModule(moduleNode));
 	}
 	if (affectedModules.length > 0) {
 		log.debug(
 			`handleHotUpdate for ${svelteRequest.id} result: ${affectedModules
 				.map((m) => m.id)
-				.join(', ')}`
+				.join(', ')}`,
+			undefined,
+			'hmr'
 		);
 	}
 	return affectedModules;
