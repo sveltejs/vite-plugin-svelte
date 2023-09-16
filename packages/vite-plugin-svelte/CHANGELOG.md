@@ -1,5 +1,24 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.0.0-next.0
+
+### Major Changes
+
+- breaking: update minimum supported node version to node18 ([#744](https://github.com/sveltejs/vite-plugin-svelte/pull/744))
+
+- breaking: update supported vite version to vite 5 ([#743](https://github.com/sveltejs/vite-plugin-svelte/pull/743))
+
+- breaking: remove support for svelte 3 ([#746](https://github.com/sveltejs/vite-plugin-svelte/pull/746))
+
+- breaking(debug): remove 'vite:' and add suffixes to debug namespace ([#749](https://github.com/sveltejs/vite-plugin-svelte/pull/749))
+
+- breaking: prefer svelte exports condition over package.json svelte field ([#747](https://github.com/sveltejs/vite-plugin-svelte/pull/747))
+
+### Patch Changes
+
+- Updated dependencies [[`d5b952f`](https://github.com/sveltejs/vite-plugin-svelte/commit/d5b952f88253e39458a1fbc0a0231b939bba338d), [`bd5d43e`](https://github.com/sveltejs/vite-plugin-svelte/commit/bd5d43e765d35b52b613ddcfd00b8d75491a7d98), [`10ec2a4`](https://github.com/sveltejs/vite-plugin-svelte/commit/10ec2a4429623382cc1a700fe91c129616bca3ef)]:
+  - @sveltejs/vite-plugin-svelte-inspector@2.0.0-next.0
+
 ## 2.4.6
 
 ### Patch Changes
