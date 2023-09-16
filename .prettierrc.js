@@ -19,10 +19,11 @@ module.exports = {
 				'.github/renovate.json5',
 				'**/types/index.d.ts',
 				'**/types/index.d.ts.map',
-				'**/pnpm-lock.yaml'
+				'**/pnpm-lock.yaml',
+				'.changeset/pre.json'
 			],
 			options: {
-				requirePragma: true
+				rangeEnd: 0
 			}
 		},
 		{
