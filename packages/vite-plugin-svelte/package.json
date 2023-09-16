@@ -4,20 +4,21 @@
   "license": "MIT",
   "author": "dominikg",
   "files": [
-    "src"
+    "src",
+    "types"
   ],
   "type": "module",
-  "types": "src/index.d.ts",
+  "types": "types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
+      "types": "./types/index.d.ts",
       "import": "./src/index.js"
-    },
-    "./package.json": "./package.json"
+    }
   },
   "scripts": {
     "check:publint": "publint --strict",
-    "check:types": "tsc --noEmit"
+    "check:types": "tsc --noEmit",
+    "generate:types": "dts-buddy"
   },
   "engines": {
     "node": "^18.0.0 || >=20"

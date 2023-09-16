@@ -1,4 +1,4 @@
-import type { Warning } from '../index.d.ts';
+import type { Warning } from 'svelte/types/compiler/interfaces';
 
 export interface LogFn extends SimpleLogFn {
 	(message: string, payload?: any, namespace?: string): void;

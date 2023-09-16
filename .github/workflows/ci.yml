@@ -66,6 +66,9 @@ jobs:
       - name: publint
         if: (${{ success() }} || ${{ failure() }})
         run: pnpm check:publint
+      - name: generated types are up to date
+        if: (${{ success() }} || ${{ failure() }})
+        run: pnpm generate:types && [ "`git status --porcelain=v1`" == "" ]
 
   test:
     timeout-minutes: 10

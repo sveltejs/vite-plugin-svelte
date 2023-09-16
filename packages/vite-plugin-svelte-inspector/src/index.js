@@ -14,14 +14,17 @@ function getInspectorPath() {
 	);
 }
 
-/** @type {import('.').svelteInspector} */
+/**
+ * @param {Partial<import('./public.d.ts').Options>} [options]
+ * @returns {import('vite').Plugin}
+ */
 export function svelteInspector(options) {
 	const inspectorPath = getInspectorPath();
 	debug(`svelte inspector path: ${inspectorPath}`);
 
 	/** @type {import('vite').ResolvedConfig} */
 	let viteConfig;
-	/** @type {import('.').Options} */
+	/** @type {import('./public.js').Options} */
 	let inspectorOptions;
 	let disabled = false;
 

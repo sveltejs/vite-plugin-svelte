@@ -59,7 +59,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
 		css = 'injected';
 	}
-	/** @type {import('../index.d.ts').CompileOptions} */
+	/** @type {import('svelte/compiler').CompileOptions} */
 	const compileOptions = {
 		...options.compilerOptions,
 		css,

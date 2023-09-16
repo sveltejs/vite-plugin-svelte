@@ -10,9 +10,12 @@ const supportedScriptLangs = ['ts'];
 
 export const lang_sep = '.vite-preprocess.';
 
-/** @type {import('./index.d.ts').vitePreprocess} */
+/**
+ * @param {import('./public.d.ts').VitePreprocessOptions} opts
+ * @returns {import('svelte/compiler').PreprocessorGroup}
+ */
 export function vitePreprocess(opts) {
-	/** @type {import('svelte/types/compiler/preprocess').PreprocessorGroup} */
+	/** @type {import('svelte/compiler').PreprocessorGroup} */
 	const preprocessor = {};
 	if (opts?.script !== false) {
 		preprocessor.script = viteScript().script;
@@ -25,7 +28,7 @@ export function vitePreprocess(opts) {
 }
 
 /**
- * @returns {{ script: import('svelte/types/compiler/preprocess').Preprocessor }}
+ * @returns {{ script: import('svelte/compiler').Preprocessor }}
  */
 function viteScript() {
 	return {
@@ -56,12 +59,12 @@ function viteScript() {
 
 /**
  * @param {import('vite').ResolvedConfig | import('vite').InlineConfig} config
- * @returns {{ style: import('svelte/types/compiler/preprocess').Preprocessor }}
+ * @returns {{ style: import('svelte/compiler').Preprocessor }}
  */
 function viteStyle(config = {}) {
 	/** @type {CssTransform} */
 	let transform;
-	/** @type {import('svelte/types/compiler/preprocess').Preprocessor} */
+	/** @type {import('svelte/compiler').Preprocessor} */
 	const style = async ({ attributes, content, filename = '' }) => {
 		const lang = /** @type {string} */ (attributes.lang);
 		if (!supportedStyleLangs.includes(lang)) return;

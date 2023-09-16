@@ -1,11 +1,12 @@
-import type { InlineConfig, ResolvedConfig, UserConfig, Plugin } from 'vite';
-import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
-import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess';
+import type { InlineConfig, ResolvedConfig } from 'vite';
+import type { CompileOptions } from 'svelte/compiler';
+import type { Warning } from 'svelte/types/compiler/interfaces';
+import type { PreprocessorGroup } from 'svelte/compiler';
 import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 
 type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
 
-interface PluginOptionsInline extends PluginOptions {
+export interface PluginOptionsInline extends PluginOptions {
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
 	 *
@@ -172,8 +173,6 @@ interface ExperimentalOptions {
 	disableSvelteResolveWarnings?: boolean;
 }
 
-type ModuleFormat = NonNullable<'esm'>;
-type CssHashGetter = NonNullable<CompileOptions['cssHash']>;
 type Arrayable<T> = T | T[];
 
 interface VitePreprocessOptions {
@@ -181,35 +180,4 @@ interface VitePreprocessOptions {
 	style?: boolean | InlineConfig | ResolvedConfig;
 }
 
-declare function vitePreprocess(opts?: VitePreprocessOptions): PreprocessorGroup;
-
-declare function loadSvelteConfig(
-	viteConfig?: UserConfig,
-	inlineOptions?: Partial<Options>
-): Promise<Partial<SvelteOptions> | undefined>;
-
-declare function svelte(inlineOptions?: Partial<Options>): Plugin[];
-
-export {
-	Arrayable,
-	CssHashGetter,
-	ModuleFormat,
-	Options,
-	PluginOptions,
-	SvelteOptions,
-	loadSvelteConfig,
-	svelte,
-	VitePreprocessOptions,
-	vitePreprocess
-};
-
-// reexported types
-
-export { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
-
-export {
-	MarkupPreprocessor,
-	Preprocessor,
-	PreprocessorGroup,
-	Processed
-} from 'svelte/types/compiler/preprocess';
+export { Arrayable, Options, PluginOptions, SvelteOptions, VitePreprocessOptions };

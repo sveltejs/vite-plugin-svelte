@@ -14,7 +14,13 @@ module.exports = {
 			options: { parser: 'typescript' }
 		},
 		{
-			files: ['**/CHANGELOG.md', '.github/renovate.json5'],
+			files: [
+				'**/CHANGELOG.md',
+				'.github/renovate.json5',
+				'**/types/index.d.ts',
+				'**/types/index.d.ts.map',
+				'**/pnpm-lock.yaml'
+			],
 			options: {
 				requirePragma: true
 			}

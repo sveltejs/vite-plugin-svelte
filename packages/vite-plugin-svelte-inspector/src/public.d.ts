@@ -1,5 +1,3 @@
-import type { Plugin } from 'vite';
-
 export interface Options {
 	/**
 	 * define a key combo to toggle inspector,
@@ -63,11 +61,10 @@ export interface Options {
 
 	/**
 	 * internal options that are automatically set, not to be set or used by users
+	 * @internal
 	 */
 	__internal?: {
 		// vite base url
 		base: string;
 	};
 }
-
-export declare function svelteInspector(options?: Options): Plugin;
