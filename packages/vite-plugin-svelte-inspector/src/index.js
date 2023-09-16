@@ -24,7 +24,7 @@ export function svelteInspector(options) {
 
 	/** @type {import('vite').ResolvedConfig} */
 	let viteConfig;
-	/** @type {import('./public.js').Options} */
+	/** @type {import('./public.d.ts').Options} */
 	let inspectorOptions;
 	let disabled = false;
 
