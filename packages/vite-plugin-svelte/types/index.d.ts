@@ -173,7 +173,6 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		disableSvelteResolveWarnings?: boolean;
 	}
 
-
 	type Arrayable<T> = T | T[];
 
 	interface VitePreprocessOptions {
