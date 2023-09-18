@@ -20,7 +20,7 @@ module.exports = {
 			}
 		},
 		{
-			files: ['**/package.json', '**/README.md', 'docs/**/*.md'],
+			files: ['**/package.json', '**/README.md', 'docs/**/*.md', '.changeset/pre.json'],
 			options: {
 				useTabs: false,
 				tabWidth: 2
