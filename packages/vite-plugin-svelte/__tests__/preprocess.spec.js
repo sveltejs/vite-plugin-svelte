@@ -17,6 +17,25 @@ describe('vitePreprocess', () => {
 	});
 
 	describe('style', async () => {
+		it('preprocess with postcss if no lang', async () => {
+			const preprocessorGroup = vitePreprocess({ style: {} });
+			const style = /**@type {import('svelte/types/compiler/preprocess').Preprocessor} */ (
+				preprocessorGroup.style
+			);
+			expect(style).toBeDefined();
+
+			const pcss = "@import './foo';";
+			const processed = await style({
+				content: pcss,
+				attributes: {},
+				markup: '', // not read by vitePreprocess
+				filename: `${fixtureDir}/File.svelte`
+			});
+
+			expect(processed).toBeDefined();
+			expect(processed.code).not.toContain('@import');
+		});
+
 		it('produces sourcemap with relative filename', async () => {
 			const preprocessorGroup = vitePreprocess({ style: { css: { devSourcemap: true } } });
 			const style = /**@type {import('svelte/types/compiler/preprocess').Preprocessor} */ (
