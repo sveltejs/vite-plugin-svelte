@@ -12,6 +12,7 @@ import path from 'node:path';
  */
 export function createInjectScopeEverythingRulePreprocessorGroup() {
 	return {
+		name: 'inject-scope-everything-rule',
 		style({ content, filename }) {
 			const s = new MagicString(content);
 			s.append(' *{}');

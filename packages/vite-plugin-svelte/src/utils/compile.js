@@ -6,6 +6,7 @@ import { log } from './log.js';
 
 import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
+import { enhanceCompileError } from './error.js';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
@@ -119,7 +120,14 @@ export const _createCompileSvelte = (makeHot) => {
 			: compileOptions;
 
 		const endStat = stats?.start(filename);
-		const compiled = compile(finalCode, finalCompileOptions);
+		/** @type {import('svelte/types/compiler/interfaces').CompileResult} */
+		let compiled;
+		try {
+			compiled = compile(finalCode, finalCompileOptions);
+		} catch (e) {
+			enhanceCompileError(e, code, preprocessors);
+			throw e;
+		}
 
 		if (endStat) {
 			endStat();
