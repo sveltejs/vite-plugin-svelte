@@ -12,6 +12,7 @@ import path from 'node:path';
  */
 export function createInjectScopeEverythingRulePreprocessorGroup() {
 	return {
+		name: 'inject-scope-everything-rule',
 		style({ content, filename }) {
 			const s = new MagicString(content);
 			s.append(' *{}');
@@ -84,14 +85,18 @@ function buildExtraPreprocessors(options, config) {
 		log.debug(
 			`Ignoring svelte preprocessors defined by these vite plugins: ${ignored
 				.map((p) => p.name)
-				.join(', ')}`
+				.join(', ')}`,
+			undefined,
+			'preprocess'
 		);
 	}
 	if (included.length > 0) {
 		log.debug(
 			`Adding svelte preprocessors defined by these vite plugins: ${included
 				.map((p) => p.name)
-				.join(', ')}`
+				.join(', ')}`,
+			undefined,
+			'preprocess'
 		);
 		appendPreprocessors.push(...pluginsWithPreprocessors.map((p) => p.api.sveltePreprocess));
 	}

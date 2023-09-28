@@ -60,7 +60,7 @@ export function svelte(inlineOptions) {
 				options = await preResolveOptions(inlineOptions, config, configEnv);
 				// extra vite config
 				const extraViteConfig = await buildExtraViteConfig(options, config);
-				log.debug('additional vite config', extraViteConfig);
+				log.debug('additional vite config', extraViteConfig, 'config');
 				return extraViteConfig;
 			},
 
@@ -72,7 +72,7 @@ export function svelte(inlineOptions) {
 				viteConfig = config;
 				// TODO deep clone to avoid mutability from outside?
 				api.options = options;
-				log.debug('resolved options', options);
+				log.debug('resolved options', options, 'config');
 			},
 
 			async buildStart() {
@@ -108,13 +108,12 @@ export function svelte(inlineOptions) {
 						if (query.svelte && query.type === 'style') {
 							const css = cache.getCSS(svelteRequest);
 							if (css) {
-								log.debug(`load returns css for ${filename}`);
 								return css;
 							}
 						}
 						// prevent vite asset plugin from loading files as url that should be compiled in transform
 						if (viteConfig.assetsInclude(filename)) {
-							log.debug(`load returns raw content for ${filename}`);
+							log.debug(`load returns raw content for ${filename}`, undefined, 'load');
 							return fs.readFileSync(filename, 'utf-8');
 						}
 					}
@@ -128,7 +127,11 @@ export function svelte(inlineOptions) {
 					if (svelteRequest.query.type === 'style' && !svelteRequest.raw) {
 						// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
 						// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
-						log.debug(`resolveId resolved virtual css module ${svelteRequest.cssId}`);
+						log.debug(
+							`resolveId resolved virtual css module ${svelteRequest.cssId}`,
+							undefined,
+							'resolve'
+						);
 						return svelteRequest.cssId;
 					}
 				}
@@ -160,7 +163,6 @@ export function svelte(inlineOptions) {
 						}
 					}
 				}
-				log.debug(`transform returns compiled js for ${svelteRequest.filename}`);
 				return {
 					...compileData.compiled.js,
 					meta: {

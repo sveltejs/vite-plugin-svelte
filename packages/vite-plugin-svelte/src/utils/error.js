@@ -100,3 +100,79 @@ function formatFrameForVite(frame) {
 		.map((line) => (line.match(/^\s+\^/) ? '   ' + line : ' ' + line.replace(':', ' | ')))
 		.join('\n');
 }
+
+/**
+ * @param {import('svelte/types/compiler/interfaces').Warning & Error} err a svelte compiler error, which is a mix of Warning and an error
+ * @param {string} originalCode
+ * @param {import('../index.js').Arrayable<import('svelte/types/compiler/preprocess').PreprocessorGroup>} [preprocessors]
+ */
+export function enhanceCompileError(err, originalCode, preprocessors) {
+	preprocessors = arraify(preprocessors ?? []);
+
+	/** @type {string[]} */
+	const additionalMessages = [];
+
+	// Handle incorrect TypeScript usage
+	if (err.code === 'parse-error') {
+		// Reference from Svelte: https://github.com/sveltejs/svelte/blob/800f6c076be5dd87dd4d2e9d66c59b973d54d84b/packages/svelte/src/compiler/preprocess/index.js#L262
+		const scriptRe = /<script(\s[^]*?)?(?:>([^]*?)<\/script>|\/>)/gi;
+		const errIndex = err.pos ?? -1;
+
+		let m;
+		while ((m = scriptRe.exec(originalCode))) {
+			const matchStart = m.index;
+			const matchEnd = matchStart + m[0].length;
+			const isErrorInScript = matchStart <= errIndex && errIndex <= matchEnd;
+			if (isErrorInScript) {
+				// Warn missing lang="ts"
+				const hasLangTs = m[1]?.includes('lang="ts"');
+				if (!hasLangTs) {
+					additionalMessages.push('Did you forget to add lang="ts" to your script tag?');
+				}
+				// Warn missing script preprocessor
+				if (preprocessors.every((p) => p.script == null)) {
+					const preprocessorType = hasLangTs ? 'TypeScript' : 'script';
+					additionalMessages.push(
+						`Did you forget to add a ${preprocessorType} preprocessor? See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.`
+					);
+				}
+			}
+		}
+	}
+
+	// Handle incorrect CSS preprocessor usage
+	if (err.code === 'css-syntax-error') {
+		const styleRe = /<style(\s[^]*?)?(?:>([^]*?)<\/style>|\/>)/gi;
+
+		let m;
+		while ((m = styleRe.exec(originalCode))) {
+			// Warn missing lang attribute
+			if (!m[1]?.includes('lang=')) {
+				additionalMessages.push('Did you forget to add a lang attribute to your style tag?');
+			}
+			// Warn missing style preprocessor
+			if (
+				preprocessors.every((p) => p.style == null || p.name === 'inject-scope-everything-rule')
+			) {
+				const preprocessorType = m[1]?.match(/lang="(.+?)"/)?.[1] ?? 'style';
+				additionalMessages.push(
+					`Did you forget to add a ${preprocessorType} preprocessor? See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.`
+				);
+			}
+		}
+	}
+
+	if (additionalMessages.length) {
+		err.message += '\n\n- ' + additionalMessages.join('\n- ');
+	}
+
+	return err;
+}
+
+/**
+ * @param {T | T[]} value
+ * @template T
+ */
+function arraify(value) {
+	return Array.isArray(value) ? value : [value];
+}

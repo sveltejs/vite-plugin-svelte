@@ -16,7 +16,7 @@ export const lang_sep = '.vite-preprocess.';
  */
 export function vitePreprocess(opts) {
 	/** @type {import('svelte/compiler').PreprocessorGroup} */
-	const preprocessor = {};
+	const preprocessor = { name: 'vite-preprocess' };
 	if (opts?.script !== false) {
 		preprocessor.script = viteScript().script;
 	}

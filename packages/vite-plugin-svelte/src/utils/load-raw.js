@@ -64,7 +64,7 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 				}" combined with direct in ${id}. supported are: ${supportedDirectTypes.join(', ')}`
 			);
 		}
-		log.debug(`load returns direct result for ${id}`);
+		log.debug(`load returns direct result for ${id}`, undefined, 'load');
 		let directOutput = result.code;
 		if (query.sourcemap && result.map?.toUrl) {
 			const map = `sourceMappingURL=${result.map.toUrl()}`;
@@ -76,7 +76,7 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 		}
 		return directOutput;
 	} else if (query.raw) {
-		log.debug(`load returns raw result for ${id}`);
+		log.debug(`load returns raw result for ${id}`, undefined, 'load');
 		return toRawExports(result);
 	} else {
 		throw new Error(`invalid raw mode in ${id}, supported are raw, direct`);

@@ -108,7 +108,7 @@ function findConfigToLoad(viteConfig, inlineOptions) {
 			.map((candidate) => path.resolve(root, candidate))
 			.filter((file) => fs.existsSync(file));
 		if (existingKnownConfigFiles.length === 0) {
-			log.debug(`no svelte config found at ${root}`);
+			log.debug(`no svelte config found at ${root}`, undefined, 'config');
 			return;
 		} else if (existingKnownConfigFiles.length > 1) {
 			log.warn(

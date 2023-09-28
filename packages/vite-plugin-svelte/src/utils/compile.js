@@ -6,6 +6,7 @@ import { log } from './log.js';
 
 import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
+import { enhanceCompileError } from './error.js';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
@@ -56,7 +57,6 @@ export const _createCompileSvelte = (makeHot) => {
 
 		if (options.hot && options.emitCss) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-			log.debug(`setting cssHash ${hash} for ${normalizedFilename}`);
 			compileOptions.cssHash = () => hash;
 		}
 		if (ssr && compileOptions.enableSourcemap !== false) {
@@ -107,7 +107,9 @@ export const _createCompileSvelte = (makeHot) => {
 		});
 		if (dynamicCompileOptions && log.debug.enabled) {
 			log.debug(
-				`dynamic compile options for  ${filename}: ${JSON.stringify(dynamicCompileOptions)}`
+				`dynamic compile options for  ${filename}: ${JSON.stringify(dynamicCompileOptions)}`,
+				undefined,
+				'compile'
 			);
 		}
 		const finalCompileOptions = dynamicCompileOptions
@@ -118,7 +120,14 @@ export const _createCompileSvelte = (makeHot) => {
 			: compileOptions;
 
 		const endStat = stats?.start(filename);
-		const compiled = compile(finalCode, finalCompileOptions);
+		/** @type {import('svelte/types/compiler/interfaces').CompileResult} */
+		let compiled;
+		try {
+			compiled = compile(finalCode, finalCompileOptions);
+		} catch (e) {
+			enhanceCompileError(e, code, preprocessors);
+			throw e;
+		}
 
 		if (endStat) {
 			endStat();

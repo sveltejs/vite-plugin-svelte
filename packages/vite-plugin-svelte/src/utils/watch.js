@@ -22,7 +22,9 @@ export function setupWatchers(options, cache, requestParser) {
 		dependants.forEach((dependant) => {
 			if (fs.existsSync(dependant)) {
 				log.debug(
-					`emitting virtual change event for "${dependant}" because depdendency "${filename}" changed`
+					`emitting virtual change event for "${dependant}" because depdendency "${filename}" changed`,
+					undefined,
+					'hmr'
 				);
 				watcher.emit('change', dependant);
 			}
@@ -34,7 +36,7 @@ export function setupWatchers(options, cache, requestParser) {
 		if (svelteRequest) {
 			const removedFromCache = cache.remove(svelteRequest);
 			if (removedFromCache) {
-				log.debug(`cleared VitePluginSvelteCache for deleted file ${filename}`);
+				log.debug(`cleared VitePluginSvelteCache for deleted file ${filename}`, undefined, 'hmr');
 			}
 		}
 	};
