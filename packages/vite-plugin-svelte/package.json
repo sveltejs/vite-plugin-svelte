@@ -11,14 +11,16 @@
   "types": "types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./types/index.d.ts",
-      "import": "./src/index.js"
+      "import": {
+        "types": "./types/index.d.ts",
+        "default": "./src/index.js"
+      }
     }
   },
   "scripts": {
     "check:publint": "publint --strict",
     "check:types": "tsc --noEmit",
-    "generate:types": "dts-buddy"
+    "generate:types": "dts-buddy -m \"@sveltejs/vite-plugin-svelte:src/index.js\""
   },
   "engines": {
     "node": "^18.0.0 || >=20"
