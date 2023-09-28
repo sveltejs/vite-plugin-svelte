@@ -125,13 +125,15 @@ export function enhanceCompileError(err, originalCode, preprocessors) {
 			const isErrorInScript = matchStart <= errIndex && errIndex <= matchEnd;
 			if (isErrorInScript) {
 				// Warn missing lang="ts"
-				if (!m[1]?.includes('lang="ts"')) {
-					additionalMessages.push('Did you forgot to add lang="ts" to your script tag?');
+				const hasLangTs = m[1]?.includes('lang="ts"');
+				if (!hasLangTs) {
+					additionalMessages.push('Did you forget to add lang="ts" to your script tag?');
 				}
 				// Warn missing script preprocessor
 				if (preprocessors.every((p) => p.script == null)) {
+					const preprocessorType = hasLangTs ? 'TypeScript' : 'script';
 					additionalMessages.push(
-						'Did you forgot to add a script preprocessor? See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.'
+						`Did you forget to add a ${preprocessorType} preprocessor? See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.`
 					);
 				}
 			}
@@ -146,14 +148,15 @@ export function enhanceCompileError(err, originalCode, preprocessors) {
 		while ((m = styleRe.exec(originalCode))) {
 			// Warn missing lang attribute
 			if (!m[1]?.includes('lang=')) {
-				additionalMessages.push('Did you forgot to add a lang attribute to your style tag?');
+				additionalMessages.push('Did you forget to add a lang attribute to your style tag?');
 			}
-			// Warn missing script preprocessor
+			// Warn missing style preprocessor
 			if (
 				preprocessors.every((p) => p.style == null || p.name === 'inject-scope-everything-rule')
 			) {
+				const preprocessorType = m[1]?.match(/lang="(.+?)"/)?.[1] ?? 'style';
 				additionalMessages.push(
-					'Did you forgot to add a style preprocessor? See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.'
+					`Did you forget to add a ${preprocessorType} preprocessor? See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.`
 				);
 			}
 		}
