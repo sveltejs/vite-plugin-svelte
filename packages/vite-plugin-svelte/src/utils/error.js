@@ -104,7 +104,7 @@ function formatFrameForVite(frame) {
 /**
  * @param {import('svelte/types/compiler/interfaces').Warning & Error} err a svelte compiler error, which is a mix of Warning and an error
  * @param {string} originalCode
- * @param {import('../index.js').Arrayable<import('svelte/types/compiler/preprocess').PreprocessorGroup>} [preprocessors]
+ * @param {import('../public.d.ts').Arrayable<import('svelte/compiler').PreprocessorGroup>} [preprocessors]
  */
 export function enhanceCompileError(err, originalCode, preprocessors) {
 	preprocessors = arraify(preprocessors ?? []);
