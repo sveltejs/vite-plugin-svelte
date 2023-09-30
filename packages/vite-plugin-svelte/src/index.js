@@ -105,7 +105,14 @@ export function svelte(inlineOptions) {
 						if (query.svelte && query.type === 'style') {
 							const css = cache.getCSS(svelteRequest);
 							if (css) {
-								return css;
+								if (options.experimental?.noCssModuleSideEffects && options.emitCss) {
+									return {
+										...css,
+										moduleSideEffects: false // DOES NOT WORK
+									};
+								} else {
+									return css;
+								}
 							}
 						}
 						// prevent vite asset plugin from loading files as url that should be compiled in transform

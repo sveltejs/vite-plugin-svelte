@@ -170,6 +170,12 @@ interface ExperimentalOptions {
 	 * @default false
 	 */
 	disableSvelteResolveWarnings?: boolean;
+
+	/**
+	 *
+	 * @default false
+	 */
+	noCssModuleSideEffects?: boolean;
 }
 
 type ModuleFormat = NonNullable<'esm'>;

@@ -258,6 +258,18 @@ importers:
         specifier: ^5.0.0-beta.2
         version: 5.0.0-beta.2(@types/node@18.17.19)(sass@1.68.0)(stylus@0.60.0)
 
+  packages/e2e-tests/css-nosideeffects:
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: workspace:^
+        version: link:../../vite-plugin-svelte
+      svelte:
+        specifier: ^4.2.1
+        version: 4.2.1
+      vite:
+        specifier: ^5.0.0-beta.2
+        version: 5.0.0-beta.2(@types/node@18.17.19)(sass@1.68.0)(stylus@0.60.0)
+
   packages/e2e-tests/custom-extensions:
     devDependencies:
       '@sveltejs/vite-plugin-svelte':

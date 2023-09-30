@@ -140,7 +140,8 @@ export const _createCompileSvelte = (makeHot) => {
 			// compiler might not emit css with mode none or it may be empty
 			if (emitCss && hasCss) {
 				// TODO properly update sourcemap?
-				compiled.js.code += `\nimport ${JSON.stringify(cssId)};\n`;
+				// ADDING PURE OR NO_SIDE_EFFECTS here does not work
+				compiled.js.code += `\n/*@__NO_SIDE_EFFECTS__*/import ${JSON.stringify(cssId)};\n`;
 			}
 
 			// only apply hmr when not in ssr context and hot options are set
