@@ -14,11 +14,12 @@ However, `svelte-preprocess` does provide extra functionalities not available wi
   A Svelte preprocessor that supports transforming TypeScript, PostCSS, SCSS, Less, Stylus, and SugarSS. These are transformed when the script or style tags have the respective `lang` attribute.
 
   - TypeScript: `<script lang="ts">`
-  - PostCSS: `<style lang="postcss">`
   - SCSS: `<style lang="scss">`
   - Less: `<style lang="less">`
   - Stylus: `<style lang="stylus">`
   - SugarSS: `<style lang="sss">`
+
+  By default, PostCSS or LightningCSS ([if configured in Vite](https://vitejs.dev/config/shared-options.html#css-transformer)) is applied to all `<style>` tags.
 
   If required, you can turn script or style transforming off by setting the `script` or `style` option to `false`. The `style` option also accepts Vite's `InlineConfig` and `ResolvedConfig` types for advanced usage.
 

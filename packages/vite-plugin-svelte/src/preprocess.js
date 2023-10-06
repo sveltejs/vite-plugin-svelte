@@ -1,14 +1,13 @@
-import { preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
+import { isCSSRequest, preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
 import { mapToRelative, removeLangSuffix } from './utils/sourcemaps.js';
 
 /**
  * @typedef {(code: string, filename: string) => Promise<{ code: string; map?: any; deps?: Set<string> }>} CssTransform
  */
 
-const supportedStyleLangs = ['css', 'less', 'sass', 'scss', 'styl', 'stylus', 'postcss', 'sss'];
 const supportedScriptLangs = ['ts'];
 
-export const lang_sep = '.vite-preprocess.';
+export const lang_sep = '.vite-preprocess';
 
 /** @type {import('./index.d.ts').vitePreprocess} */
 export function vitePreprocess(opts) {
@@ -63,8 +62,8 @@ function viteStyle(config = {}) {
 	let transform;
 	/** @type {import('svelte/types/compiler/preprocess').Preprocessor} */
 	const style = async ({ attributes, content, filename = '' }) => {
-		const lang = /** @type {string} */ (attributes.lang);
-		if (!supportedStyleLangs.includes(lang)) return;
+		const ext = attributes.lang ? `.${attributes.lang}` : '.css';
+		if (attributes.lang && !isCSSRequest(ext)) return;
 		if (!transform) {
 			/** @type {import('vite').ResolvedConfig} */
 			let resolvedConfig;
@@ -82,7 +81,7 @@ function viteStyle(config = {}) {
 			}
 			transform = getCssTransformFn(resolvedConfig);
 		}
-		const suffix = `${lang_sep}${lang}`;
+		const suffix = `${lang_sep}${ext}`;
 		const moduleId = `${filename}${suffix}`;
 		const { code, map, deps } = await transform(content, moduleId);
 		removeLangSuffix(map, suffix);

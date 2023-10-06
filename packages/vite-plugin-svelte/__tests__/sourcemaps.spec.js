@@ -12,7 +12,7 @@ const filename = 'File.svelte';
 
 describe('removeLangSuffix', () => {
 	it('removes suffix', () => {
-		const suffix = `${lang_sep}scss`;
+		const suffix = `${lang_sep}.scss`;
 		const map = {
 			file: `${fixtureDir}/${filename}${suffix}`,
 			sources: ['foo.scss', `${fixtureDir}/${filename}${suffix}`],
