@@ -92,6 +92,18 @@ module.exports = {
 			}
 		},
 		{
+			// eslint is not great at detecting the esm/cjs context of a file,
+			// mistreating `require` and `module` globals as undefined
+			files: [
+				'packages/e2e-tests/_test_dependencies/cjs-only/**',
+				'packages/e2e-tests/_test_dependencies/index-only/**',
+				'packages/e2e-tests/_test_dependencies/vite-plugins/**'
+			],
+			rules: {
+				'no-undef': 'off'
+			}
+		},
+		{
 			files: ['packages/e2e-tests/**/vite.config.js', 'packages/playground/**'],
 			rules: {
 				'no-unused-vars': 'off',

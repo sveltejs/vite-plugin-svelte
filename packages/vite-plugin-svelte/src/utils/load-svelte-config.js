@@ -59,7 +59,8 @@ export async function loadSvelteConfig(viteConfig, inlineOptions) {
 				// identify which require function to use (esm and cjs mode)
 				const _require = import.meta.url
 					? esmRequire ?? (esmRequire = createRequire(import.meta.url))
-					: require;
+					: // eslint-disable-next-line no-undef
+					  require;
 
 				// avoid loading cached version on reload
 				delete _require.cache[_require.resolve(configFile)];
