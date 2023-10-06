@@ -1,1 +1,1 @@
-<div id="A">preserved leading whitespace</div>
+<div id="A">    preserved leading whitespace</div>

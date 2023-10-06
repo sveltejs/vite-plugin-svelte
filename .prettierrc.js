@@ -14,9 +14,14 @@ module.exports = {
 			options: { parser: 'typescript' }
 		},
 		{
-			files: ['**/CHANGELOG.md', '.github/renovate.json5'],
+			files: [
+				'**/vite.config.js.timestamp-*.mjs',
+				'**/CHANGELOG.md',
+				'.github/renovate.json5',
+				'packages/e2e-tests/dynamic-compile-options/src/components/A.svelte'
+			],
 			options: {
-				requirePragma: true
+				rangeEnd: 0
 			}
 		},
 		{
