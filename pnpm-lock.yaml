@@ -288,6 +288,18 @@ importers:
         specifier: file:../_test_dependencies/scss-only
         version: file:packages/e2e-tests/_test_dependencies/scss-only
 
+  packages/e2e-tests/dynamic-compile-options:
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: workspace:^
+        version: link:../../vite-plugin-svelte
+      svelte:
+        specifier: ^4.2.1
+        version: 4.2.1
+      vite:
+        specifier: ^5.0.0-beta.4
+        version: 5.0.0-beta.4(@types/node@18.18.3)(sass@1.68.0)(stylus@0.60.0)
+
   packages/e2e-tests/env:
     devDependencies:
       '@sveltejs/vite-plugin-svelte':

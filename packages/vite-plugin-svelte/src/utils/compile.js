@@ -100,7 +100,7 @@ export const _createCompileSvelte = (makeHot) => {
 			};
 		}
 		const finalCode = preprocessed ? preprocessed.code : code;
-		const dynamicCompileOptions = await options.experimental?.dynamicCompileOptions?.({
+		const dynamicCompileOptions = await options?.dynamicCompileOptions?.({
 			filename,
 			code: finalCode,
 			compileOptions

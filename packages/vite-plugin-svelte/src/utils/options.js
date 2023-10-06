@@ -36,6 +36,7 @@ const allowedPluginOptions = new Set([
 	'disableDependencyReinclusion',
 	'prebundleSvelteLibraries',
 	'inspector',
+	'dynamicCompileOptions',
 	'experimental'
 ]);
 
@@ -316,13 +317,13 @@ function removeIgnoredOptions(options) {
 function handleDeprecatedOptions(options) {
 	const experimental = /** @type {Record<string, any>} */ (options.experimental);
 	if (experimental) {
-		for (const promoted of ['prebundleSvelteLibraries', 'inspector']) {
+		for (const promoted of ['prebundleSvelteLibraries', 'inspector', 'dynamicCompileOptions']) {
 			if (experimental[promoted]) {
 				//@ts-expect-error untyped assign
 				options[promoted] = experimental[promoted];
 				delete experimental[promoted];
 				log.warn(
-					`Option "vitePlugin.experimental.${promoted}" is no longer experimental and has moved to "vitePlugin.${promoted}". Please update your svelte config.`
+					`Option "experimental.${promoted}" is no longer experimental and has moved to "${promoted}". Please update your Svelte or Vite config.`
 				);
 			}
 		}
