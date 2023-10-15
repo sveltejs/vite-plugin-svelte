@@ -81,14 +81,18 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 
 	const finalCode = preprocessed ? preprocessed.code : code;
 
-	const dynamicCompileOptions = await options.experimental?.dynamicCompileOptions?.({
+	const dynamicCompileOptions = await options?.dynamicCompileOptions?.({
 		filename,
 		code: finalCode,
 		compileOptions
 	});
 
 	if (dynamicCompileOptions && log.debug.enabled) {
-		log.debug(`dynamic compile options for  ${filename}: ${JSON.stringify(dynamicCompileOptions)}`);
+		log.debug(
+			`dynamic compile options for  ${filename}: ${JSON.stringify(dynamicCompileOptions)}`,
+			undefined,
+			'compile'
+		);
 	}
 
 	const finalCompileOptions = dynamicCompileOptions

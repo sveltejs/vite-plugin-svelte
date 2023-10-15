@@ -221,38 +221,6 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 
   Inspector mode shows you the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.
 
-## Experimental options
-
-These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.
-
-Either in Vite config:
-
-```js
-// vite.config.js
-export default defineConfig({
-  plugins: [
-    svelte({
-      experimental: {
-        // experimental options
-      }
-    })
-  ]
-});
-```
-
-or in Svelte config:
-
-```js
-// svelte.config.js
-export default {
-  vitePlugin: {
-    experimental: {
-      // experimental options
-    }
-  }
-};
-```
-
 ### dynamicCompileOptions
 
 - **Type:**
@@ -286,6 +254,38 @@ export default {
     ]
   });
   ```
+
+## Experimental options
+
+These options are considered experimental and breaking changes to them can occur in any release! Specify them under the `experimental` option.
+
+Either in Vite config:
+
+```js
+// vite.config.js
+export default defineConfig({
+  plugins: [
+    svelte({
+      experimental: {
+        // experimental options
+      }
+    })
+  ]
+});
+```
+
+or in Svelte config:
+
+```js
+// svelte.config.js
+export default {
+  vitePlugin: {
+    experimental: {
+      // experimental options
+    }
+  }
+};
+```
 
 ### sendWarningsToBrowser
 
