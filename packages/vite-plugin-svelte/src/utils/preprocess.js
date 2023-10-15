@@ -1,6 +1,7 @@
 import MagicString from 'magic-string';
 import { log } from './log.js';
 import path from 'node:path';
+import { normalizePath } from 'vite';
 
 /**
  * this appends a *{} rule to component styles to force the svelte compiler to add style classes to all nodes
@@ -120,4 +121,52 @@ export function addExtraPreprocessors(options, config) {
 			options.preprocess = [...prependPreprocessors, options.preprocess, ...appendPreprocessors];
 		}
 	}
+}
+
+/**
+ *
+ * @param filename {string}
+ * @param dependencies  {string[]}
+ * @returns {({dependencies: string[], warnings:import('svelte/types/compiler/interfaces').Warning[] })}
+ */
+export function checkPreprocessDependencies(filename, dependencies) {
+	const normalizedFullFilename = normalizePath(filename);
+	/** @type {import('svelte/types/compiler/interfaces').Warning[]} */
+	const warnings = [];
+	const filteredDeps = dependencies
+		.map(normalizePath)
+		.filter((dep) => dep !== normalizedFullFilename);
+	if (filteredDeps.length !== dependencies.length) {
+		warnings.push({
+			code: 'vite-plugin-svelte-preprocess-depends-on-self',
+			message:
+				'svelte.preprocess returned this file as a dependency of itself. This can be caused by invalid configuration or importing generated code that depends on .svelte files (eg. tailwind base css)',
+			filename
+		});
+	}
+	const cssDeps = filteredDeps.filter(
+		(dep) => dep.endsWith('.css') && !dep.startsWith(normalizedFullFilename)
+	);
+	if (cssDeps.length) {
+		warnings.push({
+			code: 'vite-plugin-svelte-preprocess-imports-css',
+			message: `importing external css into svelte scoped style blocks is not recommended. Use vite to directly import css files into your main.js or root +layout.svelte. Found: ${cssDeps.join(
+				', '
+			)}`,
+			filename
+		});
+	}
+	if (filteredDeps.length > 10) {
+		warnings.push({
+			code: 'vite-plugin-svelte-preprocess-many-dependencies',
+			message: `preprocess depends on more than 10 external files which can cause slow builds and poor DX, try to reduce them. Found: ${filteredDeps.join(
+				', '
+			)}`,
+			filename
+		});
+	}
+	return {
+		dependencies: filteredDeps,
+		warnings
+	};
 }
