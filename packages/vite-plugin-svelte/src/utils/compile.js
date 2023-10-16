@@ -4,7 +4,10 @@ import { createMakeHot } from 'svelte-hmr';
 import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
 
-import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess.js';
+import {
+	checkPreprocessDependencies,
+	createInjectScopeEverythingRulePreprocessorGroup
+} from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
 import { enhanceCompileError } from './error.js';
 
@@ -22,7 +25,10 @@ export const _createCompileSvelte = (makeHot) => {
 	return async function compileSvelte(svelteRequest, code, options) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
+		/** @type {string[]} */
 		const dependencies = [];
+		/** @type {import('svelte/types/compiler/interfaces').Warning[]} */
+		const warnings = [];
 
 		if (options.stats) {
 			if (options.isBuild) {
@@ -87,7 +93,16 @@ export const _createCompileSvelte = (makeHot) => {
 				throw e;
 			}
 
-			if (preprocessed.dependencies) dependencies.push(...preprocessed.dependencies);
+			if (preprocessed.dependencies?.length) {
+				const checked = checkPreprocessDependencies(filename, preprocessed.dependencies);
+				if (checked.warnings.length) {
+					warnings.push(...checked.warnings);
+				}
+				if (checked.dependencies.length) {
+					dependencies.push(...checked.dependencies);
+				}
+			}
+
 			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 		}
 		if (typeof preprocessed?.map === 'object') {
@@ -134,6 +149,12 @@ export const _createCompileSvelte = (makeHot) => {
 		}
 		mapToRelative(compiled.js?.map, filename);
 		mapToRelative(compiled.css?.map, filename);
+		if (warnings.length) {
+			if (!compiled.warnings) {
+				compiled.warnings = [];
+			}
+			compiled.warnings.push(...warnings);
+		}
 		if (!raw) {
 			// wire css import and code for hmr
 			const hasCss = compiled.css?.code?.trim().length > 0;

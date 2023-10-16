@@ -1,6 +1,7 @@
 import MagicString from 'magic-string';
 import { log } from './log.js';
 import path from 'node:path';
+import { normalizePath } from 'vite';
 
 /**
  * this appends a *{} rule to component styles to force the svelte compiler to add style classes to all nodes
@@ -120,4 +121,53 @@ export function addExtraPreprocessors(options, config) {
 			options.preprocess = [...prependPreprocessors, options.preprocess, ...appendPreprocessors];
 		}
 	}
+}
+
+/**
+ *
+ * @param filename {string}
+ * @param dependencies  {string[]}
+ * @returns {({dependencies: string[], warnings:import('svelte/types/compiler/interfaces').Warning[] })}
+ */
+export function checkPreprocessDependencies(filename, dependencies) {
+	/** @type {import('svelte/types/compiler/interfaces').Warning[]} */
+	const warnings = [];
+
+	// to find self, we have to compare normalized filenames, but must keep the original values in `dependencies`
+	// because otherwise file watching on windows doesn't work
+	// so we track idx and filter by that in the end
+	/** @type {number[]} */
+	const selfIdx = [];
+	const normalizedFullFilename = normalizePath(filename);
+	const normalizedDeps = dependencies.map(normalizePath);
+	for (let i = 0; i < normalizedDeps.length; i++) {
+		if (normalizedDeps[i] === normalizedFullFilename) {
+			selfIdx.push(i);
+		}
+	}
+	const hasSelfDependency = selfIdx.length > 0;
+	if (hasSelfDependency) {
+		warnings.push({
+			code: 'vite-plugin-svelte-preprocess-depends-on-self',
+			message:
+				'svelte.preprocess returned this file as a dependency of itself. This can be caused by an invalid configuration or importing generated code that depends on .svelte files (eg. tailwind base css)',
+			filename
+		});
+	}
+
+	if (dependencies.length > 10) {
+		warnings.push({
+			code: 'vite-plugin-svelte-preprocess-many-dependencies',
+			message: `svelte.preprocess depends on more than 10 external files which can cause slow builds and poor DX, try to reduce them. Found: ${dependencies.join(
+				', '
+			)}`,
+			filename
+		});
+	}
+	return {
+		dependencies: hasSelfDependency
+			? dependencies.filter((_, i) => !selfIdx.includes(i)) // remove self dependency
+			: dependencies,
+		warnings
+	};
 }
