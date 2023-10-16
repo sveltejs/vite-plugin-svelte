@@ -150,7 +150,7 @@ export function checkPreprocessDependencies(filename, dependencies) {
 		warnings.push({
 			code: 'vite-plugin-svelte-preprocess-depends-on-self',
 			message:
-				'svelte.preprocess returned this file as a dependency of itself. This can be caused by invalid configuration or importing generated code that depends on .svelte files (eg. tailwind base css)',
+				'svelte.preprocess returned this file as a dependency of itself. This can be caused by an invalid configuration or importing generated code that depends on .svelte files (eg. tailwind base css)',
 			filename
 		});
 	}
@@ -158,7 +158,7 @@ export function checkPreprocessDependencies(filename, dependencies) {
 	if (dependencies.length > 10) {
 		warnings.push({
 			code: 'vite-plugin-svelte-preprocess-many-dependencies',
-			message: `preprocess depends on more than 10 external files which can cause slow builds and poor DX, try to reduce them. Found: ${dependencies.join(
+			message: `svelte.preprocess depends on more than 10 external files which can cause slow builds and poor DX, try to reduce them. Found: ${dependencies.join(
 				', '
 			)}`,
 			filename
