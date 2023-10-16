@@ -1,5 +1,21 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.0.0-next.1
+
+### Major Changes
+
+- Preprocess style tags by default with vitePreprocess ([#756](https://github.com/sveltejs/vite-plugin-svelte/pull/756))
+
+### Minor Changes
+
+- feat(preprocess): add warnings in case preprocess dependencies contain anomalies ([#767](https://github.com/sveltejs/vite-plugin-svelte/pull/767))
+
+### Patch Changes
+
+- Improve compile error messages ([#757](https://github.com/sveltejs/vite-plugin-svelte/pull/757))
+
+- feat(compile): promote experimental.dynamicCompileOptions to stable ([#765](https://github.com/sveltejs/vite-plugin-svelte/pull/765))
+
 ## 3.0.0-next.0
 
 ### Major Changes
