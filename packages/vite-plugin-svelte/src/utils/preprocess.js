@@ -130,13 +130,23 @@ export function addExtraPreprocessors(options, config) {
  * @returns {({dependencies: string[], warnings:import('svelte/types/compiler/interfaces').Warning[] })}
  */
 export function checkPreprocessDependencies(filename, dependencies) {
-	const normalizedFullFilename = normalizePath(filename);
 	/** @type {import('svelte/types/compiler/interfaces').Warning[]} */
 	const warnings = [];
-	const filteredDeps = dependencies
-		.map(normalizePath)
-		.filter((dep) => dep !== normalizedFullFilename);
-	if (filteredDeps.length !== dependencies.length) {
+
+	// to find self, we have to compare normalized filenames, but must keep the original values in `dependencies`
+	// because otherwise file watching on windows doesn't work
+	// so we track idx and filter by that in the end
+	/** @type {number[]} */
+	const selfIdx = [];
+	const normalizedFullFilename = normalizePath(filename);
+	const normalizedDeps = dependencies.map(normalizePath);
+	for (let i = 0; i < normalizedDeps.length; i++) {
+		if (normalizedDeps[i] === normalizedFullFilename) {
+			selfIdx.push(i);
+		}
+	}
+	const hasSelfDependency = selfIdx.length > 0;
+	if (hasSelfDependency) {
 		warnings.push({
 			code: 'vite-plugin-svelte-preprocess-depends-on-self',
 			message:
@@ -144,29 +154,20 @@ export function checkPreprocessDependencies(filename, dependencies) {
 			filename
 		});
 	}
-	const cssDeps = filteredDeps.filter(
-		(dep) => dep.endsWith('.css') && !dep.startsWith(normalizedFullFilename)
-	);
-	if (cssDeps.length) {
-		warnings.push({
-			code: 'vite-plugin-svelte-preprocess-imports-css',
-			message: `importing external css into svelte scoped style blocks is not recommended. Use vite to directly import css files into your main.js or root +layout.svelte. Found: ${cssDeps.join(
-				', '
-			)}`,
-			filename
-		});
-	}
-	if (filteredDeps.length > 10) {
+
+	if (dependencies.length > 10) {
 		warnings.push({
 			code: 'vite-plugin-svelte-preprocess-many-dependencies',
-			message: `preprocess depends on more than 10 external files which can cause slow builds and poor DX, try to reduce them. Found: ${filteredDeps.join(
+			message: `preprocess depends on more than 10 external files which can cause slow builds and poor DX, try to reduce them. Found: ${dependencies.join(
 				', '
 			)}`,
 			filename
 		});
 	}
 	return {
-		dependencies: filteredDeps,
+		dependencies: hasSelfDependency
+			? dependencies.filter((_, i) => !selfIdx.includes(i)) // remove self dependency
+			: dependencies,
 		warnings
 	};
 }
