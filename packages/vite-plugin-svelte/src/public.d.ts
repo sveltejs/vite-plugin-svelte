@@ -122,20 +122,7 @@ interface SvelteOptions {
 	 * @see https://svelte.dev/docs#svelte_compile
 	 */
 	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
-	/**
-	 * Handles warning emitted from the Svelte compiler
-	 */
-	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
-	/**
-	 * Options for vite-plugin-svelte
-	 */
-	vitePlugin?: PluginOptions;
-}
 
-/**
- * These options are considered experimental and breaking changes to them can occur in any release
- */
-interface ExperimentalOptions {
 	/**
 	 * A function to update `compilerOptions` before compilation
 	 *
@@ -160,6 +147,21 @@ interface ExperimentalOptions {
 		code: string;
 		compileOptions: Partial<CompileOptions>;
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
+
+	/**
+	 * Handles warning emitted from the Svelte compiler
+	 */
+	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
+	/**
+	 * Options for vite-plugin-svelte
+	 */
+	vitePlugin?: PluginOptions;
+}
+
+/**
+ * These options are considered experimental and breaking changes to them can occur in any release
+ */
+interface ExperimentalOptions {
 	/**
 	 * send a websocket message with svelte compiler warnings during dev
 	 *
