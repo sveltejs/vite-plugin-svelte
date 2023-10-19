@@ -21,7 +21,7 @@ import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 
 /**
- * @param {Partial<import('./public.d.ts').PluginOptionsInline>} [inlineOptions]
+ * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
  * @returns {import('vite').Plugin[]}
  */
 export function svelte(inlineOptions) {

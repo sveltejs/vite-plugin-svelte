@@ -3,7 +3,7 @@ declare module '@sveltejs/vite-plugin-svelte' {
 	import type { CompileOptions, PreprocessorGroup } from 'svelte/compiler';
 	import type { Warning } from 'svelte/types/compiler/interfaces';
 	import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
-	export function svelte(inlineOptions?: Partial<PluginOptionsInline> | undefined): import('vite').Plugin[];
+	export function svelte(inlineOptions?: Partial<Options> | undefined): import('vite').Plugin[];
 	type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
 
 	interface PluginOptionsInline extends PluginOptions {
