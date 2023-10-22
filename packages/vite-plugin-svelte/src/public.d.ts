@@ -4,9 +4,9 @@ import type { Warning } from 'svelte/types/compiler/interfaces';
 import type { PreprocessorGroup } from 'svelte/compiler';
 import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 
-type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
+export type Options = Omit<SvelteConfig, 'vitePlugin'> & PluginOptionsInline;
 
-export interface PluginOptionsInline extends PluginOptions {
+interface PluginOptionsInline extends PluginOptions {
 	/**
 	 * Path to a svelte config file, either absolute or relative to Vite root
 	 *
@@ -95,33 +95,6 @@ interface PluginOptions {
 	 * @default unset for dev, always false for build
 	 */
 	inspector?: InspectorOptions | boolean;
-	/**
-	 * These options are considered experimental and breaking changes to them can occur in any release
-	 */
-	experimental?: ExperimentalOptions;
-}
-
-interface SvelteOptions {
-	/**
-	 * A list of file extensions to be compiled by Svelte
-	 *
-	 * @default ['.svelte']
-	 */
-	extensions?: string[];
-	/**
-	 * An array of preprocessors to transform the Svelte source code before compilation
-	 *
-	 * @see https://svelte.dev/docs#svelte_preprocess
-	 */
-	preprocess?: Arrayable<PreprocessorGroup>;
-	/**
-	 * The options to be passed to the Svelte compiler. A few options are set by default,
-	 * including `dev` and `css`. However, some options are non-configurable, like
-	 * `filename`, `format`, `generate`, and `cssHash` (in dev).
-	 *
-	 * @see https://svelte.dev/docs#svelte_compile
-	 */
-	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
 
 	/**
 	 * A function to update `compilerOptions` before compilation
@@ -147,6 +120,34 @@ interface SvelteOptions {
 		code: string;
 		compileOptions: Partial<CompileOptions>;
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
+
+	/**
+	 * These options are considered experimental and breaking changes to them can occur in any release
+	 */
+	experimental?: ExperimentalOptions;
+}
+
+export interface SvelteConfig {
+	/**
+	 * A list of file extensions to be compiled by Svelte
+	 *
+	 * @default ['.svelte']
+	 */
+	extensions?: string[];
+	/**
+	 * An array of preprocessors to transform the Svelte source code before compilation
+	 *
+	 * @see https://svelte.dev/docs#svelte_preprocess
+	 */
+	preprocess?: Arrayable<PreprocessorGroup>;
+	/**
+	 * The options to be passed to the Svelte compiler. A few options are set by default,
+	 * including `dev` and `css`. However, some options are non-configurable, like
+	 * `filename`, `format`, `generate`, and `cssHash` (in dev).
+	 *
+	 * @see https://svelte.dev/docs#svelte_compile
+	 */
+	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
 
 	/**
 	 * Handles warning emitted from the Svelte compiler
@@ -177,9 +178,9 @@ interface ExperimentalOptions {
 
 type Arrayable<T> = T | T[];
 
-interface VitePreprocessOptions {
+export interface VitePreprocessOptions {
 	script?: boolean;
 	style?: boolean | InlineConfig | ResolvedConfig;
 }
 
-export { Arrayable, Options, PluginOptions, SvelteOptions, VitePreprocessOptions };
+export * from './index.js';

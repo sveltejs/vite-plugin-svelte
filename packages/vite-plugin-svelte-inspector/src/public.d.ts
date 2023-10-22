@@ -68,3 +68,5 @@ export interface Options {
 		base: string;
 	};
 }
+
+export * from './index.js';

@@ -57,7 +57,7 @@ export function validateInlineOptions(inlineOptions) {
 }
 
 /**
- * @param {Partial<import('../public.d.ts').SvelteOptions>} [config]
+ * @param {Partial<import('../public.d.ts').SvelteConfig>} [config]
  * @returns {Partial<import('../public.d.ts').Options> | undefined}
  */
 function convertPluginOptions(config) {

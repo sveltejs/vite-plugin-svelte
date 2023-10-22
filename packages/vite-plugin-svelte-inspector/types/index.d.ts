@@ -1,6 +1,5 @@
 declare module '@sveltejs/vite-plugin-svelte-inspector' {
-	export function svelteInspector(options?: Partial<Options> | undefined): import('vite').Plugin;
-	interface Options {
+	export interface Options {
 		/**
 		 * define a key combo to toggle inspector,
 		 * @default 'meta-shift' on mac, 'control-shift' on other os
@@ -69,6 +68,7 @@ declare module '@sveltejs/vite-plugin-svelte-inspector' {
 			base: string;
 		};
 	}
+	export function svelteInspector(options?: Partial<Options> | undefined): import('vite').Plugin;
 }
 
 //# sourceMappingURL=index.d.ts.map
