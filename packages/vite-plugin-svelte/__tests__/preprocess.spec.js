@@ -8,9 +8,15 @@ const fixtureDir = normalizePath(
 	path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'preprocess')
 );
 
+/** @type {import('vite').InlineConfig} */
+const inlineConfig = {
+	configFile: false,
+	root: fixtureDir
+};
+
 describe('vitePreprocess', () => {
 	it('returns function', () => {
-		const preprocessorGroup = vitePreprocess({ script: true, style: true });
+		const preprocessorGroup = vitePreprocess({ script: true, style: inlineConfig });
 		expect(typeof preprocessorGroup).toBe('object');
 		expect(typeof preprocessorGroup.script).toBe('function');
 		expect(typeof preprocessorGroup.style).toBe('function');
@@ -18,7 +24,7 @@ describe('vitePreprocess', () => {
 
 	describe('style', async () => {
 		it('preprocess with postcss if no lang', async () => {
-			const preprocessorGroup = vitePreprocess({ style: {} });
+			const preprocessorGroup = vitePreprocess({ style: inlineConfig });
 			const style = /**@type {import('svelte/types/compiler/preprocess').Preprocessor} */ (
 				preprocessorGroup.style
 			);
@@ -37,7 +43,9 @@ describe('vitePreprocess', () => {
 		});
 
 		it('produces sourcemap with relative filename', async () => {
-			const preprocessorGroup = vitePreprocess({ style: { css: { devSourcemap: true } } });
+			const preprocessorGroup = vitePreprocess({
+				style: { ...inlineConfig, css: { devSourcemap: true } }
+			});
 			const style = /**@type {import('svelte/types/compiler/preprocess').Preprocessor} */ (
 				preprocessorGroup.style
 			);

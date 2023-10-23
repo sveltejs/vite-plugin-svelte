@@ -16,14 +16,13 @@ export const knownSvelteConfigNames = [
 	'svelte.config.mjs'
 ];
 
-// hide dynamic import from ts transform to prevent it turning into a require
-// see https://github.com/microsoft/TypeScript/issues/43329#issuecomment-811606238
-// also use timestamp query to avoid caching on reload
-const dynamicImportDefault = new Function(
-	'path',
-	'timestamp',
-	'return import(path + "?t=" + timestamp).then(m => m.default)'
-);
+/**
+ * @param {string} filePath
+ * @param {number} timestamp
+ */
+async function dynamicImportDefault(filePath, timestamp) {
+	return await import(filePath + '?t=' + timestamp).then((m) => m.default);
+}
 
 /** @type {import('../index.d.ts').loadSvelteConfig} */
 export async function loadSvelteConfig(viteConfig, inlineOptions) {
