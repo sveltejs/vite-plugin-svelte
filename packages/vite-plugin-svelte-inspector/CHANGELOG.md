@@ -1,5 +1,16 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 2.0.0-next.1
+
+### Major Changes
+
+- breaking(types): emit types with dts-buddy to include type map ([#751](https://github.com/sveltejs/vite-plugin-svelte/pull/751))
+
+### Patch Changes
+
+- Updated dependencies [[`62afd80`](https://github.com/sveltejs/vite-plugin-svelte/commit/62afd80c3a7bd6430be3c552acdb8baa75aac995), [`62afd80`](https://github.com/sveltejs/vite-plugin-svelte/commit/62afd80c3a7bd6430be3c552acdb8baa75aac995), [`62afd80`](https://github.com/sveltejs/vite-plugin-svelte/commit/62afd80c3a7bd6430be3c552acdb8baa75aac995), [`62afd80`](https://github.com/sveltejs/vite-plugin-svelte/commit/62afd80c3a7bd6430be3c552acdb8baa75aac995)]:
+  - @sveltejs/vite-plugin-svelte@3.0.0-next.2
+
 ## 2.0.0-next.0
 
 ### Major Changes
