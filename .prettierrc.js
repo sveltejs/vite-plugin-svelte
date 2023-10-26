@@ -16,9 +16,13 @@ export default {
 		},
 		{
 			files: [
-				'**/vite.config.js.timestamp-*.mjs',
 				'**/CHANGELOG.md',
 				'.github/renovate.json5',
+				'**/types/index.d.ts',
+				'**/types/index.d.ts.map',
+				'**/pnpm-lock.yaml',
+				'.changeset/pre.json',
+				'**/vite.config.js.timestamp-*.mjs',
 				'packages/e2e-tests/dynamic-compile-options/src/components/A.svelte'
 			],
 			options: {

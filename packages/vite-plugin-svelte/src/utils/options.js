@@ -45,7 +45,7 @@ const knownRootOptions = new Set(['extensions', 'compilerOptions', 'preprocess',
 const allowedInlineOptions = new Set(['configFile', ...allowedPluginOptions, ...knownRootOptions]);
 
 /**
- * @param {Partial<import('../index.d.ts').Options>} [inlineOptions]
+ * @param {Partial<import('../public.d.ts').Options>} [inlineOptions]
  */
 export function validateInlineOptions(inlineOptions) {
 	const invalidKeys = Object.keys(inlineOptions || {}).filter(
@@ -57,8 +57,8 @@ export function validateInlineOptions(inlineOptions) {
 }
 
 /**
- * @param {Partial<import('../index.d.ts').SvelteOptions>} [config]
- * @returns {Partial<import('../index.d.ts').Options> | undefined}
+ * @param {Partial<import('../public.d.ts').SvelteConfig>} [config]
+ * @returns {Partial<import('../public.d.ts').Options> | undefined}
  */
 function convertPluginOptions(config) {
 	if (!config) {
@@ -108,7 +108,7 @@ function convertPluginOptions(config) {
 			delete pluginOptions[unkownOption];
 		});
 	}
-	/** @type {import('../index.d.ts').Options} */
+	/** @type {import('../public.d.ts').Options} */
 	const result = {
 		...config,
 		...pluginOptions
@@ -121,7 +121,7 @@ function convertPluginOptions(config) {
 
 /**
  * used in config phase, merges the default options, svelte config, and inline options
- * @param {Partial<import('../index.d.ts').Options> | undefined} inlineOptions
+ * @param {Partial<import('../public.d.ts').Options> | undefined} inlineOptions
  * @param {import('vite').UserConfig} viteUserConfig
  * @param {import('vite').ConfigEnv} viteEnv
  * @returns {Promise<import('../types/options.d.ts').PreResolvedOptions>}
@@ -191,7 +191,7 @@ function mergeConfigs(...configs) {
  */
 export function resolveOptions(preResolveOptions, viteConfig, cache) {
 	const css = preResolveOptions.emitCss ? 'external' : 'injected';
-	/** @type {Partial<import('../index.d.ts').Options>} */
+	/** @type {Partial<import('../public.d.ts').Options>} */
 	const defaultOptions = {
 		hot: viteConfig.isProduction
 			? false

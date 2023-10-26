@@ -18,7 +18,8 @@
     "fixup": "run-s lint format",
     "release": "pnpm changeset publish",
     "prepare": "husky install",
-    "playwright": "playwright-core"
+    "playwright": "playwright-core",
+    "generate:types": "pnpm --filter \"./packages/*\" --parallel generate:types"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
@@ -28,6 +29,7 @@
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "@typescript-eslint/parser": "^6.8.0",
     "cross-env": "^7.0.3",
+    "dts-buddy": "^0.3.0",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-html": "^7.1.0",

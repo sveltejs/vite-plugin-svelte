@@ -36,6 +36,9 @@ importers:
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
+      dts-buddy:
+        specifier: ^0.3.0
+        version: 0.3.0(typescript@5.2.2)
       eslint:
         specifier: ^8.51.0
         version: 8.51.0
@@ -1333,6 +1336,13 @@ packages:
   /@jridgewell/set-array@1.1.2:
     resolution: {integrity: sha512-xnkseuNADM0gt2bs+BvhO0p78Mk762YnZdsuzFV018NoG1Sj1SCQvpSqa7XUaTam5vAGasABV9qXASMKnFMwMw==}
     engines: {node: '>=6.0.0'}
+
+  /@jridgewell/source-map@0.3.5:
+    resolution: {integrity: sha512-UTYAUj/wviwdsMfzoSJspJxbkH5o1snzwX0//0ENX1u/55kkZZkcTZP6u9bwKGkv+dkk9at4m1Cpt0uY80kcpQ==}
+    dependencies:
+      '@jridgewell/gen-mapping': 0.3.3
+      '@jridgewell/trace-mapping': 0.3.20
+    dev: true
 
   /@jridgewell/sourcemap-codec@1.4.15:
     resolution: {integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==}
@@ -2722,6 +2732,24 @@ packages:
   /dotenv@16.3.1:
     resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
+    dev: true
+
+  /dts-buddy@0.3.0(typescript@5.2.2):
+    resolution: {integrity: sha512-O/l2Sw//bCpqJVWOQ+8xh54QLRGg4dh+42mONTRyxbIPEpXzN9pOJXYNDOWndPGlgJWMNhlQIUGYxnEcZ83c+g==}
+    hasBin: true
+    peerDependencies:
+      typescript: '>=5.0.4 <5.3'
+    dependencies:
+      '@jridgewell/source-map': 0.3.5
+      '@jridgewell/sourcemap-codec': 1.4.15
+      globrex: 0.1.2
+      kleur: 4.1.5
+      locate-character: 3.0.0
+      magic-string: 0.30.5
+      sade: 1.8.1
+      tiny-glob: 0.2.9
+      ts-api-utils: 1.0.3(typescript@5.2.2)
+      typescript: 5.2.2
     dev: true
 
   /eastasianwidth@0.2.0:

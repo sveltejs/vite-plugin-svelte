@@ -1,9 +1,10 @@
-import type { InlineConfig, ResolvedConfig, UserConfig, Plugin } from 'vite';
-import type { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
-import type { PreprocessorGroup } from 'svelte/types/compiler/preprocess';
+import type { InlineConfig, ResolvedConfig } from 'vite';
+import type { CompileOptions } from 'svelte/compiler';
+import type { Warning } from 'svelte/types/compiler/interfaces';
+import type { PreprocessorGroup } from 'svelte/compiler';
 import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 
-type Options = Omit<SvelteOptions, 'vitePlugin'> & PluginOptionsInline;
+export type Options = Omit<SvelteConfig, 'vitePlugin'> & PluginOptionsInline;
 
 interface PluginOptionsInline extends PluginOptions {
 	/**
@@ -94,33 +95,6 @@ interface PluginOptions {
 	 * @default unset for dev, always false for build
 	 */
 	inspector?: InspectorOptions | boolean;
-	/**
-	 * These options are considered experimental and breaking changes to them can occur in any release
-	 */
-	experimental?: ExperimentalOptions;
-}
-
-interface SvelteOptions {
-	/**
-	 * A list of file extensions to be compiled by Svelte
-	 *
-	 * @default ['.svelte']
-	 */
-	extensions?: string[];
-	/**
-	 * An array of preprocessors to transform the Svelte source code before compilation
-	 *
-	 * @see https://svelte.dev/docs#svelte_preprocess
-	 */
-	preprocess?: Arrayable<PreprocessorGroup>;
-	/**
-	 * The options to be passed to the Svelte compiler. A few options are set by default,
-	 * including `dev` and `css`. However, some options are non-configurable, like
-	 * `filename`, `format`, `generate`, and `cssHash` (in dev).
-	 *
-	 * @see https://svelte.dev/docs#svelte_compile
-	 */
-	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
 
 	/**
 	 * A function to update `compilerOptions` before compilation
@@ -146,6 +120,34 @@ interface SvelteOptions {
 		code: string;
 		compileOptions: Partial<CompileOptions>;
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
+
+	/**
+	 * These options are considered experimental and breaking changes to them can occur in any release
+	 */
+	experimental?: ExperimentalOptions;
+}
+
+export interface SvelteConfig {
+	/**
+	 * A list of file extensions to be compiled by Svelte
+	 *
+	 * @default ['.svelte']
+	 */
+	extensions?: string[];
+	/**
+	 * An array of preprocessors to transform the Svelte source code before compilation
+	 *
+	 * @see https://svelte.dev/docs#svelte_preprocess
+	 */
+	preprocess?: Arrayable<PreprocessorGroup>;
+	/**
+	 * The options to be passed to the Svelte compiler. A few options are set by default,
+	 * including `dev` and `css`. However, some options are non-configurable, like
+	 * `filename`, `format`, `generate`, and `cssHash` (in dev).
+	 *
+	 * @see https://svelte.dev/docs#svelte_compile
+	 */
+	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
 
 	/**
 	 * Handles warning emitted from the Svelte compiler
@@ -174,44 +176,11 @@ interface ExperimentalOptions {
 	disableSvelteResolveWarnings?: boolean;
 }
 
-type ModuleFormat = NonNullable<'esm'>;
-type CssHashGetter = NonNullable<CompileOptions['cssHash']>;
 type Arrayable<T> = T | T[];
 
-interface VitePreprocessOptions {
+export interface VitePreprocessOptions {
 	script?: boolean;
 	style?: boolean | InlineConfig | ResolvedConfig;
 }
 
-declare function vitePreprocess(opts?: VitePreprocessOptions): PreprocessorGroup;
-
-declare function loadSvelteConfig(
-	viteConfig?: UserConfig,
-	inlineOptions?: Partial<Options>
-): Promise<Partial<SvelteOptions> | undefined>;
-
-declare function svelte(inlineOptions?: Partial<Options>): Plugin[];
-
-export {
-	Arrayable,
-	CssHashGetter,
-	ModuleFormat,
-	Options,
-	PluginOptions,
-	SvelteOptions,
-	loadSvelteConfig,
-	svelte,
-	VitePreprocessOptions,
-	vitePreprocess
-};
-
-// reexported types
-
-export { CompileOptions, Warning } from 'svelte/types/compiler/interfaces';
-
-export {
-	MarkupPreprocessor,
-	Preprocessor,
-	PreprocessorGroup,
-	Processed
-} from 'svelte/types/compiler/preprocess';
+export * from './index.js';

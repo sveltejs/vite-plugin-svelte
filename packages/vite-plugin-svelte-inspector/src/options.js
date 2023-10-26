@@ -1,7 +1,7 @@
 import { loadEnv } from 'vite';
 import { debug } from './debug.js';
 
-/** @type {import('.').Options} */
+/** @type {import('./public.d.ts').Options} */
 export const defaultInspectorOptions = {
 	toggleKeyCombo: process.platform === 'darwin' ? 'meta-shift' : 'control-shift',
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
@@ -14,7 +14,7 @@ export const defaultInspectorOptions = {
 
 /**
  * @param {import('vite').ResolvedConfig} config
- * @returns {Partial<import('.').Options> | boolean | void}
+ * @returns {Partial<import('./public.d.ts').Options> | boolean | void}
  */
 export function parseEnvironmentOptions(config) {
 	const env = loadEnv(config.mode, config.envDir ?? process.cwd(), 'SVELTE_INSPECTOR');

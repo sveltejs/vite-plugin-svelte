@@ -54,7 +54,7 @@ export const _createCompileSvelte = (makeHot) => {
 				// also they for hmr updates too
 			}
 		}
-		/** @type {import('../index.d.ts').CompileOptions} */
+		/** @type {import('svelte/compiler').CompileOptions} */
 		const compileOptions = {
 			...options.compilerOptions,
 			filename,

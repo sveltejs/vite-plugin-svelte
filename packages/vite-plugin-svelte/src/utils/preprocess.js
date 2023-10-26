@@ -9,7 +9,7 @@ import { normalizePath } from 'vite';
  *
  * only used during dev with enabled css hmr
  *
- * @returns {import('svelte/types/compiler/preprocess').PreprocessorGroup}
+ * @returns {import('svelte/compiler').PreprocessorGroup}
  */
 export function createInjectScopeEverythingRulePreprocessorGroup() {
 	return {
@@ -32,14 +32,14 @@ export function createInjectScopeEverythingRulePreprocessorGroup() {
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {import('vite').ResolvedConfig} config
  * @returns {{
- * 	prependPreprocessors: import('svelte/types/compiler/preprocess').PreprocessorGroup[],
- * 	appendPreprocessors: import('svelte/types/compiler/preprocess').PreprocessorGroup[]
+ * 	prependPreprocessors: import('svelte/compiler').PreprocessorGroup[],
+ * 	appendPreprocessors: import('svelte/compiler').PreprocessorGroup[]
  * }}
  */
 function buildExtraPreprocessors(options, config) {
-	/** @type {import('svelte/types/compiler/preprocess').PreprocessorGroup[]} */
+	/** @type {import('svelte/compiler').PreprocessorGroup[]} */
 	const prependPreprocessors = [];
-	/** @type {import('svelte/types/compiler/preprocess').PreprocessorGroup[]} */
+	/** @type {import('svelte/compiler').PreprocessorGroup[]} */
 	const appendPreprocessors = [];
 
 	// @ts-ignore

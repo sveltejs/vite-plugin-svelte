@@ -43,7 +43,10 @@ jobs:
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
-
+      - name: generated types are up to date
+        run: pnpm generate:types && [ "`git status --porcelain=v1`" == "" ]
+      - name: publint
+        run: pnpm check:publint
       - name: Creating .npmrc
         run: |
           cat << EOF > "$HOME/.npmrc"

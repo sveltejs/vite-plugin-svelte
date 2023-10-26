@@ -4,19 +4,23 @@
   "license": "MIT",
   "author": "dominikg",
   "files": [
-    "src"
+    "src",
+    "types"
   ],
   "type": "module",
-  "types": "src/index.d.ts",
+  "types": "types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js"
+      "import": {
+        "types": "./types/index.d.ts",
+        "default": "./src/index.js"
+      }
     }
   },
   "scripts": {
     "check:publint": "publint --strict",
-    "check:types": "tsc --noEmit"
+    "check:types": "tsc --noEmit",
+    "generate:types": "dts-buddy -m \"@sveltejs/vite-plugin-svelte-inspector:src/public.d.ts\""
   },
   "engines": {
     "node": "^18.0.0 || >=20"

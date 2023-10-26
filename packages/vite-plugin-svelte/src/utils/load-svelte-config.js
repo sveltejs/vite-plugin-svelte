@@ -24,7 +24,11 @@ async function dynamicImportDefault(filePath, timestamp) {
 	return await import(filePath + '?t=' + timestamp).then((m) => m.default);
 }
 
-/** @type {import('../index.d.ts').loadSvelteConfig} */
+/**
+ * @param {import('vite').UserConfig} viteConfig
+ * @param {Partial<import('../public.d.ts').Options>} inlineOptions
+ * @returns {Promise<Partial<import('../public.d.ts').SvelteConfig> | undefined>}
+ */
 export async function loadSvelteConfig(viteConfig, inlineOptions) {
 	if (inlineOptions?.configFile === false) {
 		return;
@@ -86,7 +90,7 @@ export async function loadSvelteConfig(viteConfig, inlineOptions) {
 
 /**
  * @param {import('vite').UserConfig | undefined} viteConfig
- * @param {Partial<import('../index.d.ts').Options> | undefined} inlineOptions
+ * @param {Partial<import('../public.d.ts').Options> | undefined} inlineOptions
  * @returns {string | undefined}
  */
 function findConfigToLoad(viteConfig, inlineOptions) {

@@ -20,7 +20,10 @@ import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 
-/** @type {import('./index.d.ts').svelte} */
+/**
+ * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
+ * @returns {import('vite').Plugin[]}
+ */
 export function svelte(inlineOptions) {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');

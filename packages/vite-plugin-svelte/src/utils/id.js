@@ -159,8 +159,8 @@ function stripRoot(normalizedFilename, normalizedRoot) {
 }
 
 /**
- * @param {import('../index.d.ts').Arrayable<string> | undefined} include
- * @param {import('../index.d.ts').Arrayable<string> | undefined} exclude
+ * @param {import('../public.d.ts').Options['include'] | undefined} include
+ * @param {import('../public.d.ts').Options['exclude'] | undefined} exclude
  * @param {string[]} extensions
  * @returns {(filename: string) => boolean}
  */
