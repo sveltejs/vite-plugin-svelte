@@ -19,6 +19,7 @@ import { toRollupError } from './utils/error.js';
 import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
+import { isSvelte5 } from './utils/svelte-version.js';
 
 /**
  * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
@@ -185,9 +186,12 @@ export function svelte(inlineOptions) {
 			async buildEnd() {
 				await options.stats?.finishAll();
 			}
-		},
-		svelteInspector()
+		}
 	];
+	if (!isSvelte5) {
+		log.warn('svelte5 does not support svelte-inspector yet, disabling it');
+		plugins.push(svelteInspector()); // TODO reenable once svelte5 has support
+	}
 	return plugins;
 }
 

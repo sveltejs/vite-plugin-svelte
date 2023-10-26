@@ -49,13 +49,14 @@
     "prettier-plugin-svelte": "^3.0.3",
     "publint": "^0.2.5",
     "svelte": "^4.2.2",
+    "svelte5": "link:../svelte-octane/packages/svelte",
     "typescript": "^5.2.2",
     "vite": "^5.0.0-beta.12",
     "vitest": "^0.34.6"
   },
   "lint-staged": {
-    "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
-    "*": [
+    "*.{js,ts,html,md,svx}": "eslint --cache --fix",
+    "!**/*.svelte": [
       "prettier --cache --ignore-path .gitignore --ignore-unknown --write"
     ]
   },
@@ -68,7 +69,7 @@
     "overrides": {
       "@sveltejs/vite-plugin-svelte": "workspace:^",
       "@sveltejs/vite-plugin-svelte-inspector": "workspace:^",
-      "svelte": "$svelte",
+      "svelte": "$svelte5",
       "vite": "$vite",
       "@adobe/css-tools@<4.3.1": "^4.3.1"
     }

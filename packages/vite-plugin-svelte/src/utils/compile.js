@@ -1,4 +1,4 @@
-import { compile, preprocess, walk } from 'svelte/compiler';
+import * as svelte from 'svelte/compiler';
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr';
 import { safeBase64Hash } from './hash.js';
@@ -87,7 +87,7 @@ export const _createCompileSvelte = (makeHot) => {
 		}
 		if (preprocessors) {
 			try {
-				preprocessed = await preprocess(code, preprocessors, { filename }); // full filename here so postcss works
+				preprocessed = await svelte.preprocess(code, preprocessors, { filename }); // full filename here so postcss works
 			} catch (e) {
 				e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
 				throw e;
@@ -138,7 +138,7 @@ export const _createCompileSvelte = (makeHot) => {
 		/** @type {import('svelte/types/compiler/interfaces').CompileResult} */
 		let compiled;
 		try {
-			compiled = compile(finalCode, finalCompileOptions);
+			compiled = svelte.compile(finalCode, finalCompileOptions);
 		} catch (e) {
 			enhanceCompileError(e, code, preprocessors);
 			throw e;
@@ -203,7 +203,7 @@ function buildMakeHot(options) {
 		// @ts-ignore
 		const adapter = options?.hot?.adapter;
 		return createMakeHot({
-			walk,
+			walk: svelte.walk,
 			hotApi,
 			adapter,
 			hotOptions: { noOverlay: true, .../** @type {object} */ (options.hot) }

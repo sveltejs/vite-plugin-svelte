@@ -3,7 +3,8 @@ module.exports = {
 	extends: [
 		'eslint:recommended',
 		'plugin:n/recommended',
-		'plugin:svelte/recommended',
+		// TODO: didn't work with linked svelte5
+		// 'plugin:svelte/recommended',
 		'plugin:@typescript-eslint/eslint-recommended',
 		'prettier'
 	],
@@ -110,8 +111,9 @@ module.exports = {
 				'n/no-missing-require': 'off'
 			}
 		},
+		/* TODO: eslint didn't work with linked svelte5
 		{
-			files: ['**/*.svelte'],
+			files: ['** /*.svelte'] // ,
 			env: {
 				es6: true,
 				browser: true,
@@ -129,6 +131,7 @@ module.exports = {
 				'n/no-missing-import': 'off' // doesn't work with typescript's "import from 'src/foo.js'" for src/foo.ts
 			}
 		},
+*/
 		{
 			files: ['**/*.svx', '**/*.md'],
 			processor: 'markdown/markdown',
