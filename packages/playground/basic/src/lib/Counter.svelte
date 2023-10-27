@@ -1,10 +1,9 @@
+<svelte:options runes />
 <script>
-  let count = 0;
-  const increment = () => {
-    count += 1;
-  }
+  import {createCounter} from "./Counter.svelte.js";
+  const counter = createCounter(0);
 </script>
 
-<button on:click={increment}>
-  count is {count}
+<button on:click={counter.increment}>
+  count is {counter.count}
 </button>

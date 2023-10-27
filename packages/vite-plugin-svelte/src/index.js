@@ -5,7 +5,7 @@ import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
-import { buildIdParser } from './utils/id.js';
+import { buildIdParser, buildModuleIdParser } from './utils/id.js';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
@@ -20,6 +20,7 @@ import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 import { isSvelte5 } from './utils/svelte-version.js';
+import * as svelteCompiler from 'svelte/compiler';
 
 /**
  * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
@@ -34,6 +35,8 @@ export function svelte(inlineOptions) {
 	// updated in configResolved hook
 	/** @type {import('./types/id.d.ts').IdParser} */
 	let requestParser;
+	/** @type {import('./types/id.d.ts').ModuleIdParser} */
+	let moduleRequestParser;
 	/** @type {import('./types/options.d.ts').ResolvedOptions} */
 	let options;
 	/** @type {import('vite').ResolvedConfig} */
@@ -191,6 +194,33 @@ export function svelte(inlineOptions) {
 	if (!isSvelte5) {
 		log.warn('svelte5 does not support svelte-inspector yet, disabling it');
 		plugins.push(svelteInspector()); // TODO reenable once svelte5 has support
+	}
+	if (isSvelte5) {
+		// TODO move to separate file
+		plugins.push({
+			name: 'vite-plugin-svelte-module',
+			enforce: 'post',
+			async configResolved() {
+				moduleRequestParser = buildModuleIdParser(options);
+			},
+			async transform(code, id, opts) {
+				const ssr = !!opts?.ssr;
+				const moduleRequest = moduleRequestParser(id, ssr);
+				if (!moduleRequest) {
+					return;
+				}
+				try {
+					const compileResult = await svelteCompiler.compileModule(code, {
+						generate: ssr ? 'ssr' : 'dom',
+						filename: moduleRequest.filename
+					});
+					logCompilerWarnings(moduleRequest, compileResult.warnings, options);
+					return compileResult.js;
+				} catch (e) {
+					throw toRollupError(e, options);
+				}
+			}
+		});
 	}
 	return plugins;
 }
