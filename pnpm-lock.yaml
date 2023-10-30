@@ -152,6 +152,8 @@ importers:
         specifier: file:../cjs-only
         version: file:packages/e2e-tests/_test_dependencies/cjs-only
 
+  packages/e2e-tests/_test_dependencies/svelte-module: {}
+
   packages/e2e-tests/_test_dependencies/svelte-nested:
     dependencies:
       e2e-test-dep-cjs-and-esm:
@@ -587,6 +589,9 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: workspace:^
         version: link:../../vite-plugin-svelte
+      e2e-test-dep-svelte-module:
+        specifier: workspace:^
+        version: link:../../e2e-tests/_test_dependencies/svelte-module
       svelte:
         specifier: link:../../../../svelte-octane/packages/svelte
         version: link:../../../../svelte-octane/packages/svelte

@@ -2,6 +2,8 @@
   import svelteLogo from './assets/svelte.svg';
   import viteLogo from '/vite.svg';
   import Counter from './lib/Counter.svelte';
+  import {Counter as ExternalCounter, createCounter} from 'e2e-test-dep-svelte-module';
+  let counter = createCounter(0);
 </script>
 
 <main>
@@ -16,7 +18,10 @@
   <h1>Vite + Svelte</h1>
 
   <div class="card">
-    <Counter />
+    <div><span>local</span> <Counter /></div>
+    <div><span>imported</span> <ExternalCounter /></div>
+    <div><span>imported function</span><button on:click={counter.increment}>count is {counter.count}</button></div>
+
   </div>
 
   <p>
@@ -43,5 +48,13 @@
   }
   .read-the-docs {
     color: #888;
+  }
+  .card {
+    display: flex;
+    gap: 1rem;
+  }
+  .card > div {
+    display: flex;
+    flex-direction: column;
   }
 </style>
