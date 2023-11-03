@@ -7,7 +7,7 @@ import { toRollupError } from './utils/error.js';
  * @param {Function} compileSvelte
  * @param {import('vite').HmrContext} ctx
  * @param {import('./types/id.d.ts').SvelteRequest} svelteRequest
- * @param {import('./utils/vite-plugin-svelte-cache').VitePluginSvelteCache} cache
+ * @param {import('./utils/vite-plugin-svelte-cache.js').VitePluginSvelteCache} cache
  * @param {import('./types/options.d.ts').ResolvedOptions} options
  * @returns {Promise<import('vite').ModuleNode[] | void>}
  */

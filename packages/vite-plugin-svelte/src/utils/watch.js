@@ -5,7 +5,7 @@ import path from 'node:path';
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @param {import('./vite-plugin-svelte-cache').VitePluginSvelteCache} cache
+ * @param {import('./vite-plugin-svelte-cache.js').VitePluginSvelteCache} cache
  * @param {import('../types/id.d.ts').IdParser} requestParser
  * @returns {void}
  */
