@@ -28,4 +28,19 @@ export interface SvelteRequest {
 	raw: boolean;
 }
 
+export interface SvelteModuleRequest {
+	id: string;
+	filename: string;
+	normalizedFilename: string;
+	query: RequestQuery;
+	timestamp: number;
+	ssr: boolean;
+}
+
 export type IdParser = (id: string, ssr: boolean, timestamp?: number) => SvelteRequest | undefined;
+
+export type ModuleIdParser = (
+	id: string,
+	ssr: boolean,
+	timestamp?: number
+) => SvelteModuleRequest | undefined;

@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import { version as viteVersion } from 'vite';
+import * as svelteCompiler from 'svelte/compiler';
 
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 
@@ -7,7 +8,7 @@ import { isDepExcluded } from 'vitefu';
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
-import { buildIdParser } from './utils/id.js';
+import { buildIdParser, buildModuleIdParser } from './utils/id.js';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
@@ -24,7 +25,7 @@ import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 import { FAQ_LINK_CONFLICTS_IN_SVELTE_RESOLVE } from './utils/constants.js';
-import { isSvelte3 } from './utils/svelte-version.js';
+import { isSvelte3, isSvelte5 } from './utils/svelte-version.js';
 
 const isVite4_0 = viteVersion.startsWith('4.0');
 
@@ -38,6 +39,8 @@ export function svelte(inlineOptions) {
 	// updated in configResolved hook
 	/** @type {import('./types/id.d.ts').IdParser} */
 	let requestParser;
+	/** @type {import('./types/id.d.ts').ModuleIdParser} */
+	let moduleRequestParser;
 	/** @type {import('./types/options.d.ts').ResolvedOptions} */
 	let options;
 	/** @type {import('vite').ResolvedConfig} */
@@ -268,9 +271,41 @@ export function svelte(inlineOptions) {
 					);
 				}
 			}
-		},
-		svelteInspector()
+		}
 	];
+
+	if (!isSvelte5) {
+		plugins.push(svelteInspector()); // TODO reenable once svelte5 has support
+	}
+	if (isSvelte5) {
+		log.warn('svelte 5 does not support svelte-inspector yet, disabling it');
+		// TODO move to separate file
+		plugins.push({
+			name: 'vite-plugin-svelte-module',
+			enforce: 'post',
+			async configResolved() {
+				moduleRequestParser = buildModuleIdParser(options);
+			},
+			async transform(code, id, opts) {
+				const ssr = !!opts?.ssr;
+				const moduleRequest = moduleRequestParser(id, ssr);
+				if (!moduleRequest) {
+					return;
+				}
+				try {
+					const compileResult = await svelteCompiler.compileModule(code, {
+						generate: ssr ? 'ssr' : 'dom',
+						filename: moduleRequest.filename
+					});
+					logCompilerWarnings(moduleRequest, compileResult.warnings, options);
+					return compileResult.js;
+				} catch (e) {
+					throw toRollupError(e, options);
+				}
+			}
+		});
+	}
+
 	return plugins;
 }
 
