@@ -278,6 +278,9 @@ export function svelte(inlineOptions) {
 		plugins.push(svelteInspector()); // TODO reenable once svelte5 has support
 	}
 	if (isSvelte5) {
+		log.warn(
+			'svelte 5 support in v-p-s is experimental, breaking changes can occur in any release until this notice is removed'
+		);
 		log.warn('svelte 5 does not support svelte-inspector yet, disabling it');
 		// TODO move to separate file
 		plugins.push({
