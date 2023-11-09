@@ -86,6 +86,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		...options.compilerOptions,
 		css,
 		filename,
+		// @ts-expect-error generate type is different for svelte5
 		generate: isSvelte5 ? 'client' : 'dom'
 	};
 	if (isSvelte3) {
