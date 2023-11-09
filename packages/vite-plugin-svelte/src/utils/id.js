@@ -184,3 +184,48 @@ export function buildIdParser(options) {
 		}
 	};
 }
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {import('../types/id.d.ts').ModuleIdParser}
+ */
+export function buildModuleIdParser(options) {
+	const { include, exclude, extensions } = options?.experimental?.compileModule ?? {};
+	const root = options.root;
+	const normalizedRoot = normalizePath(root);
+	const filter = buildFilter(include, exclude, extensions ?? ['.svelte.js', '.svelte.ts']);
+	return (id, ssr, timestamp = Date.now()) => {
+		const { filename, rawQuery } = splitId(id);
+		if (filter(filename)) {
+			return parseToSvelteModuleRequest(id, filename, rawQuery, normalizedRoot, timestamp, ssr);
+		}
+	};
+}
+
+/**
+ * @param {string} id
+ * @param {string} filename
+ * @param {string} rawQuery
+ * @param {string} root
+ * @param {number} timestamp
+ * @param {boolean} ssr
+ * @returns {import('../types/id.d.ts').SvelteModuleRequest | undefined}
+ */
+function parseToSvelteModuleRequest(id, filename, rawQuery, root, timestamp, ssr) {
+	const query = parseRequestQuery(rawQuery);
+
+	if (query.url || query.raw || query.direct) {
+		// skip requests with special vite tags
+		return;
+	}
+
+	const normalizedFilename = normalize(filename, root);
+
+	return {
+		id,
+		filename,
+		normalizedFilename,
+		query,
+		timestamp,
+		ssr
+	};
+}

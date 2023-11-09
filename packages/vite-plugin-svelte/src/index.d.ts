@@ -170,6 +170,16 @@ interface ExperimentalOptions {
 	 * @default false
 	 */
 	disableSvelteResolveWarnings?: boolean;
+	/**
+	 * Options for compiling Svelte JS/TS modules
+	 */
+	compileModule?: CompileModuleOptions;
+}
+
+interface CompileModuleOptions {
+	extensions?: string[];
+	include?: Arrayable<string>;
+	exclude?: Arrayable<string>;
 }
 
 type ModuleFormat = NonNullable<'esm'>;

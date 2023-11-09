@@ -120,7 +120,7 @@ export const log = {
 };
 
 /**
- * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
+ * @param {import('../types/id.d.ts').SvelteRequest | import('../types/id.d.ts').SvelteModuleRequest} svelteRequest
  * @param {import('svelte/types/compiler/interfaces').Warning[]} warnings
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  */

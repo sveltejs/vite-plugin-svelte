@@ -1,4 +1,4 @@
-import { compile, preprocess, walk } from 'svelte/compiler';
+import * as svelte from 'svelte/compiler';
 // @ts-ignore
 import { createMakeHot } from 'svelte-hmr';
 import { safeBase64Hash } from './hash.js';
@@ -86,7 +86,7 @@ export const _createCompileSvelte = (makeHot) => {
 		}
 		if (preprocessors) {
 			try {
-				preprocessed = await preprocess(code, preprocessors, { filename }); // full filename here so postcss works
+				preprocessed = await svelte.preprocess(code, preprocessors, { filename }); // full filename here so postcss works
 			} catch (e) {
 				e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
 				throw e;
@@ -123,7 +123,7 @@ export const _createCompileSvelte = (makeHot) => {
 			: compileOptions;
 
 		const endStat = stats?.start(filename);
-		const compiled = compile(finalCode, finalCompileOptions);
+		const compiled = svelte.compile(finalCode, finalCompileOptions);
 
 		if (isSvelte3) {
 			// prevent dangling pure comments
@@ -187,7 +187,8 @@ function buildMakeHot(options) {
 		// @ts-ignore
 		const adapter = options?.hot?.adapter;
 		return createMakeHot({
-			walk,
+			// TODO Svelte 5 doesn't expose walk anymore. If we decide to make v-p-s 2 work with Svelte 5 HMR, we need to import walk from estree-walker
+			walk: svelte.walk,
 			hotApi,
 			adapter,
 			hotOptions: { noOverlay: true, .../** @type {object} */ (options.hot) }
