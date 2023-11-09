@@ -296,6 +296,7 @@ export function svelte(inlineOptions) {
 					return;
 				}
 				try {
+					// @ts-ignore doesn't exist in Svelte 4
 					const compileResult = await svelteCompiler.compileModule(code, {
 						generate: ssr ? 'ssr' : 'dom',
 						filename: moduleRequest.filename

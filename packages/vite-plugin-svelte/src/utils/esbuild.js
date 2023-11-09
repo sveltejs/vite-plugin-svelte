@@ -62,6 +62,7 @@ export function esbuildSveltePlugin(options) {
 async function compileSvelte(options, { filename, code }, statsCollection) {
 	if (isSvelte5 && filename.endsWith(svelteModuleExtension)) {
 		const endStat = statsCollection?.start(filename);
+		// @ts-ignore doesn't exist in Svelte 4
 		const compiled = svelte.compileModule(code, {
 			filename,
 			generate: 'dom',
