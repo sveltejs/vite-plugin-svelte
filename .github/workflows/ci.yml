@@ -6,10 +6,12 @@ on:
     branches:
       - main
       - v1
+      - v2
   pull_request:
     branches:
       - main
       - v1
+      - v2
 env:
   # we call `pnpm playwright install` instead
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
