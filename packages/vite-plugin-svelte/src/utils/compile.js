@@ -9,7 +9,7 @@ import { mapToRelative } from './sourcemaps.js';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
-import { isSvelte3 } from './svelte-version.js';
+import { isSvelte3, isSvelte5 } from './svelte-version.js';
 
 /**
  * @param {Function} [makeHot]
@@ -53,7 +53,8 @@ export const _createCompileSvelte = (makeHot) => {
 		const compileOptions = {
 			...options.compilerOptions,
 			filename,
-			generate: ssr ? 'ssr' : 'dom'
+			// @ts-expect-error generate type is different for svelte5
+			generate: isSvelte5 ? (ssr ? 'server' : 'client') : ssr ? 'ssr' : 'dom'
 		};
 		if (isSvelte3) {
 			// @ts-ignore
