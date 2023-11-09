@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.5.1
+
+### Patch Changes
+
+- feat: support Svelte 5 compiler API ([#785](https://github.com/sveltejs/vite-plugin-svelte/pull/785))
+
 ## 2.5.0
 
 ### Minor Changes
