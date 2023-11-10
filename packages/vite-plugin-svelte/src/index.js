@@ -192,10 +192,13 @@ export function svelte(inlineOptions) {
 		}
 	];
 	if (!isSvelte5) {
-		log.warn('svelte5 does not support svelte-inspector yet, disabling it');
 		plugins.push(svelteInspector()); // TODO reenable once svelte5 has support
 	}
 	if (isSvelte5) {
+		log.warn(
+			'svelte 5 support in vite-plugin-svelte is experimental, breaking changes can occur in any release until this notice is removed'
+		);
+		log.warn('svelte5 does not support svelte-inspector yet, disabling it');
 		// TODO move to separate file
 		plugins.push({
 			name: 'vite-plugin-svelte-module',
@@ -210,8 +213,9 @@ export function svelte(inlineOptions) {
 					return;
 				}
 				try {
+					// @ts-expect-error compileModule does not exist in svelte4
 					const compileResult = await svelteCompiler.compileModule(code, {
-						generate: ssr ? 'ssr' : 'dom',
+						generate: ssr ? 'server' : 'client',
 						filename: moduleRequest.filename
 					});
 					logCompilerWarnings(moduleRequest, compileResult.warnings, options);

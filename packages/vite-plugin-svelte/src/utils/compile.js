@@ -10,6 +10,7 @@ import {
 } from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
 import { enhanceCompileError } from './error.js';
+import { isSvelte5 } from './svelte-version.js';
 
 const scriptLangRE = /<script [^>]*lang=["']?([^"' >]+)["']?[^>]*>/;
 
@@ -58,7 +59,8 @@ export const _createCompileSvelte = (makeHot) => {
 		const compileOptions = {
 			...options.compilerOptions,
 			filename,
-			generate: ssr ? 'ssr' : 'dom'
+			// @ts-expect-error svelte5 uses server/client, svelte4 uses ssr/dom
+			generate: isSvelte5 ? (ssr ? 'server' : 'client') : ssr ? 'ssr' : 'dom'
 		};
 
 		if (options.hot && options.emitCss) {

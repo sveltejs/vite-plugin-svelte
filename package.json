@@ -49,7 +49,6 @@
     "prettier-plugin-svelte": "^3.0.3",
     "publint": "^0.2.5",
     "svelte": "^4.2.2",
-    "svelte5": "link:../svelte-octane/packages/svelte",
     "typescript": "^5.2.2",
     "vite": "^5.0.0-beta.16",
     "vitest": "^0.34.6"
@@ -69,7 +68,7 @@
     "overrides": {
       "@sveltejs/vite-plugin-svelte": "workspace:^",
       "@sveltejs/vite-plugin-svelte-inspector": "workspace:^",
-      "svelte": "$svelte5",
+      "svelte": "$svelte",
       "vite": "$vite",
       "@adobe/css-tools@<4.3.1": "^4.3.1"
     }

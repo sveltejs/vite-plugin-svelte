@@ -62,9 +62,10 @@ export function esbuildSveltePlugin(options) {
 async function compileSvelte(options, { filename, code }, statsCollection) {
 	if (isSvelte5 && filename.endsWith(svelteModuleExtension)) {
 		const endStat = statsCollection?.start(filename);
+		// @ts-expect-error compileModule does not exist in svelte4
 		const compiled = svelte.compileModule(code, {
 			filename,
-			generate: 'dom',
+			generate: 'client',
 			runes: true
 		});
 		if (endStat) {
@@ -84,7 +85,8 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		...options.compilerOptions,
 		css,
 		filename,
-		generate: 'dom'
+		// @ts-expect-error svelte4 uses 'dom', svelte5 uses 'client'
+		generate: isSvelte5 ? 'client' : 'dom'
 	};
 
 	let preprocessed;
