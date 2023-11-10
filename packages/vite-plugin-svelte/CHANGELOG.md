@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.5.2
+
+### Patch Changes
+
+- fix compileModule call for optimizing libraries ([#788](https://github.com/sveltejs/vite-plugin-svelte/pull/788))
+
 ## 2.5.1
 
 ### Patch Changes
