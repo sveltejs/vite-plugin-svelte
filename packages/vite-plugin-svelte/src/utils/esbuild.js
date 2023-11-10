@@ -65,8 +65,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		// @ts-ignore doesn't exist in Svelte 4
 		const compiled = svelte.compileModule(code, {
 			filename,
-			generate: isSvelte5 ? 'client' : 'dom',
-			runes: true
+			generate: 'client'
 		});
 		if (endStat) {
 			endStat();
