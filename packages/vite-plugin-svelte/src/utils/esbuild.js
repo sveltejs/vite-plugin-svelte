@@ -65,8 +65,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		// @ts-expect-error compileModule does not exist in svelte4
 		const compiled = svelte.compileModule(code, {
 			filename,
-			generate: 'client',
-			runes: true
+			generate: 'client'
 		});
 		if (endStat) {
 			endStat();
