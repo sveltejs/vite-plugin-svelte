@@ -54,8 +54,8 @@
     "vitest": "^0.34.6"
   },
   "lint-staged": {
-    "*.{js,ts,html,md,svx}": "eslint --cache --fix",
-    "!**/*.svelte": [
+    "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
+    "*": [
       "prettier --cache --ignore-path .gitignore --ignore-unknown --write"
     ]
   },
