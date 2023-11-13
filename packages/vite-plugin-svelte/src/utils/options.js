@@ -231,7 +231,7 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
  */
 function enforceOptionsForHmr(options) {
 	if (isSvelte5) {
-		log.warn('svelte 5 does not support hmr api yet, disabling it for now');
+		// TODO add hmr options for svelte5 once it is supported and update utils/log.js#logSvelte5Warning
 		options.hot = false;
 	}
 	if (options.hot) {

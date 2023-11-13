@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 
 import { handleHotUpdate } from './handle-hot-update.js';
-import { log, logCompilerWarnings } from './utils/log.js';
+import { log, logCompilerWarnings, logSvelte5Warning } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
 import { buildIdParser, buildModuleIdParser } from './utils/id.js';
 import {
@@ -191,14 +191,8 @@ export function svelte(inlineOptions) {
 			}
 		}
 	];
-	if (!isSvelte5) {
-		plugins.push(svelteInspector()); // TODO reenable once svelte5 has support
-	}
 	if (isSvelte5) {
-		log.warn(
-			'svelte 5 support in vite-plugin-svelte is experimental, breaking changes can occur in any release until this notice is removed'
-		);
-		log.warn('svelte5 does not support svelte-inspector yet, disabling it');
+		logSvelte5Warning();
 		// TODO move to separate file
 		plugins.push({
 			name: 'vite-plugin-svelte-module',
@@ -225,6 +219,10 @@ export function svelte(inlineOptions) {
 				}
 			}
 		});
+	}
+	if (!isSvelte5) {
+		// TODO reenable once svelte5 has support and update utils/log.js#logSvelte5Warning
+		plugins.push(svelteInspector());
 	}
 	return plugins;
 }
