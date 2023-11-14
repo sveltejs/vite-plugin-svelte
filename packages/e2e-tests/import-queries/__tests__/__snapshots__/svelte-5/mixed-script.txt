@@ -1,0 +1,3 @@
+export const code="// Dummy.svelte (Svelte vXXX)\n\nimport * as $ from \"svelte/internal/server\";\n\nexport default function Dummy($$payload, $$props) {\n\t$.push(false);\n\n\tlet name = $$props[\"name\"];\n\tlet clicks = 0;\n\n\t$$payload.out += `<button class=\"svelte-d8vj6a\">${$.escape(name)} clicks: ${$.escape(clicks)}</button>`;\n\t$.bind_props($$props, { name });\n\t$.pop();\n}"
+export const map={"version":3,"names":[],"sources":["Dummy.svelte"],"sourcesContent":[null],"mappings":";;;;;;;KAA6B,IAAI;KAC7B,MAAM,GAAG,CAAC;;4DAMT,IAAI,sBAAW,MAAM;;;"}
+export default code

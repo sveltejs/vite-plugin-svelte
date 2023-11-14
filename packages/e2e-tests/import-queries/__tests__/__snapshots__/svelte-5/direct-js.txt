@@ -1,0 +1,16 @@
+// Dummy.svelte (Svelte vXXX)
+
+import * as $ from "/node_modules/.vite/deps/svelte_internal_server.js?v=XXX";
+
+export default function Dummy($$payload, $$props) {
+	$.push(false);
+
+	let name = $$props["name"];
+	let clicks = 0;
+
+	$$payload.out += `<button class="svelte-d8vj6a">${$.escape(name)} clicks: ${$.escape(clicks)}</button>`;
+	$.bind_props($$props, { name });
+	$.pop();
+}
+
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6W10sInNvdXJjZXMiOlsiRHVtbXkuc3ZlbHRlIl0sInNvdXJjZXNDb250ZW50IjpbbnVsbF0sIm1hcHBpbmdzIjoiOzs7Ozs7O0tBQTZCLElBQUk7S0FDN0IsTUFBTSxHQUFHLENBQUM7OzREQU1ULElBQUksc0JBQVcsTUFBTTs7OyJ9

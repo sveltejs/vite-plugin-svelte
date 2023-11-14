@@ -1,7 +1,7 @@
 import App from './App.svelte';
 
-const app = new App({
-	target: document.getElementById('app')
-});
-
-export default app;
+if (App.toString().startsWith('class ')) {
+	new App({ target: document.getElementById('app') });
+} else {
+	import('svelte').then(({ mount }) => mount(App, { target: document.getElementById('app') }));
+}

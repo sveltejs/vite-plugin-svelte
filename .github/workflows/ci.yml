@@ -1,4 +1,4 @@
-# build and test on linux, windows, mac with node  14, 16, 18
+# build and test on linux, windows, mac with node  18,20
 name: CI
 
 on:
@@ -76,11 +76,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18]
+        node: [20]
         os: [ubuntu-latest, macos-latest, windows-latest]
+        svelte: 4
         include:
-          - node: 20
+          - node: 18
             os: ubuntu-latest
+            svelte: 4
+    #  disable running tests with svelte5 in ci for now. Enable once they pass
+    #          - node: 20
+    #            os: ubuntu-latest
+    #            svelte: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -99,6 +105,9 @@ jobs:
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+      #      - name: use svelte5
+      #        if: (${{matrix.svelte == 5 }})
+      #        run: pnpm i -Dw svelte@^5.0.0-next.1 && pnpm install
       - name: install playwright chromium
         run: pnpm playwright install chromium
       - name: run tests

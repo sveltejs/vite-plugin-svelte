@@ -8,7 +8,8 @@ import {
 	page,
 	e2eServer,
 	browserLogs,
-	fetchPageText
+	fetchPageText,
+	isSvelte4
 } from '~utils';
 
 test('/', async () => {

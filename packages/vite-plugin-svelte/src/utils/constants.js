@@ -1,3 +1,5 @@
+import { isSvelte5 } from './svelte-version.js';
+
 export const VITE_RESOLVE_MAIN_FIELDS = ['module', 'jsnext:main', 'jsnext'];
 
 export const SVELTE_RESOLVE_MAIN_FIELDS = ['svelte'];
@@ -19,6 +21,11 @@ export const SVELTE_HMR_IMPORTS = [
 	'svelte-hmr/runtime/proxy-adapter-dom.js',
 	'svelte-hmr'
 ];
+
+if (isSvelte5) {
+	SVELTE_IMPORTS.push('svelte/server', 'svelte/internal/server', 'svelte/legacy');
+	SVELTE_HMR_IMPORTS.length = 0; // truncate, svelte-hmr isn't used with svelte5
+}
 
 export const SVELTE_EXPORT_CONDITIONS = ['svelte'];
 

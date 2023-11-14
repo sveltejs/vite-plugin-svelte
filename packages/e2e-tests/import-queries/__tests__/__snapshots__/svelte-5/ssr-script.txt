@@ -1,0 +1,14 @@
+// Dummy.svelte (Svelte vXXX)
+
+import * as $ from "svelte/internal/server";
+
+export default function Dummy($$payload, $$props) {
+	$.push(false);
+
+	let name = $$props["name"];
+	let clicks = 0;
+
+	$$payload.out += `<button class="svelte-d8vj6a">${$.escape(name)} clicks: ${$.escape(clicks)}</button>`;
+	$.bind_props($$props, { name });
+	$.pop();
+}
