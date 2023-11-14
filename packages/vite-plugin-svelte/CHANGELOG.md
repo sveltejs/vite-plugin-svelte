@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.0.0-next.3
+
+### Minor Changes
+
+- Add experimental support for svelte5 ([#787](https://github.com/sveltejs/vite-plugin-svelte/pull/787))
+
 ## 3.0.0-next.2
 
 ### Major Changes
