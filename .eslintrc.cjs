@@ -9,7 +9,11 @@ module.exports = {
 	],
 	globals: {
 		Atomics: 'readonly',
-		SharedArrayBuffer: 'readonly'
+		SharedArrayBuffer: 'readonly',
+		$derived: 'readonly',
+		$effect: 'readonly',
+		$props: 'readonly',
+		$state: 'readonly'
 	},
 	plugins: ['@typescript-eslint', 'html', 'markdown', 'unicorn'],
 	parser: '@typescript-eslint/parser',

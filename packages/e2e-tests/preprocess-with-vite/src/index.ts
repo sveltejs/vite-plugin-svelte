@@ -1,13 +1,17 @@
 import App from './App.svelte';
+
 import { Hello } from './types.js';
 
 const hello: Hello = 'Hello';
 
-const app = new App({
+const options = {
 	target: document.body,
 	props: {
 		hello
 	}
-});
-
-export default app;
+};
+if (App.toString().startsWith('class ')) {
+	new App(options);
+} else {
+	import('svelte').then(({ mount }) => mount(App, options));
+}

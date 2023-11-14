@@ -26,6 +26,7 @@ import {
 import { isCommonDepWithoutSvelteField } from './dependencies.js';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats.js';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache.js';
+import { isSvelte5 } from './svelte-version.js';
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -229,6 +230,10 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  */
 function enforceOptionsForHmr(options) {
+	if (isSvelte5) {
+		// TODO add hmr options for svelte5 once it is supported and update utils/log.js#logSvelte5Warning
+		options.hot = false;
+	}
 	if (options.hot) {
 		if (!options.compilerOptions.dev) {
 			log.warn('hmr is enabled but compilerOptions.dev is false, forcing it to true');

@@ -173,6 +173,14 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * @default false
 		 */
 		disableSvelteResolveWarnings?: boolean;
+
+		compileModule?: CompileModuleOptions;
+	}
+
+	interface CompileModuleOptions {
+		extensions?: string[];
+		include?: Arrayable<string>;
+		exclude?: Arrayable<string>;
 	}
 
 	type Arrayable<T> = T | T[];

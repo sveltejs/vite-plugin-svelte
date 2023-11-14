@@ -174,6 +174,14 @@ interface ExperimentalOptions {
 	 * @default false
 	 */
 	disableSvelteResolveWarnings?: boolean;
+
+	compileModule?: CompileModuleOptions;
+}
+
+interface CompileModuleOptions {
+	extensions?: string[];
+	include?: Arrayable<string>;
+	exclude?: Arrayable<string>;
 }
 
 type Arrayable<T> = T | T[];

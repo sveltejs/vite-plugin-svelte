@@ -1,0 +1,29 @@
+// Dummy.svelte (Svelte vXXX)
+
+import "svelte/internal/disclose-version";
+import * as $ from "svelte/internal";
+
+var on_click = (_, clicks) => {
+	$.increment(clicks);
+};
+
+var frag = $.template(`<button class="svelte-d8vj6a"> </button>`);
+
+export default function Dummy($$anchor, $$props) {
+	$.push($$props, false);
+
+	let name = $.prop($$props, "name");
+	let clicks = $.source(0);
+
+	/* Init */
+	var button = $.open($$anchor, true, frag);
+	var text = $.child(button);
+
+	/* Update */
+	$.text_effect(text, () => `${$.stringify(name())} clicks: ${$.stringify($.get(clicks))}`);
+	button.__click = [on_click, clicks];
+	$.close($$anchor, button);
+	$.pop();
+}
+
+$.delegate(["click"]);

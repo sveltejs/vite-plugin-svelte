@@ -6,7 +6,7 @@ import path from 'node:path';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 import fetch from 'node-fetch';
-
+import { VERSION } from 'svelte/compiler';
 import {
 	isBuild,
 	isWin,
@@ -21,6 +21,8 @@ import {
 export * from './vitestSetup.js';
 
 export const hmrUpdateTimeout = 10000;
+
+export const isSvelte4 = VERSION.startsWith('4.');
 
 const hexToNameMap: Record<string, string> = {};
 Object.keys(colors).forEach((color) => {

@@ -1,0 +1,52 @@
+{
+  "css": {
+    "code": "button.svelte-d8vj6a {\n  color: #000099;\n}",
+    "map": {
+      "version": 3,
+      "file": "Dummy.svelte",
+      "sources": [
+        "Dummy.svelte"
+      ],
+      "sourcesContent": [
+        "<script lang=\"ts\">export let name;\nlet clicks = 0;\n</script>\n\n<button\n\ton:click={() => {\n\t\tclicks++;\n\t}}>{name} clicks: {clicks}</button\n>\n\n<style lang=\"scss\">button {\n  color: #000099;\n}</style>\n"
+      ],
+      "names": [],
+      "mappings": "AAUmB,oBAAM;AACzB;AACA"
+    }
+  },
+  "dependencies": [],
+  "js": {
+    "code": "// Dummy.svelte (Svelte vXXX)\n\nimport \"svelte/internal/disclose-version\";\nimport * as $ from \"svelte/internal\";\n\nvar on_click = (_, clicks) => {\n\t$.increment(clicks);\n};\n\nvar frag = $.template(`<button class=\"svelte-d8vj6a\"> </button>`);\n\nexport default function Dummy($$anchor, $$props) {\n\t$.push($$props, false);\n\n\tlet name = $.prop($$props, \"name\");\n\tlet clicks = $.source(0);\n\n\t/* Init */\n\tvar button = $.open($$anchor, true, frag);\n\tvar text = $.child(button);\n\n\t/* Update */\n\t$.text_effect(text, () => `${$.stringify(name())} clicks: ${$.stringify($.get(clicks))}`);\n\tbutton.__click = [on_click, clicks];\n\t$.close($$anchor, button);\n\t$.pop();\n}\n\n$.delegate([\"click\"]);",
+    "map": {
+      "version": 3,
+      "names": [],
+      "sources": [
+        "Dummy.svelte"
+      ],
+      "sourcesContent": [
+        null
+      ],
+      "mappings": ";;;;;mBACI,MAAM;;;;;;;;;KADmB,IAAI;KAC7B,MAAM,YAAG,CAAC;;;;;;;0CAMT,IAAI,iCAAW,MAAM;6BANtB,MAAM;;;;;"
+    }
+  },
+  "lang": "ts",
+  "metadata": {
+    "runes": false
+  },
+  "normalizedFilename": "/src/Dummy.svelte",
+  "preprocessed": {
+    "code": "<script lang=\"ts\">export let name;\nlet clicks = 0;\n</script>\n\n<button\n\ton:click={() => {\n\t\tclicks++;\n\t}}>{name} clicks: {clicks}</button\n>\n\n<style lang=\"scss\">button {\n  color: #000099;\n}</style>\n",
+    "dependencies": [],
+    "map": {
+      "version": 3,
+      "mappings": "AAAA,CAAC,MAAM,CAAC,IAAI,CAAC,CAAC,EAAE,CAAC,CACT,WAAI;AACX,IAAI,SAAS;AACd,CAAC,CAAC,MAAM;;AAER,CAAC;AACD,CAAC,EAAE,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC;AACjB,EAAE,MAAM,CAAC,CAAC;AACV,CAAC,CAAC,CAAC,CAAC,CAAC,IAAI,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC;AAC7B;;AAEA,CAAC,KAAK,CAAC,IAAI,CAAC,CAAC,IAAI,CAAC;;CAKlB,CAAC,CAAC,KAAK",
+      "names": [],
+      "sources": [
+        "Dummy.svelte"
+      ]
+    }
+  },
+  "source": "<script lang=\"ts\">\n\texport let name: string;\n\tlet clicks = 0;\n</script>\n\n<button\n\ton:click={() => {\n\t\tclicks++;\n\t}}>{name} clicks: {clicks}</button\n>\n\n<style lang=\"scss\">\n\t$blue: blue;\n\tbutton {\n\t\tcolor: darken($blue, 20);\n\t}\n</style>\n",
+  "ssr": false,
+  "warnings": []
+}

@@ -1,0 +1,42 @@
+// Dummy.svelte (Svelte vXXX)
+
+import "svelte/internal/disclose-version";
+import * as $ from "svelte/internal";
+
+var on_click = (_, clicks) => {
+	$.increment(clicks);
+};
+
+var frag = $.template(`<button class="svelte-d8vj6a"> </button>`);
+
+export default function Dummy($$anchor, $$props) {
+	$.push($$props, false);
+
+	let name = $.prop_source($$props, "name");
+	let clicks = $.source(0);
+
+	/* Init */
+	var button = $.open($$anchor, true, frag);
+	var text = $.child(button);
+
+	/* Update */
+	$.text_effect(text, () => `${$.stringify($.get(name))} clicks: ${$.stringify($.get(clicks))}`);
+	button.__click = [on_click, clicks];
+	$.close($$anchor, button);
+
+	var $$accessors = {
+		get name() {
+			return $.get(name);
+		},
+		set name($$value) {
+			$.set_sync(name, $$value);
+		}
+	};
+
+	$.pop($$accessors);
+	$.append_styles($$anchor, "svelte-d8vj6a", "button.svelte-d8vj6a {\n  color: #000099;\n}");
+	return $$accessors;
+}
+
+$.delegate(["click"]);
+$.create_custom_element(Dummy, { name: {} }, [], [], true);

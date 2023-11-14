@@ -5,7 +5,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 export default defineConfig({
 	plugins: [
 		svelte({
-			compilerOptions: { css: 'none' }
+			compilerOptions: { css: 'external' }
 		})
 	]
 });

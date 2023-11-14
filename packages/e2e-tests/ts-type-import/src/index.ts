@@ -6,9 +6,12 @@ main();
 
 export function main({ arg = true }: Test = {}): void {
 	if (arg && test()) {
-		// only create app when test worked
-		const app = new App({
-			target: document.body
-		});
+		if (App.toString().startsWith('class ')) {
+			new App({ target: document.body });
+		} else {
+			import('svelte').then(({ mount }) => {
+				mount(App, { target: document.body });
+			});
+		}
 	}
 }

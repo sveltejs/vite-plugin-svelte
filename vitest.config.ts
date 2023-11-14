@@ -16,6 +16,6 @@ export default defineConfig({
 		minThreads: process.env.CI ? 1 : undefined
 	},
 	esbuild: {
-		target: 'node14'
+		target: 'node18'
 	}
 });

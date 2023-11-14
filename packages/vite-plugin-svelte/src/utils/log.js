@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { cyan, red, yellow } from 'kleur/colors';
 import debug from 'debug';
+import { VERSION } from 'svelte/compiler';
 
 /** @type {import('../types/log.d.ts').LogLevel[]} */
 const levels = ['debug', 'info', 'warn', 'error', 'silent'];
@@ -126,7 +127,7 @@ export const log = {
 };
 
 /**
- * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
+ * @param {import('../types/id.d.ts').SvelteRequest | import('../types/id.d.ts').SvelteModuleRequest} svelteRequest
  * @param {import('svelte/types/compiler/interfaces').Warning[]} warnings
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  */
@@ -258,4 +259,13 @@ export function buildExtendedLogMessage(w) {
  */
 export function isDebugNamespaceEnabled(namespace) {
 	return debug.enabled(`${prefix}:${namespace}`);
+}
+
+export function logSvelte5Warning() {
+	const notice = `Your are using Svelte ${VERSION}. Svelte 5 support is experimental, breaking changes can occur in any release until this notice is removed.`;
+	const wip = [
+		'svelte-inspector is disabled until dev mode implements node to code mapping',
+		'hmr for .svelte files is disabled until hmr api is implemented'
+	];
+	log.warn(`${notice}\nwork in progress:\n - ${wip.join('\n - ')}\n`);
 }

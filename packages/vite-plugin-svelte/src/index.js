@@ -3,9 +3,9 @@ import fs from 'node:fs';
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 
 import { handleHotUpdate } from './handle-hot-update.js';
-import { log, logCompilerWarnings } from './utils/log.js';
+import { log, logCompilerWarnings, logSvelte5Warning } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
-import { buildIdParser } from './utils/id.js';
+import { buildIdParser, buildModuleIdParser } from './utils/id.js';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
@@ -19,6 +19,8 @@ import { toRollupError } from './utils/error.js';
 import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
+import { isSvelte5 } from './utils/svelte-version.js';
+import * as svelteCompiler from 'svelte/compiler';
 
 /**
  * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
@@ -33,6 +35,8 @@ export function svelte(inlineOptions) {
 	// updated in configResolved hook
 	/** @type {import('./types/id.d.ts').IdParser} */
 	let requestParser;
+	/** @type {import('./types/id.d.ts').ModuleIdParser} */
+	let moduleRequestParser;
 	/** @type {import('./types/options.d.ts').ResolvedOptions} */
 	let options;
 	/** @type {import('vite').ResolvedConfig} */
@@ -185,9 +189,41 @@ export function svelte(inlineOptions) {
 			async buildEnd() {
 				await options.stats?.finishAll();
 			}
-		},
-		svelteInspector()
+		}
 	];
+	if (isSvelte5) {
+		logSvelte5Warning();
+		// TODO move to separate file
+		plugins.push({
+			name: 'vite-plugin-svelte-module',
+			enforce: 'post',
+			async configResolved() {
+				moduleRequestParser = buildModuleIdParser(options);
+			},
+			async transform(code, id, opts) {
+				const ssr = !!opts?.ssr;
+				const moduleRequest = moduleRequestParser(id, ssr);
+				if (!moduleRequest) {
+					return;
+				}
+				try {
+					// @ts-expect-error compileModule does not exist in svelte4
+					const compileResult = await svelteCompiler.compileModule(code, {
+						generate: ssr ? 'server' : 'client',
+						filename: moduleRequest.filename
+					});
+					logCompilerWarnings(moduleRequest, compileResult.warnings, options);
+					return compileResult.js;
+				} catch (e) {
+					throw toRollupError(e, options);
+				}
+			}
+		});
+	}
+	if (!isSvelte5) {
+		// TODO reenable once svelte5 has support and update utils/log.js#logSvelte5Warning
+		plugins.push(svelteInspector());
+	}
 	return plugins;
 }
 
