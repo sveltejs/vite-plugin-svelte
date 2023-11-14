@@ -78,7 +78,7 @@ jobs:
       matrix:
         node: [20]
         os: [ubuntu-latest, macos-latest, windows-latest]
-        svelte: 4
+        svelte: [4]
         include:
           - node: 18
             os: ubuntu-latest
