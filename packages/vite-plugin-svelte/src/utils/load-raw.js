@@ -19,7 +19,7 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 	try {
 		//avoid compileSvelte doing extra ssr stuff unless requested
 		//@ts-ignore //@ts-expect-error generate value differs between svelte4 and 5
-		svelteRequest.ssr = query.compilerOptions?.generate === (isSvelte4 ? 'ssr' : 'client');
+		svelteRequest.ssr = query.compilerOptions?.generate === (isSvelte4 ? 'ssr' : 'server');
 		const type = query.type;
 		compileData = await compileSvelte(svelteRequest, source, {
 			...options,
