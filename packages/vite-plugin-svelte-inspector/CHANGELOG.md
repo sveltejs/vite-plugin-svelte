@@ -1,5 +1,24 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 2.0.0
+
+### Major Changes
+
+- breaking: update minimum supported node version to node18 ([#744](https://github.com/sveltejs/vite-plugin-svelte/pull/744))
+
+- breaking: update supported vite version to vite 5 ([#743](https://github.com/sveltejs/vite-plugin-svelte/pull/743))
+
+- breaking: remove support for svelte 3 ([#746](https://github.com/sveltejs/vite-plugin-svelte/pull/746))
+
+- breaking(types): emit types with dts-buddy to include type map ([#751](https://github.com/sveltejs/vite-plugin-svelte/pull/751))
+
+### Patch Changes
+
+- update peer dependencies to use final releases ([#794](https://github.com/sveltejs/vite-plugin-svelte/pull/794))
+
+- Updated dependencies [[`d5b952f`](https://github.com/sveltejs/vite-plugin-svelte/commit/d5b952f88253e39458a1fbc0a0231b939bba338d), [`bd5d43e`](https://github.com/sveltejs/vite-plugin-svelte/commit/bd5d43e765d35b52b613ddcfd00b8d75491a7d98), [`261f571`](https://github.com/sveltejs/vite-plugin-svelte/commit/261f571c5c148128b64fb4f89e09f8bfeea2f380), [`62afd80`](https://github.com/sveltejs/vite-plugin-svelte/commit/62afd80c3a7bd6430be3c552acdb8baa75aac995), [`5d8944b`](https://github.com/sveltejs/vite-plugin-svelte/commit/5d8944b5a947bc17a25119c51bd283f494db3146), [`10ec2a4`](https://github.com/sveltejs/vite-plugin-svelte/commit/10ec2a4429623382cc1a700fe91c129616bca3ef), [`7c45024`](https://github.com/sveltejs/vite-plugin-svelte/commit/7c45024eb1ac6a17e722697c603d05ff06c5dc9e), [`62afd80`](https://github.com/sveltejs/vite-plugin-svelte/commit/62afd80c3a7bd6430be3c552acdb8baa75aac995), [`62afd80`](https://github.com/sveltejs/vite-plugin-svelte/commit/62afd80c3a7bd6430be3c552acdb8baa75aac995), [`3a45ae3`](https://github.com/sveltejs/vite-plugin-svelte/commit/3a45ae3fcedd8a03859c51a1303aac9abeec8b76), [`7758c8b`](https://github.com/sveltejs/vite-plugin-svelte/commit/7758c8bf13e8adfd3aed9728508884ceb5aad0a1), [`62afd80`](https://github.com/sveltejs/vite-plugin-svelte/commit/62afd80c3a7bd6430be3c552acdb8baa75aac995), [`1be1c08`](https://github.com/sveltejs/vite-plugin-svelte/commit/1be1c085ed75eb8d84cedc5b45077400edd720ef), [`05701c6`](https://github.com/sveltejs/vite-plugin-svelte/commit/05701c63857169abc5b640f762be6abb2a969648), [`a1dd21d`](https://github.com/sveltejs/vite-plugin-svelte/commit/a1dd21d4150bac011162999f4bf06f8663a8d849)]:
+  - @sveltejs/vite-plugin-svelte@3.0.0
+
 ## 2.0.0-next.1
 
 ### Major Changes
