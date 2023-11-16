@@ -1,5 +1,46 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.0.0
+
+### Major Changes
+
+- breaking: update minimum supported node version to node18 ([#744](https://github.com/sveltejs/vite-plugin-svelte/pull/744))
+
+- breaking: update supported vite version to vite 5 ([#743](https://github.com/sveltejs/vite-plugin-svelte/pull/743))
+
+- breaking: remove support for svelte 3 ([#746](https://github.com/sveltejs/vite-plugin-svelte/pull/746))
+
+- Preprocess style tags by default with vitePreprocess ([#756](https://github.com/sveltejs/vite-plugin-svelte/pull/756))
+
+- breaking: remove package.json export ([#751](https://github.com/sveltejs/vite-plugin-svelte/pull/751))
+
+- breaking(types): emit types with dts-buddy to include type map ([#751](https://github.com/sveltejs/vite-plugin-svelte/pull/751))
+
+- breaking(debug): remove 'vite:' and add suffixes to debug namespace ([#749](https://github.com/sveltejs/vite-plugin-svelte/pull/749))
+
+- breaking(types): rename SvelteOptions to SvelteConfig ([#751](https://github.com/sveltejs/vite-plugin-svelte/pull/751))
+
+- breaking: prefer svelte exports condition over package.json svelte field ([#747](https://github.com/sveltejs/vite-plugin-svelte/pull/747))
+
+### Minor Changes
+
+- feat(preprocess): add warnings in case preprocess dependencies contain anomalies ([#767](https://github.com/sveltejs/vite-plugin-svelte/pull/767))
+
+- Add experimental support for svelte5 ([#787](https://github.com/sveltejs/vite-plugin-svelte/pull/787))
+
+### Patch Changes
+
+- fix(types): use correct type Options for svelte function arg ([#751](https://github.com/sveltejs/vite-plugin-svelte/pull/751))
+
+- Improve compile error messages ([#757](https://github.com/sveltejs/vite-plugin-svelte/pull/757))
+
+- feat(compile): promote experimental.dynamicCompileOptions to stable ([#765](https://github.com/sveltejs/vite-plugin-svelte/pull/765))
+
+- update peer dependencies to use final releases ([#794](https://github.com/sveltejs/vite-plugin-svelte/pull/794))
+
+- Updated dependencies [[`d5b952f`](https://github.com/sveltejs/vite-plugin-svelte/commit/d5b952f88253e39458a1fbc0a0231b939bba338d), [`bd5d43e`](https://github.com/sveltejs/vite-plugin-svelte/commit/bd5d43e765d35b52b613ddcfd00b8d75491a7d98), [`10ec2a4`](https://github.com/sveltejs/vite-plugin-svelte/commit/10ec2a4429623382cc1a700fe91c129616bca3ef), [`62afd80`](https://github.com/sveltejs/vite-plugin-svelte/commit/62afd80c3a7bd6430be3c552acdb8baa75aac995), [`1be1c08`](https://github.com/sveltejs/vite-plugin-svelte/commit/1be1c085ed75eb8d84cedc5b45077400edd720ef)]:
+  - @sveltejs/vite-plugin-svelte-inspector@2.0.0
+
 ## 3.0.0-next.3
 
 ### Minor Changes
