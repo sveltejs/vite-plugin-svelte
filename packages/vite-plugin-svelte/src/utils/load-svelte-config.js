@@ -25,8 +25,8 @@ async function dynamicImportDefault(filePath, timestamp) {
 }
 
 /**
- * @param {import('vite').UserConfig} viteConfig
- * @param {Partial<import('../public.d.ts').Options>} inlineOptions
+ * @param {import('vite').UserConfig} [viteConfig]
+ * @param {Partial<import('../public.d.ts').Options>} [inlineOptions]
  * @returns {Promise<Partial<import('../public.d.ts').SvelteConfig> | undefined>}
  */
 export async function loadSvelteConfig(viteConfig, inlineOptions) {
