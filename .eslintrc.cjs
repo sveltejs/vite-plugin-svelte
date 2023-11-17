@@ -190,5 +190,6 @@ module.exports = {
 				'no-unused-vars': 'off'
 			}
 		}
-	]
+	],
+	ignorePatterns: ['packages/*/types/index.d.ts', 'packages/*/types/index.d.ts.map']
 };

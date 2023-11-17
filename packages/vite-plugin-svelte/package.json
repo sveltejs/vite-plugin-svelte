@@ -20,7 +20,7 @@
   "scripts": {
     "check:publint": "publint --strict",
     "check:types": "tsc --noEmit",
-    "generate:types": "dts-buddy -m \"@sveltejs/vite-plugin-svelte:src/public.d.ts\" && eslint --fix types && prettier --write types"
+    "generate:types": "dts-buddy -m \"@sveltejs/vite-plugin-svelte:src/public.d.ts\""
   },
   "engines": {
     "node": "^18.0.0 || >=20"
