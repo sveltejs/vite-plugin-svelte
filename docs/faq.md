@@ -221,7 +221,7 @@ Example:
 ```diff
 // package.json
   "files": ["dist"],
-  "svelte": "dist/index.js",
+-  "svelte": "dist/index.js",
 + "exports": {
 +   ".": {
 +     "svelte": "./dist/index.js"
