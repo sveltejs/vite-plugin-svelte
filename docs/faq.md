@@ -236,3 +236,9 @@ See the faq about [vite and prebundling](#what-is-going-on-with-vite-and-pre-bun
 > [svelte-package](https://kit.svelte.dev/docs/packaging) which already supports it.
 >
 > For backwards compatibility, you can keep the `svelte` field in addition to the `exports` condition. But make sure that both always resolve to the same files.
+
+# Unknown file extension ".svelte"
+
+1. Perhaps you have any empty +page.svelte, remove it/them.
+2. Perhaps you just installed any new component from npm. Vite needs to optimise your dependencies and that causes the issue, just run ```npm run dev```.
+3. You probably got warnings that you ignored when you ran ```npm run dev``` or ```npm run build```. Process these warnings, this FAQ will help you with.
