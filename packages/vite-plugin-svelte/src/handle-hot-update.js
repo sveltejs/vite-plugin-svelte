@@ -104,7 +104,7 @@ function jsChanged(prev, next, filename) {
 	}
 	const isLooseEqual = isCodeEqual(normalizeJsCode(prevJs), normalizeJsCode(nextJs));
 	if (!isStrictEqual && isLooseEqual) {
-		log.warn(
+		log.debug(
 			`ignoring compiler output js change for ${filename} as it is equal to previous output after normalization`
 		);
 	}
