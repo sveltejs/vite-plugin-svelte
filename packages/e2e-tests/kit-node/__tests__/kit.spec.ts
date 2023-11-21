@@ -336,7 +336,7 @@ describe('kit-node', () => {
 				);
 				expectArrayEqual(
 					config.resolve.mainFields,
-					['svelte', 'module', 'jsnext:main', 'jsnext'],
+					['svelte', 'browser', 'module', 'jsnext:main', 'jsnext'],
 					`resolve.mainFields in ${filename}`
 				);
 				expectArrayEqual(
