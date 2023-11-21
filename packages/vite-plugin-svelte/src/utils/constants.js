@@ -1,6 +1,6 @@
 import { isSvelte5 } from './svelte-version.js';
 
-export const VITE_RESOLVE_MAIN_FIELDS = ['module', 'jsnext:main', 'jsnext'];
+export const VITE_RESOLVE_MAIN_FIELDS = ['browser', 'module', 'jsnext:main', 'jsnext'];
 
 export const SVELTE_RESOLVE_MAIN_FIELDS = ['svelte'];
 
