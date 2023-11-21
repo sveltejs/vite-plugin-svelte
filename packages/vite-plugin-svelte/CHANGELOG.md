@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.0.1
+
+### Patch Changes
+
+- fix: improve checking of script and style in .svelte code to work with new generic= attribute ([#799](https://github.com/sveltejs/vite-plugin-svelte/pull/799))
+
+- Fix optional parameter types ([#797](https://github.com/sveltejs/vite-plugin-svelte/pull/797))
+
+- Update log level for HMR updates where the output is functionally equivalent to the previous version to "debug" ([#806](https://github.com/sveltejs/vite-plugin-svelte/pull/806))
+
 ## 3.0.0
 
 ### Major Changes
