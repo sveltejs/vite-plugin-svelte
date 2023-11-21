@@ -114,8 +114,9 @@ export function enhanceCompileError(err, originalCode, preprocessors) {
 
 	// Handle incorrect TypeScript usage
 	if (err.code === 'parse-error') {
-		// Reference from Svelte: https://github.com/sveltejs/svelte/blob/800f6c076be5dd87dd4d2e9d66c59b973d54d84b/packages/svelte/src/compiler/preprocess/index.js#L262
-		const scriptRe = /<script(\s[^]*?)?(?:>([^]*?)<\/script>|\/>)/gi;
+		// Reference from Svelte: https://github.com/sveltejs/svelte/blob/9926347ad9dbdd0f3324d5538e25dcb7f5e442f8/packages/svelte/src/compiler/preprocess/index.js#L259
+		const scriptRe =
+			/<!--[^]*?-->|<script((?:\s+[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)|\s+[^=>'"/]+)*\s*)(?:\/>|>([\S\s]*?)<\/script>)/g;
 		const errIndex = err.pos ?? -1;
 
 		let m;
@@ -142,7 +143,9 @@ export function enhanceCompileError(err, originalCode, preprocessors) {
 
 	// Handle incorrect CSS preprocessor usage
 	if (err.code === 'css-syntax-error') {
-		const styleRe = /<style(\s[^]*?)?(?:>([^]*?)<\/style>|\/>)/gi;
+		// Reference from Svelte: https://github.com/sveltejs/svelte/blob/9926347ad9dbdd0f3324d5538e25dcb7f5e442f8/packages/svelte/src/compiler/preprocess/index.js#L257
+		const styleRe =
+			/<!--[^]*?-->|<style((?:\s+[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)|\s+[^=>'"/]+)*\s*)(?:\/>|>([\S\s]*?)<\/style>)/g;
 
 		let m;
 		while ((m = styleRe.exec(originalCode))) {
