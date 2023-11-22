@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 2.5.3
+
+### Patch Changes
+
+- fix: handle closing tags in attributes when detecting script language ([#796](https://github.com/sveltejs/vite-plugin-svelte/pull/796))
+
 ## 2.5.2
 
 ### Patch Changes
