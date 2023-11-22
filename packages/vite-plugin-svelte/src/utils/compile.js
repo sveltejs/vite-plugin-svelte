@@ -8,7 +8,7 @@ import { createInjectScopeEverythingRulePreprocessorGroup } from './preprocess.j
 import { mapToRelative } from './sourcemaps.js';
 
 const scriptLangRE =
-	/<script (?:[^>]*|(?:[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s])\s+)*)lang=["']?([^"' >]+)["']?[^>]*>/;
+	/<script (?:[^>]*|(?:[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)\s+)*)lang=["']?([^"' >]+)["']?[^>]*>/;
 
 import { isSvelte3 } from './svelte-version.js';
 
