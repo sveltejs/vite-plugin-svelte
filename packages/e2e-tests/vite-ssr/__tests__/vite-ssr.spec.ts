@@ -1,3 +1,4 @@
+import { version as viteVersion } from 'vite';
 import {
 	editFileAndWaitForHmrComplete,
 	getColor,
@@ -11,45 +12,49 @@ import {
 	fetchPageText
 } from '~utils';
 
-test('/', async () => {
-	expect(await page.textContent('h1')).toMatch('Hello svelte world'); // after hydration
+const vite5 = viteVersion.startsWith('5');
 
-	const html = await fetchPageText();
-	expect(html).toMatch('Hello world'); // before hydration
-	if (isBuild) {
-		// TODO expect preload links
-	}
-});
+describe.skipIf(vite5)('vite-ssr', () => {
+	test('/', async () => {
+		expect(await page.textContent('h1')).toMatch('Hello svelte world'); // after hydration
 
-test('css', async () => {
-	if (isBuild) {
-		expect(await getColor('h1')).toBe('green');
-	} else {
-		// During dev, the CSS is loaded from async chunk and we may have to wait
-		// when the test runs concurrently.
-		await untilMatches(() => getColor('h1'), 'green', 'h1 has color green');
-	}
-});
-
-test('loaded esm only package', async () => {
-	expect(await page.textContent('#esm')).toMatch('esm');
-	expect(browserLogs).toContain('esm');
-	expect(e2eServer.logs.server.out).toContain('esm');
-});
-
-test('asset', async () => {
-	// should have no 404s
-	browserLogs.forEach((msg) => {
-		expect(msg).not.toMatch('404');
+		const html = await fetchPageText();
+		expect(html).toMatch('Hello world'); // before hydration
+		if (isBuild) {
+			// TODO expect preload links
+		}
 	});
-	const img = await page.$('img');
-	expect(await img.getAttribute('src')).toMatch(
-		isBuild ? /\/assets\/logo-\w{8}\.png/ : '/src/assets/logo.png'
-	);
+
+	test('css', async () => {
+		if (isBuild) {
+			expect(await getColor('h1')).toBe('green');
+		} else {
+			// During dev, the CSS is loaded from async chunk and we may have to wait
+			// when the test runs concurrently.
+			await untilMatches(() => getColor('h1'), 'green', 'h1 has color green');
+		}
+	});
+
+	test('loaded esm only package', async () => {
+		expect(await page.textContent('#esm')).toMatch('esm');
+		expect(browserLogs).toContain('esm');
+		expect(e2eServer.logs.server.out).toContain('esm');
+	});
+
+	test('asset', async () => {
+		// should have no 404s
+		browserLogs.forEach((msg) => {
+			expect(msg).not.toMatch('404');
+		});
+		const img = await page.$('img');
+		expect(await img.getAttribute('src')).toMatch(
+			isBuild ? /\/assets\/logo-\w{8}\.png/ : '/src/assets/logo.png'
+		);
+	});
 });
 
 if (!isBuild) {
-	describe('hmr', () => {
+	describe.skipIf(vite5)('hmr', () => {
 		const updateApp = editFileAndWaitForHmrComplete.bind(null, 'src/App.svelte');
 		test('should render additional html', async () => {
 			expect(await getEl('#hmr-test')).toBe(null);
