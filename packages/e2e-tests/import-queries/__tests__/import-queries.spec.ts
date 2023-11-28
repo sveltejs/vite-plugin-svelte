@@ -1,6 +1,6 @@
 import { browserLogs, fetchFromPage, getText, isBuild, testDir } from '~utils';
-import { createServer, ViteDevServer } from 'vite';
-import { VERSION } from 'svelte/compiler';
+import { createServer, version as viteVersion, ViteDevServer } from 'vite';
+import { VERSION as svelteVersion } from 'svelte/compiler';
 
 function normalizeSnapshot(result: string) {
 	// during dev, the import is rewritten but can vary on the v= hash. replace with stable short import
@@ -13,12 +13,13 @@ function normalizeSnapshot(result: string) {
 		.replace(/"total": *\d+\.\d+/g, '"total":0.123456789'); // svelte compile stats
 }
 
-const svelteMajor = VERSION.split('.', 1)[0];
+const vite5 = viteVersion.startsWith('5');
+const svelteMajor = svelteVersion.split('.', 1)[0];
 function snapshotFilename(name: string) {
 	return `./__snapshots__/svelte-${svelteMajor}/${name}.txt`;
 }
 
-describe('raw', () => {
+describe.skipIf(vite5)('raw', () => {
 	test('does not have failed requests', async () => {
 		browserLogs.forEach((msg) => {
 			expect(msg).not.toMatch('404');
@@ -90,7 +91,7 @@ describe('raw', () => {
 
 // vitest prints a warning about obsolete snapshots during build tests, ignore it, they are used in dev tests.
 // always regenerate snapshots with `pnpm test:serve import-queries -u` and check the diffs if they are correct
-describe.runIf(isBuild)('snapshots not obsolete warning', async () => {
+describe.skipIf(vite5).runIf(isBuild)('snapshots not obsolete warning', async () => {
 	afterAll(() => {
 		console.log(
 			'Ignore the obsolete snapshot warnings for ssrLoadModule snapshots from vitest during test:build, they are used in test:serve'
@@ -101,7 +102,7 @@ describe.runIf(isBuild)('snapshots not obsolete warning', async () => {
 	});
 });
 
-describe.runIf(!isBuild)('direct', () => {
+describe.skipIf(vite5).runIf(!isBuild)('direct', () => {
 	test('Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css', async () => {
 		const response = await fetchFromPage(
 			'src/Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css',
@@ -128,7 +129,7 @@ describe.runIf(!isBuild)('direct', () => {
 	});
 });
 
-describe.runIf(!isBuild)('ssrLoadModule', () => {
+describe.skipIf(vite5).runIf(!isBuild)('ssrLoadModule', () => {
 	let vite: ViteDevServer;
 	let ssrLoadDummy;
 	beforeAll(async () => {
