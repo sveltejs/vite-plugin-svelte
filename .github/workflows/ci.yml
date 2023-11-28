@@ -4,13 +4,9 @@ name: CI
 on:
   push:
     branches:
-      - main
-      - v1
       - v2
   pull_request:
     branches:
-      - main
-      - v1
       - v2
 env:
   # we call `pnpm playwright install` instead
@@ -78,16 +74,32 @@ jobs:
         node: [16]
         os: [ubuntu-latest, macos-latest, windows-latest]
         svelte: [4]
+        vite: [4]
         include:
           - node: 14
             os: ubuntu-latest
             svelte: 3
+            vite: 4
           - node: 18
             os: ubuntu-latest
             svelte: 4
+            vite: 4
           - node: 20
             os: ubuntu-latest
             svelte: 4
+            vite: 4
+          - node: 14
+            os: ubuntu-latest
+            svelte: 3
+            vite: 5
+          - node: 18
+            os: ubuntu-latest
+            svelte: 4
+            vite: 5
+          - node: 20
+            os: ubuntu-latest
+            svelte: 4
+            vite: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -120,6 +132,9 @@ jobs:
       - name: install for node14 or svelte3
         if: matrix.node == 14 || matrix.svelte == 3
         run: pnpm install --no-frozen-lockfile --prefer-offline --ignore-scripts
+      - name: install vite 5
+        if: matrix.vite == 5
+        run: pnpm update -r --latest vite
       - name: install playwright chromium
         run: pnpm playwright install chromium
       - name: run tests
