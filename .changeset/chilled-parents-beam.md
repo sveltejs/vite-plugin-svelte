@@ -1,6 +1,6 @@
 ---
-'@sveltejs/vite-plugin-svelte-inspector': patch
-'@sveltejs/vite-plugin-svelte': patch
+'@sveltejs/vite-plugin-svelte-inspector': minor
+'@sveltejs/vite-plugin-svelte': minor
 ---
 
-chore: allow Vite 5
+feat: support Vite 5
