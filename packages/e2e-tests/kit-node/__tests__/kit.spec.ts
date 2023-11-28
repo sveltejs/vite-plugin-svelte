@@ -16,7 +16,10 @@ import {
 
 import glob from 'tiny-glob';
 import path from 'node:path';
+import { version as viteVersion } from 'vite';
 import { describe, expect, it } from 'vitest';
+
+const vite5 = viteVersion.startsWith('5');
 
 describe('kit-node', () => {
 	describe('index route', () => {
@@ -336,7 +339,9 @@ describe('kit-node', () => {
 				);
 				expectArrayEqual(
 					config.resolve.mainFields,
-					['svelte', 'browser', 'module', 'jsnext:main', 'jsnext'],
+					vite5
+						? ['svelte', 'browser', 'module', 'jsnext:main', 'jsnext']
+						: ['svelte', 'module', 'jsnext:main', 'jsnext'],
 					`resolve.mainFields in ${filename}`
 				);
 				expectArrayEqual(

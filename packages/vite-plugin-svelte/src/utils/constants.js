@@ -1,6 +1,11 @@
 import { isSvelte3 } from './svelte-version.js';
+import { version as viteVersion } from 'vite';
 
-export const VITE_RESOLVE_MAIN_FIELDS = ['browser', 'module', 'jsnext:main', 'jsnext'];
+const vite5 = viteVersion.startsWith('5');
+
+export const VITE_RESOLVE_MAIN_FIELDS = vite5
+	? ['browser', 'module', 'jsnext:main', 'jsnext']
+	: ['module', 'jsnext:main', 'jsnext'];
 
 export const SVELTE_RESOLVE_MAIN_FIELDS = ['svelte'];
 
