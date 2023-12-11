@@ -199,7 +199,7 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 			: {
 					injectCss: css === 'injected',
 					partialAccept: !!viteConfig.experimental?.hmrPartialAccept
-			  },
+				},
 		compilerOptions: {
 			css,
 			dev: !viteConfig.isProduction
@@ -551,7 +551,7 @@ async function buildExtraConfigForDependencies(options, config) {
 							.slice(0, -1)
 							.some((d) => isDepExcluded(d.trim(), userExclude))
 					);
-			  });
+				});
 	}
 	if (options.disableDependencyReinclusion === true) {
 		depsConfig.optimizeDeps.include = depsConfig.optimizeDeps.include.filter(

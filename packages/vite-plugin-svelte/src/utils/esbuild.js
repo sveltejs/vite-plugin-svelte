@@ -120,7 +120,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		? {
 				...compileOptions,
 				...dynamicCompileOptions
-		  }
+			}
 		: compileOptions;
 	const endStat = statsCollection?.start(filename);
 	const compiled = svelte.compile(finalCode, finalCompileOptions);

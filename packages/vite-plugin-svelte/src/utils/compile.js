@@ -137,7 +137,7 @@ export const _createCompileSvelte = (makeHot) => {
 			? {
 					...compileOptions,
 					...dynamicCompileOptions
-			  }
+				}
 			: compileOptions;
 
 		const endStat = stats?.start(filename);

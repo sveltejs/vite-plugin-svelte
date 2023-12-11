@@ -21,7 +21,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 	const manifest = isProd
 		? // @ts-ignore
 
-		  JSON.parse(fs.readFileSync(resolve('dist/client/.vite/ssr-manifest.json'), 'utf-8'))
+			JSON.parse(fs.readFileSync(resolve('dist/client/.vite/ssr-manifest.json'), 'utf-8'))
 		: {};
 
 	const app = express();

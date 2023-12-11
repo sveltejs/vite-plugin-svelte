@@ -31,7 +31,7 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 					? {
 							js: type === 'script' || type === 'all',
 							css: type === 'style' || type === 'all'
-					  }
+						}
 					: false,
 				...svelteRequest.query.compilerOptions
 			},

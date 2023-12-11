@@ -275,7 +275,7 @@ describe('kit-node', () => {
 								'tiny-glob',
 								'cookie',
 								'set-cookie-parser'
-						  ]
+							]
 						: [],
 					`ssr.external in ${filename}`
 				);
