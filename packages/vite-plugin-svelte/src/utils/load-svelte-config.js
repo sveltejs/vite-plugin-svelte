@@ -63,7 +63,7 @@ export async function loadSvelteConfig(viteConfig, inlineOptions) {
 				const _require = import.meta.url
 					? esmRequire ?? (esmRequire = createRequire(import.meta.url))
 					: // eslint-disable-next-line no-undef
-					  require;
+						require;
 
 				// avoid loading cached version on reload
 				delete _require.cache[_require.resolve(configFile)];
