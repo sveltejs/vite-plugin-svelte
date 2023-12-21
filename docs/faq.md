@@ -211,7 +211,7 @@ module.exports = {
 
 ### missing exports condition
 
-| If you see a warning logged for this when using a Svelte library, please tell the library maintainers.
+> If you see a warning logged for this when using a Svelte library, please tell the library maintainers.
 
 Using the `svelte` field in `package.json` to point at `.svelte` source files is **deprecated** and you must use a `svelte` [export condition](https://nodejs.org/api/packages.html#conditional-exports).
 vite-plugin-svelte 3 still resolves it as a fallback, but in a future major release this is going to be removed and without exports condition resolving the library is going to fail.
