@@ -25,7 +25,7 @@
     "@changesets/cli": "^2.27.1",
     "@svitejs/changesets-changelog-github-compact": "^1.1.0",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^18.19.3",
+    "@types/node": "^20.10.5",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
     "cross-env": "^7.0.3",
@@ -66,11 +66,11 @@
   },
   "pnpm": {
     "overrides": {
+      "@sveltejs/kit>@sveltejs/vite-plugin-svelte": "^3.0.0",
       "@sveltejs/vite-plugin-svelte": "workspace:^",
       "@sveltejs/vite-plugin-svelte-inspector": "workspace:^",
       "svelte": "$svelte",
-      "vite": "$vite",
-      "@adobe/css-tools@<4.3.1": "^4.3.1"
+      "vite": "$vite"
     }
   }
 }
