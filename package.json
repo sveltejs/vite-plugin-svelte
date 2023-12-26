@@ -26,16 +26,16 @@
     "@svitejs/changesets-changelog-github-compact": "^1.1.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^18.19.3",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
     "cross-env": "^7.0.3",
-    "dts-buddy": "^0.4.2",
-    "eslint": "^8.55.0",
+    "dts-buddy": "^0.4.3",
+    "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-markdown": "^3.0.1",
-    "eslint-plugin-n": "^16.4.0",
-    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-n": "^16.5.0",
+    "eslint-plugin-prettier": "^5.1.2",
     "eslint-plugin-svelte": "^2.35.1",
     "eslint-plugin-unicorn": "^50.0.1",
     "execa": "^8.0.1",
@@ -47,11 +47,11 @@
     "playwright-core": "~1.40.1",
     "prettier": "^3.1.1",
     "prettier-plugin-svelte": "^3.1.2",
-    "publint": "^0.2.6",
+    "publint": "^0.2.7",
     "svelte": "^4.2.8",
     "typescript": "^5.3.3",
-    "vite": "^5.0.7",
-    "vitest": "^1.0.4"
+    "vite": "^5.0.10",
+    "vitest": "^1.1.0"
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
@@ -59,7 +59,7 @@
       "prettier --cache --ignore-path .gitignore --ignore-unknown --write"
     ]
   },
-  "packageManager": "pnpm@8.12.0",
+  "packageManager": "pnpm@8.12.1",
   "engines": {
     "pnpm": "^8.6.3",
     "node": "^18.0.0 || >=20"
