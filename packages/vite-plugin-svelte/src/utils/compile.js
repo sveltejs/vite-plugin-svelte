@@ -202,7 +202,8 @@ export const _createCompileSvelte = (makeHot) => {
  * @returns {Function | undefined}
  */
 function buildMakeHot(options) {
-	const needsMakeHot = options.hot !== false && options.isServe && !options.isProduction;
+	const needsMakeHot =
+		!isSvelte5 && options.hot !== false && options.isServe && !options.isProduction;
 	if (needsMakeHot) {
 		// @ts-ignore
 		const hotApi = options?.hot?.hotApi;
