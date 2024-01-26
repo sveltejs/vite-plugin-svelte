@@ -16,7 +16,7 @@ import { isSvelte5 } from './svelte-version.js';
 // which is closer to the other regexes in at least not falling into commented script
 // but ideally would be shared exactly with svelte and other tools that use it
 const scriptLangRE =
-	/<!--[^]*?-->|<script (?:[^>]*|(?:[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)\s+)*)lang=["']?([^"' >]+)["']?[^>]*>/;
+	/<script (?:[^>]*|(?:[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)\s+)*)lang=["']?([^"' >]+)["']?[^>]*>/;
 
 /**
  * @param {Function} [makeHot]
