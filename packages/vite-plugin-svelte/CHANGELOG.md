@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.0.2
+
+### Patch Changes
+
+- fix(compile): correctly determine script lang in files where a comment precedes the script tag ([#844](https://github.com/sveltejs/vite-plugin-svelte/pull/844))
+
 ## 3.0.1
 
 ### Patch Changes
@@ -750,7 +756,7 @@
 
   ```js
   optimizeDeps: {
-  	exclude: ['svelte'];
+    exclude: ["svelte"];
   }
   ```
 
