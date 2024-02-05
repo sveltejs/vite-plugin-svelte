@@ -25,9 +25,9 @@
     "@changesets/cli": "^2.27.1",
     "@svitejs/changesets-changelog-github-compact": "^1.1.0",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.11.7",
-    "@typescript-eslint/eslint-plugin": "^6.19.1",
-    "@typescript-eslint/parser": "^6.19.1",
+    "@types/node": "^20.11.16",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "cross-env": "^7.0.3",
     "dts-buddy": "^0.4.4",
     "eslint": "^8.56.0",
@@ -41,14 +41,14 @@
     "execa": "^8.0.1",
     "fs-extra": "^11.2.0",
     "husky": "^9.0.10",
-    "lint-staged": "^15.2.0",
+    "lint-staged": "^15.2.2",
     "node-fetch": "^3.3.2",
     "npm-run-all": "^4.1.5",
-    "playwright-core": "~1.41.1",
-    "prettier": "^3.2.4",
+    "playwright-core": "~1.41.2",
+    "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.1.2",
     "publint": "^0.2.7",
-    "svelte": "^4.2.9",
+    "svelte": "^4.2.10",
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
     "vitest": "^1.2.2"
@@ -59,7 +59,7 @@
       "prettier --cache --ignore-path .gitignore --ignore-unknown --write"
     ]
   },
-  "packageManager": "pnpm@8.14.3",
+  "packageManager": "pnpm@8.15.1",
   "engines": {
     "pnpm": "^8.6.3",
     "node": "^18.0.0 || >=20"
@@ -71,7 +71,7 @@
       "@sveltejs/vite-plugin-svelte-inspector": "workspace:^",
       "svelte": "$svelte",
       "vite": "$vite",
-      "@types/node@<=20.11.7": "20.11.2"
+      "@types/node@<=20.12.0": "20.11.5"
     }
   }
 }
