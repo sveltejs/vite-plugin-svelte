@@ -71,13 +71,6 @@ export const _createCompileSvelte = (makeHot) => {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
 			compileOptions.cssHash = () => hash;
 		}
-		if (ssr && compileOptions.enableSourcemap !== false) {
-			if (typeof compileOptions.enableSourcemap === 'object') {
-				compileOptions.enableSourcemap.css = false;
-			} else {
-				compileOptions.enableSourcemap = { js: true, css: false };
-			}
-		}
 
 		let preprocessed;
 		let preprocessors = options.preprocess;
