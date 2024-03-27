@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.0.3
+
+### Patch Changes
+
+- Remove unnecessary `enableSourcemap` option usage and prevent passing it in Svelte 5 ([#862](https://github.com/sveltejs/vite-plugin-svelte/pull/862))
+
 ## 3.0.2
 
 ### Patch Changes
