@@ -1,32 +1,19 @@
-import { isSvelte5 } from './svelte-version.js';
+import { isSvelte4 } from './svelte-version.js';
 
 export const VITE_RESOLVE_MAIN_FIELDS = ['browser', 'module', 'jsnext:main', 'jsnext'];
 
 export const SVELTE_RESOLVE_MAIN_FIELDS = ['svelte'];
 
-export const SVELTE_IMPORTS = [
-	'svelte/animate',
-	'svelte/easing',
-	'svelte/internal',
-	'svelte/internal/disclose-version',
-	'svelte/motion',
-	'svelte/ssr',
-	'svelte/store',
-	'svelte/transition',
-	'svelte'
-];
+export const SVELTE_OPTIMIZEDEPS = ['svelte/**/*.js', 'svelte'];
 
-export const SVELTE_HMR_IMPORTS = [
-	'svelte-hmr/runtime/hot-api-esm.js',
-	'svelte-hmr/runtime/proxy-adapter-dom.js',
-	'svelte-hmr'
-];
-
-if (isSvelte5) {
-	SVELTE_IMPORTS.push('svelte/server', 'svelte/internal/server', 'svelte/legacy');
-	SVELTE_HMR_IMPORTS.length = 0; // truncate, svelte-hmr isn't used with svelte5
+if (isSvelte4) {
+	SVELTE_OPTIMIZEDEPS.push('svelte-hmr/**/*.js');
 }
 
+export const SVELTE_DEDUPE = ['svelte'];
+if (isSvelte4) {
+	SVELTE_DEDUPE.push('svelte-hmr');
+}
 export const SVELTE_EXPORT_CONDITIONS = ['svelte'];
 
 export const FAQ_LINK_MISSING_EXPORTS_CONDITION =

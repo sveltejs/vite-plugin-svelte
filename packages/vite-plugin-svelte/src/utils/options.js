@@ -4,9 +4,9 @@ import { isDebugNamespaceEnabled, log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
 import {
 	FAQ_LINK_MISSING_EXPORTS_CONDITION,
+	SVELTE_DEDUPE,
 	SVELTE_EXPORT_CONDITIONS,
-	SVELTE_HMR_IMPORTS,
-	SVELTE_IMPORTS,
+	SVELTE_OPTIMIZEDEPS,
 	SVELTE_RESOLVE_MAIN_FIELDS,
 	VITE_RESOLVE_MAIN_FIELDS
 } from './constants.js';
@@ -370,7 +370,7 @@ export async function buildExtraViteConfig(options, config) {
 	/** @type {Partial<import('vite').UserConfig>} */
 	const extraViteConfig = {
 		resolve: {
-			dedupe: [...SVELTE_IMPORTS, ...SVELTE_HMR_IMPORTS],
+			dedupe: [...SVELTE_DEDUPE],
 			conditions: [...SVELTE_EXPORT_CONDITIONS]
 		}
 		// this option is still awaiting a PR in vite to be supported
@@ -581,7 +581,7 @@ function buildExtraConfigForSvelte(config) {
 	const include = [];
 	const exclude = ['svelte-hmr'];
 	if (!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
-		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
+		const svelteImportsToInclude = [...SVELTE_OPTIMIZEDEPS];
 		log.debug(
 			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `,
 			undefined,
