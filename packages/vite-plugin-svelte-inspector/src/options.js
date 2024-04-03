@@ -5,6 +5,7 @@ import { debug } from './debug.js';
 export const defaultInspectorOptions = {
 	toggleKeyCombo: process.platform === 'darwin' ? 'meta-shift' : 'control-shift',
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
+	escapeKeys: ['Backspace', 'Escape'],
 	openKey: 'Enter',
 	holdMode: true,
 	showToggleButton: 'active',
