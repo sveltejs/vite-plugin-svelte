@@ -6,10 +6,7 @@ const config = {
 		adapter: adapter()
 	},
 	vitePlugin: {
-		experimental: {
-			inspector: true
-		}
+		inspector: true
 	}
 };
-
 export default config;
