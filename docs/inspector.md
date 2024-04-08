@@ -75,6 +75,13 @@ SVELTE_INSPECTOR_OPTIONS=true
 
   Define key to open the editor for the currently selected dom node.
 
+### escapeKeys
+
+- **Type:** `string[]`
+- **Default:** `['Backspace', 'Escape']`
+
+  Define keys to close the inspector.
+
 ### holdMode
 
 - **Type:** `boolean`
