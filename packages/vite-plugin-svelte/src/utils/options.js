@@ -26,7 +26,7 @@ import {
 import { isCommonDepWithoutSvelteField } from './dependencies.js';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats.js';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache.js';
-import { isSvelte5 } from './svelte-version.js';
+import { isSvelte4, isSvelte5 } from './svelte-version.js';
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -581,7 +581,9 @@ function buildExtraConfigForSvelte(config) {
 	const include = [];
 	const exclude = ['svelte-hmr'];
 	if (!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
-		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
+		const svelteImportsToInclude = SVELTE_IMPORTS.filter(
+			(x) => isSvelte4 || !x.endsWith('/server')
+		); // not used on clientside
 		log.debug(
 			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `,
 			undefined,
@@ -600,7 +602,6 @@ function buildExtraConfigForSvelte(config) {
 	/** @type {string[]} */
 	const external = [];
 	// add svelte to ssr.noExternal unless it is present in ssr.external
-	// so we can resolve it with svelte/ssr
 	if (!isDepExternaled('svelte', config.ssr?.external ?? [])) {
 		noExternal.push('svelte', /^svelte\//);
 	}

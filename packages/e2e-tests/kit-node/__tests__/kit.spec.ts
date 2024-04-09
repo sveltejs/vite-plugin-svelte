@@ -328,7 +328,6 @@ describe('kit-node', () => {
 					'svelte/easing',
 					'svelte/internal',
 					'svelte/motion',
-					'svelte/ssr',
 					'svelte/store',
 					'svelte/transition',
 					'svelte',
