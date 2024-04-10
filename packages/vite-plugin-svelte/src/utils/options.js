@@ -200,8 +200,10 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 		}
 	};
 	if (isSvelte5) {
-		// @ts-expect-error svelte4 does not have hmr option
-		defaultOptions.compilerOptions.hmr = !viteConfig.isProduction;
+		if (isSvelte5WithHMRSupport) {
+			// @ts-expect-error svelte4 does not have hmr option
+			defaultOptions.compilerOptions.hmr = !viteConfig.isProduction;
+		}
 	} else {
 		defaultOptions.hot = viteConfig.isProduction
 			? false
