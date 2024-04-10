@@ -38,6 +38,12 @@ declare module '@sveltejs/vite-plugin-svelte-inspector' {
 		openKey?: string;
 
 		/**
+		 * define keys to close the inspector
+		 * @default ['Backspace', 'Escape']
+		 */
+		escapeKeys?: string[];
+
+		/**
 		 * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
 		 * @default true
 		 */

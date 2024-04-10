@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { toRollupError } from './error.js';
 import { log } from './log.js';
-import { isSvelte4 } from './svelte-version.js';
+import { isSvelte4, isSvelte5 } from './svelte-version.js';
 /**
  * utility function to compile ?raw and ?direct requests in load hook
  *
@@ -27,12 +27,14 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 			compilerOptions: {
 				dev: false,
 				css: 'external',
-				enableSourcemap: query.sourcemap
-					? {
-							js: type === 'script' || type === 'all',
-							css: type === 'style' || type === 'all'
-						}
-					: false,
+				enableSourcemap: isSvelte5
+					? undefined
+					: query.sourcemap
+						? {
+								js: type === 'script' || type === 'all',
+								css: type === 'style' || type === 'all'
+							}
+						: false,
 				...svelteRequest.query.compilerOptions
 			},
 			hot: false,

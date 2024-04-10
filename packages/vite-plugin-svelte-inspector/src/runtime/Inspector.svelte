@@ -4,6 +4,7 @@
 
 	import options from 'virtual:svelte-inspector-options';
 	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
+	const escape_keys = options.escapeKeys?.map((key) => key?.toLowerCase());
 	const nav_keys = Object.values(options.navKeys).map((k) => k.toLowerCase());
 	let enabled = false;
 	let has_opened = false;
@@ -148,6 +149,10 @@
 		return is_toggle(event) && toggle_combo?.every((key) => is_key_active(key, event));
 	}
 
+	function is_escape(event) {
+		return escape_keys?.includes(event.key.toLowerCase());
+	}
+
 	function is_toggle(event) {
 		return toggle_combo?.includes(event.key.toLowerCase());
 	}
@@ -188,8 +193,11 @@
 				}
 			} else if (is_open(event)) {
 				open_editor(event);
-			} else if (is_holding()) {
-				// unhandled additional key pressed while holding, possibly another shortcut, disable again
+			} else if (is_holding() || is_escape(event)) {
+				// is_holding() checks for unhandled additional key pressed
+				// while holding the toggle keys, which is possibly another
+				// shortcut (e.g. 'meta-shift-x'), so disable again.
+
 				disable();
 			}
 		}

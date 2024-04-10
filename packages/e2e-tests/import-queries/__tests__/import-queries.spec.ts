@@ -120,11 +120,12 @@ describe.runIf(!isBuild)('direct', () => {
 		const response = await fetchFromPage(
 			'src/Dummy.svelte?direct&svelte&type=script&sourcemap&lang.js',
 			{
-				headers: { Accept: 'application/javascript' }
+				headers: { Accept: 'text/javascript' }
 			}
 		);
 		expect(response.ok).toBe(true);
-		expect(response.headers.get('Content-Type')).toBe('application/javascript');
+		// vite switched from application/javascript to text/javascript in 5.1
+		expect(response.headers.get('Content-Type')).toMatch(/^(?:text|application)\/javascript$/);
 		const js = await response.text();
 		expect(normalizeSnapshot(js)).toMatchFileSnapshot(snapshotFilename('direct-js'));
 	});
