@@ -19,8 +19,7 @@
     "release": "pnpm changeset publish",
     "prepare": "husky",
     "playwright": "playwright-core",
-    "generate:types": "pnpm --filter \"./packages/*\" --parallel generate:types",
-    "foo": "pnpm exec playwright install"
+    "generate:types": "pnpm --filter \"./packages/*\" --parallel generate:types"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
