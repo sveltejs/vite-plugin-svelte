@@ -1,5 +1,18 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.1.0
+
+### Minor Changes
+
+- feat(svelte5): enable hmr option in dev ([#836](https://github.com/sveltejs/vite-plugin-svelte/pull/836))
+
+### Patch Changes
+
+- Remove unnecessary `enableSourcemap` option usage and prevent passing it in Svelte 5 ([#862](https://github.com/sveltejs/vite-plugin-svelte/pull/862))
+
+- Updated dependencies [[`8ae3dc8cf415355f406f23d6104cb6153d75dfc8`](https://github.com/sveltejs/vite-plugin-svelte/commit/8ae3dc8cf415355f406f23d6104cb6153d75dfc8)]:
+  - @sveltejs/vite-plugin-svelte-inspector@2.1.0
+
 ## 3.0.2
 
 ### Patch Changes
