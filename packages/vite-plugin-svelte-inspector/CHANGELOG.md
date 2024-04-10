@@ -1,5 +1,16 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 2.1.0
+
+### Minor Changes
+
+- Implements `escapeKeys` to close the inspector via hotkey (default keys are `Backspace` and `Escape`). ([#880](https://github.com/sveltejs/vite-plugin-svelte/pull/880))
+
+### Patch Changes
+
+- Updated dependencies [[`324f569ead2447903a9da86794075ecabaf59702`](https://github.com/sveltejs/vite-plugin-svelte/commit/324f569ead2447903a9da86794075ecabaf59702), [`f12e3f0a0c741b4456703907c81694b5bcee8205`](https://github.com/sveltejs/vite-plugin-svelte/commit/f12e3f0a0c741b4456703907c81694b5bcee8205)]:
+  - @sveltejs/vite-plugin-svelte@3.1.0
+
 ## 2.0.0
 
 ### Major Changes
