@@ -179,7 +179,7 @@ export function svelte(inlineOptions) {
 
 			handleHotUpdate(ctx) {
 				// @ts-expect-error svelte4 does not have hmr option
-				if ((!options.hot && !options.compileOptions.hmr) || !options.emitCss) {
+				if ((!options.hot && !options.compilerOptions.hmr) || !options.emitCss) {
 					return;
 				}
 				const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);
