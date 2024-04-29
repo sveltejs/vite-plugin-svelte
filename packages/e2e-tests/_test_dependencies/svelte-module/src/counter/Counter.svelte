@@ -4,10 +4,10 @@
 	let localCounter = $state(0);
 </script>
 
-<button on:click={counter.increment}>
+<button onclick={counter.increment}>
 	count is {counter.count}
 </button>
 
-<button on:click={() => localCounter++}>
+<button onclick={() => localCounter++}>
 	local count is {localCounter}
 </button>

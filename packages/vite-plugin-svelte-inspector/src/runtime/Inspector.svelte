@@ -331,7 +331,7 @@
 			.join('')}`}
 		on:click={() => toggle()}
 		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
-	/>
+	></button>
 {/if}
 {#if enabled && active_el && file_loc}
 	{@const loc = active_el.__svelte_meta.loc}
