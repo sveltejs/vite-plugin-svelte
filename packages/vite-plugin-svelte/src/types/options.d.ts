@@ -1,4 +1,4 @@
-import type { CompileOptions } from 'svelte/types/compiler/interfaces';
+import type { CompileOptions } from 'svelte/compiler';
 import type { ViteDevServer } from 'vite';
 import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
 import type { Options } from '../public.d.ts';

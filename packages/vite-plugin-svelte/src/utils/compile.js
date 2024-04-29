@@ -1,6 +1,5 @@
 import * as svelte from 'svelte/compiler';
-// @ts-ignore
-import { createMakeHot } from 'svelte-hmr';
+
 import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
 
@@ -10,7 +9,6 @@ import {
 } from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
 import { enhanceCompileError } from './error.js';
-import { isSvelte5 } from './svelte-version.js';
 
 // TODO this is a patched version of https://github.com/sveltejs/vite-plugin-svelte/pull/796/files#diff-3bce0b33034aad4b35ca094893671f7e7ddf4d27254ae7b9b0f912027a001b15R10
 // which is closer to the other regexes in at least not falling into commented script
@@ -19,10 +17,9 @@ const scriptLangRE =
 	/<!--[^]*?-->|<script (?:[^>]*|(?:[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)\s+)*)lang=["']?([^"' >]+)["']?[^>]*>/g;
 
 /**
- * @param {Function} [makeHot]
  * @returns {import('../types/compile.d.ts').CompileSvelte}
  */
-export const _createCompileSvelte = (makeHot) => {
+export function createCompileSvelte() {
 	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 	let stats;
 	const devStylePreprocessor = createInjectScopeEverythingRulePreprocessorGroup();
@@ -32,7 +29,7 @@ export const _createCompileSvelte = (makeHot) => {
 		const { emitCss = true } = options;
 		/** @type {string[]} */
 		const dependencies = [];
-		/** @type {import('svelte/types/compiler/interfaces').Warning[]} */
+		/** @type {import('svelte/compiler').Warning[]} */
 		const warnings = [];
 
 		if (options.stats) {
@@ -63,8 +60,7 @@ export const _createCompileSvelte = (makeHot) => {
 		const compileOptions = {
 			...options.compilerOptions,
 			filename,
-			// @ts-expect-error svelte5 uses server/client, svelte4 uses ssr/dom
-			generate: isSvelte5 ? (ssr ? 'server' : 'client') : ssr ? 'ssr' : 'dom'
+			generate: ssr ? 'server' : 'client'
 		};
 
 		if (options.hot && options.emitCss) {
@@ -134,7 +130,7 @@ export const _createCompileSvelte = (makeHot) => {
 			: compileOptions;
 
 		const endStat = stats?.start(filename);
-		/** @type {import('svelte/types/compiler/interfaces').CompileResult} */
+		/** @type {import('svelte/compiler').CompileResult} */
 		let compiled;
 		try {
 			compiled = svelte.compile(finalCode, finalCompileOptions);
@@ -156,24 +152,11 @@ export const _createCompileSvelte = (makeHot) => {
 		}
 		if (!raw) {
 			// wire css import and code for hmr
-			const hasCss = compiled.css?.code?.trim().length > 0;
+			const hasCss = compiled.css?.code?.trim()?.length ?? 0 > 0;
 			// compiler might not emit css with mode none or it may be empty
 			if (emitCss && hasCss) {
 				// TODO properly update sourcemap?
 				compiled.js.code += `\nimport ${JSON.stringify(cssId)};\n`;
-			}
-
-			// only apply hmr when not in ssr context and hot options are set
-			if (!ssr && makeHot) {
-				compiled.js.code = makeHot({
-					id: filename,
-					compiledCode: compiled.js.code,
-					//@ts-expect-error hot isn't a boolean at this point
-					hotOptions: { ...options.hot, injectCss: options.hot?.injectCss === true && hasCss },
-					compiled,
-					originalCode: code,
-					compileOptions: finalCompileOptions
-				});
 			}
 		}
 
@@ -196,34 +179,4 @@ export const _createCompileSvelte = (makeHot) => {
 			preprocessed: preprocessed ?? { code }
 		};
 	};
-};
-
-/**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {Function | undefined}
- */
-function buildMakeHot(options) {
-	const needsMakeHot =
-		!isSvelte5 && options.hot !== false && options.isServe && !options.isProduction;
-	if (needsMakeHot) {
-		// @ts-ignore
-		const hotApi = options?.hot?.hotApi;
-		// @ts-ignore
-		const adapter = options?.hot?.adapter;
-		return createMakeHot({
-			walk: svelte.walk,
-			hotApi,
-			adapter,
-			hotOptions: { noOverlay: true, .../** @type {object} */ (options.hot) }
-		});
-	}
-}
-
-/**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {import('../types/compile.d.ts').CompileSvelte}
- */
-export function createCompileSvelte(options) {
-	const makeHot = buildMakeHot(options);
-	return _createCompileSvelte(makeHot);
 }

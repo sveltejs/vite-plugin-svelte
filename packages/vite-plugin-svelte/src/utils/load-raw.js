@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { toRollupError } from './error.js';
 import { log } from './log.js';
-import { isSvelte4, isSvelte5 } from './svelte-version.js';
+
 /**
  * utility function to compile ?raw and ?direct requests in load hook
  *
@@ -19,22 +19,13 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 	try {
 		//avoid compileSvelte doing extra ssr stuff unless requested
 		//@ts-ignore //@ts-expect-error generate value differs between svelte4 and 5
-		svelteRequest.ssr = query.compilerOptions?.generate === (isSvelte4 ? 'ssr' : 'server');
-		const type = query.type;
+		svelteRequest.ssr = query.compilerOptions?.generate === 'server';
 		compileData = await compileSvelte(svelteRequest, source, {
 			...options,
 			// don't use dynamic vite-plugin-svelte defaults here to ensure stable result between ssr,dev and build
 			compilerOptions: {
 				dev: false,
 				css: 'external',
-				enableSourcemap: isSvelte5
-					? undefined
-					: query.sourcemap
-						? {
-								js: type === 'script' || type === 'all',
-								css: type === 'style' || type === 'all'
-							}
-						: false,
 				...svelteRequest.query.compilerOptions
 			},
 			hot: false,
@@ -45,7 +36,7 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 	}
 	let result;
 	if (query.type === 'style') {
-		result = compileData.compiled.css;
+		result = compileData.compiled.css ?? { code: '', map: null };
 	} else if (query.type === 'script') {
 		result = compileData.compiled.js;
 	} else if (query.type === 'preprocessed') {
@@ -68,7 +59,9 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 		}
 		log.debug(`load returns direct result for ${id}`, undefined, 'load');
 		let directOutput = result.code;
+		// @ts-expect-error might not be SourceMap but toUrl check should suffice
 		if (query.sourcemap && result.map?.toUrl) {
+			// @ts-expect-error
 			const map = `sourceMappingURL=${result.map.toUrl()}`;
 			if (query.type === 'style') {
 				directOutput += `\n\n/*# ${map} */\n`;

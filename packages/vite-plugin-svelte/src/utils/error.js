@@ -2,7 +2,7 @@ import { buildExtendedLogMessage } from './log.js';
 
 /**
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
- * @param {import('svelte/types/compiler/interfaces').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('svelte/compiler').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {import('vite').Rollup.RollupError} the converted error
  */
@@ -29,7 +29,7 @@ export function toRollupError(error, options) {
 
 /**
  * convert an error thrown by svelte.compile to an esbuild PartialMessage
- * @param {import('svelte/types/compiler/interfaces').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('svelte/compiler').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {import('esbuild').PartialMessage} the converted error
  */
@@ -102,7 +102,7 @@ function formatFrameForVite(frame) {
 }
 
 /**
- * @param {import('svelte/types/compiler/interfaces').Warning & Error} err a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('svelte/compiler').Warning & Error} err a svelte compiler error, which is a mix of Warning and an error
  * @param {string} originalCode
  * @param {import('../public.d.ts').Options['preprocess']} [preprocessors]
  */

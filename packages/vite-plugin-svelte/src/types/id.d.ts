@@ -1,4 +1,4 @@
-import type { CompileOptions } from 'svelte/types/compiler/interfaces';
+import type { CompileOptions } from 'svelte/compiler';
 
 export type SvelteQueryTypes = 'style' | 'script' | 'preprocessed' | 'all';
 

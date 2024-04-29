@@ -1,8 +1,6 @@
 declare module '@sveltejs/vite-plugin-svelte' {
 	import type { InlineConfig, ResolvedConfig } from 'vite';
-	import type { CompileOptions, PreprocessorGroup } from 'svelte/compiler';
-	import type { Warning } from 'svelte/types/compiler/interfaces';
-	import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
+	import type { CompileOptions, Warning, PreprocessorGroup } from 'svelte/compiler';
 	export type Options = Omit<SvelteConfig, 'vitePlugin'> & PluginOptionsInline;
 
 	interface PluginOptionsInline extends PluginOptions {
@@ -37,29 +35,7 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * @default true
 		 */
 		emitCss?: boolean;
-		/**
-		 * Enable or disable Hot Module Replacement.
-		 *
-		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		 *
-		 * DO NOT CUSTOMIZE SVELTE-HMR OPTIONS UNLESS YOU KNOW EXACTLY WHAT YOU ARE DOING
-		 *
-		 *                             YOU HAVE BEEN WARNED
-		 *
-		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		 *
-		 * Set an object to pass custom options to svelte-hmr
-		 *
-		 * @see https://github.com/rixo/svelte-hmr#options
-		 * @default true for development, always false for production
-		 */
-		hot?:
-			| boolean
-			| {
-					injectCss?: boolean;
-					partialAccept?: boolean;
-					[key: string]: any;
-			  };
+
 		/**
 		 * Some Vite plugins can contribute additional preprocessors by defining `api.sveltePreprocess`.
 		 * If you don't want to use them, set this to true to ignore them all or use an array of strings
@@ -88,12 +64,6 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * @default true for dev, false for build
 		 */
 		prebundleSvelteLibraries?: boolean;
-		/**
-		 * toggle/configure Svelte Inspector
-		 *
-		 * @default unset for dev, always false for build
-		 */
-		inspector?: InspectorOptions | boolean;
 
 		/**
 		 * A function to update `compilerOptions` before compilation

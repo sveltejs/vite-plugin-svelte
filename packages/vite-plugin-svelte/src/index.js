@@ -1,7 +1,5 @@
 import fs from 'node:fs';
 
-import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
-
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings, logSvelte5Warning } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
@@ -19,7 +17,6 @@ import { toRollupError } from './utils/error.js';
 import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
-import { isSvelte5 } from './utils/svelte-version.js';
 import * as svelteCompiler from 'svelte/compiler';
 
 /**
@@ -27,6 +24,9 @@ import * as svelteCompiler from 'svelte/compiler';
  * @returns {import('vite').Plugin[]}
  */
 export function svelte(inlineOptions) {
+	// TODO remove for v-p-s 4.0.0
+	logSvelte5Warning();
+
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
 	}
@@ -72,7 +72,7 @@ export function svelte(inlineOptions) {
 				options = resolveOptions(options, config, cache);
 				patchResolvedViteConfig(config, options);
 				requestParser = buildIdParser(options);
-				compileSvelte = createCompileSvelte(options);
+				compileSvelte = createCompileSvelte();
 				viteConfig = config;
 				// TODO deep clone to avoid mutability from outside?
 				api.options = options;
@@ -178,7 +178,6 @@ export function svelte(inlineOptions) {
 			},
 
 			handleHotUpdate(ctx) {
-				// @ts-expect-error svelte4 does not have hmr option
 				if ((!options.hot && !options.compilerOptions.hmr) || !options.emitCss) {
 					return;
 				}
@@ -190,12 +189,8 @@ export function svelte(inlineOptions) {
 			async buildEnd() {
 				await options.stats?.finishAll();
 			}
-		}
-	];
-	if (isSvelte5) {
-		logSvelte5Warning();
-		// TODO move to separate file
-		plugins.push({
+		},
+		{
 			name: 'vite-plugin-svelte-module',
 			enforce: 'post',
 			async configResolved() {
@@ -208,8 +203,7 @@ export function svelte(inlineOptions) {
 					return;
 				}
 				try {
-					// @ts-expect-error compileModule does not exist in svelte4
-					const compileResult = await svelteCompiler.compileModule(code, {
+					const compileResult = svelteCompiler.compileModule(code, {
 						generate: ssr ? 'server' : 'client',
 						filename: moduleRequest.filename
 					});
@@ -219,12 +213,8 @@ export function svelte(inlineOptions) {
 					throw toRollupError(e, options);
 				}
 			}
-		});
-	}
-	if (!isSvelte5) {
-		// TODO reenable once svelte5 has support and update utils/log.js#logSvelte5Warning
-		plugins.push(svelteInspector());
-	}
+		}
+	];
 	return plugins;
 }
 

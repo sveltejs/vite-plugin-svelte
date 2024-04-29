@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs';
 import * as svelte from 'svelte/compiler';
 import { log } from './log.js';
 import { toESBuildError } from './error.js';
-import { isSvelte5 } from './svelte-version.js';
 
 /**
  * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
@@ -26,9 +25,8 @@ export function esbuildSveltePlugin(options) {
 			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
 
 			const svelteExtensions = (options.extensions ?? ['.svelte']).map((ext) => ext.slice(1));
-			if (isSvelte5) {
-				svelteExtensions.push(svelteModuleExtension.slice(1));
-			}
+			svelteExtensions.push(svelteModuleExtension.slice(1));
+
 			const svelteFilter = new RegExp('\\.(' + svelteExtensions.join('|') + ')(\\?.*)?$');
 			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 			let statsCollection;
@@ -60,9 +58,8 @@ export function esbuildSveltePlugin(options) {
  * @returns {Promise<string>}
  */
 async function compileSvelte(options, { filename, code }, statsCollection) {
-	if (isSvelte5 && filename.endsWith(svelteModuleExtension)) {
+	if (filename.endsWith(svelteModuleExtension)) {
 		const endStat = statsCollection?.start(filename);
-		// @ts-expect-error compileModule does not exist in svelte4
 		const compiled = svelte.compileModule(code, {
 			filename,
 			generate: 'client'
@@ -75,7 +72,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 			: compiled.js.code;
 	}
 	let css = options.compilerOptions.css;
-	if (css !== 'none') {
+	if (css !== 'injected') {
 		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
 		css = 'injected';
 	}
@@ -84,8 +81,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		...options.compilerOptions,
 		css,
 		filename,
-		// @ts-expect-error svelte4 uses 'dom', svelte5 uses 'client'
-		generate: isSvelte5 ? 'client' : 'dom'
+		generate: 'client'
 	};
 
 	let preprocessed;
