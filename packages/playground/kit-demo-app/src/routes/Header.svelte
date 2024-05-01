@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import logo from '$lib/images/svelte-logo.svg';
 	import github from '$lib/images/github.svg';
+	page; // TODO workaround for https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 </script>
 
 <header>

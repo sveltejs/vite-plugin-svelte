@@ -1,5 +1,6 @@
 <script>
 	import { Route, router } from 'tinro';
+	router; // TODO workaround for https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 </script>
 
 <nav>
