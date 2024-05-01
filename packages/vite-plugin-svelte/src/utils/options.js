@@ -238,9 +238,11 @@ function enforceOptionsForHmr(options) {
  */
 function enforceOptionsForProduction(options) {
 	if (options.isProduction) {
-		if (options.hot) {
-			log.warn('options.hot is enabled but does not work on production build, forcing it to false');
-			options.hot = false;
+		if (options.compilerOptions.hmr) {
+			log.warn(
+				'you are building for production but compilerOptions.hmr is true, forcing it to false'
+			);
+			options.compilerOptions.hmr = false;
 		}
 		if (options.compilerOptions.dev) {
 			log.warn(
@@ -387,12 +389,7 @@ export async function buildExtraViteConfig(options, config) {
 	}
 
 	// enable hmrPartialAccept if not explicitly disabled
-	if (
-		(options.hot == null ||
-			options.hot === true ||
-			(options.hot && options.hot.partialAccept !== false)) && // deviate from svelte-hmr, default to true
-		config.experimental?.hmrPartialAccept !== false
-	) {
+	if (options.compilerOptions.hmr && config.experimental?.hmrPartialAccept !== false) {
 		log.debug('enabling "experimental.hmrPartialAccept" in vite config', undefined, 'config');
 		extraViteConfig.experimental = { hmrPartialAccept: true };
 	}

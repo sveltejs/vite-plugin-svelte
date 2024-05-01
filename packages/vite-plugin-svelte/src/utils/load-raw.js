@@ -26,9 +26,9 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 			compilerOptions: {
 				dev: false,
 				css: 'external',
+				hmr: false,
 				...svelteRequest.query.compilerOptions
 			},
-			hot: false,
 			emitCss: true
 		});
 	} catch (e) {

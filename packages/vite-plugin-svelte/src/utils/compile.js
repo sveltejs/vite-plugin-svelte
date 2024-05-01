@@ -63,14 +63,14 @@ export function createCompileSvelte() {
 			generate: ssr ? 'server' : 'client'
 		};
 
-		if (options.hot && options.emitCss) {
+		if (compileOptions.hmr && options.emitCss) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
 			compileOptions.cssHash = () => hash;
 		}
 
 		let preprocessed;
 		let preprocessors = options.preprocess;
-		if (!options.isBuild && options.emitCss && options.hot) {
+		if (!options.isBuild && options.emitCss && compileOptions.hmr) {
 			// inject preprocessor that ensures css hmr works better
 			if (!Array.isArray(preprocessors)) {
 				preprocessors = preprocessors
