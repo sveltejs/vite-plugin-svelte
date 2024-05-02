@@ -81,8 +81,8 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 }
 
 /**
- * @param {import('./types/compile.d.ts').Code} [prev]
- * @param {import('./types/compile.d.ts').Code} [next]
+ * @param {import('./types/compile.d.ts').Code | null} [prev]
+ * @param {import('./types/compile.d.ts').Code | null} [next]
  * @returns {boolean}
  */
 function cssChanged(prev, next) {
@@ -90,8 +90,8 @@ function cssChanged(prev, next) {
 }
 
 /**
- * @param {import('./types/compile.d.ts').Code} [prev]
- * @param {import('./types/compile.d.ts').Code} [next]
+ * @param {import('./types/compile.d.ts').Code | null} [prev]
+ * @param {import('./types/compile.d.ts').Code | null} [next]
  * @param {string} [filename]
  * @returns {boolean}
  */

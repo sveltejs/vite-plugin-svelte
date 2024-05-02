@@ -227,7 +227,7 @@ function warnDev(w) {
 }
 
 /**
- * @param {import('svelte/compiler').Warning} w
+ * @param {import('svelte/compiler').Warning & {frame?: string}} w
  */
 function warnBuild(w) {
 	log.warn.enabled && log.warn(buildExtendedLogMessage(w), w.frame);

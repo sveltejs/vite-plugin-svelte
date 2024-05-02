@@ -9,7 +9,7 @@ export interface RequestQuery {
 	sourcemap?: boolean;
 	compilerOptions?: Pick<
 		CompileOptions,
-		'generate' | 'dev' | 'css' | 'hydratable' | 'customElement' | 'immutable' | 'enableSourcemap'
+		'generate' | 'dev' | 'css' | 'customElement' | 'immutable'
 	>;
 	// vite specific
 	url?: boolean;
