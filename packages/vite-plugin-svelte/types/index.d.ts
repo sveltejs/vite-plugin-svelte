@@ -35,6 +35,14 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * @default true
 		 */
 		emitCss?: boolean;
+		/**
+		 * Enable or disable Hot Module Replacement.
+		 * Deprecated, use compilerOptions.hmr instead!
+		 *
+		 * @deprecated
+		 * @default true for development, always false for production
+		 */
+		hot?: boolean;
 
 		/**
 		 * Some Vite plugins can contribute additional preprocessors by defining `api.sveltePreprocess`.
