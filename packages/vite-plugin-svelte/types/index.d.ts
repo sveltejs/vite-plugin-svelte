@@ -1,6 +1,7 @@
 declare module '@sveltejs/vite-plugin-svelte' {
 	import type { InlineConfig, ResolvedConfig } from 'vite';
 	import type { CompileOptions, Warning, PreprocessorGroup } from 'svelte/compiler';
+	import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 	export type Options = Omit<SvelteConfig, 'vitePlugin'> & PluginOptionsInline;
 
 	interface PluginOptionsInline extends PluginOptions {
@@ -72,6 +73,12 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * @default true for dev, false for build
 		 */
 		prebundleSvelteLibraries?: boolean;
+		/**
+		 * toggle/configure Svelte Inspector
+		 *
+		 * @default unset for dev, always false for build
+		 */
+		inspector?: InspectorOptions | boolean;
 
 		/**
 		 * A function to update `compilerOptions` before compilation

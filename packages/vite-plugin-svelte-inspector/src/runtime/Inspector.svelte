@@ -329,7 +329,7 @@
 			.split('-')
 			.map((p) => `${p}: 8px;`)
 			.join('')}`}
-		on:click={() => toggle()}
+		onclick={() => toggle()}
 		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
 	></button>
 {/if}

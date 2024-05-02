@@ -263,6 +263,8 @@ export function isDebugNamespaceEnabled(namespace) {
 
 export function logSvelte5Warning() {
 	const notice = `You are using Svelte ${VERSION}. Svelte 5 support is experimental, breaking changes can occur in any release until this notice is removed.`;
-	const wip = ['svelte-inspector is disabled until dev mode implements node to code mapping'];
-	log.warn(`${notice}\nwork in progress:\n - ${wip.join('\n - ')}\n`);
+	const wip = ['svelte-inspector: loaded but requires additional metadata to work'];
+	if (wip.length > 0) {
+		log.warn(`${notice}\nwork in progress:\n - ${wip.join('\n - ')}\n`);
+	}
 }

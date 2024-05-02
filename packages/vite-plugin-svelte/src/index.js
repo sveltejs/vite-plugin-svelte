@@ -213,6 +213,32 @@ export function svelte(inlineOptions) {
 					throw toRollupError(e, options);
 				}
 			}
+		},
+		{
+			name: 'vite-plugin-svelte-inspector-lazy',
+			enforce: 'pre',
+			apply: 'serve',
+			async configResolved(_config) {
+				if (options.inspector !== false) {
+					try {
+						const { svelteInspector } = await import('@sveltejs/vite-plugin-svelte-inspector');
+						const instance =
+							options.inspector === true ? svelteInspector() : svelteInspector(options.inspector);
+						const i = _config.plugins.findIndex(
+							(p) => p.name === 'vite-plugin-svelte-inspector-lazy'
+						);
+						// @ts-expect-error naughty!
+						_config.plugins[i] = instance;
+						// @ts-expect-error naughty!
+						return instance.configResolved?.call(this, _config);
+					} catch (e) {
+						log.warn(
+							'failed to add @sveltejs/vite-plugin-svelte-inspector. Either install it to your devDependencies or set `vitePlugin.inspector: false` in your svelte.config.js '
+						);
+						// TODO install?
+					}
+				}
+			}
 		}
 	];
 	return plugins;
