@@ -1,17 +1,10 @@
-// Dummy.svelte (Svelte vXXX)
-
 import "/node_modules/.vite/deps/svelte_internal_disclose-version.js?v=XXX";
 import * as $ from "/node_modules/.vite/deps/svelte_internal_client.js?v=XXX";
 
 var root = $.template(`<button class="svelte-d8vj6a"> </button>`);
 
-function Dummy($$anchor, $$props) {
-	$.push($$props, false);
-
+export default function Dummy($$anchor, $$props) {
 	let clicks = $.mutable_source(0);
-
-	$.init();
-
 	var button = root();
 	var text = $.child(button);
 
@@ -27,9 +20,6 @@ function Dummy($$anchor, $$props) {
 	);
 
 	$.append($$anchor, button);
-	$.pop();
 }
 
-export default Dummy;
-
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7OztLQUVLLDBCQUFTOzs7Ozs7OytEQU1ULElBQUksK0JBQVcsTUFBTSIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJEdW1teS5zdmVsdGUiXX0=
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7O0tBRUssTUFBTSxvQkFBRyxDQUFDOzs7OytEQU1WLElBQUksK0JBQVcsTUFBTSIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJEdW1teS5zdmVsdGUiXX0=

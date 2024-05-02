@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-
+import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings, logSvelte5Warning } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
@@ -11,7 +11,6 @@ import {
 	patchResolvedViteConfig,
 	preResolveOptions
 } from './utils/options.js';
-
 import { ensureWatchedFile, setupWatchers } from './utils/watch.js';
 import { toRollupError } from './utils/error.js';
 import { saveSvelteMetadata } from './utils/optimizer.js';
@@ -214,32 +213,7 @@ export function svelte(inlineOptions) {
 				}
 			}
 		},
-		{
-			name: 'vite-plugin-svelte-inspector-lazy',
-			enforce: 'pre',
-			apply: 'serve',
-			async configResolved(_config) {
-				if (options.inspector !== false) {
-					try {
-						const { svelteInspector } = await import('@sveltejs/vite-plugin-svelte-inspector');
-						const instance =
-							options.inspector === true ? svelteInspector() : svelteInspector(options.inspector);
-						const i = _config.plugins.findIndex(
-							(p) => p.name === 'vite-plugin-svelte-inspector-lazy'
-						);
-						// @ts-expect-error naughty!
-						_config.plugins[i] = instance;
-						// @ts-expect-error naughty!
-						return instance.configResolved?.call(this, _config);
-					} catch (e) {
-						log.warn(
-							'failed to add @sveltejs/vite-plugin-svelte-inspector. Either install it to your devDependencies or set `vitePlugin.inspector: false` in your svelte.config.js '
-						);
-						// TODO install?
-					}
-				}
-			}
-		}
+		svelteInspector()
 	];
 	return plugins;
 }

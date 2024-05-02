@@ -2,39 +2,39 @@
   "ast": {
     "html": {
       "type": "Fragment",
-      "start": 62,
-      "end": 138,
+      "start": 73,
+      "end": 149,
       "children": [
         {
           "type": "Text",
-          "start": 60,
-          "end": 62,
+          "start": 71,
+          "end": 73,
           "raw": "\n\n",
           "data": "\n\n"
         },
         {
           "type": "Element",
-          "start": 62,
-          "end": 138,
+          "start": 73,
+          "end": 149,
           "name": "button",
           "attributes": [
             {
-              "start": 71,
-              "end": 104,
+              "start": 82,
+              "end": 115,
               "type": "EventHandler",
               "name": "click",
               "modifiers": [],
               "expression": {
                 "type": "ArrowFunctionExpression",
-                "start": 81,
-                "end": 103,
+                "start": 92,
+                "end": 114,
                 "loc": {
                   "start": {
-                    "line": 6,
+                    "line": 7,
                     "column": 11
                   },
                   "end": {
-                    "line": 8,
+                    "line": 9,
                     "column": 2
                   }
                 },
@@ -45,44 +45,44 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 87,
-                  "end": 103,
+                  "start": 98,
+                  "end": 114,
                   "loc": {
                     "start": {
-                      "line": 6,
+                      "line": 7,
                       "column": 17
                     },
                     "end": {
-                      "line": 8,
+                      "line": 9,
                       "column": 2
                     }
                   },
                   "body": [
                     {
                       "type": "ExpressionStatement",
-                      "start": 91,
-                      "end": 100,
+                      "start": 102,
+                      "end": 111,
                       "loc": {
                         "start": {
-                          "line": 7,
+                          "line": 8,
                           "column": 2
                         },
                         "end": {
-                          "line": 7,
+                          "line": 8,
                           "column": 11
                         }
                       },
                       "expression": {
                         "type": "UpdateExpression",
-                        "start": 91,
-                        "end": 99,
+                        "start": 102,
+                        "end": 110,
                         "loc": {
                           "start": {
-                            "line": 7,
+                            "line": 8,
                             "column": 2
                           },
                           "end": {
-                            "line": 7,
+                            "line": 8,
                             "column": 10
                           }
                         },
@@ -90,15 +90,15 @@
                         "prefix": false,
                         "argument": {
                           "type": "Identifier",
-                          "start": 91,
-                          "end": 97,
+                          "start": 102,
+                          "end": 108,
                           "loc": {
                             "start": {
-                              "line": 7,
+                              "line": 8,
                               "column": 2
                             },
                             "end": {
-                              "line": 7,
+                              "line": 8,
                               "column": 8
                             }
                           },
@@ -188,19 +188,19 @@
           "children": [
             {
               "type": "MustacheTag",
-              "start": 105,
-              "end": 111,
+              "start": 116,
+              "end": 122,
               "expression": {
                 "type": "Identifier",
-                "start": 106,
-                "end": 110,
+                "start": 117,
+                "end": 121,
                 "loc": {
                   "start": {
-                    "line": 8,
+                    "line": 9,
                     "column": 5
                   },
                   "end": {
-                    "line": 8,
+                    "line": 9,
                     "column": 9
                   }
                 },
@@ -209,26 +209,26 @@
             },
             {
               "type": "Text",
-              "start": 111,
-              "end": 120,
+              "start": 122,
+              "end": 131,
               "raw": " clicks: ",
               "data": " clicks: "
             },
             {
               "type": "MustacheTag",
-              "start": 120,
-              "end": 128,
+              "start": 131,
+              "end": 139,
               "expression": {
                 "type": "Identifier",
-                "start": 121,
-                "end": 127,
+                "start": 132,
+                "end": 138,
                 "loc": {
                   "start": {
-                    "line": 8,
+                    "line": 9,
                     "column": 20
                   },
                   "end": {
-                    "line": 8,
+                    "line": 9,
                     "column": 26
                   }
                 },
@@ -239,8 +239,8 @@
         },
         {
           "type": "Text",
-          "start": 138,
-          "end": 140,
+          "start": 149,
+          "end": 151,
           "raw": "\n\n",
           "data": "\n\n"
         }
@@ -249,82 +249,112 @@
     "instance": {
       "type": "Script",
       "start": 0,
-      "end": 60,
+      "end": 71,
       "context": "default",
       "content": {
         "type": "Program",
         "start": 18,
-        "end": 51,
+        "end": 62,
         "loc": {
           "start": {
             "line": 1,
             "column": 0
           },
           "end": {
-            "line": 3,
+            "line": 4,
             "column": 0
           }
         },
         "body": [
           {
             "type": "ExportNamedDeclaration",
-            "start": 18,
-            "end": 34,
+            "start": 20,
+            "end": 44,
             "loc": {
               "start": {
-                "line": 1,
-                "column": 18
+                "line": 2,
+                "column": 1
               },
               "end": {
-                "line": 1,
-                "column": 34
+                "line": 2,
+                "column": 25
               }
             },
             "exportKind": "value",
             "declaration": {
               "type": "VariableDeclaration",
-              "start": 25,
-              "end": 34,
+              "start": 27,
+              "end": 44,
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 25
+                  "line": 2,
+                  "column": 8
                 },
                 "end": {
-                  "line": 1,
-                  "column": 34
+                  "line": 2,
+                  "column": 25
                 }
               },
               "declarations": [
                 {
                   "type": "VariableDeclarator",
-                  "start": 29,
-                  "end": 33,
+                  "start": 31,
+                  "end": 43,
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 29
+                      "line": 2,
+                      "column": 12
                     },
                     "end": {
-                      "line": 1,
-                      "column": 33
+                      "line": 2,
+                      "column": 24
                     }
                   },
                   "id": {
                     "type": "Identifier",
-                    "start": 29,
-                    "end": 33,
+                    "start": 31,
+                    "end": 24,
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 29
+                        "line": 2,
+                        "column": 12
                       },
                       "end": {
-                        "line": 1,
-                        "column": 33
+                        "line": 2,
+                        "column": 24
                       }
                     },
-                    "name": "name"
+                    "name": "name",
+                    "typeAnnotation": {
+                      "type": "TSTypeAnnotation",
+                      "start": 35,
+                      "end": 43,
+                      "loc": {
+                        "start": {
+                          "line": 2,
+                          "column": 16
+                        },
+                        "end": {
+                          "line": 2,
+                          "column": 24
+                        }
+                      },
+                      "typeAnnotation": {
+                        "type": "TSStringKeyword",
+                        "start": 37,
+                        "end": 43,
+                        "loc": {
+                          "start": {
+                            "line": 2,
+                            "column": 18
+                          },
+                          "end": {
+                            "line": 2,
+                            "column": 24
+                          }
+                        }
+                      }
+                    }
                   },
                   "init": null
                 }
@@ -336,61 +366,61 @@
           },
           {
             "type": "VariableDeclaration",
-            "start": 35,
-            "end": 50,
+            "start": 46,
+            "end": 61,
             "loc": {
               "start": {
-                "line": 2,
-                "column": 0
+                "line": 3,
+                "column": 1
               },
               "end": {
-                "line": 2,
-                "column": 15
+                "line": 3,
+                "column": 16
               }
             },
             "declarations": [
               {
                 "type": "VariableDeclarator",
-                "start": 39,
-                "end": 49,
+                "start": 50,
+                "end": 60,
                 "loc": {
                   "start": {
-                    "line": 2,
-                    "column": 4
+                    "line": 3,
+                    "column": 5
                   },
                   "end": {
-                    "line": 2,
-                    "column": 14
+                    "line": 3,
+                    "column": 15
                   }
                 },
                 "id": {
                   "type": "Identifier",
-                  "start": 39,
-                  "end": 45,
+                  "start": 50,
+                  "end": 56,
                   "loc": {
                     "start": {
-                      "line": 2,
-                      "column": 4
+                      "line": 3,
+                      "column": 5
                     },
                     "end": {
-                      "line": 2,
-                      "column": 10
+                      "line": 3,
+                      "column": 11
                     }
                   },
                   "name": "clicks"
                 },
                 "init": {
                   "type": "Literal",
-                  "start": 48,
-                  "end": 49,
+                  "start": 59,
+                  "end": 60,
                   "loc": {
                     "start": {
-                      "line": 2,
-                      "column": 13
+                      "line": 3,
+                      "column": 14
                     },
                     "end": {
-                      "line": 2,
-                      "column": 14
+                      "line": 3,
+                      "column": 15
                     }
                   },
                   "value": 0,
@@ -406,18 +436,18 @@
     },
     "css": {
       "type": "Style",
-      "start": 140,
-      "end": 195,
+      "start": 151,
+      "end": 206,
       "attributes": [
         {
           "type": "Attribute",
-          "start": 147,
-          "end": 158,
+          "start": 158,
+          "end": 169,
           "name": "lang",
           "value": [
             {
-              "start": 153,
-              "end": 157,
+              "start": 164,
+              "end": 168,
               "type": "Text",
               "raw": "scss",
               "data": "scss"
@@ -430,19 +460,19 @@
           "type": "Rule",
           "prelude": {
             "type": "SelectorList",
-            "start": 159,
-            "end": 165,
+            "start": 170,
+            "end": 176,
             "children": [
               {
                 "type": "Selector",
-                "start": 159,
-                "end": 165,
+                "start": 170,
+                "end": 176,
                 "children": [
                   {
                     "type": "TypeSelector",
                     "name": "button",
-                    "start": 159,
-                    "end": 165
+                    "start": 170,
+                    "end": 176
                   }
                 ]
               }
@@ -450,25 +480,25 @@
           },
           "block": {
             "type": "Block",
-            "start": 166,
-            "end": 187,
+            "start": 177,
+            "end": 198,
             "children": [
               {
                 "type": "Declaration",
-                "start": 170,
-                "end": 184,
+                "start": 181,
+                "end": 195,
                 "property": "color",
                 "value": "#000099"
               }
             ]
           },
-          "start": 159,
-          "end": 187
+          "start": 170,
+          "end": 198
         }
       ],
       "content": {
-        "start": 159,
-        "end": 187,
+        "start": 170,
+        "end": 198,
         "styles": "button {\n  color: #000099;\n}",
         "comment": null
       }
@@ -488,10 +518,10 @@
   },
   "dependencies": [],
   "js": {
-    "code": "// Dummy.svelte (Svelte vXXX)\n\nimport \"svelte/internal/disclose-version\";\nimport * as $ from \"svelte/internal/client\";\n\nvar root = $.template(`<button class=\"svelte-d8vj6a\"> </button>`);\n\nfunction Dummy($$anchor, $$props) {\n\t$.push($$props, false);\n\n\tlet clicks = $.mutable_source(0);\n\n\t$.init();\n\n\tvar button = root();\n\tvar text = $.child(button);\n\n\t$.render_effect(() => $.set_text(text, `${$.stringify($$props.name)} clicks: ${$.stringify($.get(clicks))}`));\n\n\t$.event(\n\t\t\"click\",\n\t\tbutton,\n\t\t() => {\n\t\t\t$.update(clicks);\n\t\t},\n\t\tfalse\n\t);\n\n\t$.append($$anchor, button);\n\t$.pop();\n}\n\nexport default Dummy;",
+    "code": "import \"svelte/internal/disclose-version\";\nimport * as $ from \"svelte/internal/client\";\n\nvar root = $.template(`<button class=\"svelte-d8vj6a\"> </button>`);\n\nexport default function Dummy($$anchor, $$props) {\n\tlet clicks = $.mutable_source(0);\n\tvar button = root();\n\tvar text = $.child(button);\n\n\t$.render_effect(() => $.set_text(text, `${$.stringify($$props.name)} clicks: ${$.stringify($.get(clicks))}`));\n\n\t$.event(\n\t\t\"click\",\n\t\tbutton,\n\t\t() => {\n\t\t\t$.update(clicks);\n\t\t},\n\t\tfalse\n\t);\n\n\t$.append($$anchor, button);\n}",
     "map": {
       "version": 3,
-      "mappings": ";;;;;;;;;;KAEK,0BAAS;;;;;;;+DAMT,IAAI,+BAAW,MAAM",
+      "mappings": ";;;;;;KAEK,MAAM,oBAAG,CAAC;;;;+DAMV,IAAI,+BAAW,MAAM",
       "names": [],
       "sources": [
         "Dummy.svelte"
@@ -504,11 +534,11 @@
   },
   "normalizedFilename": "/src/Dummy.svelte",
   "preprocessed": {
-    "code": "<script lang=\"ts\">export let name;\nlet clicks = 0;\n</script>\n\n<button\n\ton:click={() => {\n\t\tclicks++;\n\t}}>{name} clicks: {clicks}</button\n>\n\n<style lang=\"scss\">button {\n  color: #000099;\n}</style>\n",
+    "code": "<script lang=\"ts\">\n\texport let name: string;\n\tlet clicks = 0;\n</script>\n\n<button\n\ton:click={() => {\n\t\tclicks++;\n\t}}>{name} clicks: {clicks}</button\n>\n\n<style lang=\"scss\">button {\n  color: #000099;\n}</style>\n",
     "dependencies": [],
     "map": {
       "version": 3,
-      "mappings": "AAAA,CAAC,MAAM,CAAC,IAAI,CAAC,CAAC,EAAE,CAAC,CACT,WAAI;AACX,IAAI,SAAS;AACd,CAAC,CAAC,MAAM;;AAER,CAAC;AACD,CAAC,EAAE,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC;AACjB,EAAE,MAAM,CAAC,CAAC;AACV,CAAC,CAAC,CAAC,CAAC,CAAC,IAAI,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC;AAC7B;;AAEA,CAAC,KAAK,CAAC,IAAI,CAAC,CAAC,IAAI,CAAC;;CAKlB,CAAC,CAAC,KAAK",
+      "mappings": "AAAA,CAAC,MAAM,CAAC,IAAI,CAAC,CAAC,EAAE,CAAC;AACjB,CAAC,MAAM,CAAC,GAAG,CAAC,IAAI,CAAC,CAAC,MAAM;AACxB,CAAC,GAAG,CAAC,MAAM,CAAC,CAAC,CAAC,CAAC;AACf,CAAC,CAAC,MAAM;;AAER,CAAC;AACD,CAAC,EAAE,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC;AACjB,EAAE,MAAM,CAAC,CAAC;AACV,CAAC,CAAC,CAAC,CAAC,CAAC,IAAI,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC;AAC7B;;AAEA,CAAC,KAAK,CAAC,IAAI,CAAC,CAAC,IAAI,CAAC;;CAKlB,CAAC,CAAC,KAAK",
       "names": [],
       "sources": [
         "Dummy.svelte"
