@@ -164,7 +164,16 @@ declare module '@sveltejs/vite-plugin-svelte' {
 	type Arrayable<T> = T | T[];
 
 	export interface VitePreprocessOptions {
+		/**
+		 * preprocess script block with vite pipeline.
+		 * Since svelte5 this is not needed for typescript anymore
+		 *
+		 * @default false
+		 */
 		script?: boolean;
+		/**
+		 * preprocess style blocks with vite pipeline
+		 */
 		style?: boolean | InlineConfig | ResolvedConfig;
 	}
 	export function svelte(inlineOptions?: Partial<Options> | undefined): import('vite').Plugin[];

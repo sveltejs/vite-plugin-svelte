@@ -166,7 +166,16 @@ interface CompileModuleOptions {
 type Arrayable<T> = T | T[];
 
 export interface VitePreprocessOptions {
+	/**
+	 * preprocess script block with vite pipeline.
+	 * Since svelte5 this is not needed for typescript anymore
+	 *
+	 * @default false
+	 */
 	script?: boolean;
+	/**
+	 * preprocess style blocks with vite pipeline
+	 */
 	style?: boolean | InlineConfig | ResolvedConfig;
 }
 
