@@ -134,6 +134,17 @@ export function createCompileSvelte() {
 		let compiled;
 		try {
 			compiled = svelte.compile(finalCode, finalCompileOptions);
+			// patch output with partial accept until svelte does it
+			// TODO remove later
+			if (
+				options.server?.config.experimental.hmrPartialAccept &&
+				compiled.js.code.includes('import.meta.hot.accept(')
+			) {
+				compiled.js.code = compiled.js.code.replaceAll(
+					'import.meta.hot.accept(',
+					'import.meta.hot.acceptExports(["default"],'
+				);
+			}
 		} catch (e) {
 			enhanceCompileError(e, code, preprocessors);
 			throw e;

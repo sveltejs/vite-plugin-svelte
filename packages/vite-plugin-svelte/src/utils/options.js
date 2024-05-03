@@ -389,7 +389,7 @@ export async function buildExtraViteConfig(options, config) {
 	}
 
 	// enable hmrPartialAccept if not explicitly disabled
-	if (options.compilerOptions?.hmr && config.experimental?.hmrPartialAccept !== false) {
+	if (config.experimental?.hmrPartialAccept !== false) {
 		log.debug('enabling "experimental.hmrPartialAccept" in vite config', undefined, 'config');
 		extraViteConfig.experimental = { hmrPartialAccept: true };
 	}
