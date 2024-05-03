@@ -8,7 +8,6 @@ export const SVELTE_IMPORTS = [
 	'svelte/internal',
 	'svelte/internal/disclose-version',
 	'svelte/motion',
-	'svelte/ssr',
 	'svelte/store',
 	'svelte/transition',
 	'svelte/server',

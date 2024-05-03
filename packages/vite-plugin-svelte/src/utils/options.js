@@ -537,7 +537,7 @@ function buildExtraConfigForSvelte(config) {
 	/** @type {string[]} */
 	const exclude = [];
 	if (!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
-		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => !x.startsWith('svelte/server')); // not used on clientside
+		const svelteImportsToInclude = SVELTE_IMPORTS;
 		log.debug(
 			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `,
 			undefined,
@@ -556,7 +556,7 @@ function buildExtraConfigForSvelte(config) {
 	/** @type {string[]} */
 	const external = [];
 	// add svelte to ssr.noExternal unless it is present in ssr.external
-	// so we can resolve it with svelte/ssr
+	// so it is correctly resolving according to the conditions in sveltes exports map
 	if (!isDepExternaled('svelte', config.ssr?.external ?? [])) {
 		noExternal.push('svelte', /^svelte\//);
 	}
