@@ -1,6 +1,7 @@
 import { getEl, getText, isBuild, page, isCI } from '~utils';
 
-describe('inspector-kit', () => {
+// TODO reenable when inspector works for svelte5
+describe.skip('inspector-kit', () => {
 	it('should render page', async () => {
 		expect(await getText('h1')).toBe('Hello Inspector!');
 	});

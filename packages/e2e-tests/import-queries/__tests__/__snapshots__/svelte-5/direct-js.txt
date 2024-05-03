@@ -1,16 +1,25 @@
-// Dummy.svelte (Svelte vXXX)
+import "/node_modules/.vite/deps/svelte_internal_disclose-version.js?v=XXX";
+import * as $ from "/node_modules/.vite/deps/svelte_internal_client.js?v=XXX";
 
-import * as $ from "/node_modules/.vite/deps/svelte_internal_server.js?v=XXX";
+var root = $.template(`<button class="svelte-d8vj6a"> </button>`);
 
-export default function Dummy($$payload, $$props) {
-	$.push(false);
+export default function Dummy($$anchor, $$props) {
+	let clicks = $.mutable_source(0);
+	var button = root();
+	var text = $.child(button);
 
-	let name = $$props["name"];
-	let clicks = 0;
+	$.render_effect(() => $.set_text(text, `${$.stringify($$props.name)} clicks: ${$.stringify($.get(clicks))}`));
 
-	$$payload.out += `<button class="svelte-d8vj6a">${$.escape(name)} clicks: ${$.escape(clicks)}</button>`;
-	$.bind_props($$props, { name });
-	$.pop();
+	$.event(
+		"click",
+		button,
+		() => {
+			$.update(clicks);
+		},
+		false
+	);
+
+	$.append($$anchor, button);
 }
 
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6W10sInNvdXJjZXMiOlsiRHVtbXkuc3ZlbHRlIl0sInNvdXJjZXNDb250ZW50IjpbbnVsbF0sIm1hcHBpbmdzIjoiOzs7Ozs7O0tBQTZCLElBQUk7S0FDN0IsTUFBTSxHQUFHLENBQUM7OzREQU1ULElBQUksc0JBQVcsTUFBTTs7OyJ9
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7O0tBRUssTUFBTSxvQkFBRyxDQUFDOzs7OytEQU1WLElBQUksK0JBQVcsTUFBTSIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJEdW1teS5zdmVsdGUiXX0=

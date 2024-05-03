@@ -1,9 +1,9 @@
 <script>
 	import { confetti } from '@neoconfetti/svelte';
-	import { applyAction, enhance } from '$app/forms';
+	import { enhance } from '$app/forms';
 
-	import { invalidateAll } from '$app/navigation';
-
+	import { reduced_motion } from './reduced-motion';
+	reduced_motion; // TODO workaround for https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 	/** @type {import('./$types').PageData} */
 	export let data;
 
@@ -16,8 +16,11 @@
 	/** The index of the current guess */
 	$: i = won ? -1 : data.answers.length;
 
+	/** The current guess */
+	$: currentGuess = data.guesses[i] || '';
+
 	/** Whether the current guess can be submitted */
-	$: submittable = data.guesses[i]?.length === 5;
+	$: submittable = currentGuess.length === 5;
 
 	/**
 	 * A map of classnames for all letters that have been guessed,
@@ -26,8 +29,16 @@
 	 */
 	let classnames;
 
+	/**
+	 * A map of descriptions for all letters that have been guessed,
+	 * used for adding text for assistive technology (e.g. screen readers)
+	 * @type {Record<string, string>}
+	 */
+	let description;
+
 	$: {
 		classnames = {};
+		description = {};
 
 		data.answers.forEach((answer, i) => {
 			const guess = data.guesses[i];
@@ -37,8 +48,10 @@
 
 				if (answer[i] === 'x') {
 					classnames[letter] = 'exact';
+					description[letter] = 'correct';
 				} else if (!classnames[letter]) {
 					classnames[letter] = answer[i] === 'c' ? 'close' : 'missing';
+					description[letter] = answer[i] === 'c' ? 'present' : 'absent';
 				}
 			}
 		});
@@ -50,14 +63,13 @@
 	 * @param {MouseEvent} event
 	 */
 	function update(event) {
-		const guess = data.guesses[i];
 		const key = /** @type {HTMLButtonElement} */ (event.target).getAttribute('data-key');
 
 		if (key === 'backspace') {
-			data.guesses[i] = guess.slice(0, -1);
+			currentGuess = currentGuess.slice(0, -1);
 			if (form?.badGuess) form.badGuess = false;
-		} else if (guess.length < 5) {
-			data.guesses[i] += key;
+		} else if (currentGuess.length < 5) {
+			currentGuess += key;
 		}
 	}
 
@@ -69,6 +81,8 @@
 	function keydown(event) {
 		if (event.metaKey) return;
 
+		if (event.key === 'Enter' && !submittable) return;
+
 		document
 			.querySelector(`[data-key="${event.key}" i]`)
 			?.dispatchEvent(new MouseEvent('click', { cancelable: true }));
@@ -77,38 +91,53 @@
 
 <svelte:window on:keydown={keydown} />
 
+<svelte:head>
+	<title>Sverdle</title>
+	<meta name="description" content="A Wordle clone written in SvelteKit" />
+</svelte:head>
+
+<h1 class="visually-hidden">Sverdle</h1>
+
 <form
 	method="POST"
 	action="?/enter"
 	use:enhance={() => {
 		// prevent default callback from resetting the form
-		return async ({ result }) => {
-			if (result.type === 'success') {
-				await invalidateAll();
-			}
-			await applyAction(result);
+		return ({ update }) => {
+			update({ reset: false });
 		};
 	}}
 >
 	<a class="how-to-play" href="/sverdle/how-to-play">How to play</a>
 
 	<div class="grid" class:playing={!won} class:bad-guess={form?.badGuess}>
-		{#each Array(6) as _, row}
+		{#each Array.from(Array(6).keys()) as row (row)}
 			{@const current = row === i}
-
+			<h2 class="visually-hidden">Row {row + 1}</h2>
 			<div class="row" class:current>
-				{#each Array(5) as _, column}
+				{#each Array.from(Array(5).keys()) as column (column)}
+					{@const guess = current ? currentGuess : data.guesses[row]}
 					{@const answer = data.answers[row]?.[column]}
-
-					<input
-						name="guess"
-						disabled={!current}
-						readonly
-						class:exact={answer === 'x'}
-						class:close={answer === 'c'}
-						aria-selected={current && column === data.guesses[row].length}
-						value={data.guesses[row]?.[column] ?? ''}
-					/>
+					{@const value = guess?.[column] ?? ''}
+					{@const selected = current && column === guess.length}
+					{@const exact = answer === 'x'}
+					{@const close = answer === 'c'}
+					{@const missing = answer === '_'}
+					<div class="letter" class:exact class:close class:missing class:selected>
+						{value}
+						<span class="visually-hidden">
+							{#if exact}
+								(correct)
+							{:else if close}
+								(present)
+							{:else if missing}
+								(absent)
+							{:else}
+								empty
+							{/if}
+						</span>
+						<input name="guess" disabled={!current} type="hidden" {value} />
+					</div>
 				{/each}
 			</div>
 		{/each}
@@ -119,12 +148,12 @@
 			{#if !won && data.answer}
 				<p>the answer was "{data.answer}"</p>
 			{/if}
-			<button data-key="enter" class="restart" formaction="?/restart">
+			<button data-key="enter" class="restart selected" formaction="?/restart">
 				{won ? 'you won :)' : 'game over :('} play again?
 			</button>
 		{:else}
 			<div class="keyboard">
-				<button data-key="enter" disabled={!submittable}>enter</button>
+				<button data-key="enter" class:selected={submittable} disabled={!submittable}>enter</button>
 
 				<button
 					on:click|preventDefault={update}
@@ -143,10 +172,11 @@
 								on:click|preventDefault={update}
 								data-key={letter}
 								class={classnames[letter]}
-								disabled={data.guesses[i].length === 5}
+								disabled={submittable}
 								formaction="?/update"
 								name="key"
 								value={letter}
+								aria-label="{letter} {description[letter] || ''}"
 							>
 								{letter}
 							</button>
@@ -162,12 +192,13 @@
 	<div
 		style="position: absolute; left: 50%; top: 30%"
 		use:confetti={{
+			particleCount: $reduced_motion ? 0 : undefined,
 			force: 0.7,
 			stageWidth: window.innerWidth,
 			stageHeight: window.innerHeight,
 			colors: ['#ff3e00', '#40b3ff', '#676778']
 		}}
-	/>
+	></div>
 {/if}
 
 <style>
@@ -212,7 +243,7 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-		justify-content: start;
+		justify-content: flex-start;
 	}
 
 	.grid .row {
@@ -222,15 +253,17 @@
 		margin: 0 0 0.2rem 0;
 	}
 
-	.grid.bad-guess .row.current {
-		animation: wiggle 0.5s;
+	@media (prefers-reduced-motion: no-preference) {
+		.grid.bad-guess .row.current {
+			animation: wiggle 0.5s;
+		}
 	}
 
 	.grid.playing .row.current {
 		filter: drop-shadow(3px 3px 10px var(--color-bg-0));
 	}
 
-	input {
+	.letter {
 		aspect-ratio: 1;
 		width: 100%;
 		display: flex;
@@ -247,31 +280,22 @@
 		color: rgba(0, 0, 0, 0.7);
 	}
 
-	input:disabled:not(.exact):not(.close) {
+	.letter.missing {
 		background: rgba(255, 255, 255, 0.5);
 		color: rgba(0, 0, 0, 0.5);
 	}
 
-	input.exact {
+	.letter.exact {
 		background: var(--color-theme-2);
 		color: white;
 	}
 
-	input.close {
+	.letter.close {
 		border: 2px solid var(--color-theme-2);
 	}
 
-	input:focus {
-		outline: none;
-	}
-
-	[aria-selected='true'] {
+	.selected {
 		outline: 2px solid var(--color-theme-1);
-	}
-
-	input:not(:disabled)::selection {
-		background: transparent;
-		color: var(--color-theme-1);
 	}
 
 	.controls {

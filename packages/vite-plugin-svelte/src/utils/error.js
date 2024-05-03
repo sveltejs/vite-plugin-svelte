@@ -2,7 +2,7 @@ import { buildExtendedLogMessage } from './log.js';
 
 /**
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
- * @param {import('svelte/types/compiler/interfaces').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('svelte/compiler').Warning & Error & {frame?: string}} error a svelte compiler error, which is a mix of Warning and an error
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {import('vite').Rollup.RollupError} the converted error
  */
@@ -29,7 +29,7 @@ export function toRollupError(error, options) {
 
 /**
  * convert an error thrown by svelte.compile to an esbuild PartialMessage
- * @param {import('svelte/types/compiler/interfaces').Warning & Error} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('svelte/compiler').Warning & Error  & {frame?: string}} error a svelte compiler error, which is a mix of Warning and an error
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {import('esbuild').PartialMessage} the converted error
  */
@@ -102,7 +102,7 @@ function formatFrameForVite(frame) {
 }
 
 /**
- * @param {import('svelte/types/compiler/interfaces').Warning & Error} err a svelte compiler error, which is a mix of Warning and an error
+ * @param {import('svelte/compiler').Warning & Error} err a svelte compiler error, which is a mix of Warning and an error
  * @param {string} originalCode
  * @param {import('../public.d.ts').Options['preprocess']} [preprocessors]
  */
@@ -111,35 +111,6 @@ export function enhanceCompileError(err, originalCode, preprocessors) {
 
 	/** @type {string[]} */
 	const additionalMessages = [];
-
-	// Handle incorrect TypeScript usage
-	if (err.code === 'parse-error') {
-		// Reference from Svelte: https://github.com/sveltejs/svelte/blob/9926347ad9dbdd0f3324d5538e25dcb7f5e442f8/packages/svelte/src/compiler/preprocess/index.js#L259
-		const scriptRe =
-			/<!--[^]*?-->|<script((?:\s+[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)|\s+[^=>'"/]+)*\s*)(?:\/>|>([\S\s]*?)<\/script>)/g;
-		const errIndex = err.pos ?? -1;
-
-		let m;
-		while ((m = scriptRe.exec(originalCode))) {
-			const matchStart = m.index;
-			const matchEnd = matchStart + m[0].length;
-			const isErrorInScript = matchStart <= errIndex && errIndex <= matchEnd;
-			if (isErrorInScript) {
-				// Warn missing lang="ts"
-				const hasLangTs = m[1]?.includes('lang="ts"');
-				if (!hasLangTs) {
-					additionalMessages.push('Did you forget to add lang="ts" to your script tag?');
-				}
-				// Warn missing script preprocessor
-				if (preprocessors.every((p) => p.script == null)) {
-					const preprocessorType = hasLangTs ? 'TypeScript' : 'script';
-					additionalMessages.push(
-						`Did you forget to add a ${preprocessorType} preprocessor? See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md for more information.`
-					);
-				}
-			}
-		}
-	}
 
 	// Handle incorrect CSS preprocessor usage
 	if (err.code === 'css-syntax-error') {

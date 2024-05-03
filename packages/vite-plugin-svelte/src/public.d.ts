@@ -1,6 +1,6 @@
 import type { InlineConfig, ResolvedConfig } from 'vite';
 import type { CompileOptions } from 'svelte/compiler';
-import type { Warning } from 'svelte/types/compiler/interfaces';
+import type { Warning } from 'svelte/compiler';
 import type { PreprocessorGroup } from 'svelte/compiler';
 import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 
@@ -40,27 +40,13 @@ interface PluginOptions {
 	emitCss?: boolean;
 	/**
 	 * Enable or disable Hot Module Replacement.
+	 * Deprecated, use compilerOptions.hmr instead!
 	 *
-	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 *
-	 * DO NOT CUSTOMIZE SVELTE-HMR OPTIONS UNLESS YOU KNOW EXACTLY WHAT YOU ARE DOING
-	 *
-	 *                             YOU HAVE BEEN WARNED
-	 *
-	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 *
-	 * Set an object to pass custom options to svelte-hmr
-	 *
-	 * @see https://github.com/rixo/svelte-hmr#options
+	 * @deprecated
 	 * @default true for development, always false for production
 	 */
-	hot?:
-		| boolean
-		| {
-				injectCss?: boolean;
-				partialAccept?: boolean;
-				[key: string]: any;
-		  };
+	hot?: boolean;
+
 	/**
 	 * Some Vite plugins can contribute additional preprocessors by defining `api.sveltePreprocess`.
 	 * If you don't want to use them, set this to true to ignore them all or use an array of strings
@@ -187,7 +173,16 @@ interface CompileModuleOptions {
 type Arrayable<T> = T | T[];
 
 export interface VitePreprocessOptions {
+	/**
+	 * preprocess script block with vite pipeline.
+	 * Since svelte5 this is not needed for typescript anymore
+	 *
+	 * @default false
+	 */
 	script?: boolean;
+	/**
+	 * preprocess style blocks with vite pipeline
+	 */
 	style?: boolean | InlineConfig | ResolvedConfig;
 }
 

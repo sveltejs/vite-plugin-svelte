@@ -128,21 +128,21 @@ export const log = {
 
 /**
  * @param {import('../types/id.d.ts').SvelteRequest | import('../types/id.d.ts').SvelteModuleRequest} svelteRequest
- * @param {import('svelte/types/compiler/interfaces').Warning[]} warnings
+ * @param {import('svelte/compiler').Warning[]} warnings
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  */
 export function logCompilerWarnings(svelteRequest, warnings, options) {
 	const { emitCss, onwarn, isBuild } = options;
 	const sendViaWS = !isBuild && options.experimental?.sendWarningsToBrowser;
 	let warn = isBuild ? warnBuild : warnDev;
-	/** @type {import('svelte/types/compiler/interfaces').Warning[]} */
+	/** @type {import('svelte/compiler').Warning[]} */
 	const handledByDefaultWarn = [];
 	const notIgnored = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
 	const extra = buildExtraWarnings(warnings, isBuild);
 	const allWarnings = [...notIgnored, ...extra];
 	if (sendViaWS) {
 		const _warn = warn;
-		/** @type {(w: import('svelte/types/compiler/interfaces').Warning) => void} */
+		/** @type {(w: import('svelte/compiler').Warning) => void} */
 		warn = (w) => {
 			handledByDefaultWarn.push(w);
 			_warn(w);
@@ -172,7 +172,7 @@ export function logCompilerWarnings(svelteRequest, warnings, options) {
 }
 
 /**
- * @param {import('svelte/types/compiler/interfaces').Warning} warning
+ * @param {import('svelte/compiler').Warning} warning
  * @param {boolean} isBuild
  * @param {boolean} [emitCss]
  * @returns {boolean}
@@ -186,7 +186,7 @@ function ignoreCompilerWarning(warning, isBuild, emitCss) {
 
 /**
  *
- * @param {import('svelte/types/compiler/interfaces').Warning} warning
+ * @param {import('svelte/compiler').Warning} warning
  * @returns {boolean}
  */
 function isNoScopableElementWarning(warning) {
@@ -196,9 +196,9 @@ function isNoScopableElementWarning(warning) {
 
 /**
  *
- * @param {import('svelte/types/compiler/interfaces').Warning[]} warnings
+ * @param {import('svelte/compiler').Warning[]} warnings
  * @param {boolean} isBuild
- * @returns {import('svelte/types/compiler/interfaces').Warning[]}
+ * @returns {import('svelte/compiler').Warning[]}
  */
 function buildExtraWarnings(warnings, isBuild) {
 	const extraWarnings = [];
@@ -220,21 +220,21 @@ function buildExtraWarnings(warnings, isBuild) {
 }
 
 /**
- * @param {import('svelte/types/compiler/interfaces').Warning} w
+ * @param {import('svelte/compiler').Warning} w
  */
 function warnDev(w) {
 	log.info.enabled && log.info(buildExtendedLogMessage(w));
 }
 
 /**
- * @param {import('svelte/types/compiler/interfaces').Warning} w
+ * @param {import('svelte/compiler').Warning & {frame?: string}} w
  */
 function warnBuild(w) {
 	log.warn.enabled && log.warn(buildExtendedLogMessage(w), w.frame);
 }
 
 /**
- * @param {import('svelte/types/compiler/interfaces').Warning} w
+ * @param {import('svelte/compiler').Warning} w
  */
 export function buildExtendedLogMessage(w) {
 	const parts = [];
@@ -263,6 +263,8 @@ export function isDebugNamespaceEnabled(namespace) {
 
 export function logSvelte5Warning() {
 	const notice = `You are using Svelte ${VERSION}. Svelte 5 support is experimental, breaking changes can occur in any release until this notice is removed.`;
-	const wip = ['svelte-inspector is disabled until dev mode implements node to code mapping'];
-	log.warn(`${notice}\nwork in progress:\n - ${wip.join('\n - ')}\n`);
+	const wip = ['svelte-inspector: loaded but requires additional metadata to work'];
+	if (wip.length > 0) {
+		log.warn(`${notice}\nwork in progress:\n - ${wip.join('\n - ')}\n`);
+	}
 }

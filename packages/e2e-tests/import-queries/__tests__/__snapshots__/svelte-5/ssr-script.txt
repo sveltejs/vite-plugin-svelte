@@ -1,14 +1,23 @@
-// Dummy.svelte (Svelte vXXX)
+import "svelte/internal/disclose-version";
+import * as $ from "svelte/internal/client";
 
-import * as $ from "svelte/internal/server";
+var root = $.template(`<button class="svelte-d8vj6a"> </button>`);
 
-export default function Dummy($$payload, $$props) {
-	$.push(false);
+export default function Dummy($$anchor, $$props) {
+	let clicks = $.mutable_source(0);
+	var button = root();
+	var text = $.child(button);
 
-	let name = $$props["name"];
-	let clicks = 0;
+	$.render_effect(() => $.set_text(text, `${$.stringify($$props.name)} clicks: ${$.stringify($.get(clicks))}`));
 
-	$$payload.out += `<button class="svelte-d8vj6a">${$.escape(name)} clicks: ${$.escape(clicks)}</button>`;
-	$.bind_props($$props, { name });
-	$.pop();
+	$.event(
+		"click",
+		button,
+		() => {
+			$.update(clicks);
+		},
+		false
+	);
+
+	$.append($$anchor, button);
 }

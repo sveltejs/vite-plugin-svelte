@@ -11,8 +11,7 @@ import {
 	browserLogs,
 	fetchPageText,
 	reloadPage,
-	readFileContent,
-	isSvelte4
+	readFileContent
 } from '~utils';
 
 import glob from 'tiny-glob';
@@ -293,7 +292,7 @@ describe('kit-node', () => {
 				);
 				expectArrayEqual(
 					config.optimizeDeps.exclude,
-					['svelte-hmr', '@sveltejs/kit', '$app', '$env'],
+					['@sveltejs/kit', '$app', '$env'],
 					`optimizeDeps.exclude in ${filename}`
 				);
 				let expectedIncludes = [
@@ -307,13 +306,14 @@ describe('kit-node', () => {
 					'svelte/transition',
 					'svelte',
 					'svelte/internal/disclose-version',
+					'svelte/internal/server',
+					'svelte/server',
+					'svelte/legacy',
 					'svelte-i18n > deepmerge',
 					'svelte-i18n > cli-color',
 					'svelte-i18n > tiny-glob'
 				];
-				if (!isSvelte4) {
-					expectedIncludes.push('svelte/internal/server', 'svelte/server', 'svelte/legacy');
-				}
+
 				expectedIncludes = expectedIncludes.filter(
 					(item) => !(isServe && item.startsWith('svelte-i18n >'))
 				);
@@ -323,24 +323,20 @@ describe('kit-node', () => {
 					expectedIncludes,
 					`optimizeDeps.include in ${filename}`
 				);
-				let expectedDedupe = [
+				const expectedDedupe = [
 					'svelte/animate',
 					'svelte/easing',
 					'svelte/internal',
 					'svelte/motion',
-					'svelte/ssr',
 					'svelte/store',
 					'svelte/transition',
 					'svelte',
 					'svelte/internal/disclose-version',
-					'svelte-hmr/runtime/hot-api-esm.js',
-					'svelte-hmr/runtime/proxy-adapter-dom.js',
-					'svelte-hmr'
+					'svelte/internal/server',
+					'svelte/server',
+					'svelte/legacy'
 				];
-				if (!isSvelte4) {
-					expectedDedupe = expectedDedupe.filter((s) => !s.startsWith('svelte-hmr'));
-					expectedDedupe.push('svelte/internal/server', 'svelte/server', 'svelte/legacy');
-				}
+
 				expectArrayEqual(config.resolve.dedupe, expectedDedupe, `resolve.dedupe in ${filename}`);
 				expectArrayEqual(
 					config.resolve.mainFields,

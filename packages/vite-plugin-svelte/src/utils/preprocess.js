@@ -127,10 +127,10 @@ export function addExtraPreprocessors(options, config) {
  *
  * @param filename {string}
  * @param dependencies  {string[]}
- * @returns {({dependencies: string[], warnings:import('svelte/types/compiler/interfaces').Warning[] })}
+ * @returns {({dependencies: string[], warnings:import('svelte/compiler').Warning[] })}
  */
 export function checkPreprocessDependencies(filename, dependencies) {
-	/** @type {import('svelte/types/compiler/interfaces').Warning[]} */
+	/** @type {import('svelte/compiler').Warning[]} */
 	const warnings = [];
 
 	// to find self, we have to compare normalized filenames, but must keep the original values in `dependencies`

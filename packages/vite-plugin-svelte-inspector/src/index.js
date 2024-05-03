@@ -35,7 +35,6 @@ export function svelteInspector(options) {
 
 		configResolved(config) {
 			viteConfig = config;
-
 			const environmentOptions = parseEnvironmentOptions(config);
 			if (environmentOptions === false) {
 				debug('environment options set to false, inspector disabled');

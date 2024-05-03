@@ -16,9 +16,9 @@ import { normalizePath } from 'vite';
  * @class
  */
 export class VitePluginSvelteCache {
-	/** @type {Map<string, import('../types/compile.d.ts').Code>} */
+	/** @type {Map<string, import('../types/compile.d.ts').Code | null>} */
 	#css = new Map();
-	/** @type {Map<string, import('../types/compile.d.ts').Code>} */
+	/** @type {Map<string, import('../types/compile.d.ts').Code | null>} */
 	#js = new Map();
 	/** @type {Map<string, string[]>} */
 	#dependencies = new Map();
@@ -133,7 +133,7 @@ export class VitePluginSvelteCache {
 
 	/**
 	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
-	 * @returns {import('../types/compile.d.ts').Code | undefined}
+	 * @returns {import('../types/compile.d.ts').Code | undefined | null}
 	 */
 	getCSS(svelteRequest) {
 		return this.#css.get(svelteRequest.normalizedFilename);
@@ -141,7 +141,7 @@ export class VitePluginSvelteCache {
 
 	/**
 	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
-	 * @returns {import('../types/compile.d.ts').Code | undefined}
+	 * @returns {import('../types/compile.d.ts').Code | undefined | null}
 	 */
 	getJS(svelteRequest) {
 		if (!svelteRequest.ssr) {
