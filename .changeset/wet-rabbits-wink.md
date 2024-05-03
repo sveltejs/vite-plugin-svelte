@@ -2,4 +2,4 @@
 '@sveltejs/vite-plugin-svelte': major
 ---
 
-replace svelte-hmr with svelte5 compiler hmr integration
+replaced svelte-hmr with Svelte 5 compiler hmr integration

@@ -3,4 +3,4 @@
 '@sveltejs/vite-plugin-svelte': major
 ---
 
-remove support for svelte4
+remove support for Svelte 4
