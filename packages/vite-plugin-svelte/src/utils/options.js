@@ -534,9 +534,10 @@ function buildExtraConfigForSvelte(config) {
 	// include svelte imports for optimization unless explicitly excluded
 	/** @type {string[]} */
 	const include = [];
-	const exclude = ['svelte-hmr'];
+	/** @type {string[]} */
+	const exclude = [];
 	if (!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
-		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => x !== 'svelte/ssr'); // not used on clientside
+		const svelteImportsToInclude = SVELTE_IMPORTS.filter((x) => !x.startsWith('svelte/server')); // not used on clientside
 		log.debug(
 			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `,
 			undefined,

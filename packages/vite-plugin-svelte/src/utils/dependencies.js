@@ -46,7 +46,6 @@ const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'svelte',
 	'svelte2tsx',
 	'svelte-check',
-	'svelte-hmr',
 	'svelte-preprocess',
 	'tslib',
 	'typescript',
