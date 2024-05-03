@@ -1,4 +1,4 @@
-import { isBuild, getText, editFileAndWaitForHmrComplete, isSvelte4 } from '~utils';
+import { isBuild, getText, editFileAndWaitForHmrComplete } from '~utils';
 
 test('should render App', async () => {
 	expect(await getText('#hello')).toBe('Hello world');

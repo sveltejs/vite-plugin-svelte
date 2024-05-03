@@ -1,14 +1,13 @@
 import { expect, test } from 'vitest';
-import { isBuild, findAssetFile, page, isSvelte4 } from '~utils';
+import { isBuild, findAssetFile, page } from '~utils';
 
 test('should prefix position: sticky for code in source tree', async () => {
 	let stickyStyle = isBuild
 		? await getStyleFromDist('sticky')
 		: await getStyleFromPage(page, 'sticky');
-	if (!isSvelte4) {
-		// svelte5 doesn't minify rules, do it here to be able to have one expect
-		stickyStyle = stickyStyle.replace(/\s/g, '').replace(/;$/, '');
-	}
+
+	// minify style to have a more stable expect
+	stickyStyle = stickyStyle.replace(/\s/g, '').replace(/;$/, '');
 	expect(stickyStyle).toBe('position:-webkit-sticky;position:sticky');
 });
 
