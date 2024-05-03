@@ -1,9 +1,9 @@
 import App from './App.svelte';
 import { esm } from 'e2e-test-dep-esm-only';
-import { mount } from 'svelte';
+import { hydrate } from 'svelte';
 console.log(esm());
 
-mount(App, {
+hydrate(App, {
 	target: document.getElementById('svelte'),
 	props: {
 		world: 'svelte world'
