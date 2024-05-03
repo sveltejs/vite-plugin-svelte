@@ -18,7 +18,6 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 	const source = fs.readFileSync(filename, 'utf-8');
 	try {
 		//avoid compileSvelte doing extra ssr stuff unless requested
-		//@ts-ignore //@ts-expect-error generate value differs between svelte4 and 5
 		svelteRequest.ssr = query.compilerOptions?.generate === 'server';
 		compileData = await compileSvelte(svelteRequest, source, {
 			...options,
