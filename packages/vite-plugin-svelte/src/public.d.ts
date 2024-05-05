@@ -137,8 +137,18 @@ export interface SvelteConfig {
 
 	/**
 	 * Handles warning emitted from the Svelte compiler
+	 *
+	 * @example
+	 * ```
+	 * (warning, defaultHandler) => {
+	 *   // ignore some warnings
+	 *   if (!['foo','bar'].includes(warning.code)) {
+	 *     defaultHandler(warning);
+	 *   }
+	 * }
+	 * ```
 	 */
-	onwarn?: (warning: Warning, defaultHandler?: (warning: Warning) => void) => void;
+	onwarn?: (warning: Warning, defaultHandler: (warning: Warning) => void) => void;
 	/**
 	 * Options for vite-plugin-svelte
 	 */
