@@ -221,7 +221,7 @@ async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
 	return Promise.all([page.goto(url), waitForViteConnect(page, 15000)]);
 }
 
-export async function waitForViteConnect(page: Page, timeoutMS = 5000) {
+export async function waitForViteConnect(page: Page, timeoutMS = 10000) {
 	if (isBuild) {
 		return Promise.resolve(); // no vite websocket on build
 	}
@@ -239,7 +239,7 @@ export async function waitForViteConnect(page: Page, timeoutMS = 5000) {
 			if (text.indexOf('[vite] connected.') > -1) {
 				// TODO: this is a test to see if it becomes more reliable
 				// if thats the case, we have to update the logic here to use a later signal/event than connected log
-				setTimeout(() => resolve(), 500);
+				setTimeout(() => resolve(), isCI ? 2000 : 500);
 			}
 		};
 		page.on('console', pageConsoleListener);
