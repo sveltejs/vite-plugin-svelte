@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import { cyan, red, yellow } from 'kleur/colors';
 import debug from 'debug';
-import { VERSION } from 'svelte/compiler';
 
 /** @type {import('../types/log.d.ts').LogLevel[]} */
 const levels = ['debug', 'info', 'warn', 'error', 'silent'];
@@ -259,12 +258,4 @@ export function buildExtendedLogMessage(w) {
  */
 export function isDebugNamespaceEnabled(namespace) {
 	return debug.enabled(`${prefix}:${namespace}`);
-}
-
-export function logSvelte5Warning() {
-	const notice = `You are using Svelte ${VERSION}. Svelte 5 support is experimental, breaking changes can occur in any release until this notice is removed.`;
-	const wip = ['svelte-inspector: loaded but requires additional metadata to work'];
-	if (wip.length > 0) {
-		log.warn(`${notice}\nwork in progress:\n - ${wip.join('\n - ')}\n`);
-	}
 }

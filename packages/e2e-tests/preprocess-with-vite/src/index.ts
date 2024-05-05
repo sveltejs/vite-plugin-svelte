@@ -1,6 +1,6 @@
 import App from './App.svelte';
-
 import { Hello } from './types.js';
+import { mount } from 'svelte';
 
 const hello: Hello = 'Hello';
 
@@ -10,8 +10,5 @@ const options = {
 		hello
 	}
 };
-if (App.toString().startsWith('class ')) {
-	new App(options);
-} else {
-	import('svelte').then(({ mount }) => mount(App, options));
-}
+
+mount(App, options);

@@ -137,6 +137,12 @@ beforeAll(
 				if (!stat.isSymbolicLink()) {
 					console.error(`failed to symlink ${e2e_tests_node_modules} to ${temp_node_modules}`);
 				}
+				// ensure there is no leftover vite cache
+				const tempViteCache = path.join(temp_node_modules, '.vite');
+				if (fs.existsSync(tempViteCache)) {
+					await fs.rm(tempViteCache, { force: true, recursive: true });
+				}
+
 				await fs.mkdir(path.join(tempDir, 'logs'));
 				const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
 				const defaultServerScript = path.resolve(e2eTestsRoot, 'e2e-server.js');
@@ -215,7 +221,7 @@ async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
 	return Promise.all([page.goto(url), waitForViteConnect(page, 15000)]);
 }
 
-export async function waitForViteConnect(page: Page, timeoutMS = 5000) {
+export async function waitForViteConnect(page: Page, timeoutMS = 10000) {
 	if (isBuild) {
 		return Promise.resolve(); // no vite websocket on build
 	}

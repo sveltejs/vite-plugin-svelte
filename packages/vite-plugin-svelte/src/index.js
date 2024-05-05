@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { handleHotUpdate } from './handle-hot-update.js';
-import { log, logCompilerWarnings, logSvelte5Warning } from './utils/log.js';
+import { log, logCompilerWarnings } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
 import { buildIdParser, buildModuleIdParser } from './utils/id.js';
 import {
@@ -23,9 +23,6 @@ import * as svelteCompiler from 'svelte/compiler';
  * @returns {import('vite').Plugin[]}
  */
 export function svelte(inlineOptions) {
-	// TODO remove for v-p-s 4.0.0
-	logSvelte5Warning();
-
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
 	}
