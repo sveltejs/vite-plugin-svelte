@@ -237,9 +237,7 @@ export async function waitForViteConnect(page: Page, timeoutMS = 10000) {
 		pageConsoleListener = (data) => {
 			const text = data.text();
 			if (text.indexOf('[vite] connected.') > -1) {
-				// TODO: this is a test to see if it becomes more reliable
-				// if thats the case, we have to update the logic here to use a later signal/event than connected log
-				setTimeout(() => resolve(), isCI ? 2000 : 500);
+				resolve();
 			}
 		};
 		page.on('console', pageConsoleListener);
