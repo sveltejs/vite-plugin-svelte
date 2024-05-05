@@ -126,7 +126,7 @@ These options are specific to the Svelte compiler and are generally shared acros
 
 ### onwarn
 
-- **Type:** `(warning: Warning, defaultHandler?: (warning: Warning) => void) => void` - See [Warning](https://github.com/sveltejs/svelte/blob/ce550adef65a7e04c381b11c24f07a2ae1c25783/src/compiler/interfaces.ts#L121-L130)
+- **Type:** `(warning: Warning, defaultHandler: (warning: Warning) => void) => void` - See [Warning](https://github.com/sveltejs/svelte/blob/ce550adef65a7e04c381b11c24f07a2ae1c25783/src/compiler/interfaces.ts#L121-L130)
 
   Handles warning emitted from the Svelte compiler. Useful to suppress warning messages.
 
