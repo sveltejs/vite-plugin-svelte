@@ -2,4 +2,4 @@
 '@sveltejs/vite-plugin-svelte': patch
 ---
 
-remove experimental warning for Svelte 5
+Remove log about experimental status of Svelte 5. Note that breaking changes can still occur while vite-plugin-svelte 4 is in prerelease mode
