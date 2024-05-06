@@ -240,6 +240,10 @@ See the faq about [vite and prebundling](#what-is-going-on-with-vite-and-pre-bun
 
 ### How do I manually specify an `<img/>` `src`, or any other asset, with an inline URL?
 
-Currently, Svelte does not support inline asset URLs, you can only specify it via an imported asset.
+Currently, Svelte does not support inline asset URLs, you can only specify it via an imported asset, meaning that the following won't work:
+
+```
+<img src="./assets/inline/url/to/asset.png" />
+```
 
 2 recommended solutions are to use either [sveltejs/enhanced-img](https://kit.svelte.dev/docs/images#sveltejs-enhanced-img)(only for image elements) or [svelte-preprocess-import-assets](https://www.npmjs.com/package/svelte-preprocess-import-assets)(for all asset URLs).
