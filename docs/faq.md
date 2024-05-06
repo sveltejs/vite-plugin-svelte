@@ -237,3 +237,9 @@ See the faq about [vite and prebundling](#what-is-going-on-with-vite-and-pre-bun
 > [svelte-package](https://kit.svelte.dev/docs/packaging) which already supports it.
 >
 > For backwards compatibility, you can keep the `svelte` field in addition to the `exports` condition. But make sure that both always resolve to the same files.
+
+### How do I manually specify an <img/> 'src', or any other asset, with an inline URL?
+
+Currently, Svelte does not support inline asset URLs, you can only specify it via an imported asset.
+
+2 recommended solutions are to use either [sveltejs/enhanced-img](https://kit.svelte.dev/docs/images#sveltejs-enhanced-img)(only for image elements) or [svelte-preprocess-import-assets](https://www.npmjs.com/package/svelte-preprocess-import-assets)(for all asset URLs).
