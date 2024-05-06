@@ -238,7 +238,7 @@ See the faq about [vite and prebundling](#what-is-going-on-with-vite-and-pre-bun
 >
 > For backwards compatibility, you can keep the `svelte` field in addition to the `exports` condition. But make sure that both always resolve to the same files.
 
-### How do I manually specify an <img/> 'src', or any other asset, with an inline URL?
+### How do I manually specify an `<img/>` `src`, or any other asset, with an inline URL?
 
 Currently, Svelte does not support inline asset URLs, you can only specify it via an imported asset.
 
