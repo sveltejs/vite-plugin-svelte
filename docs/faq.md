@@ -246,4 +246,4 @@ Currently, Svelte does not support inline asset URLs, you can only specify it vi
 <img src="./assets/inline/url/to/asset.png" />
 ```
 
-2 recommended solutions are to use either [sveltejs/enhanced-img](https://kit.svelte.dev/docs/images#sveltejs-enhanced-img)(only for image elements) or [svelte-preprocess-import-assets](https://www.npmjs.com/package/svelte-preprocess-import-assets)(for all asset URLs).
+2 recommended solutions are to use either [sveltejs/enhanced-img](https://kit.svelte.dev/docs/images#sveltejs-enhanced-img) (only for image elements) or [svelte-preprocess-import-assets](https://www.npmjs.com/package/svelte-preprocess-import-assets) (for all asset URLs).
