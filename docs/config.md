@@ -239,12 +239,10 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
   export default defineConfig({
     plugins: [
       svelte({
-        experimental: {
-          dynamicCompileOptions({ filename, compileOptions }) {
-            // Dynamically set hydration per Svelte file
-            if (compileWithHydratable(filename) && !compileOptions.hydratable) {
-              return { hydratable: true };
-            }
+        dynamicCompileOptions({ filename, compileOptions }) {
+          // Dynamically set hydration per Svelte file
+          if (compileWithHydratable(filename) && !compileOptions.hydratable) {
+            return { hydratable: true };
           }
         }
       })
