@@ -1,5 +1,24 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.0
+
+### Major Changes
+
+- remove support for Svelte 4 ([#892](https://github.com/sveltejs/vite-plugin-svelte/pull/892))
+
+- disable script preprocessing in vitePreprocess() by default because Svelte 5 supports lang=ts out of the box ([#892](https://github.com/sveltejs/vite-plugin-svelte/pull/892))
+
+- replaced svelte-hmr with Svelte 5 compiler hmr integration ([#892](https://github.com/sveltejs/vite-plugin-svelte/pull/892))
+
+### Patch Changes
+
+- fix: make defaultHandler a required argument for onwarn in plugin options ([#895](https://github.com/sveltejs/vite-plugin-svelte/pull/895))
+
+- Remove log about experimental status of Svelte 5. Note that breaking changes can still occur while vite-plugin-svelte 4 is in prerelease mode ([#894](https://github.com/sveltejs/vite-plugin-svelte/pull/894))
+
+- Updated dependencies [[`49324dbf747a46ae75b405a29fc7feac2db966dd`](https://github.com/sveltejs/vite-plugin-svelte/commit/49324dbf747a46ae75b405a29fc7feac2db966dd)]:
+  - @sveltejs/vite-plugin-svelte-inspector@3.0.0-next.0
+
 ## 3.1.0
 
 ### Minor Changes

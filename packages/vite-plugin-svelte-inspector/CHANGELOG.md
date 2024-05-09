@@ -1,5 +1,16 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 3.0.0-next.0
+
+### Major Changes
+
+- remove support for Svelte 4 ([#892](https://github.com/sveltejs/vite-plugin-svelte/pull/892))
+
+### Patch Changes
+
+- Updated dependencies [[`bd5e3c2514424465fd65ef6e0ae8e99efb1709f5`](https://github.com/sveltejs/vite-plugin-svelte/commit/bd5e3c2514424465fd65ef6e0ae8e99efb1709f5), [`2f51a3af6b1e322c5a686b493a8dbf516e8985f0`](https://github.com/sveltejs/vite-plugin-svelte/commit/2f51a3af6b1e322c5a686b493a8dbf516e8985f0), [`49324dbf747a46ae75b405a29fc7feac2db966dd`](https://github.com/sveltejs/vite-plugin-svelte/commit/49324dbf747a46ae75b405a29fc7feac2db966dd), [`49324dbf747a46ae75b405a29fc7feac2db966dd`](https://github.com/sveltejs/vite-plugin-svelte/commit/49324dbf747a46ae75b405a29fc7feac2db966dd), [`49324dbf747a46ae75b405a29fc7feac2db966dd`](https://github.com/sveltejs/vite-plugin-svelte/commit/49324dbf747a46ae75b405a29fc7feac2db966dd)]:
+  - @sveltejs/vite-plugin-svelte@4.0.0-next.0
+
 ## 2.1.0
 
 ### Minor Changes
