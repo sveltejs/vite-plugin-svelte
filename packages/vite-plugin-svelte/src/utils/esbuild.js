@@ -2,6 +2,11 @@ import { readFileSync } from 'node:fs';
 import * as svelte from 'svelte/compiler';
 import { log } from './log.js';
 import { toESBuildError } from './error.js';
+import {
+	DEFAULT_SVELTE_EXT,
+	DEFAULT_SVELTE_MODULE_EXT,
+	DEFAULT_SVELTE_MODULE_INFIX
+} from './constants.js';
 
 /**
  * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
@@ -10,7 +15,14 @@ import { toESBuildError } from './error.js';
 
 export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
 
-const svelteModuleExtension = '.svelte.js';
+/**
+ * escape regex special chars
+ * @param {string} s
+ * @returns {string}
+ */
+function rescape(s) {
+	return s.replace(/([/.+^${}()|[\]\\])/g, '\\$1');
+}
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
@@ -24,10 +36,16 @@ export function esbuildSveltePlugin(options) {
 			// Otherwise this would heavily slow down the scanning phase.
 			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
 
-			const svelteExtensions = (options.extensions ?? ['.svelte']).map((ext) => ext.slice(1));
-			svelteExtensions.push(svelteModuleExtension.slice(1));
-
-			const svelteFilter = new RegExp('\\.(' + svelteExtensions.join('|') + ')(\\?.*)?$');
+			const svelteExtensions = DEFAULT_SVELTE_EXT;
+			const svelteModuleInfixes = DEFAULT_SVELTE_MODULE_INFIX;
+			const svelteModuleExt = DEFAULT_SVELTE_MODULE_EXT;
+			const svelteExtRE = `(?:${svelteExtensions.map(rescape).join('|')})`;
+			const svelteModuleRE = `(?:${svelteModuleInfixes.map((infix) => rescape(infix.slice(0, -1))).join('|')})(?:\\.[^.]+)*(?:${svelteModuleExt.map(rescape).join('|')})`;
+			const optionalQueryStringRE = '(?:\\?.*)?';
+			// one regex that matches either .svelte OR .svelte(.something)?.(js|ts) optionally followed by a querystring ?foo=bar
+			// onload decides which one to call
+			// TODO: better split this in two plugins? but then we need 2 facades too
+			const filter = new RegExp(`${svelteModuleRE}|${svelteExtRE}${optionalQueryStringRE}$`);
 			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 			let statsCollection;
 			build.onStart(() => {
@@ -35,7 +53,7 @@ export function esbuildSveltePlugin(options) {
 					logResult: (c) => c.stats.length > 1
 				});
 			});
-			build.onLoad({ filter: svelteFilter }, async ({ path: filename }) => {
+			build.onLoad({ filter }, async ({ path: filename }) => {
 				const code = readFileSync(filename, 'utf8');
 				try {
 					const contents = await compileSvelte(options, { filename, code }, statsCollection);
@@ -58,7 +76,7 @@ export function esbuildSveltePlugin(options) {
  * @returns {Promise<string>}
  */
 async function compileSvelte(options, { filename, code }, statsCollection) {
-	if (filename.endsWith(svelteModuleExtension)) {
+	if (DEFAULT_SVELTE_MODULE_EXT.some((ext) => filename.endsWith(ext))) {
 		const endStat = statsCollection?.start(filename);
 		const compiled = svelte.compileModule(code, {
 			filename,

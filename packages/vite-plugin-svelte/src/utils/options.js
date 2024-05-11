@@ -3,6 +3,7 @@ import { normalizePath } from 'vite';
 import { isDebugNamespaceEnabled, log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
 import {
+	DEFAULT_SVELTE_EXT,
 	FAQ_LINK_MISSING_EXPORTS_CONDITION,
 	SVELTE_EXPORT_CONDITIONS,
 	SVELTE_IMPORTS,
@@ -137,7 +138,7 @@ export async function preResolveOptions(inlineOptions, viteUserConfig, viteEnv) 
 	const isBuild = viteEnv.command === 'build';
 	/** @type {Partial<import('../types/options.d.ts').PreResolvedOptions>} */
 	const defaultOptions = {
-		extensions: ['.svelte'],
+		extensions: DEFAULT_SVELTE_EXT,
 		emitCss: true,
 		prebundleSvelteLibraries: !isBuild
 	};
