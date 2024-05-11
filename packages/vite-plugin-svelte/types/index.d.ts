@@ -173,6 +173,15 @@ declare module '@sveltejs/vite-plugin-svelte' {
 	}
 
 	interface CompileModuleOptions {
+		/**
+		 * infix that must be present in filename
+		 * @default ['.svelte.']
+		 */
+		infixes?: string[];
+		/**
+		 * module extensions
+		 * @default ['.ts','.js']
+		 */
 		extensions?: string[];
 		include?: Arrayable<string>;
 		exclude?: Arrayable<string>;
