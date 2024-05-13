@@ -23,7 +23,7 @@ export function esbuildSveltePlugin(options) {
 			// Otherwise this would heavily slow down the scanning phase.
 			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
 
-			const filter = /\\.svelte(?:\?.*)?$/;
+			const filter = /\.svelte(?:\?.*)?$/;
 			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 			let statsCollection;
 			build.onStart(() => {
@@ -123,7 +123,7 @@ export function esbuildSvelteModulePlugin(options) {
 			// Otherwise this would heavily slow down the scanning phase.
 			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
 
-			const filter = /\\.svelte.[jt]s(?:\?.*)?$/;
+			const filter = /\.svelte\.[jt]s(?:\?.*)?$/;
 			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 			let statsCollection;
 			build.onStart(() => {
