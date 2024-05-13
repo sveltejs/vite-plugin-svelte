@@ -12,7 +12,12 @@ import {
 } from './constants.js';
 
 import path from 'node:path';
-import { esbuildSveltePlugin, facadeEsbuildSveltePluginName } from './esbuild.js';
+import {
+	esbuildSvelteModulePlugin,
+	esbuildSveltePlugin,
+	facadeEsbuildSvelteModulePluginName,
+	facadeEsbuildSveltePluginName
+} from './esbuild.js';
 import { addExtraPreprocessors } from './preprocess.js';
 import deepmerge from 'deepmerge';
 import {
@@ -384,7 +389,10 @@ export async function buildExtraViteConfig(options, config) {
 			// Currently a placeholder as more information is needed after Vite config is resolved,
 			// the real Svelte plugin is added in `patchResolvedViteConfig()`
 			esbuildOptions: {
-				plugins: [{ name: facadeEsbuildSveltePluginName, setup: () => {} }]
+				plugins: [
+					{ name: facadeEsbuildSveltePluginName, setup: () => {} },
+					{ name: facadeEsbuildSvelteModulePluginName, setup: () => {} }
+				]
 			}
 		};
 	}
@@ -583,6 +591,12 @@ export function patchResolvedViteConfig(viteConfig, options) {
 	);
 	if (facadeEsbuildSveltePlugin) {
 		Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
+	}
+	const facadeEsbuildSvelteModulePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
+		(plugin) => plugin.name === facadeEsbuildSvelteModulePluginName
+	);
+	if (facadeEsbuildSvelteModulePlugin) {
+		Object.assign(facadeEsbuildSvelteModulePlugin, esbuildSvelteModulePlugin(options));
 	}
 }
 
