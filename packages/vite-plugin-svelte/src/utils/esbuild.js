@@ -61,6 +61,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 	}
 	/** @type {import('svelte/compiler').CompileOptions} */
 	const compileOptions = {
+		dev: true, // default to dev: true because prebundling is only used in dev
 		...options.compilerOptions,
 		css,
 		filename,
@@ -156,6 +157,7 @@ export function esbuildSvelteModulePlugin(options) {
 async function compileSvelteModule(options, { filename, code }, statsCollection) {
 	const endStat = statsCollection?.start(filename);
 	const compiled = svelte.compileModule(code, {
+		dev: options.compilerOptions?.dev ?? true, // default to dev: true because prebundling is only used in dev
 		filename,
 		generate: 'client'
 	});
