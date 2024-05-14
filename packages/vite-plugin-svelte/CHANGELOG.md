@@ -1,5 +1,27 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.1
+
+### Major Changes
+
+- only prebundle files with default filenames (.svelte for components, .svelte.(js|ts) for modules) ([#901](https://github.com/sveltejs/vite-plugin-svelte/pull/901))
+
+### Minor Changes
+
+- allow infix notation for svelte modules ([#901](https://github.com/sveltejs/vite-plugin-svelte/pull/901))
+
+  Previously, only suffix notation `.svelte.js` was allowed, now you can also use `.svelte.test.js` or `.svelte.stories.js`.
+  This helps when writing testcases or other auxillary code where you may want to use runes too.
+
+### Patch Changes
+
+- prebundle with dev: true by default ([#901](https://github.com/sveltejs/vite-plugin-svelte/pull/901))
+
+- fix: ensure svelte modules correctly run in DEV mode ([#906](https://github.com/sveltejs/vite-plugin-svelte/pull/906))
+
+- Updated dependencies []:
+  - @sveltejs/vite-plugin-svelte-inspector@3.0.0-next.1
+
 ## 4.0.0-next.0
 
 ### Major Changes
