@@ -9,8 +9,7 @@ import { toESBuildError } from './error.js';
  */
 
 export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
-
-const svelteModuleExtension = '.svelte.js';
+export const facadeEsbuildSvelteModulePluginName = 'vite-plugin-svelte-module:facade';
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
@@ -24,18 +23,15 @@ export function esbuildSveltePlugin(options) {
 			// Otherwise this would heavily slow down the scanning phase.
 			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
 
-			const svelteExtensions = (options.extensions ?? ['.svelte']).map((ext) => ext.slice(1));
-			svelteExtensions.push(svelteModuleExtension.slice(1));
-
-			const svelteFilter = new RegExp('\\.(' + svelteExtensions.join('|') + ')(\\?.*)?$');
+			const filter = /\.svelte(?:\?.*)?$/;
 			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 			let statsCollection;
 			build.onStart(() => {
-				statsCollection = options.stats?.startCollection('prebundle libraries', {
+				statsCollection = options.stats?.startCollection('prebundle library components', {
 					logResult: (c) => c.stats.length > 1
 				});
 			});
-			build.onLoad({ filter: svelteFilter }, async ({ path: filename }) => {
+			build.onLoad({ filter }, async ({ path: filename }) => {
 				const code = readFileSync(filename, 'utf8');
 				try {
 					const contents = await compileSvelte(options, { filename, code }, statsCollection);
@@ -58,19 +54,6 @@ export function esbuildSveltePlugin(options) {
  * @returns {Promise<string>}
  */
 async function compileSvelte(options, { filename, code }, statsCollection) {
-	if (filename.endsWith(svelteModuleExtension)) {
-		const endStat = statsCollection?.start(filename);
-		const compiled = svelte.compileModule(code, {
-			filename,
-			generate: 'client'
-		});
-		if (endStat) {
-			endStat();
-		}
-		return compiled.js.map
-			? compiled.js.code + '//# sourceMappingURL=' + compiled.js.map.toUrl()
-			: compiled.js.code;
-	}
 	let css = options.compilerOptions.css;
 	if (css !== 'injected') {
 		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
@@ -78,6 +61,7 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 	}
 	/** @type {import('svelte/compiler').CompileOptions} */
 	const compileOptions = {
+		dev: true, // default to dev: true because prebundling is only used in dev
 		...options.compilerOptions,
 		css,
 		filename,
@@ -120,6 +104,63 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		: compileOptions;
 	const endStat = statsCollection?.start(filename);
 	const compiled = svelte.compile(finalCode, finalCompileOptions);
+	if (endStat) {
+		endStat();
+	}
+	return compiled.js.map
+		? compiled.js.code + '//# sourceMappingURL=' + compiled.js.map.toUrl()
+		: compiled.js.code;
+}
+
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {EsbuildPlugin}
+ */
+export function esbuildSvelteModulePlugin(options) {
+	return {
+		name: 'vite-plugin-svelte-module:optimize-svelte',
+		setup(build) {
+			// Skip in scanning phase as Vite already handles scanning Svelte files.
+			// Otherwise this would heavily slow down the scanning phase.
+			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
+
+			const filter = /\.svelte\.[jt]s(?:\?.*)?$/;
+			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+			let statsCollection;
+			build.onStart(() => {
+				statsCollection = options.stats?.startCollection('prebundle library modules', {
+					logResult: (c) => c.stats.length > 1
+				});
+			});
+			build.onLoad({ filter }, async ({ path: filename }) => {
+				const code = readFileSync(filename, 'utf8');
+				try {
+					const contents = await compileSvelteModule(options, { filename, code }, statsCollection);
+					return { contents };
+				} catch (e) {
+					return { errors: [toESBuildError(e, options)] };
+				}
+			});
+			build.onEnd(() => {
+				statsCollection?.finish();
+			});
+		}
+	};
+}
+
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {{ filename: string; code: string }} input
+ * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
+ * @returns {Promise<string>}
+ */
+async function compileSvelteModule(options, { filename, code }, statsCollection) {
+	const endStat = statsCollection?.start(filename);
+	const compiled = svelte.compileModule(code, {
+		dev: options.compilerOptions?.dev ?? true, // default to dev: true because prebundling is only used in dev
+		filename,
+		generate: 'client'
+	});
 	if (endStat) {
 		endStat();
 	}

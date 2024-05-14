@@ -1,6 +1,7 @@
 import { createFilter, normalizePath } from 'vite';
 import * as fs from 'node:fs';
 import { log } from './log.js';
+import { DEFAULT_SVELTE_MODULE_EXT, DEFAULT_SVELTE_MODULE_INFIX } from './constants.js';
 
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
@@ -170,6 +171,21 @@ function buildFilter(include, exclude, extensions) {
 }
 
 /**
+ * @param {import('../public.d.ts').Options['include'] | undefined} include
+ * @param {import('../public.d.ts').Options['exclude'] | undefined} exclude
+ * @param {string[]} infixes
+ * @param {string[]} extensions
+ * @returns {(filename: string) => boolean}
+ */
+function buildModuleFilter(include, exclude, infixes, extensions) {
+	const rollupFilter = createFilter(include, exclude);
+	return (filename) =>
+		rollupFilter(filename) &&
+		infixes.some((infix) => filename.includes(infix)) &&
+		extensions.some((ext) => filename.endsWith(ext));
+}
+
+/**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @returns {import('../types/id.d.ts').IdParser}
  */
@@ -190,10 +206,15 @@ export function buildIdParser(options) {
  * @returns {import('../types/id.d.ts').ModuleIdParser}
  */
 export function buildModuleIdParser(options) {
-	const { include, exclude, extensions } = options?.experimental?.compileModule ?? {};
+	const {
+		include,
+		exclude,
+		infixes = DEFAULT_SVELTE_MODULE_INFIX,
+		extensions = DEFAULT_SVELTE_MODULE_EXT
+	} = options?.experimental?.compileModule ?? {};
 	const root = options.root;
 	const normalizedRoot = normalizePath(root);
-	const filter = buildFilter(include, exclude, extensions ?? ['.svelte.js', '.svelte.ts']);
+	const filter = buildModuleFilter(include, exclude, infixes, extensions);
 	return (id, ssr, timestamp = Date.now()) => {
 		const { filename, rawQuery } = splitId(id);
 		if (filter(filename)) {

@@ -128,12 +128,11 @@ export function createCompileSvelte() {
 					...dynamicCompileOptions
 				}
 			: compileOptions;
-
 		const endStat = stats?.start(filename);
 		/** @type {import('svelte/compiler').CompileResult} */
 		let compiled;
 		try {
-			compiled = svelte.compile(finalCode, finalCompileOptions);
+			compiled = svelte.compile(finalCode, { ...finalCompileOptions, filename: filename });
 			// patch output with partial accept until svelte does it
 			// TODO remove later
 			if (

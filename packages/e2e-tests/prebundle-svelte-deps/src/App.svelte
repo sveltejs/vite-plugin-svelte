@@ -5,6 +5,7 @@
 	import { Message as Nested } from 'e2e-test-dep-svelte-nested';
 	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
 	import { getContext } from 'svelte';
+	import { Counter } from 'e2e-test-dep-svelte-module';
 	setSomeContext();
 	const apiOnlyLoaded = !!getContext('svelte-api-only');
 </script>
@@ -22,5 +23,8 @@
 	<div id="api-only">api loaded: {apiOnlyLoaded}</div>
 	<div id="exports-simple">
 		<Dependency />
+	</div>
+	<div id="module">
+		<Counter />
 	</div>
 </main>

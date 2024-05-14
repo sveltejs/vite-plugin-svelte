@@ -17,6 +17,7 @@ async function expectPageToWork() {
 	expect(await getText('#api-only')).toBe('api loaded: true');
 	expect(await getText('#simple .label')).toBe('dependency-import');
 	expect(await getText('#exports-simple .label')).toBe('dependency-import');
+	expect(await getText('#module button:first-child')).toBe('count is 0');
 }
 
 if (!isBuild) {
@@ -31,6 +32,7 @@ if (!isBuild) {
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-exports-simple');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-api-only');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-nested');
+		expect(optimizedPaths).toContain('e2e-test-dep-svelte-module');
 	});
 
 	test('should not optimize excluded svelte dependencies', () => {

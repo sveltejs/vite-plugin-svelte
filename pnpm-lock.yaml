@@ -442,6 +442,9 @@ importers:
       e2e-test-dep-svelte-hybrid:
         specifier: file:../_test_dependencies/svelte-hybrid
         version: file:packages/e2e-tests/_test_dependencies/svelte-hybrid
+      e2e-test-dep-svelte-module:
+        specifier: file:../_test_dependencies/svelte-module
+        version: file:packages/e2e-tests/_test_dependencies/svelte-module
       e2e-test-dep-svelte-nested:
         specifier: file:../_test_dependencies/svelte-nested
         version: file:packages/e2e-tests/_test_dependencies/svelte-nested
@@ -6933,6 +6936,11 @@ packages:
     dependencies:
       '@types/node': 20.12.8
       e2e-test-dep-cjs-only: file:packages/e2e-tests/_test_dependencies/cjs-only
+    dev: false
+
+  file:packages/e2e-tests/_test_dependencies/svelte-module:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-module, type: directory}
+    name: e2e-test-dep-svelte-module
     dev: false
 
   file:packages/e2e-tests/_test_dependencies/svelte-nested:
