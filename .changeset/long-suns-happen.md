@@ -1,5 +1,5 @@
 ---
-'@sveltejs/vite-plugin-svelte': major
+'@sveltejs/vite-plugin-svelte': patch
 ---
 
 fix: ensure svelte modules correctly run in DEV mode
