@@ -200,6 +200,7 @@ export function svelte(inlineOptions) {
 				}
 				try {
 					const compileResult = svelteCompiler.compileModule(code, {
+						dev: !viteConfig.isProduction,
 						generate: ssr ? 'server' : 'client',
 						filename: moduleRequest.filename
 					});
