@@ -4,11 +4,12 @@ import * as $ from "svelte/internal/client";
 var root = $.template(`<button class="svelte-d8vj6a"> </button>`);
 
 export default function Dummy($$anchor, $$props) {
+	let name = $.prop($$props, "name");
 	let clicks = $.mutable_source(0);
 	var button = root();
 	var text = $.child(button);
 
-	$.render_effect(() => $.set_text(text, `${$.stringify($$props.name)} clicks: ${$.stringify($.get(clicks))}`));
+	$.template_effect(() => $.set_text(text, `${$.stringify(name())} clicks: ${$.stringify($.get(clicks))}`));
 
 	$.event(
 		"click",

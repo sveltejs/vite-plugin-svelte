@@ -1,5 +1,6 @@
 import type { CompileOptions } from 'svelte/compiler';
 import type { ViteDevServer } from 'vite';
+// eslint-disable-next-line n/no-missing-import
 import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
 import type { Options } from '../public.d.ts';
 

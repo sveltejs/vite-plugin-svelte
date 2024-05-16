@@ -73,9 +73,16 @@ module.exports = {
 			}
 		},
 		{
-			files: ['packages/vite-plugin-svelte-inspector/src/runtime/load-inspector.js'],
+			files: [
+				'packages/vite-plugin-svelte-inspector/src/runtime/load-inspector.js',
+				'packages/vite-plugin-svelte-inspector/src/runtime/Inspector.svelte'
+			],
 			env: {
-				browser: true
+				browser: true,
+				node: false
+			},
+			rules: {
+				'n/no-unsupported-features/node-builtins': 'off'
 			}
 		},
 		{

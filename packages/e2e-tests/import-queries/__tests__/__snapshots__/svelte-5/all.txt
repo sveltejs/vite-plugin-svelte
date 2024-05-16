@@ -325,36 +325,7 @@
                       }
                     },
                     "name": "name",
-                    "typeAnnotation": {
-                      "type": "TSTypeAnnotation",
-                      "start": 35,
-                      "end": 43,
-                      "loc": {
-                        "start": {
-                          "line": 2,
-                          "column": 16
-                        },
-                        "end": {
-                          "line": 2,
-                          "column": 24
-                        }
-                      },
-                      "typeAnnotation": {
-                        "type": "TSStringKeyword",
-                        "start": 37,
-                        "end": 43,
-                        "loc": {
-                          "start": {
-                            "line": 2,
-                            "column": 18
-                          },
-                          "end": {
-                            "line": 2,
-                            "column": 24
-                          }
-                        }
-                      }
-                    }
+                    "typeAnnotation": null
                   },
                   "init": null
                 }
@@ -518,10 +489,10 @@
   },
   "dependencies": [],
   "js": {
-    "code": "import \"svelte/internal/disclose-version\";\nimport * as $ from \"svelte/internal/client\";\n\nvar root = $.template(`<button class=\"svelte-d8vj6a\"> </button>`);\n\nexport default function Dummy($$anchor, $$props) {\n\tlet clicks = $.mutable_source(0);\n\tvar button = root();\n\tvar text = $.child(button);\n\n\t$.render_effect(() => $.set_text(text, `${$.stringify($$props.name)} clicks: ${$.stringify($.get(clicks))}`));\n\n\t$.event(\n\t\t\"click\",\n\t\tbutton,\n\t\t() => {\n\t\t\t$.update(clicks);\n\t\t},\n\t\tfalse\n\t);\n\n\t$.append($$anchor, button);\n}",
+    "code": "import \"svelte/internal/disclose-version\";\nimport * as $ from \"svelte/internal/client\";\n\nvar root = $.template(`<button class=\"svelte-d8vj6a\"> </button>`);\n\nexport default function Dummy($$anchor, $$props) {\n\tlet name = $.prop($$props, \"name\");\n\tlet clicks = $.mutable_source(0);\n\tvar button = root();\n\tvar text = $.child(button);\n\n\t$.template_effect(() => $.set_text(text, `${$.stringify(name())} clicks: ${$.stringify($.get(clicks))}`));\n\n\t$.event(\n\t\t\"click\",\n\t\tbutton,\n\t\t() => {\n\t\t\t$.update(clicks);\n\t\t},\n\t\tfalse\n\t);\n\n\t$.append($$anchor, button);\n}",
     "map": {
       "version": 3,
-      "mappings": ";;;;;;KAEK,MAAM,oBAAG,CAAC;;;;+DAMV,IAAI,+BAAW,MAAM",
+      "mappings": ";;;;;;KACY,IAAY;KACnB,MAAM,oBAAG,CAAC;;;;yDAMV,IAAI,iCAAW,MAAM",
       "names": [],
       "sources": [
         "Dummy.svelte"

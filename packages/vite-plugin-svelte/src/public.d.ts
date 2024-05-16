@@ -204,5 +204,5 @@ export interface VitePreprocessOptions {
 	 */
 	style?: boolean | InlineConfig | ResolvedConfig;
 }
-
+// eslint-disable-next-line n/no-missing-import
 export * from './index.js';
