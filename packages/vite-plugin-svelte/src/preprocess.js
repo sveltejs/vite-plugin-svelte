@@ -100,8 +100,7 @@ async function createCssTransform(style, config) {
 	if (style.__resolvedConfig) {
 		// @ts-expect-error
 		resolvedConfig = style.__resolvedConfig;
-	} else if (config.inlineConfig != null) {
-		// passed config is already resolved
+	} else if (isResolvedConfig(config)) {
 		resolvedConfig = config;
 	} else {
 		resolvedConfig = await resolveConfig(
@@ -112,4 +111,12 @@ async function createCssTransform(style, config) {
 	return async (code, filename) => {
 		return preprocessCSS(code, filename, resolvedConfig);
 	};
+}
+
+/**
+ * @param {any} config
+ * @returns {config is import('vite').ResolvedConfig}
+ */
+function isResolvedConfig(config) {
+	return !!config.inlineConfig;
 }
