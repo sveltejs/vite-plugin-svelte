@@ -12,6 +12,7 @@ export interface PreResolvedOptions extends Options {
 	isBuild: boolean;
 	isServe: boolean;
 	isDebug: boolean;
+	isVitest: boolean;
 }
 
 export interface ResolvedOptions extends PreResolvedOptions {

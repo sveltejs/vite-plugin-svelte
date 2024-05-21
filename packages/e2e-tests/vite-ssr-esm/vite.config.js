@@ -6,7 +6,7 @@ export default defineConfig(({ command, mode }) => {
 		plugins: [
 			svelte({
 				compilerOptions: {
-					hydratable: true /* required for clientside hydration */
+					hmr: command === 'serve'
 				}
 			})
 		],
