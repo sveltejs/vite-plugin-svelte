@@ -133,10 +133,16 @@ export async function getEl(selector: string) {
 	return toEl(selector);
 }
 
-export async function getText(el: string | ElementHandle, nextTick?: boolean) {
+export async function getText(el: string | ElementHandle, immediate?: boolean) {
 	el = await toEl(el);
-	if (nextTick) {
-		await page.waitForTimeout(0);
+	if (!immediate) {
+		await page.evaluate(async () => {
+			await new Promise((fulfil) => {
+				requestAnimationFrame(() => {
+					setTimeout(fulfil, 0);
+				});
+			});
+		});
 	}
 	return el ? el.textContent() : null;
 }
