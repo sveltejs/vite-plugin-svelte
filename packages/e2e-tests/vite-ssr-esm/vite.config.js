@@ -3,13 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig(({ command, mode }) => {
 	return {
-		plugins: [
-			svelte({
-				compilerOptions: {
-					hydratable: true /* required for clientside hydration */
-				}
-			})
-		],
+		plugins: [svelte()],
 		build: {
 			target: 'esnext',
 			minify: false,

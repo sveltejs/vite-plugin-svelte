@@ -201,7 +201,11 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 		compilerOptions: {
 			css,
 			dev: !viteConfig.isProduction,
-			hmr: !viteConfig.isProduction && !preResolveOptions.isBuild
+			hmr:
+				!viteConfig.isProduction &&
+				!preResolveOptions.isBuild &&
+				viteConfig.server &&
+				viteConfig.server.hmr !== false
 		}
 	};
 
@@ -217,7 +221,7 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 	removeIgnoredOptions(merged);
 	handleDeprecatedOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
-	enforceOptionsForHmr(merged);
+	enforceOptionsForHmr(merged, viteConfig);
 	enforceOptionsForProduction(merged);
 	// mergeConfigs would mangle functions on the stats class, so do this afterwards
 	if (log.debug.enabled && isDebugNamespaceEnabled('stats')) {
@@ -228,14 +232,21 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {import('vite').ResolvedConfig} viteConfig
  */
-function enforceOptionsForHmr(options) {
+function enforceOptionsForHmr(options, viteConfig) {
 	if (options.hot) {
 		log.warn(
 			'svelte 5 has hmr integrated in core. Please remove the vitePlugin.hot option and use compilerOptions.hmr instead'
 		);
 		delete options.hot;
 		options.compilerOptions.hmr = true;
+	}
+	if (options.compilerOptions.hmr && viteConfig.server?.hmr === false) {
+		log.warn(
+			'vite config server.hmr is false but compilerOptions.hmr is true. Forcing compilerOptions.hmr to false as it would not work.'
+		);
+		options.compilerOptions.hmr = false;
 	}
 }
 
@@ -264,7 +275,7 @@ function enforceOptionsForProduction(options) {
  */
 function removeIgnoredOptions(options) {
 	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
-	if (options.hot && options.emitCss) {
+	if (options.compilerOptions.hmr && options.emitCss) {
 		ignoredCompilerOptions.push('cssHash');
 	}
 	const passedCompilerOptions = Object.keys(options.compilerOptions || {});
