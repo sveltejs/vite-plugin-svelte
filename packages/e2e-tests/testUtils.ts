@@ -133,8 +133,19 @@ export async function getEl(selector: string) {
 	return toEl(selector);
 }
 
-export async function getText(el: string | ElementHandle) {
+export async function getText(el: string | ElementHandle, immediate?: boolean) {
 	el = await toEl(el);
+	if (!immediate) {
+		// svelte5 introduced more asynchronicity in https://github.com/sveltejs/svelte/pull/11706
+		// await with the same implementation to stick as close as possible to the update timing
+		await page.evaluate(async () => {
+			await new Promise((fulfil) => {
+				requestAnimationFrame(() => {
+					setTimeout(fulfil, 0);
+				});
+			});
+		});
+	}
 	return el ? el.textContent() : null;
 }
 
