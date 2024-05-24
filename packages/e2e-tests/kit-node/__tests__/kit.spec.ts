@@ -71,7 +71,7 @@ describe('kit-node', () => {
 			const button = await getEl('button');
 			expect(await getText(button)).toBe('Clicks: 0');
 			await button.click();
-			expect(await getText(button)).toBe('Clicks: 1');
+			expect(await getText(button, true)).toBe('Clicks: 1');
 		});
 
 		it('should not have failed requests', async () => {

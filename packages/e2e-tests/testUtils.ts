@@ -133,8 +133,11 @@ export async function getEl(selector: string) {
 	return toEl(selector);
 }
 
-export async function getText(el: string | ElementHandle) {
+export async function getText(el: string | ElementHandle, nextTick?: boolean) {
 	el = await toEl(el);
+	if (nextTick) {
+		await page.waitForTimeout(0);
+	}
 	return el ? el.textContent() : null;
 }
 
