@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(({ command, mode }) => {
 	return {
-		plugins: [svelte({ compilerOptions: { hmr: command === 'serve' } })],
+		plugins: [svelte()],
 		build: {
 			// make build faster by skipping transforms and minification
 			target: 'esnext',

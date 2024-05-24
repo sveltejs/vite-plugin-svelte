@@ -4,7 +4,7 @@ import { transformValidation } from 'e2e-test-dep-vite-plugins';
 
 export default defineConfig(({ command, mode }) => {
 	return {
-		plugins: [transformValidation(), svelte({ compilerOptions: { hmr: command === 'serve' } })],
+		plugins: [transformValidation(), svelte()],
 		build: {
 			minify: false,
 			target: 'esnext',

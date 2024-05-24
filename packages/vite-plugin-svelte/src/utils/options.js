@@ -155,8 +155,7 @@ export async function preResolveOptions(inlineOptions, viteUserConfig, viteEnv) 
 		root: viteConfigWithResolvedRoot.root,
 		isBuild,
 		isServe: viteEnv.command === 'serve',
-		isDebug: process.env.DEBUG != null,
-		isVitest: !!process.env.VITEST
+		isDebug: process.env.DEBUG != null
 	};
 
 	const merged = /** @type {import('../types/options.d.ts').PreResolvedOptions} */ (
@@ -202,7 +201,11 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 		compilerOptions: {
 			css,
 			dev: !viteConfig.isProduction,
-			hmr: !viteConfig.isProduction && !preResolveOptions.isBuild && !preResolveOptions.isVitest
+			hmr:
+				!viteConfig.isProduction &&
+				!preResolveOptions.isBuild &&
+				viteConfig.server &&
+				viteConfig.server.hmr !== false
 		}
 	};
 

@@ -3,13 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig(({ command, mode }) => {
 	return {
-		plugins: [
-			svelte({
-				compilerOptions: {
-					hmr: command === 'serve'
-				}
-			})
-		],
+		plugins: [svelte()],
 		build: {
 			target: 'esnext',
 			minify: false,
