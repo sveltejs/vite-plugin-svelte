@@ -61,29 +61,16 @@ function viteScript() {
  * @returns {{ style: import('svelte/compiler').Preprocessor }}
  */
 function viteStyle(config = {}) {
-	/** @type {CssTransform} */
-	let transform;
+	/** @type {Promise<CssTransform> | CssTransform} */
+	let cssTransform;
 	/** @type {import('svelte/compiler').Preprocessor} */
 	const style = async ({ attributes, content, filename = '' }) => {
 		const ext = attributes.lang ? `.${attributes.lang}` : '.css';
 		if (attributes.lang && !isCSSRequest(ext)) return;
-		if (!transform) {
-			/** @type {import('vite').ResolvedConfig} */
-			let resolvedConfig;
-			// @ts-expect-error special prop added if running in v-p-s
-			if (style.__resolvedConfig) {
-				// @ts-expect-error
-				resolvedConfig = style.__resolvedConfig;
-			} else if (isResolvedConfig(config)) {
-				resolvedConfig = config;
-			} else {
-				resolvedConfig = await resolveConfig(
-					config,
-					process.env.NODE_ENV === 'production' ? 'build' : 'serve'
-				);
-			}
-			transform = getCssTransformFn(resolvedConfig);
+		if (!cssTransform) {
+			cssTransform = createCssTransform(style, config).then((t) => (cssTransform = t));
 		}
+		const transform = await cssTransform;
 		const suffix = `${lang_sep}${ext}`;
 		const moduleId = `${filename}${suffix}`;
 		const { code, map, deps } = await transform(content, moduleId);
@@ -102,12 +89,27 @@ function viteStyle(config = {}) {
 }
 
 /**
- * @param {import('vite').ResolvedConfig} config
- * @returns {CssTransform}
+ * @param {import('svelte/compiler').Preprocessor} style
+ * @param {import('vite').ResolvedConfig | import('vite').InlineConfig} config
+ * @returns {Promise<CssTransform>}
  */
-function getCssTransformFn(config) {
+async function createCssTransform(style, config) {
+	/** @type {import('vite').ResolvedConfig} */
+	let resolvedConfig;
+	// @ts-expect-error special prop added if running in v-p-s
+	if (style.__resolvedConfig) {
+		// @ts-expect-error
+		resolvedConfig = style.__resolvedConfig;
+	} else if (isResolvedConfig(config)) {
+		resolvedConfig = config;
+	} else {
+		resolvedConfig = await resolveConfig(
+			config,
+			process.env.NODE_ENV === 'production' ? 'build' : 'serve'
+		);
+	}
 	return async (code, filename) => {
-		return preprocessCSS(code, filename, config);
+		return preprocessCSS(code, filename, resolvedConfig);
 	};
 }
 
