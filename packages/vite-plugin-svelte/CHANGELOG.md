@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.2
+### Patch Changes
+
+
+- update peer on workspace packages to avoid packages bumping each other ([#916](https://github.com/sveltejs/vite-plugin-svelte/pull/916))
+
+
+- fix: ensure vite config is only resolved once during lazy init of vitePreprocess ([#912](https://github.com/sveltejs/vite-plugin-svelte/pull/912))
+
+
+- fix: disable hmr when vite config server.hmr is false ([#913](https://github.com/sveltejs/vite-plugin-svelte/pull/913))
+
 ## 4.0.0-next.1
 
 ### Major Changes
