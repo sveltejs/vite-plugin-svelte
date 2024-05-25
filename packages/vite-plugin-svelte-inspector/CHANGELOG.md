@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 3.0.0-next.2
+### Patch Changes
+
+
+- update peer on workspace packages to avoid packages bumping each other ([#916](https://github.com/sveltejs/vite-plugin-svelte/pull/916))
+
+- Updated dependencies [[`22baa25b5e98ddc92715bfc430dc9d0cfad99bb0`](https://github.com/sveltejs/vite-plugin-svelte/commit/22baa25b5e98ddc92715bfc430dc9d0cfad99bb0), [`1211f97ffd85df1dbc3fac68265eb0b88ea61bdd`](https://github.com/sveltejs/vite-plugin-svelte/commit/1211f97ffd85df1dbc3fac68265eb0b88ea61bdd), [`f7409c8d55fba965e2671f767d00c93e4d1200b4`](https://github.com/sveltejs/vite-plugin-svelte/commit/f7409c8d55fba965e2671f767d00c93e4d1200b4)]:
+  - @sveltejs/vite-plugin-svelte@4.0.0-next.2
+
 ## 3.0.0-next.1
 
 ### Patch Changes
