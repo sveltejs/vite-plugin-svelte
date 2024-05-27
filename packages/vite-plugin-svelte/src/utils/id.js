@@ -186,7 +186,7 @@ function buildModuleFilter(include, exclude, infixes, extensions) {
 		return (
 			rollupFilter(filename) &&
 			infixes.some((infix) => basename.includes(infix)) &&
-			extensions.some((ext) => filename.endsWith(ext))
+			extensions.some((ext) => basename.endsWith(ext))
 		);
 	};
 }
