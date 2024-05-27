@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.3
+### Patch Changes
+
+
+- fix: only apply infix filter to basename ([#920](https://github.com/sveltejs/vite-plugin-svelte/pull/920))
+
 ## 4.0.0-next.2
 ### Patch Changes
 
