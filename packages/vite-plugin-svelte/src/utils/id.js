@@ -1,5 +1,6 @@
 import { createFilter, normalizePath } from 'vite';
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { log } from './log.js';
 import { DEFAULT_SVELTE_MODULE_EXT, DEFAULT_SVELTE_MODULE_INFIX } from './constants.js';
 
@@ -179,10 +180,15 @@ function buildFilter(include, exclude, extensions) {
  */
 function buildModuleFilter(include, exclude, infixes, extensions) {
 	const rollupFilter = createFilter(include, exclude);
-	return (filename) =>
-		rollupFilter(filename) &&
-		infixes.some((infix) => filename.includes(infix)) &&
-		extensions.some((ext) => filename.endsWith(ext));
+	return (filename) => {
+		const basename = path.basename(filename);
+
+		return (
+			rollupFilter(filename) &&
+			infixes.some((infix) => basename.includes(infix)) &&
+			extensions.some((ext) => basename.endsWith(ext))
+		);
+	};
 }
 
 /**
