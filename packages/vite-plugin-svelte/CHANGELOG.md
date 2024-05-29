@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.1.1
+
+### Patch Changes
+
+- fix: ensure vite config is only resolved once during lazy init of vitePreprocess ([#917](https://github.com/sveltejs/vite-plugin-svelte/pull/917))
+
+- fix: disable hmr when vite config server.hmr is false ([#917](https://github.com/sveltejs/vite-plugin-svelte/pull/917))
+
 ## 3.1.0
 
 ### Minor Changes
