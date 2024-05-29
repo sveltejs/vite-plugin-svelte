@@ -199,13 +199,15 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 			dev: !viteConfig.isProduction
 		}
 	};
+	const hot =
+		!viteConfig.isProduction && !preResolveOptions.isBuild && viteConfig.server.hmr !== false;
 	if (isSvelte5) {
 		if (isSvelte5WithHMRSupport) {
 			// @ts-expect-error svelte4 does not have hmr option
-			defaultOptions.compilerOptions.hmr = !viteConfig.isProduction;
+			defaultOptions.compilerOptions.hmr = hot;
 		}
 	} else {
-		defaultOptions.hot = viteConfig.isProduction
+		defaultOptions.hot = !hot
 			? false
 			: {
 					injectCss: css === 'injected',
@@ -224,7 +226,7 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 	removeIgnoredOptions(merged);
 	handleDeprecatedOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
-	enforceOptionsForHmr(merged);
+	enforceOptionsForHmr(merged, viteConfig);
 	enforceOptionsForProduction(merged);
 	// mergeConfigs would mangle functions on the stats class, so do this afterwards
 	if (log.debug.enabled && isDebugNamespaceEnabled('stats')) {
@@ -235,8 +237,15 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {import('vite').ResolvedConfig} viteConfig
  */
-function enforceOptionsForHmr(options) {
+function enforceOptionsForHmr(options, viteConfig) {
+	if (options.hot && viteConfig.server.hmr === false) {
+		log.warn(
+			'vite config server.hmr is false but hot is true. Forcing hot to false as it would not work.'
+		);
+		options.hot = false;
+	}
 	if (isSvelte5) {
 		if (options.hot && isSvelte5WithHMRSupport) {
 			log.warn(
