@@ -200,10 +200,7 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 		}
 	};
 	const hot =
-		!viteConfig.isProduction &&
-		!preResolveOptions.isBuild &&
-		viteConfig.server &&
-		viteConfig.server.hmr !== false;
+		!viteConfig.isProduction && !preResolveOptions.isBuild && viteConfig.server.hmr !== false;
 	if (isSvelte5) {
 		if (isSvelte5WithHMRSupport) {
 			// @ts-expect-error svelte4 does not have hmr option
@@ -243,7 +240,7 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
  * @param {import('vite').ResolvedConfig} viteConfig
  */
 function enforceOptionsForHmr(options, viteConfig) {
-	if (options.hot && viteConfig.server?.hmr === false) {
+	if (options.hot && viteConfig.server.hmr === false) {
 		log.warn(
 			'vite config server.hmr is false but hot is true. Forcing hot to false as it would not work.'
 		);
