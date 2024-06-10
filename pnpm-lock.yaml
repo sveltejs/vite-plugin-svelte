@@ -139,7 +139,7 @@ importers:
     dependencies:
       e2e-test-dep-cjs-only:
         specifier: file:../cjs-only
-        version: link:../cjs-only
+        version: file:packages/e2e-tests/_test_dependencies/cjs-only
 
   packages/e2e-tests/_test_dependencies/svelte-hybrid:
     dependencies:
@@ -148,7 +148,7 @@ importers:
         version: 20.14.2
       e2e-test-dep-cjs-only:
         specifier: file:../cjs-only
-        version: link:../cjs-only
+        version: file:packages/e2e-tests/_test_dependencies/cjs-only
 
   packages/e2e-tests/_test_dependencies/svelte-module: {}
 
@@ -156,19 +156,19 @@ importers:
     dependencies:
       e2e-test-dep-cjs-and-esm:
         specifier: file:../cjs-and-esm
-        version: link:../cjs-and-esm
+        version: file:packages/e2e-tests/_test_dependencies/cjs-and-esm
       e2e-test-dep-scss-only:
         specifier: file:../scss-only
-        version: link:../scss-only
+        version: file:packages/e2e-tests/_test_dependencies/scss-only
       e2e-test-dep-svelte-simple:
         specifier: file:../svelte-simple
-        version: link:../svelte-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-simple
 
   packages/e2e-tests/_test_dependencies/svelte-simple:
     dependencies:
       e2e-test-dep-cjs-only:
         specifier: file:../cjs-only
-        version: link:../cjs-only
+        version: file:packages/e2e-tests/_test_dependencies/cjs-only
 
   packages/e2e-tests/_test_dependencies/types-only: {}
 
@@ -178,7 +178,7 @@ importers:
     dependencies:
       e2e-test-dep-svelte-simple:
         specifier: file:../_test_dependencies/svelte-simple
-        version: link:../_test_dependencies/svelte-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-simple
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: workspace:^
@@ -206,7 +206,7 @@ importers:
     dependencies:
       e2e-test-dep-svelte-simple:
         specifier: file:../_test_dependencies/svelte-simple
-        version: link:../_test_dependencies/svelte-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-simple
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: workspace:^
@@ -222,7 +222,7 @@ importers:
     dependencies:
       e2e-test-dep-svelte-simple:
         specifier: file:../_test_dependencies/svelte-simple
-        version: link:../_test_dependencies/svelte-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-simple
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: workspace:^
@@ -268,19 +268,19 @@ importers:
     dependencies:
       e2e-test-dep-cjs-and-esm:
         specifier: file:../_test_dependencies/cjs-and-esm
-        version: link:../_test_dependencies/cjs-and-esm
+        version: file:packages/e2e-tests/_test_dependencies/cjs-and-esm
       e2e-test-dep-cjs-only:
         specifier: file:../_test_dependencies/cjs-only
-        version: link:../_test_dependencies/cjs-only
+        version: file:packages/e2e-tests/_test_dependencies/cjs-only
       e2e-test-dep-esm-only:
         specifier: file:../_test_dependencies/esm-only
-        version: link:../_test_dependencies/esm-only
+        version: file:packages/e2e-tests/_test_dependencies/esm-only
       e2e-test-dep-index-only:
         specifier: file:../_test_dependencies/index-only
-        version: link:../_test_dependencies/index-only
+        version: file:packages/e2e-tests/_test_dependencies/index-only
       e2e-test-dep-scss-only:
         specifier: file:../_test_dependencies/scss-only
-        version: link:../_test_dependencies/scss-only
+        version: file:packages/e2e-tests/_test_dependencies/scss-only
 
   packages/e2e-tests/dynamic-compile-options:
     devDependencies:
@@ -310,14 +310,14 @@ importers:
     dependencies:
       e2e-test-dep-svelte-simple:
         specifier: file:../_test_dependencies/svelte-simple
-        version: link:../_test_dependencies/svelte-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-simple
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: workspace:^
         version: link:../../vite-plugin-svelte
       e2e-test-dep-vite-plugins:
         specifier: file:../_test_dependencies/vite-plugins
-        version: link:../_test_dependencies/vite-plugins
+        version: file:packages/e2e-tests/_test_dependencies/vite-plugins
       node-fetch:
         specifier: ^3.3.2
         version: 3.3.2
@@ -386,10 +386,10 @@ importers:
         version: link:../../vite-plugin-svelte
       e2e-test-dep-svelte-api-only:
         specifier: file:../_test_dependencies/svelte-api-only
-        version: link:../_test_dependencies/svelte-api-only
+        version: file:packages/e2e-tests/_test_dependencies/svelte-api-only
       e2e-test-dep-vite-plugins:
         specifier: file:../_test_dependencies/vite-plugins
-        version: link:../_test_dependencies/vite-plugins
+        version: file:packages/e2e-tests/_test_dependencies/vite-plugins
       svelte:
         specifier: ^5.0.0-next.153
         version: 5.0.0-next.153
@@ -413,10 +413,10 @@ importers:
     dependencies:
       e2e-test-dep-svelte-hybrid:
         specifier: file:../_test_dependencies/svelte-hybrid
-        version: link:../_test_dependencies/svelte-hybrid
+        version: file:packages/e2e-tests/_test_dependencies/svelte-hybrid
       e2e-test-dep-svelte-nested:
         specifier: file:../_test_dependencies/svelte-nested
-        version: link:../_test_dependencies/svelte-nested
+        version: file:packages/e2e-tests/_test_dependencies/svelte-nested
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: workspace:^
@@ -435,22 +435,22 @@ importers:
     dependencies:
       e2e-test-dep-svelte-api-only:
         specifier: file:../_test_dependencies/svelte-api-only
-        version: link:../_test_dependencies/svelte-api-only
+        version: file:packages/e2e-tests/_test_dependencies/svelte-api-only
       e2e-test-dep-svelte-exports-simple:
         specifier: file:../_test_dependencies/svelte-exports-simple
-        version: link:../_test_dependencies/svelte-exports-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-exports-simple
       e2e-test-dep-svelte-hybrid:
         specifier: file:../_test_dependencies/svelte-hybrid
-        version: link:../_test_dependencies/svelte-hybrid
+        version: file:packages/e2e-tests/_test_dependencies/svelte-hybrid
       e2e-test-dep-svelte-module:
         specifier: file:../_test_dependencies/svelte-module
-        version: link:../_test_dependencies/svelte-module
+        version: file:packages/e2e-tests/_test_dependencies/svelte-module
       e2e-test-dep-svelte-nested:
         specifier: file:../_test_dependencies/svelte-nested
-        version: link:../_test_dependencies/svelte-nested
+        version: file:packages/e2e-tests/_test_dependencies/svelte-nested
       e2e-test-dep-svelte-simple:
         specifier: file:../_test_dependencies/svelte-simple
-        version: link:../_test_dependencies/svelte-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-simple
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: workspace:^
@@ -490,7 +490,7 @@ importers:
     dependencies:
       e2e-test-dep-svelte-exports-simple:
         specifier: file:../_test_dependencies/svelte-exports-simple
-        version: link:../_test_dependencies/svelte-exports-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-exports-simple
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: workspace:^
@@ -2248,6 +2248,43 @@ packages:
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.4 <5.5'
+
+  e2e-test-dep-cjs-and-esm@file:packages/e2e-tests/_test_dependencies/cjs-and-esm:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/cjs-and-esm, type: directory}
+
+  e2e-test-dep-cjs-only@file:packages/e2e-tests/_test_dependencies/cjs-only:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/cjs-only, type: directory}
+
+  e2e-test-dep-esm-only@file:packages/e2e-tests/_test_dependencies/esm-only:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/esm-only, type: directory}
+
+  e2e-test-dep-index-only@file:packages/e2e-tests/_test_dependencies/index-only:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/index-only, type: directory}
+
+  e2e-test-dep-scss-only@file:packages/e2e-tests/_test_dependencies/scss-only:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/scss-only, type: directory}
+
+  e2e-test-dep-svelte-api-only@file:packages/e2e-tests/_test_dependencies/svelte-api-only:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-api-only, type: directory}
+
+  e2e-test-dep-svelte-exports-simple@file:packages/e2e-tests/_test_dependencies/svelte-exports-simple:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-exports-simple, type: directory}
+
+  e2e-test-dep-svelte-hybrid@file:packages/e2e-tests/_test_dependencies/svelte-hybrid:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-hybrid, type: directory}
+    hasBin: true
+
+  e2e-test-dep-svelte-module@file:packages/e2e-tests/_test_dependencies/svelte-module:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-module, type: directory}
+
+  e2e-test-dep-svelte-nested@file:packages/e2e-tests/_test_dependencies/svelte-nested:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-nested, type: directory}
+
+  e2e-test-dep-svelte-simple@file:packages/e2e-tests/_test_dependencies/svelte-simple:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/svelte-simple, type: directory}
+
+  e2e-test-dep-vite-plugins@file:packages/e2e-tests/_test_dependencies/vite-plugins:
+    resolution: {directory: packages/e2e-tests/_test_dependencies/vite-plugins, type: directory}
 
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
@@ -5737,6 +5774,43 @@ snapshots:
       tiny-glob: 0.2.9
       ts-api-utils: 1.0.3(typescript@5.4.5)
       typescript: 5.4.5
+
+  e2e-test-dep-cjs-and-esm@file:packages/e2e-tests/_test_dependencies/cjs-and-esm: {}
+
+  e2e-test-dep-cjs-only@file:packages/e2e-tests/_test_dependencies/cjs-only: {}
+
+  e2e-test-dep-esm-only@file:packages/e2e-tests/_test_dependencies/esm-only: {}
+
+  e2e-test-dep-index-only@file:packages/e2e-tests/_test_dependencies/index-only: {}
+
+  e2e-test-dep-scss-only@file:packages/e2e-tests/_test_dependencies/scss-only: {}
+
+  e2e-test-dep-svelte-api-only@file:packages/e2e-tests/_test_dependencies/svelte-api-only:
+    dependencies:
+      svelte: 5.0.0-next.153
+
+  e2e-test-dep-svelte-exports-simple@file:packages/e2e-tests/_test_dependencies/svelte-exports-simple:
+    dependencies:
+      e2e-test-dep-cjs-only: file:packages/e2e-tests/_test_dependencies/cjs-only
+
+  e2e-test-dep-svelte-hybrid@file:packages/e2e-tests/_test_dependencies/svelte-hybrid:
+    dependencies:
+      '@types/node': 20.14.2
+      e2e-test-dep-cjs-only: file:packages/e2e-tests/_test_dependencies/cjs-only
+
+  e2e-test-dep-svelte-module@file:packages/e2e-tests/_test_dependencies/svelte-module: {}
+
+  e2e-test-dep-svelte-nested@file:packages/e2e-tests/_test_dependencies/svelte-nested:
+    dependencies:
+      e2e-test-dep-cjs-and-esm: file:packages/e2e-tests/_test_dependencies/cjs-and-esm
+      e2e-test-dep-scss-only: file:packages/e2e-tests/_test_dependencies/scss-only
+      e2e-test-dep-svelte-simple: file:packages/e2e-tests/_test_dependencies/svelte-simple
+
+  e2e-test-dep-svelte-simple@file:packages/e2e-tests/_test_dependencies/svelte-simple:
+    dependencies:
+      e2e-test-dep-cjs-only: file:packages/e2e-tests/_test_dependencies/cjs-only
+
+  e2e-test-dep-vite-plugins@file:packages/e2e-tests/_test_dependencies/vite-plugins: {}
 
   ee-first@1.1.1: {}
 
