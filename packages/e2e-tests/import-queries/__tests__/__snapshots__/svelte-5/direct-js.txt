@@ -9,7 +9,7 @@ export default function Dummy($$anchor, $$props) {
 	var button = root();
 	var text = $.child(button);
 
-	$.template_effect(() => $.set_text(text, `${$.stringify(name())} clicks: ${$.stringify($.get(clicks))}`));
+	$.template_effect(() => $.set_text(text, `${name() ?? ""} clicks: ${$.get(clicks) ?? ""}`));
 
 	$.event(
 		"click",
@@ -23,4 +23,4 @@ export default function Dummy($$anchor, $$props) {
 	$.append($$anchor, button);
 }
 
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7O0tBQ1ksSUFBWTtLQUNuQixNQUFNLG9CQUFHLENBQUM7Ozs7eURBTVYsSUFBSSxpQ0FBVyxNQUFNIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbIkR1bW15LnN2ZWx0ZSJdfQ==
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7O0tBQ1ksSUFBWTtLQUNuQixNQUFNLG9CQUFHLENBQUM7Ozs7NkNBTVYsSUFBSSwwQkFBVyxNQUFNIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbIkR1bW15LnN2ZWx0ZSJdfQ==
