@@ -190,14 +190,14 @@ importers:
         specifier: ^8.4.38
         version: 8.4.38
       postcss-load-config:
-        specifier: ^5.1.0
-        version: 5.1.0(postcss@8.4.38)
+        specifier: ^6.0.1
+        version: 6.0.1(postcss@8.4.38)(yaml@2.4.2)
       svelte:
         specifier: ^5.0.0-next.153
         version: 5.0.0-next.153
       svelte-preprocess:
         specifier: ^5.1.4
-        version: 5.1.4(postcss-load-config@5.1.0(postcss@8.4.38))(postcss@8.4.38)(sass@1.77.4)(stylus@0.63.0)(svelte@5.0.0-next.153)(typescript@5.4.5)
+        version: 5.1.4(postcss-load-config@6.0.1(postcss@8.4.38)(yaml@2.4.2))(postcss@8.4.38)(sass@1.77.4)(stylus@0.63.0)(svelte@5.0.0-next.153)(typescript@5.4.5)
       vite:
         specifier: ^5.2.13
         version: 5.2.13(@types/node@20.11.5)(sass@1.77.4)(stylus@0.63.0)
@@ -3543,6 +3543,24 @@ packages:
       postcss:
         optional: true
       tsx:
+        optional: true
+
+  postcss-load-config@6.0.1:
+    resolution: {integrity: sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      jiti: '>=1.21.0'
+      postcss: '>=8.0.9'
+      tsx: ^4.8.1
+      yaml: ^2.4.2
+    peerDependenciesMeta:
+      jiti:
+        optional: true
+      postcss:
+        optional: true
+      tsx:
+        optional: true
+      yaml:
         optional: true
 
   postcss-safe-parser@6.0.0:
@@ -7230,6 +7248,14 @@ snapshots:
       yaml: 2.4.2
     optionalDependencies:
       postcss: 8.4.38
+    optional: true
+
+  postcss-load-config@6.0.1(postcss@8.4.38)(yaml@2.4.2):
+    dependencies:
+      lilconfig: 3.1.1
+    optionalDependencies:
+      postcss: 8.4.38
+      yaml: 2.4.2
 
   postcss-safe-parser@6.0.0(postcss@8.4.38):
     dependencies:
@@ -7759,6 +7785,21 @@ snapshots:
     optionalDependencies:
       postcss: 8.4.38
       postcss-load-config: 5.1.0(postcss@8.4.38)
+      sass: 1.77.4
+      stylus: 0.63.0
+      typescript: 5.4.5
+
+  svelte-preprocess@5.1.4(postcss-load-config@6.0.1(postcss@8.4.38)(yaml@2.4.2))(postcss@8.4.38)(sass@1.77.4)(stylus@0.63.0)(svelte@5.0.0-next.153)(typescript@5.4.5):
+    dependencies:
+      '@types/pug': 2.0.10
+      detect-indent: 6.1.0
+      magic-string: 0.30.10
+      sorcery: 0.11.0
+      strip-indent: 3.0.0
+      svelte: 5.0.0-next.153
+    optionalDependencies:
+      postcss: 8.4.38
+      postcss-load-config: 6.0.1(postcss@8.4.38)(yaml@2.4.2)
       sass: 1.77.4
       stylus: 0.63.0
       typescript: 5.4.5
