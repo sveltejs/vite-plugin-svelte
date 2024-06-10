@@ -11,7 +11,7 @@ export default function Dummy($$anchor, $$props) {
 	var button = root();
 	var text = $.child(button);
 
-	$.template_effect(() => $.set_text(text, `${$.stringify(name())} clicks: ${$.stringify($.get(clicks))}`));
+	$.template_effect(() => $.set_text(text, `${name() ?? ""} clicks: ${$.get(clicks) ?? ""}`));
 
 	$.event(
 		"click",
