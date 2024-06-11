@@ -23,7 +23,8 @@ export default {
 				'**/pnpm-lock.yaml',
 				'.changeset/pre.json',
 				'**/vite.config.js.timestamp-*.mjs',
-				'packages/e2e-tests/dynamic-compile-options/src/components/A.svelte'
+				'packages/e2e-tests/dynamic-compile-options/src/components/A.svelte',
+				'packages/playground/big/src/pages/**' // lots of generated files
 			],
 			options: {
 				rangeEnd: 0
