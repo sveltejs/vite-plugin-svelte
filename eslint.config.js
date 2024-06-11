@@ -1,24 +1,23 @@
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import html from 'eslint-plugin-html';
 import markdown from 'eslint-plugin-markdown';
 import unicorn from 'eslint-plugin-unicorn';
-import tsParser from '@typescript-eslint/parser';
+import typescript from 'typescript-eslint';
+
 import globals from 'globals';
 import svelteParser from 'svelte-eslint-parser';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import n from 'eslint-plugin-n';
 import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import svelte from 'eslint-plugin-svelte';
+import prettierRecommended from 'eslint-plugin-prettier/recommended';
+import svelte_config from '@sveltejs/eslint-config';
 
-const compat = new FlatCompat({
-	baseDirectory: __dirname,
-	recommendedConfig: js.configs.recommended,
-	allConfig: js.configs.all
-});
+const globalsBrowserWithoutNode = {
+	...Object.fromEntries(Object.entries(globals.node).map(([key]) => [key, 'off'])),
+	...globals.browser
+};
 
 export default [
+	...svelte_config,
 	{
 		ignores: [
 			'**/temp/**',
@@ -32,16 +31,13 @@ export default [
 			'packages/*/CHANGELOG.md'
 		]
 	},
-	...compat.extends(
-		'eslint:recommended',
-		'plugin:n/recommended',
-		'plugin:svelte/recommended',
-		'plugin:@typescript-eslint/eslint-recommended',
-		'prettier'
-	),
+	js.configs.recommended,
+	n.configs['flat/recommended-module'],
+	...svelte.configs['flat/recommended'],
+	...typescript.configs.recommended,
+	prettierRecommended,
 	{
 		plugins: {
-			'@typescript-eslint': typescriptEslint,
 			html,
 			markdown,
 			unicorn
@@ -57,7 +53,7 @@ export default [
 				$state: 'readonly'
 			},
 
-			parser: tsParser,
+			parser: typescript.parser,
 			ecmaVersion: 2020,
 			sourceType: 'module',
 
@@ -145,10 +141,7 @@ export default [
 		],
 
 		languageOptions: {
-			globals: {
-				...Object.fromEntries(Object.entries(globals.node).map(([key]) => [key, 'off'])),
-				...globals.browser
-			}
+			globals: globalsBrowserWithoutNode
 		},
 
 		rules: {
@@ -200,11 +193,7 @@ export default [
 		files: ['**/*.svelte'],
 
 		languageOptions: {
-			globals: {
-				...Object.fromEntries(Object.entries(globals.node).map(([key]) => [key, 'off'])),
-				...globals.browser
-			},
-
+			globals: globalsBrowserWithoutNode,
 			parser: svelteParser,
 			ecmaVersion: 5,
 			sourceType: 'script',
@@ -234,7 +223,8 @@ export default [
 			'n/no-missing-import': 'off',
 			'n/no-extraneous-require': 'off',
 			'import/no-unresolved': 'off',
-			'n/no-missing-require': 'off'
+			'n/no-missing-require': 'off',
+			'@typescript-eslint/no-unused-vars': 'off'
 		},
 
 		processor: 'markdown/markdown'
@@ -258,7 +248,8 @@ export default [
 			'n/no-missing-import': 'off',
 			'n/no-extraneous-require': 'off',
 			'import/no-unresolved': 'off',
-			'n/no-missing-require': 'off'
+			'n/no-missing-require': 'off',
+			'@typescript-eslint/no-unused-vars': 'off'
 		}
 	},
 	{
@@ -291,6 +282,20 @@ export default [
 
 		rules: {
 			'no-unused-vars': 'off'
+		}
+	},
+	{
+		files: ['**/vite.config.*', 'packages/e2e-tests/**'],
+
+		rules: {
+			'no-unused-vars': 'off',
+			'@typescript-eslint/no-unused-vars': 'off'
+		}
+	},
+	{
+		files: ['packages/playground/**'],
+		rules: {
+			'@typescript-eslint/no-unused-expressions': 'off'
 		}
 	}
 ];

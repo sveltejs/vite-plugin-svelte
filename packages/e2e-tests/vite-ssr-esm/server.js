@@ -19,9 +19,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 	const indexProd = isProd ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8') : '';
 
 	const manifest = isProd
-		? // @ts-ignore
-
-			JSON.parse(fs.readFileSync(resolve('dist/client/.vite/ssr-manifest.json'), 'utf-8'))
+		? JSON.parse(fs.readFileSync(resolve('dist/client/.vite/ssr-manifest.json'), 'utf-8'))
 		: {};
 
 	const app = express();
@@ -31,6 +29,9 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 	 */
 	let vite;
 	if (!isProd) {
+		/**
+		 * @type {import('vite').InlineConfig}
+		 */
 		const inlineCfg = {
 			root,
 			appType: 'custom',
@@ -43,7 +44,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 				}
 			}
 		};
-		// @ts-ignore
+
 		vite = await (await import('vite')).createServer(inlineCfg);
 		// use vite's connect instance as middleware
 		app.use(vite.middlewares);
@@ -68,7 +69,6 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 				render = (await vite.ssrLoadModule('/src/entry-server.js')).render;
 			} else {
 				template = indexProd;
-				// @ts-ignore
 				render = (await import(pathToFileURL(resolve('dist/server/entry-server.js')).href)).render;
 			}
 			const rendered = await render(req.originalUrl, manifest);
@@ -81,7 +81,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 
 			res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
 		} catch (e) {
-			vite && vite.ssrFixStacktrace(e);
+			if (vite) vite.ssrFixStacktrace(e);
 			console.log(e.stack);
 			res.status(500).end(e.stack);
 		}

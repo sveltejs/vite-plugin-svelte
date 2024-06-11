@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { normalizePath } from 'vite';
 import { isDebugNamespaceEnabled, log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
@@ -30,7 +29,6 @@ import {
 
 import { isCommonDepWithoutSvelteField } from './dependencies.js';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats.js';
-import { VitePluginSvelteCache } from './vite-plugin-svelte-cache.js';
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -109,7 +107,7 @@ function convertPluginOptions(config) {
 			)}`
 		);
 		unknownPluginOptions.forEach((unkownOption) => {
-			// @ts-ignore
+			// @ts-expect-error not typed
 			delete pluginOptions[unkownOption];
 		});
 	}
@@ -191,7 +189,7 @@ function mergeConfigs(...configs) {
  *
  * @param {import('../types/options.d.ts').PreResolvedOptions} preResolveOptions
  * @param {import('vite').ResolvedConfig} viteConfig
- * @param {VitePluginSvelteCache} cache
+ * @param {import('./vite-plugin-svelte-cache.js').VitePluginSvelteCache} cache
  * @returns {import('../types/options.d.ts').ResolvedOptions}
  */
 export function resolveOptions(preResolveOptions, viteConfig, cache) {
@@ -352,7 +350,6 @@ export async function buildExtraViteConfig(options, config) {
 		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
-		// @ts-ignore
 		// knownJsSrcExtensions: options.extensions
 	};
 
@@ -394,7 +391,6 @@ export async function buildExtraViteConfig(options, config) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
-			// @ts-ignore
 			extensions: options.extensions ?? ['.svelte'],
 			// Add esbuild plugin to prebundle Svelte files.
 			// Currently a placeholder as more information is needed after Vite config is resolved,

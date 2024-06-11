@@ -98,7 +98,7 @@ async function createCssTransform(style, config) {
 	let resolvedConfig;
 	// @ts-expect-error special prop added if running in v-p-s
 	if (style.__resolvedConfig) {
-		// @ts-expect-error
+		// @ts-expect-error not typed
 		resolvedConfig = style.__resolvedConfig;
 	} else if (isResolvedConfig(config)) {
 		resolvedConfig = config;

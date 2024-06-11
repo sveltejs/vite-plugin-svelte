@@ -60,7 +60,7 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 		let directOutput = result.code;
 		// @ts-expect-error might not be SourceMap but toUrl check should suffice
 		if (query.sourcemap && result.map?.toUrl) {
-			// @ts-expect-error
+			// @ts-expect-error toUrl might not exist
 			const map = `sourceMappingURL=${result.map.toUrl()}`;
 			if (query.type === 'style') {
 				directOutput += `\n\n/*# ${map} */\n`;
@@ -114,8 +114,7 @@ function allToRawExports(compileData, source) {
 function toRawExports(object) {
 	let exports =
 		Object.entries(object)
-			//eslint-disable-next-line no-unused-vars
-			.filter(([key, value]) => typeof value !== 'function') // preprocess output has a toString function that's enumerable
+			.filter(([_key, value]) => typeof value !== 'function') // preprocess output has a toString function that's enumerable
 			.sort(([a], [b]) => (a < b ? -1 : a === b ? 0 : 1))
 			.map(([key, value]) => `export const ${key}=${JSON.stringify(value)}`)
 			.join('\n') + '\n';

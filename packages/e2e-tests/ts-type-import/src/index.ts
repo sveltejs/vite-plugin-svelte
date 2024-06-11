@@ -1,5 +1,4 @@
-import type { Test } from './lib.js';
-import { test } from './lib.js';
+import { type Test, test } from './lib.js';
 import App from './App.svelte';
 import { mount } from 'svelte';
 

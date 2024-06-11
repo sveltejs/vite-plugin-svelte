@@ -217,7 +217,11 @@
 	}
 
 	function toggle() {
-		enabled ? disable() : enable();
+		if (enabled) {
+			disable();
+		} else {
+			enable();
+		}
 	}
 
 	function listeners(body, enabled) {

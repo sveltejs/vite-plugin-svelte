@@ -91,7 +91,7 @@ function parseRequestQuery(rawQuery) {
 	const query = Object.fromEntries(new URLSearchParams(rawQuery));
 	for (const key in query) {
 		if (query[key] === '') {
-			// @ts-ignore
+			// @ts-expect-error not boolean
 			query[key] = true;
 		}
 	}

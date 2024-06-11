@@ -72,7 +72,11 @@ function _log(logger, message, payload, namespace) {
 			}
 			log = logger.log.extend(namespace);
 		}
-		payload !== undefined ? log(message, payload) : log(message);
+		if (payload !== undefined) {
+			log(message, payload);
+		} else {
+			log(message);
+		}
 	} else {
 		logger.log(
 			logger.color(
@@ -222,14 +226,14 @@ function buildExtraWarnings(warnings, isBuild) {
  * @param {import('svelte/compiler').Warning} w
  */
 function warnDev(w) {
-	log.info.enabled && log.info(buildExtendedLogMessage(w));
+	if (log.info.enabled) log.info(buildExtendedLogMessage(w));
 }
 
 /**
  * @param {import('svelte/compiler').Warning & {frame?: string}} w
  */
 function warnBuild(w) {
-	log.warn.enabled && log.warn(buildExtendedLogMessage(w), w.frame);
+	if (log.warn.enabled) log.warn(buildExtendedLogMessage(w), w.frame);
 }
 
 /**
