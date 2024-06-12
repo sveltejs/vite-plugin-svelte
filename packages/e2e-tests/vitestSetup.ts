@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'node:path';
-import type { chromium, Browser, Page } from 'playwright-core';
-import type { beforeAll, File } from 'vitest';
+import { chromium, type Browser, type Page } from 'playwright-core';
+import { beforeAll, type File } from 'vitest';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 
