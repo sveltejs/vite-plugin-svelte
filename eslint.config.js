@@ -1,23 +1,10 @@
 import html from 'eslint-plugin-html';
 import markdown from 'eslint-plugin-markdown';
-import unicorn from 'eslint-plugin-unicorn';
-import typescript from 'typescript-eslint';
-
 import globals from 'globals';
-import svelteParser from 'svelte-eslint-parser';
 import n from 'eslint-plugin-n';
-import js from '@eslint/js';
-import svelte from 'eslint-plugin-svelte';
-import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import svelte_config from '@sveltejs/eslint-config';
 
-const globalsBrowserWithoutNode = {
-	...Object.fromEntries(Object.entries(globals.node).map(([key]) => [key, 'off'])),
-	...globals.browser
-};
-
 export default [
-	...svelte_config,
 	{
 		ignores: [
 			'**/temp/**',
@@ -31,16 +18,12 @@ export default [
 			'packages/*/CHANGELOG.md'
 		]
 	},
-	js.configs.recommended,
+	...svelte_config, // contains setup for svelte, typescript and unicorn
 	n.configs['flat/recommended-module'],
-	...svelte.configs['flat/recommended'],
-	...typescript.configs.recommended,
-	prettierRecommended,
 	{
 		plugins: {
 			html,
-			markdown,
-			unicorn
+			markdown
 		},
 
 		languageOptions: {
@@ -52,14 +35,8 @@ export default [
 				$props: 'readonly',
 				$state: 'readonly'
 			},
-
-			parser: typescript.parser,
-			ecmaVersion: 2020,
-			sourceType: 'module',
-
-			parserOptions: {
-				extraFileExtensions: ['.svelte']
-			}
+			ecmaVersion: 2022,
+			sourceType: 'module'
 		},
 
 		rules: {
@@ -141,9 +118,10 @@ export default [
 		],
 
 		languageOptions: {
-			globals: globalsBrowserWithoutNode
+			globals: {
+				...globals.browser
+			}
 		},
-
 		rules: {
 			'n/no-unsupported-features/node-builtins': 'off'
 		}
@@ -193,40 +171,20 @@ export default [
 		files: ['**/*.svelte'],
 
 		languageOptions: {
-			globals: globalsBrowserWithoutNode,
-			parser: svelteParser,
-			ecmaVersion: 5,
-			sourceType: 'script',
-
+			globals: {
+				...globals.browser
+			},
 			parserOptions: {
 				parser: '@typescript-eslint/parser'
 			}
 		},
 
 		rules: {
-			'import/first': 'off',
-			'import/no-duplicates': 'off',
-			'import/no-mutable-exports': 'off',
-			'import/no-unresolved': 'off',
-			'n/no-missing-import': 'off'
+			'n/no-missing-import': 'off' // n doesn't know some vite specifics or monorepo imports.
 		}
 	},
 	{
 		files: ['**/*.svx', '**/*.md'],
-
-		rules: {
-			'no-undef': 'off',
-			'no-unused-vars': 'off',
-			'no-unused-labels': 'off',
-			'no-console': 'off',
-			'padded-blocks': 'off',
-			'n/no-missing-import': 'off',
-			'n/no-extraneous-require': 'off',
-			'import/no-unresolved': 'off',
-			'n/no-missing-require': 'off',
-			'@typescript-eslint/no-unused-vars': 'off'
-		},
-
 		processor: 'markdown/markdown'
 	},
 	{
