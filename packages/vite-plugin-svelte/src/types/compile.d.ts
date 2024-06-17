@@ -10,9 +10,7 @@ export type CompileSvelte = (
 
 export interface Code {
 	code: string;
-
 	map?: any;
-
 	dependencies?: any[];
 }
 
