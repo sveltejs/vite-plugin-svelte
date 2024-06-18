@@ -24,10 +24,6 @@ export default [
 	{
 		name: 'local/language-options',
 		languageOptions: {
-			globals: {
-				Atomics: 'readonly',
-				SharedArrayBuffer: 'readonly'
-			},
 			ecmaVersion: 2022,
 			sourceType: 'module'
 		}
@@ -152,17 +148,8 @@ export default [
 	{
 		name: 'local/markdown-codefences',
 		files: ['**/*.md/*.js', '**/*.md/*.ts', '**/*.md/*.svelte'],
-
 		rules: {
-			'no-undef': 'off',
-			'no-unused-vars': 'off',
-			'no-unused-labels': 'off',
-			'no-console': 'off',
-			'padded-blocks': 'off',
 			'n/no-missing-import': 'off',
-			'n/no-extraneous-require': 'off',
-			'import/no-unresolved': 'off',
-			'n/no-missing-require': 'off',
 			'@typescript-eslint/no-unused-vars': 'off'
 		}
 	},
@@ -177,23 +164,13 @@ export default [
 				...globals.browser
 			}
 		},
-
 		rules: {
-			'n/no-extraneous-import': 'off',
-			'n/no-missing-import': 'off',
-			'n/no-unused-import': 'off'
-		}
-	},
-	{
-		name: 'local/dts-files',
-		files: ['**/*.d.ts'],
-		rules: {
-			'no-unused-vars': 'off'
+			'n/no-missing-import': 'off'
 		}
 	},
 	{
 		name: 'local/allow-unused-vars',
-		files: ['**/vite.config.*', 'packages/e2e-tests/**'],
+		files: ['**/vite.config.*', 'packages/e2e-tests/**', '**/*.d.ts'],
 		rules: {
 			'no-unused-vars': 'off',
 			'@typescript-eslint/no-unused-vars': 'off'
