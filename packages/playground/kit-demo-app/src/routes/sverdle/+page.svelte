@@ -3,6 +3,7 @@
 	import { enhance } from '$app/forms';
 
 	import { reduced_motion } from './reduced-motion';
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	reduced_motion; // TODO workaround for https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 	/** @type {import('./$types').PageData} */
 	export let data;

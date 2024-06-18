@@ -1,4 +1,3 @@
-import html from 'eslint-plugin-html';
 import markdown from 'eslint-plugin-markdown';
 import globals from 'globals';
 import n from 'eslint-plugin-n';
@@ -6,6 +5,7 @@ import svelte_config from '@sveltejs/eslint-config';
 
 export default [
 	{
+		name: 'local/ignores',
 		ignores: [
 			'**/temp/**',
 			'**/dist/**',
@@ -20,44 +20,25 @@ export default [
 	},
 	...svelte_config, // contains setup for svelte, typescript and unicorn
 	n.configs['flat/recommended-module'],
+	...markdown.configs.recommended,
 	{
-		plugins: {
-			html,
-			markdown
-		},
-
+		name: 'local/language-options',
 		languageOptions: {
 			globals: {
 				Atomics: 'readonly',
-				SharedArrayBuffer: 'readonly',
-				$derived: 'readonly',
-				$effect: 'readonly',
-				$props: 'readonly',
-				$state: 'readonly'
+				SharedArrayBuffer: 'readonly'
 			},
 			ecmaVersion: 2022,
 			sourceType: 'module'
-		},
-
+		}
+	},
+	{
+		name: 'local/generic-rules',
 		rules: {
 			'n/no-unsupported-features/es-builtins': 'error',
 			'n/no-unsupported-features/es-syntax': 'error',
 			'no-console': 'off',
 			'no-debugger': 'error',
-
-			'n/no-missing-import': [
-				'error',
-				{
-					allowModules: ['types', 'estree', 'testUtils', '@sveltejs/vite-plugin-svelte', 'svelte']
-				}
-			],
-
-			'n/no-missing-require': [
-				'error',
-				{
-					allowModules: ['pnpapi']
-				}
-			],
 
 			'n/no-extraneous-import': [
 				'error',
@@ -65,15 +46,6 @@ export default [
 					allowModules: ['vite', 'vitest']
 				}
 			],
-
-			'n/no-extraneous-require': [
-				'error',
-				{
-					allowModules: ['vite']
-				}
-			],
-
-			'n/no-deprecated-api': 'off',
 
 			'no-restricted-properties': [
 				'error',
@@ -106,12 +78,14 @@ export default [
 		}
 	},
 	{
-		files: ['packages/vite-plugin-svelte/src/**'],
+		name: 'local/packages-src',
+		files: ['packages/*/src/**'],
 		rules: {
 			'no-console': 'error'
 		}
 	},
 	{
+		name: 'local/inspector-extras',
 		files: [
 			'packages/vite-plugin-svelte-inspector/src/runtime/load-inspector.js',
 			'packages/vite-plugin-svelte-inspector/src/runtime/Inspector.svelte'
@@ -127,47 +101,15 @@ export default [
 		}
 	},
 	{
-		files: ['**/*.d.ts'],
-
-		rules: {
-			'no-unused-vars': 'off'
-		}
-	},
-	{
+		name: 'local/tests-and-playground-rules',
 		files: ['packages/e2e-tests/**', 'packages/playground/**'],
 
-		languageOptions: {
-			globals: {
-				...globals.browser
-			}
-		},
-
 		rules: {
-			'n/no-extraneous-import': 'off',
-			'n/no-extraneous-require': 'off',
-			'no-unused-vars': 'off'
+			'n/no-extraneous-import': 'off'
 		}
 	},
 	{
-		files: [
-			'packages/e2e-tests/_test_dependencies/cjs-only/**',
-			'packages/e2e-tests/_test_dependencies/index-only/**',
-			'packages/e2e-tests/_test_dependencies/vite-plugins/**'
-		],
-
-		rules: {
-			'no-undef': 'off'
-		}
-	},
-	{
-		files: ['packages/e2e-tests/**/vite.config.js', 'packages/playground/**'],
-
-		rules: {
-			'no-unused-vars': 'off',
-			'n/no-missing-require': 'off'
-		}
-	},
-	{
+		name: 'local/svelte-files',
 		files: ['**/*.svelte'],
 
 		languageOptions: {
@@ -184,18 +126,32 @@ export default [
 		}
 	},
 	{
-		files: ['**/*.svx', '**/*.md'],
+		name: 'local/svelte-runes-globals',
+		files: [
+			'**/*.svelte',
+			'**/*.svelte.js',
+			'**/*.svelte.ts',
+			'**/*.svelte.*.js',
+			'**/*.svelte.*.ts'
+		],
+		languageOptions: {
+			globals: {
+				...globals.browser,
+				$derived: 'readonly',
+				$effect: 'readonly',
+				$props: 'readonly',
+				$state: 'readonly'
+			}
+		}
+	},
+	{
+		name: 'local/markdown',
+		files: ['**/*.md'],
 		processor: 'markdown/markdown'
 	},
 	{
-		files: [
-			'**/*.svx/*.js',
-			'**/*.md/*.js',
-			'**/*.svx/*.ts',
-			'**/*.md/*.ts',
-			'**/*.svx/*.svelte',
-			'**/*.md/*.svelte'
-		],
+		name: 'local/markdown-codefences',
+		files: ['**/*.md/*.js', '**/*.md/*.ts', '**/*.md/*.svelte'],
 
 		rules: {
 			'no-undef': 'off',
@@ -211,6 +167,7 @@ export default [
 		}
 	},
 	{
+		name: 'local/spec-files',
 		files: ['**/__tests__/**/*.spec.ts'],
 
 		languageOptions: {
@@ -228,32 +185,18 @@ export default [
 		}
 	},
 	{
-		files: ['packages/playground/kit-demo-app/src/**'],
-
-		rules: {
-			'n/no-missing-import': 'off',
-			'n/no-unsupported-features/node-builtins': 'off'
-		}
-	},
-	{
+		name: 'local/dts-files',
 		files: ['**/*.d.ts'],
-
 		rules: {
 			'no-unused-vars': 'off'
 		}
 	},
 	{
+		name: 'local/allow-unused-vars',
 		files: ['**/vite.config.*', 'packages/e2e-tests/**'],
-
 		rules: {
 			'no-unused-vars': 'off',
 			'@typescript-eslint/no-unused-vars': 'off'
-		}
-	},
-	{
-		files: ['packages/playground/**'],
-		rules: {
-			'@typescript-eslint/no-unused-expressions': 'off'
 		}
 	}
 ];
