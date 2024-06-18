@@ -2,7 +2,7 @@ import markdown from 'eslint-plugin-markdown';
 import globals from 'globals';
 import n from 'eslint-plugin-n';
 import svelte_config from '@sveltejs/eslint-config';
-
+import svelteParser from 'svelte-eslint-parser';
 export default [
 	{
 		name: 'local/ignores',
@@ -123,21 +123,9 @@ export default [
 	},
 	{
 		name: 'local/svelte-runes-globals',
-		files: [
-			'**/*.svelte',
-			'**/*.svelte.js',
-			'**/*.svelte.ts',
-			'**/*.svelte.*.js',
-			'**/*.svelte.*.ts'
-		],
+		files: ['**/*.svelte.js', '**/*.svelte.ts', '**/*.svelte.*.js', '**/*.svelte.*.ts'],
 		languageOptions: {
-			globals: {
-				...globals.browser,
-				$derived: 'readonly',
-				$effect: 'readonly',
-				$props: 'readonly',
-				$state: 'readonly'
-			}
+			parser: svelteParser
 		}
 	},
 	{
