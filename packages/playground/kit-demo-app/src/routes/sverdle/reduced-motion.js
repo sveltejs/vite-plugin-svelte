@@ -1,4 +1,5 @@
 import { readable } from 'svelte/store';
+// eslint-disable-next-line n/no-missing-import
 import { browser } from '$app/environment';
 
 const reduced_motion_query = '(prefers-reduced-motion: reduce)';

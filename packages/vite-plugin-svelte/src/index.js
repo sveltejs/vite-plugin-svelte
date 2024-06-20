@@ -39,7 +39,6 @@ export function svelte(inlineOptions) {
 	let viteConfig;
 	/** @type {import('./types/compile.d.ts').CompileSvelte} */
 	let compileSvelte;
-	/* eslint-enable no-unused-vars */
 	/** @type {import('./types/plugin-api.d.ts').PluginAPI} */
 	const api = {};
 	/** @type {import('vite').Plugin[]} */

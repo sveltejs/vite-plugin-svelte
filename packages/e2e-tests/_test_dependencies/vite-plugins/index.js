@@ -1,10 +1,10 @@
-const path = require('node:path');
-const fs = require('node:fs');
+import path from 'node:path';
+import fs from 'node:fs';
 /**
  * Ensure transform flow is not interrupted
  * @returns {import('vite').Plugin[]}
  */
-function transformValidation() {
+export function transformValidation() {
 	return [
 		{
 			name: 'transform-validation:1',
@@ -40,13 +40,11 @@ function transformValidation() {
 	];
 }
 
-module.exports.transformValidation = transformValidation;
-
 /**
  * write resolved config
  * @returns {import('vite').Plugin}
  */
-function writeResolvedConfig() {
+export function writeResolvedConfig() {
 	let cmd;
 	return {
 		name: 'writeResolvedConfig',
@@ -72,5 +70,3 @@ function writeResolvedConfig() {
 		}
 	};
 }
-
-module.exports.writeResolvedConfig = writeResolvedConfig;

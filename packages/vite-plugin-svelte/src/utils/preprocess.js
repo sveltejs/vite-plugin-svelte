@@ -42,7 +42,7 @@ function buildExtraPreprocessors(options, config) {
 	/** @type {import('svelte/compiler').PreprocessorGroup[]} */
 	const appendPreprocessors = [];
 
-	// @ts-ignore
+	// @ts-expect-error not typed
 	const pluginsWithPreprocessorsDeprecated = config.plugins.filter((p) => p?.sveltePreprocess);
 	if (pluginsWithPreprocessorsDeprecated.length > 0) {
 		log.warn(
@@ -56,7 +56,7 @@ function buildExtraPreprocessors(options, config) {
 				p.api = {};
 			}
 			if (p.api.sveltePreprocess === undefined) {
-				// @ts-ignore
+				// @ts-expect-error not typed
 				p.api.sveltePreprocess = p.sveltePreprocess;
 			} else {
 				log.error(

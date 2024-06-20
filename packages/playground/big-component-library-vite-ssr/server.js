@@ -46,7 +46,7 @@ app.use('*', async (req, res) => {
 			render = (await vite.ssrLoadModule('/src/entry-server.js')).render;
 		} else {
 			template = templateHtml;
-			//eslint-disable-next-line n/no-missing-import
+			// eslint-disable-next-line n/no-missing-import
 			render = (await import('./dist/server/entry-server.js')).render;
 		}
 

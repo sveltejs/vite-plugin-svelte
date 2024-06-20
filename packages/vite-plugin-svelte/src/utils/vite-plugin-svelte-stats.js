@@ -89,6 +89,7 @@ export class VitePluginSvelteStats {
 		/** @type {import('../types/vite-plugin-svelte-stats.d.ts').Stat[]} */
 		const stats = [];
 		const collectionStart = performance.now();
+
 		const _this = this;
 		let hasLoggedProgress = false;
 		/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} */

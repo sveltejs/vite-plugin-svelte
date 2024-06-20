@@ -67,7 +67,6 @@ describe('vitePreprocess', () => {
 				filename: `${fixtureDir}/File.svelte`
 			});
 			expect(processed).toBeDefined();
-			// @ts-ignore
 			const { code, map, dependencies } = processed;
 			expect(code).toBe('.foo {\n  color: green;\n}\n\n.foo.bar {\n  color: red;\n}');
 			expect(map.file).toBe('File.svelte');

@@ -1,14 +1,14 @@
 import type { Warning } from 'svelte/compiler';
 
 export interface LogFn extends SimpleLogFn {
-	(message: string, payload?: any, namespace?: string): void;
+	(message: string, payload?: unknown, namespace?: string): void;
 
 	enabled: boolean;
 	once: SimpleLogFn;
 }
 
 export interface SimpleLogFn {
-	(message: string, payload?: any, namespace?: string): void;
+	(message: string, payload?: unknown, namespace?: string): void;
 }
 
 export type SvelteWarningsMessage = {

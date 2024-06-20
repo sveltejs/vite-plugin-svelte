@@ -132,7 +132,7 @@ export function createCompileSvelte() {
 		/** @type {import('svelte/compiler').CompileResult} */
 		let compiled;
 		try {
-			compiled = svelte.compile(finalCode, { ...finalCompileOptions, filename: filename });
+			compiled = svelte.compile(finalCode, { ...finalCompileOptions, filename });
 			// patch output with partial accept until svelte does it
 			// TODO remove later
 			if (
@@ -182,7 +182,6 @@ export function createCompileSvelte() {
 			filename,
 			normalizedFilename,
 			lang,
-			// @ts-ignore
 			compiled,
 			ssr,
 			dependencies,
