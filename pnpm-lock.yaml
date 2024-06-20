@@ -30,7 +30,7 @@ importers:
         version: 2.1.0(eslint@9.4.0)
       '@sveltejs/eslint-config':
         specifier: ^7.0.1
-        version: 7.0.1(@stylistic/eslint-plugin-js@2.1.0(eslint@9.4.0))(eslint-config-prettier@9.1.0(eslint@9.4.0))(eslint-plugin-svelte@2.40.0(eslint@9.4.0)(svelte@5.0.0-next.153))(eslint-plugin-unicorn@53.0.0(eslint@9.4.0))(eslint@9.4.0)(typescript-eslint@8.0.0-alpha.30(eslint@9.4.0)(typescript@5.4.5))(typescript@5.4.5)
+        version: 7.0.1(@stylistic/eslint-plugin-js@2.1.0(eslint@9.4.0))(eslint-config-prettier@9.1.0(eslint@9.4.0))(eslint-plugin-svelte@2.40.0(eslint@9.4.0)(svelte@5.0.0-next.153))(eslint-plugin-unicorn@54.0.0(eslint@9.4.0))(eslint@9.4.0)(typescript-eslint@8.0.0-alpha.30(eslint@9.4.0)(typescript@5.4.5))(typescript@5.4.5)
       '@svitejs/changesets-changelog-github-compact':
         specifier: ^1.1.0
         version: 1.1.0
@@ -65,8 +65,8 @@ importers:
         specifier: ^2.40.0
         version: 2.40.0(eslint@9.4.0)(svelte@5.0.0-next.153)
       eslint-plugin-unicorn:
-        specifier: ^53.0.0
-        version: 53.0.0(eslint@9.4.0)
+        specifier: ^54.0.0
+        version: 54.0.0(eslint@9.4.0)
       execa:
         specifier: ^8.0.1
         version: 8.0.1
@@ -2452,8 +2452,8 @@ packages:
       svelte:
         optional: true
 
-  eslint-plugin-unicorn@53.0.0:
-    resolution: {integrity: sha512-kuTcNo9IwwUCfyHGwQFOK/HjJAYzbODHN3wP0PgqbW+jbXqpNWxNVpVhj2tO9SixBwuAdmal8rVcWKBxwFnGuw==}
+  eslint-plugin-unicorn@54.0.0:
+    resolution: {integrity: sha512-XxYLRiYtAWiAjPv6z4JREby1TAE2byBC7wlh0V4vWDCpccOSU1KovWV//jqPXF6bq3WKxqX9rdjoRQ1EhdmNdQ==}
     engines: {node: '>=18.18'}
     peerDependencies:
       eslint: '>=8.56.0'
@@ -5097,13 +5097,13 @@ snapshots:
       '@sveltejs/kit': 2.5.10(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.0.0-next.153)(vite@5.2.13(@types/node@20.11.5)(sass@1.77.6)(stylus@0.63.0))
       rollup: 4.9.6
 
-  '@sveltejs/eslint-config@7.0.1(@stylistic/eslint-plugin-js@2.1.0(eslint@9.4.0))(eslint-config-prettier@9.1.0(eslint@9.4.0))(eslint-plugin-svelte@2.40.0(eslint@9.4.0)(svelte@5.0.0-next.153))(eslint-plugin-unicorn@53.0.0(eslint@9.4.0))(eslint@9.4.0)(typescript-eslint@8.0.0-alpha.30(eslint@9.4.0)(typescript@5.4.5))(typescript@5.4.5)':
+  '@sveltejs/eslint-config@7.0.1(@stylistic/eslint-plugin-js@2.1.0(eslint@9.4.0))(eslint-config-prettier@9.1.0(eslint@9.4.0))(eslint-plugin-svelte@2.40.0(eslint@9.4.0)(svelte@5.0.0-next.153))(eslint-plugin-unicorn@54.0.0(eslint@9.4.0))(eslint@9.4.0)(typescript-eslint@8.0.0-alpha.30(eslint@9.4.0)(typescript@5.4.5))(typescript@5.4.5)':
     dependencies:
       '@stylistic/eslint-plugin-js': 2.1.0(eslint@9.4.0)
       eslint: 9.4.0
       eslint-config-prettier: 9.1.0(eslint@9.4.0)
       eslint-plugin-svelte: 2.40.0(eslint@9.4.0)(svelte@5.0.0-next.153)
-      eslint-plugin-unicorn: 53.0.0(eslint@9.4.0)
+      eslint-plugin-unicorn: 54.0.0(eslint@9.4.0)
       globals: 15.4.0
       typescript: 5.4.5
       typescript-eslint: 8.0.0-alpha.30(eslint@9.4.0)(typescript@5.4.5)
@@ -6089,7 +6089,7 @@ snapshots:
     transitivePeerDependencies:
       - ts-node
 
-  eslint-plugin-unicorn@53.0.0(eslint@9.4.0):
+  eslint-plugin-unicorn@54.0.0(eslint@9.4.0):
     dependencies:
       '@babel/helper-validator-identifier': 7.24.5
       '@eslint-community/eslint-utils': 4.4.0(eslint@9.4.0)
