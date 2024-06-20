@@ -4,6 +4,7 @@ import treeKill from 'tree-kill';
 import fs from 'node:fs';
 import path from 'node:path';
 const isWin = process.platform === 'win32';
+import { execSync } from 'node:child_process';
 
 async function startedOnPort(serverProcess, port, timeout) {
 	let id;
@@ -130,7 +131,7 @@ export async function serve(root, isBuild, port) {
 					});
 				});
 			} else {
-				serverProcess.cancel();
+				serverProcess.kill('SIGTERM');
 			}
 
 			try {
