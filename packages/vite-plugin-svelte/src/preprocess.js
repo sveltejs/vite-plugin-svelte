@@ -103,10 +103,11 @@ async function createCssTransform(style, config) {
 	} else if (isResolvedConfig(config)) {
 		resolvedConfig = config;
 	} else {
-		resolvedConfig = await resolveConfig(
-			config,
-			process.env.NODE_ENV === 'production' ? 'build' : 'serve'
-		);
+		// default to "build" if no NODE_ENV is set to avoid running in dev mode for svelte-check etc.
+		const useBuild = !process.env.NODE_ENV || process.env.NODE_ENV === 'production';
+		const command = useBuild ? 'build' : 'serve';
+		const defaultMode = useBuild ? 'production' : 'development';
+		resolvedConfig = await resolveConfig(config, command, defaultMode, defaultMode, false);
 	}
 	return async (code, filename) => {
 		return preprocessCSS(code, filename, resolvedConfig);
