@@ -1,7 +1,7 @@
 import markdown from 'eslint-plugin-markdown';
 import globals from 'globals';
 import n from 'eslint-plugin-n';
-import svelte_config from '@sveltejs/eslint-config';
+import svelteOrgEslintConfig from '@sveltejs/eslint-config';
 import svelteParser from 'svelte-eslint-parser';
 export default [
 	{
@@ -18,7 +18,7 @@ export default [
 			'packages/*/CHANGELOG.md'
 		]
 	},
-	...svelte_config, // contains setup for svelte, typescript and unicorn
+	...svelteOrgEslintConfig, // contains setup for svelte, typescript and unicorn
 	n.configs['flat/recommended-module'],
 	...markdown.configs.recommended,
 	{
@@ -127,11 +127,6 @@ export default [
 		languageOptions: {
 			parser: svelteParser
 		}
-	},
-	{
-		name: 'local/markdown',
-		files: ['**/*.md'],
-		processor: 'markdown/markdown'
 	},
 	{
 		name: 'local/markdown-codefences',
