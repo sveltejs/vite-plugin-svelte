@@ -4,7 +4,6 @@ import treeKill from 'tree-kill';
 import fs from 'node:fs';
 import path from 'node:path';
 const isWin = process.platform === 'win32';
-import { execSync } from 'node:child_process';
 
 async function startedOnPort(serverProcess, port, timeout) {
 	let id;
@@ -112,8 +111,11 @@ export async function serve(root, isBuild, port) {
 
 	const serverProcess = execa('pnpm', [isBuild ? 'preview' : 'dev', '--port', port], {
 		cwd: root,
-		stdio: 'pipe'
+		stdio: 'pipe',
+		encoding: 'utf8',
+		verbose: 'short'
 	});
+	console.log(`started ${'pnpm ' + [isBuild ? 'preview' : 'dev', '--port', port].join(' ')}`);
 	const out = [],
 		err = [];
 	logs.server = { out, err };
@@ -122,6 +124,7 @@ export async function serve(root, isBuild, port) {
 	const closeServer = async () => {
 		if (serverProcess) {
 			if (serverProcess.pid) {
+				console.log('killing with pid and treekill');
 				await new Promise((resolve) => {
 					treeKill(serverProcess.pid, (err) => {
 						if (err) {
@@ -131,12 +134,16 @@ export async function serve(root, isBuild, port) {
 					});
 				});
 			} else {
+				console.log('killing with SIGTERM');
 				serverProcess.kill('SIGTERM');
 			}
 
 			try {
+				console.log('awaiting server process end');
 				await serverProcess;
+				console.log('server process done');
 			} catch (e) {
+				console.log('server process failed', e);
 				if (e.stdout) {
 					pushLines(e.stdout, out);
 				}
