@@ -2,8 +2,9 @@ import os from 'node:os';
 import fs from 'fs-extra';
 import path from 'node:path';
 import { chromium } from 'playwright-core';
-import { execa } from 'execa';
+import spawn from 'cross-spawn';
 import { fileURLToPath } from 'node:url';
+import { once } from 'node:events';
 
 const tempTestDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'temp');
 
@@ -17,9 +18,10 @@ const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
 const syncNodeModules = async () => {
 	// tests use symbolic linked node_modules directories. make sure the workspace is up for it
 	console.log('syncing node_modules');
-	await execa('pnpm', ['install', '--frozen-lockfile', '--prefer-offline', '--silent'], {
+	const install = spawn('pnpm', ['install', '--frozen-lockfile', '--silent'], {
 		stdio: 'inherit'
 	});
+	await once(install, 'exit');
 	console.log('syncing node_modules done');
 };
 

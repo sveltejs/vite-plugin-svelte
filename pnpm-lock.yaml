@@ -34,6 +34,9 @@ importers:
       '@svitejs/changesets-changelog-github-compact':
         specifier: ^1.1.0
         version: 1.1.0
+      '@types/cross-spawn':
+        specifier: ^6.0.6
+        version: 6.0.6
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
@@ -41,6 +44,9 @@ importers:
         specifier: ^20.14.6
         version: 20.14.6
       cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      cross-spawn:
         specifier: ^7.0.3
         version: 7.0.3
       dts-buddy:
@@ -67,9 +73,6 @@ importers:
       eslint-plugin-unicorn:
         specifier: ^54.0.0
         version: 54.0.0(eslint@9.5.0)
-      execa:
-        specifier: ^8.0.1
-        version: 8.0.1
       fs-extra:
         specifier: ^11.2.0
         version: 11.2.0
@@ -121,6 +124,9 @@ importers:
 
   packages/e2e-tests:
     devDependencies:
+      cross-spawn:
+        specifier: ^7.0.3
+        version: 7.0.3
       css-color-names:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1468,6 +1474,9 @@ packages:
 
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
+
+  '@types/cross-spawn@6.0.6':
+    resolution: {integrity: sha512-fXRhhUkG4H3TQk5dBhQ7m/JDdSNHKwR2BBia62lhwEIq9xGiQKLxd6LymNhn47SjXhsUEPmxi+PKw2OkW4LLjA==}
 
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
@@ -4858,6 +4867,10 @@ snapshots:
   '@tsconfig/svelte@5.0.4': {}
 
   '@types/cookie@0.6.0': {}
+
+  '@types/cross-spawn@6.0.6':
+    dependencies:
+      '@types/node': 20.11.5
 
   '@types/debug@4.1.12':
     dependencies:

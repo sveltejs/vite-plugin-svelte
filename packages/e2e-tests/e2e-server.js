@@ -1,8 +1,9 @@
 // script to start package.json dev/build/preview scripts with execa for e2e tests
-import { execa } from 'execa';
+import spawn from 'cross-spawn';
 import treeKill from 'tree-kill';
 import fs from 'node:fs';
 import path from 'node:path';
+import { once } from 'node:events';
 const isWin = process.platform === 'win32';
 
 async function startedOnPort(serverProcess, port, timeout) {
@@ -83,16 +84,17 @@ export async function serve(root, isBuild, port) {
 		const err = [];
 
 		try {
-			const buildProcess = execa('pnpm', ['build'], {
+			const buildProcess = spawn('pnpm', ['build'], {
 				cwd: root,
 				stdio: 'pipe',
 				env: {
+					...process.env,
 					NODE_ENV: 'production'
 				}
 			});
 			logs.build = { out, err };
 			collectLogs(buildProcess, logs.build);
-			await buildProcess;
+			await once(buildProcess, 'exit');
 		} catch (e) {
 			buildResult = e;
 			if (buildResult.stdout) {
@@ -109,7 +111,7 @@ export async function serve(root, isBuild, port) {
 		}
 	}
 
-	const serverProcess = execa('pnpm', [isBuild ? 'preview' : 'dev', '--port', port], {
+	const serverProcess = spawn('pnpm', [isBuild ? 'preview' : 'dev', '--port', port], {
 		cwd: root,
 		stdio: 'pipe'
 	});
@@ -130,11 +132,11 @@ export async function serve(root, isBuild, port) {
 					});
 				});
 			} else {
-				serverProcess.cancel();
+				serverProcess.kill();
 			}
 
 			try {
-				await serverProcess;
+				await once(serverProcess, 'exit');
 			} catch (e) {
 				if (e.stdout) {
 					pushLines(e.stdout, out);
