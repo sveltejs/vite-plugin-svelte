@@ -16,7 +16,8 @@ function snapshotFilename(name: string) {
 	return `./__snapshots__/svelte-${svelteMajor}/${name}.txt`;
 }
 
-describe('raw', () => {
+// TODO remove .skip in this file once svelte5 output is considered stable
+describe.skip('raw', () => {
 	test('does not have failed requests', async () => {
 		browserLogs.forEach((msg) => {
 			expect(msg).not.toMatch('404');
@@ -88,7 +89,7 @@ describe('raw', () => {
 
 // vitest prints a warning about obsolete snapshots during build tests, ignore it, they are used in dev tests.
 // always regenerate snapshots with `pnpm test:serve import-queries -u` and check the diffs if they are correct
-describe.runIf(isBuild)('snapshots not obsolete warning', async () => {
+describe.skip.runIf(isBuild)('snapshots not obsolete warning', async () => {
 	afterAll(() => {
 		console.log(
 			'Ignore the obsolete snapshot warnings for ssrLoadModule snapshots from vitest during test:build, they are used in test:serve'
@@ -99,7 +100,7 @@ describe.runIf(isBuild)('snapshots not obsolete warning', async () => {
 	});
 });
 
-describe.runIf(!isBuild)('direct', () => {
+describe.skip.runIf(!isBuild)('direct', () => {
 	test('Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css', async () => {
 		const response = await fetchFromPage(
 			'src/Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css',
@@ -127,7 +128,7 @@ describe.runIf(!isBuild)('direct', () => {
 	});
 });
 
-describe.runIf(!isBuild)('ssrLoadModule', () => {
+describe.skip.runIf(!isBuild)('ssrLoadModule', () => {
 	let vite: ViteDevServer;
 	let ssrLoadDummy;
 	beforeAll(async () => {
