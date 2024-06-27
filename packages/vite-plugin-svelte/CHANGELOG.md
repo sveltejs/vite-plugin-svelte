@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.4
+### Patch Changes
+
+
+- fix(vitePreprocess): default to build config so that svelte-check does not trigger dev-only plugins ([#931](https://github.com/sveltejs/vite-plugin-svelte/pull/931))
+
 ## 4.0.0-next.3
 ### Patch Changes
 
