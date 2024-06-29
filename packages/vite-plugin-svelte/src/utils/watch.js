@@ -22,7 +22,7 @@ export function setupWatchers(options, cache, requestParser) {
 		dependants.forEach((dependant) => {
 			if (fs.existsSync(dependant)) {
 				log.debug(
-					`emitting virtual change event for "${dependant}" because depdendency "${filename}" changed`,
+					`emitting virtual change event for "${dependant}" because dependency "${filename}" changed`,
 					undefined,
 					'hmr'
 				);
