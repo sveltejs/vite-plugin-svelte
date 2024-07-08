@@ -1,20 +1,24 @@
+import { createRequire } from 'node:module';
+
 export const VITE_RESOLVE_MAIN_FIELDS = ['browser', 'module', 'jsnext:main', 'jsnext'];
 
 export const SVELTE_RESOLVE_MAIN_FIELDS = ['svelte'];
 
-export const SVELTE_IMPORTS = [
-	'svelte/animate',
-	'svelte/easing',
-	'svelte/internal',
-	'svelte/internal/disclose-version',
-	'svelte/motion',
-	'svelte/store',
-	'svelte/transition',
-	'svelte/server',
-	'svelte/internal/server',
-	'svelte/legacy',
-	'svelte'
-];
+export const SVELTE_IMPORTS = Object.entries(
+	createRequire(import.meta.url)('svelte/package.json').exports
+)
+	.map(([name, config]) => {
+		// ignore type only
+		if (typeof config === 'object' && Object.keys(config).length === 1 && config.types) {
+			return '';
+		}
+		// ignore names
+		if (name === './package.json' || name === './compiler') {
+			return '';
+		}
+		return name.replace(/^\./, 'svelte');
+	})
+	.filter((s) => s.length > 0);
 
 export const SVELTE_EXPORT_CONDITIONS = ['svelte'];
 
