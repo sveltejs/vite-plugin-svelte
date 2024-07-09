@@ -237,3 +237,17 @@ See the faq about [vite and prebundling](#what-is-going-on-with-vite-and-pre-bun
 > [svelte-package](https://kit.svelte.dev/docs/packaging) which already supports it.
 >
 > For backwards compatibility, you can keep the `svelte` field in addition to the `exports` condition. But make sure that both always resolve to the same files.
+
+### How can I use relative paths for asset references in svelte components like `<img src="./asset.png">`
+
+This is not supported out of the box. To resolve assets, you have to either import them like this:
+
+```html
+<script>
+  import assetUrl from './asset.png';
+</script>
+<img src="{assetUrl}" />
+```
+
+or use a separate tool to add this functionality.
+The 2 recommended solutions are [sveltejs/enhanced-img](https://kit.svelte.dev/docs/images#sveltejs-enhanced-img) (only for image elements) and [svelte-preprocess-import-assets](https://www.npmjs.com/package/svelte-preprocess-import-assets) (for all asset URLs).
