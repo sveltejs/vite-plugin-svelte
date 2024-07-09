@@ -18,7 +18,7 @@ export default [
 			'packages/*/CHANGELOG.md'
 		]
 	},
-	...svelteOrgEslintConfig, // contains setup for svelte, typescript and unicorn
+	...svelteOrgEslintConfig, // contains setup for svelte and typescript
 	n.configs['flat/recommended-module'],
 	...markdown.configs.recommended,
 	{
@@ -68,9 +68,7 @@ export default [
 				{
 					avoidEscape: true
 				}
-			],
-
-			'unicorn/prefer-node-protocol': 'error'
+			]
 		}
 	},
 	{
