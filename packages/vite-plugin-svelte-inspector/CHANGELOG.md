@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 3.0.0-next.3
+### Major Changes
+
+
+- breaking(types): some types that have been unintentionally public are now private ([#934](https://github.com/sveltejs/vite-plugin-svelte/pull/934))
+
+
+### Patch Changes
+
+- Updated dependencies [[`ab2dd120e82edc39632d046bec3553e0da211285`](https://github.com/sveltejs/vite-plugin-svelte/commit/ab2dd120e82edc39632d046bec3553e0da211285), [`ab2dd120e82edc39632d046bec3553e0da211285`](https://github.com/sveltejs/vite-plugin-svelte/commit/ab2dd120e82edc39632d046bec3553e0da211285), [`e9f048c362a0769b3d5afa87da6f8398f46fe1a9`](https://github.com/sveltejs/vite-plugin-svelte/commit/e9f048c362a0769b3d5afa87da6f8398f46fe1a9), [`c5253aed244b31e9edf114053316232cd0166c03`](https://github.com/sveltejs/vite-plugin-svelte/commit/c5253aed244b31e9edf114053316232cd0166c03)]:
+  - @sveltejs/vite-plugin-svelte@4.0.0-next.4
+
 ## 3.0.0-next.2
 ### Patch Changes
 

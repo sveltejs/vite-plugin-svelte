@@ -1,5 +1,29 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.4
+### Major Changes
+
+
+- breaking(types): some types that have been unintentionally public are now private ([#934](https://github.com/sveltejs/vite-plugin-svelte/pull/934))
+
+
+### Minor Changes
+
+
+- feat(config): dynamically extract list of svelte exports from peer dependency so that new exports work automatically" ([#941](https://github.com/sveltejs/vite-plugin-svelte/pull/941))
+
+
+### Patch Changes
+
+
+- fix(optimizeDeps): avoid to optimise server only entrypoints of svelte that are never used on the client ([#941](https://github.com/sveltejs/vite-plugin-svelte/pull/941))
+
+
+- fix(vitePreprocess): default to build config so that svelte-check does not trigger dev-only plugins ([#931](https://github.com/sveltejs/vite-plugin-svelte/pull/931))
+
+- Updated dependencies [[`e9f048c362a0769b3d5afa87da6f8398f46fe1a9`](https://github.com/sveltejs/vite-plugin-svelte/commit/e9f048c362a0769b3d5afa87da6f8398f46fe1a9)]:
+  - @sveltejs/vite-plugin-svelte-inspector@3.0.0-next.3
+
 ## 4.0.0-next.3
 ### Patch Changes
 
