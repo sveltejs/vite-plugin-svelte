@@ -553,7 +553,9 @@ function buildExtraConfigForSvelte(config) {
 	/** @type {string[]} */
 	const exclude = [];
 	if (!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
-		const svelteImportsToInclude = SVELTE_IMPORTS;
+		const svelteImportsToInclude = SVELTE_IMPORTS.filter(
+			(si) => !(si.endsWith('/server') || si.includes('/server/'))
+		);
 		log.debug(
 			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `,
 			undefined,
