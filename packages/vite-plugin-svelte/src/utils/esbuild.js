@@ -65,7 +65,8 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		...options.compilerOptions,
 		css,
 		filename,
-		generate: 'client'
+		generate: 'client',
+		hmr: false
 	};
 
 	let preprocessed;

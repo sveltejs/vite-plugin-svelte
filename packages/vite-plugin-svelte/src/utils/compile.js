@@ -59,6 +59,7 @@ export function createCompileSvelte() {
 		/** @type {import('svelte/compiler').CompileOptions} */
 		const compileOptions = {
 			...options.compilerOptions,
+			hmr: options.compilerOptions.hmr && !normalizedFilename.includes('/node_modules/'),
 			filename,
 			generate: ssr ? 'server' : 'client'
 		};
