@@ -77,9 +77,12 @@ async function compileSvelte(options, { filename, code }, normalizeFilename, sta
 		generate: 'client'
 	};
 
-	if (compileOptions.hmr && options.emitCss) {
-		const hash = `s-${safeBase64Hash(normalizeFilename(filename))}`;
-		compileOptions.cssHash = () => hash;
+	if (compileOptions.hmr) {
+		if (options.emitCss) {
+			const hash = `s-${safeBase64Hash(normalizeFilename(filename))}`;
+			compileOptions.cssHash = () => hash;
+		}
+		compileOptions.hmr = false;
 	}
 
 	let preprocessed;
