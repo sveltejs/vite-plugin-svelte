@@ -141,7 +141,7 @@ function normalize(filename, normalizedRoot) {
  * create a normalizer function for root
  *
  * @param {string} root
- * @returns {function(filename: string): string}
+ * @returns {(filename: string) => string}
  */
 export function buildFilenameNormalizer(root) {
 	const normalizedRoot = normalizePath(root);
