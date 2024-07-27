@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.5
+### Patch Changes
+
+
+- fix(dev): compile with hmr: false for prebundled deps as hmr does not work with that ([#950](https://github.com/sveltejs/vite-plugin-svelte/pull/950))
+
+
+- fix(dev): make sure custom cssHash is applied consistently even for prebundled components to avoid hash mismatches during hydration ([#950](https://github.com/sveltejs/vite-plugin-svelte/pull/950))
+
 ## 4.0.0-next.4
 ### Major Changes
 
