@@ -87,20 +87,7 @@ describe.skip('raw', () => {
 	});
 });
 
-// vitest prints a warning about obsolete snapshots during build tests, ignore it, they are used in dev tests.
-// always regenerate snapshots with `pnpm test:serve import-queries -u` and check the diffs if they are correct
-describe.skip.runIf(isBuild)('snapshots not obsolete warning', async () => {
-	afterAll(() => {
-		console.log(
-			'Ignore the obsolete snapshot warnings for ssrLoadModule snapshots from vitest during test:build, they are used in test:serve'
-		);
-	});
-	test('suite not empty', () => {
-		expect(true).toBe(true);
-	});
-});
-
-describe.skip.runIf(!isBuild)('direct', () => {
+describe.runIf(!isBuild).skip('direct', () => {
 	test('Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css', async () => {
 		const response = await fetchFromPage(
 			'src/Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css',
@@ -128,7 +115,7 @@ describe.skip.runIf(!isBuild)('direct', () => {
 	});
 });
 
-describe.skip.runIf(!isBuild)('ssrLoadModule', () => {
+describe.runIf(!isBuild).skip('ssrLoadModule', () => {
 	let vite: ViteDevServer;
 	let ssrLoadDummy;
 	beforeAll(async () => {
