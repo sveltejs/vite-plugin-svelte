@@ -133,19 +133,8 @@ function parseRequestQuery(rawQuery) {
  * @param {string} normalizedRoot
  * @returns {string}
  */
-function normalize(filename, normalizedRoot) {
+export function normalize(filename, normalizedRoot) {
 	return stripRoot(normalizePath(filename), normalizedRoot);
-}
-
-/**
- * create a normalizer function for root
- *
- * @param {string} root
- * @returns {(filename: string) => string}
- */
-export function buildFilenameNormalizer(root) {
-	const normalizedRoot = normalizePath(root);
-	return (filename) => normalize(filename, normalizedRoot);
 }
 
 /**

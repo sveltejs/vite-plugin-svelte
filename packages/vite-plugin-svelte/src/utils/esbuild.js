@@ -3,7 +3,7 @@ import * as svelte from 'svelte/compiler';
 import { log } from './log.js';
 import { toESBuildError } from './error.js';
 import { safeBase64Hash } from './hash.js';
-import { buildFilenameNormalizer } from './id.js';
+import { normalize } from './id.js';
 
 /**
  * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
@@ -28,7 +28,6 @@ export function esbuildSveltePlugin(options) {
 			const filter = /\.svelte(?:\?.*)?$/;
 			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 			let statsCollection;
-			const normalizeFilename = buildFilenameNormalizer(options.root);
 			build.onStart(() => {
 				statsCollection = options.stats?.startCollection('prebundle library components', {
 					logResult: (c) => c.stats.length > 1
@@ -37,12 +36,7 @@ export function esbuildSveltePlugin(options) {
 			build.onLoad({ filter }, async ({ path: filename }) => {
 				const code = readFileSync(filename, 'utf8');
 				try {
-					const contents = await compileSvelte(
-						options,
-						{ filename, code },
-						normalizeFilename,
-						statsCollection
-					);
+					const contents = await compileSvelte(options, { filename, code }, statsCollection);
 					return { contents };
 				} catch (e) {
 					return { errors: [toESBuildError(e, options)] };
@@ -58,11 +52,10 @@ export function esbuildSveltePlugin(options) {
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {{ filename: string, code: string }} input
- * @param {(filename: string) => string} normalizeFilename
  * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
  * @returns {Promise<string>}
  */
-async function compileSvelte(options, { filename, code }, normalizeFilename, statsCollection) {
+async function compileSvelte(options, { filename, code }, statsCollection) {
 	let css = options.compilerOptions.css;
 	if (css !== 'injected') {
 		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
@@ -79,7 +72,7 @@ async function compileSvelte(options, { filename, code }, normalizeFilename, sta
 
 	if (compileOptions.hmr) {
 		if (options.emitCss) {
-			const hash = `s-${safeBase64Hash(normalizeFilename(filename))}`;
+			const hash = `s-${safeBase64Hash(normalize(filename, options.root))}`;
 			compileOptions.cssHash = () => hash;
 		}
 		compileOptions.hmr = false;
