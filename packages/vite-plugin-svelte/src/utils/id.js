@@ -133,7 +133,7 @@ function parseRequestQuery(rawQuery) {
  * @param {string} normalizedRoot
  * @returns {string}
  */
-function normalize(filename, normalizedRoot) {
+export function normalize(filename, normalizedRoot) {
 	return stripRoot(normalizePath(filename), normalizedRoot);
 }
 

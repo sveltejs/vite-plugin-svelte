@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import * as svelte from 'svelte/compiler';
 import { log } from './log.js';
 import { toESBuildError } from './error.js';
+import { safeBase64Hash } from './hash.js';
+import { normalize } from './id.js';
 
 /**
  * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
@@ -49,7 +51,7 @@ export function esbuildSveltePlugin(options) {
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @param {{ filename: string; code: string }} input
+ * @param {{ filename: string, code: string }} input
  * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
  * @returns {Promise<string>}
  */
@@ -67,6 +69,14 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		filename,
 		generate: 'client'
 	};
+
+	if (compileOptions.hmr) {
+		if (options.emitCss) {
+			const hash = `s-${safeBase64Hash(normalize(filename, options.root))}`;
+			compileOptions.cssHash = () => hash;
+		}
+		compileOptions.hmr = false;
+	}
 
 	let preprocessed;
 
