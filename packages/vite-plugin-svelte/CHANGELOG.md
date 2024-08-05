@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.6
+### Patch Changes
+
+
+- ensure consistent use of compileOptions.hmr also for prebundling ([#956](https://github.com/sveltejs/vite-plugin-svelte/pull/956))
+
 ## 4.0.0-next.5
 ### Patch Changes
 
