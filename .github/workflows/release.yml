@@ -10,6 +10,7 @@ jobs:
   release:
     permissions:
       contents: write # to create release (changesets/action)
+      id-token: write # OpenID Connect token needed for provenance
       pull-requests: write # to create pull request (changesets/action)
     # prevents this action from running on forks
     if: github.repository == 'sveltejs/vite-plugin-svelte'
