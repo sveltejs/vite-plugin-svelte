@@ -10,7 +10,6 @@ import {
 } from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
 import { enhanceCompileError } from './error.js';
-import { isSvelte5 } from './svelte-version.js';
 
 // TODO this is a patched version of https://github.com/sveltejs/vite-plugin-svelte/pull/796/files#diff-3bce0b33034aad4b35ca094893671f7e7ddf4d27254ae7b9b0f912027a001b15R10
 // which is closer to the other regexes in at least not falling into commented script
@@ -63,8 +62,7 @@ export const _createCompileSvelte = (makeHot) => {
 		const compileOptions = {
 			...options.compilerOptions,
 			filename,
-			// @ts-expect-error svelte5 uses server/client, svelte4 uses ssr/dom
-			generate: isSvelte5 ? (ssr ? 'server' : 'client') : ssr ? 'ssr' : 'dom'
+			generate: ssr ? 'ssr' : 'dom'
 		};
 
 		if (options.hot && options.emitCss) {
@@ -203,8 +201,7 @@ export const _createCompileSvelte = (makeHot) => {
  * @returns {Function | undefined}
  */
 function buildMakeHot(options) {
-	const needsMakeHot =
-		!isSvelte5 && options.hot !== false && options.isServe && !options.isProduction;
+	const needsMakeHot = options.hot !== false && options.isServe && !options.isProduction;
 	if (needsMakeHot) {
 		// @ts-ignore
 		const hotApi = options?.hot?.hotApi;

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { toRollupError } from './error.js';
 import { log } from './log.js';
-import { isSvelte4, isSvelte5 } from './svelte-version.js';
+
 /**
  * utility function to compile ?raw and ?direct requests in load hook
  *
@@ -18,8 +18,7 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 	const source = fs.readFileSync(filename, 'utf-8');
 	try {
 		//avoid compileSvelte doing extra ssr stuff unless requested
-		//@ts-ignore //@ts-expect-error generate value differs between svelte4 and 5
-		svelteRequest.ssr = query.compilerOptions?.generate === (isSvelte4 ? 'ssr' : 'server');
+		svelteRequest.ssr = query.compilerOptions?.generate === 'ssr';
 		const type = query.type;
 		compileData = await compileSvelte(svelteRequest, source, {
 			...options,
@@ -27,14 +26,12 @@ export async function loadRaw(svelteRequest, compileSvelte, options) {
 			compilerOptions: {
 				dev: false,
 				css: 'external',
-				enableSourcemap: isSvelte5
-					? undefined
-					: query.sourcemap
-						? {
-								js: type === 'script' || type === 'all',
-								css: type === 'style' || type === 'all'
-							}
-						: false,
+				enableSourcemap: query.sourcemap
+					? {
+							js: type === 'script' || type === 'all',
+							css: type === 'style' || type === 'all'
+						}
+					: false,
 				...svelteRequest.query.compilerOptions
 			},
 			hot: false,

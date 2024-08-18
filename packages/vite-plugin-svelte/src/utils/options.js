@@ -26,7 +26,6 @@ import {
 import { isCommonDepWithoutSvelteField } from './dependencies.js';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats.js';
 import { VitePluginSvelteCache } from './vite-plugin-svelte-cache.js';
-import { isSvelte5, isSvelte5WithHMRSupport } from './svelte-version.js';
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -201,19 +200,14 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 	};
 	const hot =
 		!viteConfig.isProduction && !preResolveOptions.isBuild && viteConfig.server.hmr !== false;
-	if (isSvelte5) {
-		if (isSvelte5WithHMRSupport) {
-			// @ts-expect-error svelte4 does not have hmr option
-			defaultOptions.compilerOptions.hmr = hot;
-		}
-	} else {
-		defaultOptions.hot = !hot
-			? false
-			: {
-					injectCss: css === 'injected',
-					partialAccept: !!viteConfig.experimental?.hmrPartialAccept
-				};
-	}
+
+	defaultOptions.hot = !hot
+		? false
+		: {
+				injectCss: css === 'injected',
+				partialAccept: !!viteConfig.experimental?.hmrPartialAccept
+			};
+
 	/** @type {Partial<import('../types/options.d.ts').ResolvedOptions>} */
 	const extraOptions = {
 		root: viteConfig.root,
@@ -246,53 +240,42 @@ function enforceOptionsForHmr(options, viteConfig) {
 		);
 		options.hot = false;
 	}
-	if (isSvelte5) {
-		if (options.hot && isSvelte5WithHMRSupport) {
-			log.warn(
-				'svelte 5 has hmr integrated in core. Please remove the hot option and use compilerOptions.hmr instead'
-			);
-			delete options.hot;
-			// @ts-expect-error hmr option doesn't exist in svelte4
-			options.compilerOptions.hmr = true;
+	if (options.hot) {
+		if (!options.compilerOptions.dev) {
+			log.warn('hmr is enabled but compilerOptions.dev is false, forcing it to true');
+			options.compilerOptions.dev = true;
 		}
-	} else {
-		if (options.hot) {
-			if (!options.compilerOptions.dev) {
-				log.warn('hmr is enabled but compilerOptions.dev is false, forcing it to true');
-				options.compilerOptions.dev = true;
+		if (options.emitCss) {
+			if (options.hot !== true && options.hot.injectCss) {
+				log.warn('hmr and emitCss are enabled but hot.injectCss is true, forcing it to false');
+				options.hot.injectCss = false;
 			}
-			if (options.emitCss) {
-				if (options.hot !== true && options.hot.injectCss) {
-					log.warn('hmr and emitCss are enabled but hot.injectCss is true, forcing it to false');
-					options.hot.injectCss = false;
+			const css = options.compilerOptions.css;
+			if (css === true || css === 'injected') {
+				const forcedCss = 'external';
+				log.warn(
+					`hmr and emitCss are enabled but compilerOptions.css is ${css}, forcing it to ${forcedCss}`
+				);
+				options.compilerOptions.css = forcedCss;
+			}
+		} else {
+			if (options.hot === true || !options.hot.injectCss) {
+				log.warn(
+					'hmr with emitCss disabled requires option hot.injectCss to be enabled, forcing it to true'
+				);
+				if (options.hot === true) {
+					options.hot = { injectCss: true };
+				} else {
+					options.hot.injectCss = true;
 				}
-				const css = options.compilerOptions.css;
-				if (css === true || css === 'injected') {
-					const forcedCss = 'external';
-					log.warn(
-						`hmr and emitCss are enabled but compilerOptions.css is ${css}, forcing it to ${forcedCss}`
-					);
-					options.compilerOptions.css = forcedCss;
-				}
-			} else {
-				if (options.hot === true || !options.hot.injectCss) {
-					log.warn(
-						'hmr with emitCss disabled requires option hot.injectCss to be enabled, forcing it to true'
-					);
-					if (options.hot === true) {
-						options.hot = { injectCss: true };
-					} else {
-						options.hot.injectCss = true;
-					}
-				}
-				const css = options.compilerOptions.css;
-				if (!(css === true || css === 'injected')) {
-					const forcedCss = 'injected';
-					log.warn(
-						`hmr with emitCss disabled requires compilerOptions.css to be enabled, forcing it to ${forcedCss}`
-					);
-					options.compilerOptions.css = forcedCss;
-				}
+			}
+			const css = options.compilerOptions.css;
+			if (!(css === true || css === 'injected')) {
+				const forcedCss = 'injected';
+				log.warn(
+					`hmr with emitCss disabled requires compilerOptions.css to be enabled, forcing it to ${forcedCss}`
+				);
+				options.compilerOptions.css = forcedCss;
 			}
 		}
 	}
