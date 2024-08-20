@@ -29,7 +29,10 @@ export function svelte(inlineOptions) {
 	// a previous version of vite-plugin-svelte@3 had experimental support for svelte5, let upgrading users know that they have to bump to next major
 	if (VERSION.startsWith('5.')) {
 		log.error(
-			`You are using Svelte ${VERSION} with vite-plugin-svelte@3. Svelte 5 support has moved vite-plugin-svelte@4.\nPlease update your package.json to "@sveltejs/vite-plugin-svelte":"^4.0.0-next.6" and install.`
+			`You are using Svelte ${VERSION} with vite-plugin-svelte@3. Svelte 5 support has moved vite-plugin-svelte@4.
+			Please update it in your devDependencies to "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6" and install.
+			For framework integrations that depend on it (e.g. astro), you have to add an override:
+			"overrides": {"@sveltejs/vite-plugin-svelte": "^4.0.0-next.6"}`.replace(/\n\s*/gm, '\n\t')
 		);
 		throw new Error('Svelte5 is not supported in vite-plugin-svelte@3, use "^4.0.0-next.6"');
 	}
