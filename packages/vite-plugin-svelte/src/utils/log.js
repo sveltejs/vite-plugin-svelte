@@ -264,8 +264,8 @@ export function isDebugNamespaceEnabled(namespace) {
 export function logSvelte5Warning() {
 	log.warn(
 		`You are using Svelte ${VERSION} with vite-plugin-svelte@3. Active Svelte 5 support has moved to vite-plugin-svelte@4.
-			To receive bugfixes and new features update your devDependencies to "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6" and install.
-			For framework integrations that depend on it (e.g. astro), you might have to add an override:
+			To receive bug fixes and new features update your devDependencies to "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6" and install.
+			For framework integrations that depend on it, you might have to add an override:
 			"overrides": {"@sveltejs/vite-plugin-svelte": "^4.0.0-next.6"}`.replace(/\n\s*/gm, '\n\t')
 	);
 }
