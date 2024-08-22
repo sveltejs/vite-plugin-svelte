@@ -56,7 +56,8 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        # pinned for security, always review third party action code before updating
+        uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 #v1.4.7
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: pnpm release
@@ -64,9 +65,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-
-      # TODO alert discord
-      # - name: Send a Slack notification if a publish happens
-      #   if: steps.changesets.outputs.published == 'true'
-      #   # You can do something when a publish happens.
-      #   run: my-slack-bot send-notification --message "A new version of ${GITHUB_REPOSITORY} was published!"
+      - name: Remove .npmrc
+        if: always()
+        run: |
+          echo "#deleted" > "$HOME/.npmrc"
+          rm -f "$HOME/.npmrc"
