@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         # pseudo-matrix for convenience, NEVER use more than a single combination
-        node: [18]
+        node: [20]
         os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
@@ -102,7 +102,7 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
-        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
       #      - name: use svelte5
       #        if: (${{matrix.svelte == 5 }})
       #        run: pnpm i -Dw svelte@^5.0.0-next.1 && pnpm install
