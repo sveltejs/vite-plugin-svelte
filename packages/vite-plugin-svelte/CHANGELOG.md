@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 3.1.2
+
+### Patch Changes
+
+- add warning for svelte5 users to update to vite-plugin-svelte@4 ([#964](https://github.com/sveltejs/vite-plugin-svelte/pull/964))
+
 ## 3.1.1
 
 ### Patch Changes
