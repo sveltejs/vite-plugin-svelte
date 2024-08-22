@@ -59,9 +59,9 @@
       "prettier --cache --ignore-path .gitignore --ignore-unknown --write"
     ]
   },
-  "packageManager": "pnpm@8.15.7",
+  "packageManager": "pnpm@9.6.0",
   "engines": {
-    "pnpm": "^8.6.3",
+    "pnpm": "^9.6.0",
     "node": "^18.0.0 || >=20"
   },
   "pnpm": {
@@ -70,8 +70,7 @@
       "@sveltejs/vite-plugin-svelte": "workspace:^",
       "@sveltejs/vite-plugin-svelte-inspector": "workspace:^",
       "svelte": "$svelte",
-      "vite": "$vite",
-      "@types/node@<=20.12.0": "20.11.5"
+      "vite": "$vite"
     }
   }
 }
