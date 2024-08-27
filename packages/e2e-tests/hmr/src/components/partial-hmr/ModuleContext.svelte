@@ -1,4 +1,4 @@
-<script context="module">
+<script module>
 	export const y = 1;
 </script>
 

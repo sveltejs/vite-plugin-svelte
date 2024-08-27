@@ -31,6 +31,7 @@
 	let hold_start_ts;
 
 	$: show_toggle =
+		// eslint-disable-next-line svelte/valid-compile
 		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled);
 
 	function mousemove(event) {
