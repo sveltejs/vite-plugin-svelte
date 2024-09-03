@@ -20,10 +20,10 @@ However, `svelte-preprocess` does provide extra functionalities not available wi
   - SugarSS: `<style lang="sss">`
 
   By default, PostCSS or LightningCSS ([if configured in Vite](https://vitejs.dev/config/shared-options.html#css-transformer)) is applied to all `<style>` tags.
-  If required, you can style transforming off by setting the `style` option to `false`. The `style` option also accepts Vite's `InlineConfig` and `ResolvedConfig` types for advanced usage.
+  If required, you can turn transforming off by setting the `style` option to `false`. The `style` option also accepts Vite's `InlineConfig` and `ResolvedConfig` types for advanced usage.
 
-  > TypeScript is no longer preprocessed by default as Svelte 5 understands most syntax natively.
-  > If you use TypeScript features that emit code like enum, using , decorators or class declarations with visibility modifiers, you have to enable the script preprocessor manually.
+TypeScript is no longer preprocessed by default as Svelte 5 understands most syntax natively.
+If you use TypeScript features that emit code (like `enum`, `using`, `accessors`, decorators or class declarations with visibility modifiers), you have to enable the script preprocessor by setting the `script` option to `true`.
 
 ### Examples
 
