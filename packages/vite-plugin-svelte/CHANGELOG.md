@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.7
+### Patch Changes
+
+
+- export PluginOptions interface ([#976](https://github.com/sveltejs/vite-plugin-svelte/pull/976))
+
 ## 4.0.0-next.6
 ### Patch Changes
 
