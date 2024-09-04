@@ -15,7 +15,7 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		configFile?: string | false;
 	}
 
-	interface PluginOptions {
+	export interface PluginOptions {
 		/**
 		 * A `picomatch` pattern, or array of patterns, which specifies the files the plugin should
 		 * operate on. By default, all svelte files are included.
