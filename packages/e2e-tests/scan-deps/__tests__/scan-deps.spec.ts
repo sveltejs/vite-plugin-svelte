@@ -1,9 +1,18 @@
-import { e2eServer } from '~utils';
-
-test('should not fail to discover dependencies exported from script module', async () => {
-	expect(
-		e2eServer.logs.server.err.some((logs) =>
-			logs.match(/No matching export in "html:.+\/src\/Deps\.svelte" for import "something"/)
-		)
-	).toBe(false);
+import { e2eServer, getText } from '~utils';
+import { describe, expect, it } from 'vitest';
+describe('vite import scan', () => {
+	it('should not fail to discover dependencies exported from script module', async () => {
+		// vite logs an error if scan fails but continues, so validate no errors logged
+		expect(
+			e2eServer.logs.server.err.length,
+			`unexpected errors:\n${e2eServer.logs.server.err.join('\n')}`
+		).toBe(0);
+	});
+	it('should work with exports from module context', async () => {
+		expect(await getText('#svelte5')).toBe('svelte5');
+		expect(await getText('#svelte4double')).toBe('svelte4double');
+		expect(await getText('#svelte4single')).toBe('svelte4single');
+		expect(await getText('#svelte4none')).toBe('svelte4none');
+		expect(await getText('#svelte4space')).toBe('svelte4space');
+	});
 });
