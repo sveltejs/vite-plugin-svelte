@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { loadEnv } from 'vite';
 import { debug } from './debug.js';
 

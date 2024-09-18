@@ -1,5 +1,8 @@
+import process from 'node:process';
 import { optimizeImports } from 'carbon-preprocess-svelte';
-import preprocess from 'svelte-preprocess';
+import { sveltePreprocess } from 'svelte-preprocess';
 export default {
-	preprocess: [preprocess(), process.env.DEEP_IMPORTS ? optimizeImports() : null].filter(Boolean)
+	preprocess: [sveltePreprocess(), process.env.DEEP_IMPORTS ? optimizeImports() : null].filter(
+		Boolean
+	)
 };

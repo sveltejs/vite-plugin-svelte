@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { normalizePath } from 'vite';
 import { isDebugNamespaceEnabled, log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';

@@ -1,6 +1,7 @@
 import os from 'node:os';
 import fs from 'fs-extra';
 import path from 'node:path';
+import process from 'node:process';
 import { chromium } from 'playwright-core';
 import { execa } from 'execa';
 import { fileURLToPath } from 'node:url';

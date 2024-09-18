@@ -1,5 +1,6 @@
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import process from 'node:process';
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { log } from './log.js';

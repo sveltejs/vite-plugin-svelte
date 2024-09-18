@@ -1,4 +1,4 @@
-import * as crypto from 'node:crypto';
+import crypto from 'node:crypto';
 
 const hashes = Object.create(null);
 

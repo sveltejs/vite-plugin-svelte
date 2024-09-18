@@ -3,6 +3,7 @@ import { execa } from 'execa';
 import treeKill from 'tree-kill';
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 const isWin = process.platform === 'win32';
 
 async function startedOnPort(serverProcess, port, timeout) {

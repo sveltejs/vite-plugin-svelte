@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { isCSSRequest, preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
 import { mapToRelative, removeLangSuffix } from './utils/sourcemaps.js';
 
