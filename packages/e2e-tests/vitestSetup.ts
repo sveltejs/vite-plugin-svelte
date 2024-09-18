@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'node:path';
+import process from 'node:process';
 import { chromium, type Browser, type Page } from 'playwright-core';
 import { beforeAll, type File } from 'vitest';
 import os from 'node:os';

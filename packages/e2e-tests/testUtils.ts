@@ -3,6 +3,7 @@
 // `import { getColor } from 'testUtils'`
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
 import fetch from 'node-fetch';

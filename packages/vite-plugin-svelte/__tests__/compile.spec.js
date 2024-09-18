@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { describe, it, expect } from 'vitest';
 import { createCompileSvelte } from '../src/utils/compile.js';
 /** @type {import('../../types/options.d.ts').ResolvedOptions} */

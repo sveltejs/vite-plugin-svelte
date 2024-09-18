@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import process from 'node:process';
 import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings } from './utils/log.js';

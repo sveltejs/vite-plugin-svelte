@@ -1,6 +1,7 @@
 import { createFilter, normalizePath } from 'vite';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
 import { log } from './log.js';
 import { DEFAULT_SVELTE_MODULE_EXT, DEFAULT_SVELTE_MODULE_INFIX } from './constants.js';
 

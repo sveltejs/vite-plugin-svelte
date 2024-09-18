@@ -8,10 +8,10 @@
 
 <main>
 	<div>
-		<a href="https://vitejs.dev" target="_blank" rel="noreferrer">
+		<a href="https://vitejs.dev" target="_blank" rel="noreferrer" aria-label="vite homepage">
 			<img src={viteLogo} class="logo" alt="Vite Logo" />
 		</a>
-		<a href="https://svelte.dev" target="_blank" rel="noreferrer">
+		<a href="https://svelte.dev" target="_blank" rel="noreferrer" aria-label="svelte homepage">
 			<img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
 		</a>
 	</div>

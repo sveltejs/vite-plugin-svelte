@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import * as os from 'node:os';
+import * as process from 'node:process';
 
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'node:url';
