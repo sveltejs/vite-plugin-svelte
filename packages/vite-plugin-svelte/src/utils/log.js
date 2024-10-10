@@ -226,14 +226,26 @@ function buildExtraWarnings(warnings, isBuild) {
  * @param {import('svelte/compiler').Warning} w
  */
 function warnDev(w) {
-	if (log.info.enabled) log.info(buildExtendedLogMessage(w));
+	if (w.filename?.includes('node_modules')) {
+		if (isDebugNamespaceEnabled('node-modules-onwarn')) {
+			log.debug(buildExtendedLogMessage(w), undefined, 'node-modules-onwarn');
+		}
+	} else if (log.info.enabled) {
+		log.info(buildExtendedLogMessage(w));
+	}
 }
 
 /**
  * @param {import('svelte/compiler').Warning & {frame?: string}} w
  */
 function warnBuild(w) {
-	if (log.warn.enabled) log.warn(buildExtendedLogMessage(w), w.frame);
+	if (w.filename?.includes('node_modules')) {
+		if (isDebugNamespaceEnabled('node-modules-onwarn')) {
+			log.debug(buildExtendedLogMessage(w), w.frame, 'node-modules-onwarn');
+		}
+	} else if (log.warn.enabled) {
+		log.warn(buildExtendedLogMessage(w), w.frame);
+	}
 }
 
 /**

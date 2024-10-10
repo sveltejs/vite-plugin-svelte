@@ -136,6 +136,9 @@ export interface SvelteConfig {
 	/**
 	 * Handles warning emitted from the Svelte compiler
 	 *
+	 * warnings emitted for files in node_modules are logged at the debug level, to see them run
+	 * `DEBUG=vite-plugin-svelte:node-modules-onwarn pnpm build`
+	 *
 	 * @example
 	 * ```
 	 * (warning, defaultHandler) => {
@@ -145,6 +148,7 @@ export interface SvelteConfig {
 	 *   }
 	 * }
 	 * ```
+	 *
 	 */
 	onwarn?: (warning: Warning, defaultHandler: (warning: Warning) => void) => void;
 	/**
