@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0-next.8
+### Minor Changes
+
+
+- feat(warnings): change default loglevel of warnings originating from files in node_modules to debug. To see them call `DEBUG:vite-plugin-svelte:node-modules-onwarn pnpm build`. ([#989](https://github.com/sveltejs/vite-plugin-svelte/pull/989))
+
 ## 4.0.0-next.7
 ### Patch Changes
 
