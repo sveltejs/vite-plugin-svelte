@@ -6,13 +6,23 @@ Note that `@sveltejs/vite-plugin-svelte` needs to be installed as a peer depende
 
 ## Setup
 
-### with Svelte config
+### enable in Svelte config
 
 ```js
 // svelte.config.js
 export default {
   vitePlugin: {
-    // set to true for defaults or customize with object
+    inspector: true
+  }
+};
+```
+
+### enable with custom options in Svelte config
+
+```js
+// svelte.config.js
+export default {
+  vitePlugin: {
     inspector: {
       toggleKeyCombo: 'meta-shift',
       showToggleButton: 'always',
@@ -22,7 +32,7 @@ export default {
 };
 ```
 
-### with environment variables
+### configure with environment variables
 
 Svelte Inspector toggle keys and other options are personal preferences. As such it isn't always convenient to define them in a shared svelte config file.
 To allow you to use your own setup, svelte inspector can be configured via environment variables, both from shell and dotenv files.
