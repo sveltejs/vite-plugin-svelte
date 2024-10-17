@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 3.0.0-next.4
+### Major Changes
+
+
+- Change default key-combo to `alt-x` to avoid conflicts with other combos that started with the previous defaults. ([#995](https://github.com/sveltejs/vite-plugin-svelte/pull/995))
+
 ## 3.0.0-next.3
 ### Major Changes
 
