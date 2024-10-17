@@ -4,8 +4,10 @@
 
 	import options from 'virtual:svelte-inspector-options';
 	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
-	const escape_keys = options.escapeKeys?.map((key) => key?.toLowerCase());
-	const nav_keys = Object.values(options.navKeys).map((k) => k.toLowerCase());
+	const escape_keys = options.escapeKeys?.map((k) => k.toLowerCase());
+	const nav_keys = Object.values(options.navKeys).map((k) => k?.toLowerCase());
+	const open_key = options.openKey?.toLowerCase();
+
 	let enabled = false;
 	let has_opened = false;
 
@@ -34,9 +36,9 @@
 		// eslint-disable-next-line svelte/valid-compile
 		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled);
 
-	function mousemove(event) {
-		x = event.x;
-		y = event.y;
+	function mousemove(e) {
+		x = e.x;
+		y = e.y;
 	}
 
 	function find_selectable_parent(el, include_self = false) {
@@ -123,9 +125,9 @@
 		}
 	}
 
-	function open_editor(event) {
+	function open_editor(e) {
 		if (file_loc) {
-			stop(event);
+			stop(e);
 			fetch(`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
 			has_opened = true;
 			if (options.holdMode && is_holding()) {
@@ -134,67 +136,67 @@
 		}
 	}
 
-	function is_key_active(key, event) {
+	function is_active(key, e) {
 		switch (key) {
 			case 'shift':
 			case 'control':
 			case 'alt':
 			case 'meta':
-				return event.getModifierState(key.charAt(0).toUpperCase() + key.slice(1));
+				return e.getModifierState(key.charAt(0).toUpperCase() + key.slice(1));
 			default:
-				return key === event.key.toLowerCase();
+				return key === e.code.replace(/^Key/, '').toLowerCase() || key === e.key.toLowerCase();
 		}
 	}
 
-	function is_combo(event) {
-		return is_toggle(event) && toggle_combo?.every((key) => is_key_active(key, event));
+	function is_combo(e) {
+		return toggle_combo?.every((k) => is_active(k, e));
 	}
 
-	function is_escape(event) {
-		return escape_keys?.includes(event.key.toLowerCase());
+	function is_escape(e) {
+		return escape_keys?.some((k) => is_active(k, e));
 	}
 
-	function is_toggle(event) {
-		return toggle_combo?.includes(event.key.toLowerCase());
+	function is_toggle(e) {
+		return toggle_combo?.some((k) => is_active(k, e));
 	}
 
-	function is_nav(event) {
-		return nav_keys?.some((key) => is_key_active(key, event));
+	function is_nav(e) {
+		return nav_keys?.some((k) => is_active(k, e));
 	}
 
-	function is_open(event) {
-		return options.openKey && options.openKey.toLowerCase() === event.key.toLowerCase();
+	function is_open(e) {
+		return open_key && is_active(open_key, e);
 	}
 
 	function is_holding() {
 		return hold_start_ts && Date.now() - hold_start_ts > 250;
 	}
 
-	function stop(event) {
-		event.preventDefault();
-		event.stopPropagation();
-		event.stopImmediatePropagation();
+	function stop(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
 	}
 
-	function keydown(event) {
-		if (event.repeat || event.key == null || (!enabled && !is_toggle(event))) {
+	function keydown(e) {
+		if (e.repeat || e.key == null || (!enabled && !is_toggle(e))) {
 			return;
 		}
-		if (is_combo(event)) {
+		if (is_combo(e)) {
 			toggle();
 			if (options.holdMode && enabled) {
 				hold_start_ts = Date.now();
 			}
 		} else if (enabled) {
-			if (is_nav(event)) {
-				const el = find_selectable_for_nav(event.key);
+			if (is_nav(e)) {
+				const el = find_selectable_for_nav(e.key);
 				if (el) {
 					activate(el);
-					stop(event);
+					stop(e);
 				}
-			} else if (is_open(event)) {
-				open_editor(event);
-			} else if (is_holding() || is_escape(event)) {
+			} else if (is_open(e)) {
+				open_editor(e);
+			} else if (is_holding() || is_escape(e)) {
 				// is_holding() checks for unhandled additional key pressed
 				// while holding the toggle keys, which is possibly another
 				// shortcut (e.g. 'meta-shift-x'), so disable again.
@@ -204,11 +206,11 @@
 		}
 	}
 
-	function keyup(event) {
-		if (event.repeat || event.key == null || !enabled) {
+	function keyup(e) {
+		if (e.repeat || e.key == null || !enabled) {
 			return;
 		}
-		if (is_toggle(event)) {
+		if (is_toggle(e)) {
 			if (is_holding()) {
 				disable();
 			} else {
