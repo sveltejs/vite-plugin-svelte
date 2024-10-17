@@ -142,7 +142,7 @@
 			case 'meta':
 				return event.getModifierState(key.charAt(0).toUpperCase() + key.slice(1));
 			default:
-				return key === event.key.toLowerCase();
+				return key === event.key.toLowerCase() || event.code === `Key${key.toUpperCase()}`;
 		}
 	}
 

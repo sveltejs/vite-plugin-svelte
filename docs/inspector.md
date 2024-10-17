@@ -24,7 +24,7 @@ export default {
 export default {
   vitePlugin: {
     inspector: {
-      toggleKeyCombo: 'meta-shift',
+      toggleKeyCombo: 'alt-x',
       showToggleButton: 'always',
       toggleButtonPos: 'bottom-right'
     }
@@ -39,7 +39,7 @@ To allow you to use your own setup, svelte inspector can be configured via envir
 
 ```shell
 # just keycombo, unquoted string
-SVELTE_INSPECTOR_TOGGLE=control-shift
+SVELTE_INSPECTOR_TOGGLE=alt-x
 
 # options object as json
 SVELTE_INSPECTOR_OPTIONS='{"holdMode": false, "toggleButtonPos": "bottom-left"}'
@@ -58,13 +58,13 @@ SVELTE_INSPECTOR_OPTIONS=true
 ### toggleKeyCombo
 
 - **Type:** `string`
-- **Default:** `'meta-shift'` on mac, `'control-shift'` on other os
+- **Default:** `'alt-x'`
 
   Define a key combo to toggle inspector.
 
-  The value is recommended to be any number of modifiers (e.g. `control`, `shift`, `alt`, `meta`) followed by zero or one regular key, separated by `-`. This helps avoid conflicts or accidentally typing into inputs. Note that some keys have native behavior (e.g. `alt-s` opens history menu on firefox).
+  The value is recommended to be any number of modifiers (e.g. `control`, `shift`, `alt`, `meta`) followed by zero or one regular key, separated by `-`. Note that some keys have native behavior (e.g. `alt-s` opens history menu on firefox).
 
-  Examples: `control-shift`, `control-o`, `control-alt-s`, `meta-x`, `control-meta`.
+  Examples: `control-o`, `control-alt-s`, `meta-x`, `alt-i`.
 
 ### navKeys
 

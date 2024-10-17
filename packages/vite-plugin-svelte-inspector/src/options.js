@@ -4,7 +4,7 @@ import { debug } from './debug.js';
 
 /** @type {import('./public.d.ts').Options} */
 export const defaultInspectorOptions = {
-	toggleKeyCombo: process.platform === 'darwin' ? 'meta-shift' : 'control-shift',
+	toggleKeyCombo: 'alt-x',
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
 	escapeKeys: ['Backspace', 'Escape'],
 	openKey: 'Enter',
