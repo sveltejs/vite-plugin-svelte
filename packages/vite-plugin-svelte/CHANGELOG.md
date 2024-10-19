@@ -1,5 +1,85 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.0
+### Major Changes
+
+
+- only prebundle files with default filenames (.svelte for components, .svelte.(js|ts) for modules) ([#901](https://github.com/sveltejs/vite-plugin-svelte/pull/901))
+
+
+- remove support for Svelte 4 ([#892](https://github.com/sveltejs/vite-plugin-svelte/pull/892))
+
+
+- breaking(types): some types that have been unintentionally public are now private ([#934](https://github.com/sveltejs/vite-plugin-svelte/pull/934))
+
+
+- disable script preprocessing in vitePreprocess() by default because Svelte 5 supports lang=ts out of the box ([#892](https://github.com/sveltejs/vite-plugin-svelte/pull/892))
+
+
+- replaced svelte-hmr with Svelte 5 compiler hmr integration ([#892](https://github.com/sveltejs/vite-plugin-svelte/pull/892))
+
+
+### Minor Changes
+
+
+- allow infix notation for svelte modules ([#901](https://github.com/sveltejs/vite-plugin-svelte/pull/901))
+  
+  Previously, only suffix notation `.svelte.js` was allowed, now you can also use `.svelte.test.js` or `.svelte.stories.js`.
+  This helps when writing testcases or other auxillary code where you may want to use runes too.
+
+- feat(config): dynamically extract list of svelte exports from peer dependency so that new exports work automatically" ([#941](https://github.com/sveltejs/vite-plugin-svelte/pull/941))
+
+
+- feat(warnings): change default loglevel of warnings originating from files in node_modules to debug. To see them call `DEBUG:vite-plugin-svelte:node-modules-onwarn pnpm build`. ([#989](https://github.com/sveltejs/vite-plugin-svelte/pull/989))
+
+
+### Patch Changes
+
+
+- fix: make defaultHandler a required argument for onwarn in plugin options ([#895](https://github.com/sveltejs/vite-plugin-svelte/pull/895))
+
+
+- prebundle with dev: true by default ([#901](https://github.com/sveltejs/vite-plugin-svelte/pull/901))
+
+
+- fix(dev): compile with hmr: false for prebundled deps as hmr does not work with that ([#950](https://github.com/sveltejs/vite-plugin-svelte/pull/950))
+
+
+- fix: ensure svelte modules correctly run in DEV mode ([#906](https://github.com/sveltejs/vite-plugin-svelte/pull/906))
+
+
+- ensure consistent use of compileOptions.hmr also for prebundling ([#956](https://github.com/sveltejs/vite-plugin-svelte/pull/956))
+
+
+- fix(optimizeDeps): avoid to optimise server only entrypoints of svelte that are never used on the client ([#941](https://github.com/sveltejs/vite-plugin-svelte/pull/941))
+
+
+- update peer on workspace packages to avoid packages bumping each other ([#916](https://github.com/sveltejs/vite-plugin-svelte/pull/916))
+
+
+- export PluginOptions interface ([#976](https://github.com/sveltejs/vite-plugin-svelte/pull/976))
+
+
+- Remove log about experimental status of Svelte 5. Note that breaking changes can still occur while vite-plugin-svelte 4 is in prerelease mode ([#894](https://github.com/sveltejs/vite-plugin-svelte/pull/894))
+
+
+- fix: ensure vite config is only resolved once during lazy init of vitePreprocess ([#912](https://github.com/sveltejs/vite-plugin-svelte/pull/912))
+
+
+- fix(vitePreprocess): default to build config so that svelte-check does not trigger dev-only plugins ([#931](https://github.com/sveltejs/vite-plugin-svelte/pull/931))
+
+
+- fix: only apply infix filter to basename ([#920](https://github.com/sveltejs/vite-plugin-svelte/pull/920))
+
+
+- fix: disable hmr when vite config server.hmr is false ([#913](https://github.com/sveltejs/vite-plugin-svelte/pull/913))
+
+
+- fix(dev): make sure custom cssHash is applied consistently even for prebundled components to avoid hash mismatches during hydration ([#950](https://github.com/sveltejs/vite-plugin-svelte/pull/950))
+
+- Updated dependencies [[`22baa25`](https://github.com/sveltejs/vite-plugin-svelte/commit/22baa25b5e98ddc92715bfc430dc9d0cfad99bb0), [`49324db`](https://github.com/sveltejs/vite-plugin-svelte/commit/49324dbf747a46ae75b405a29fc7feac2db966dd), [`e9f048c`](https://github.com/sveltejs/vite-plugin-svelte/commit/e9f048c362a0769b3d5afa87da6f8398f46fe1a9), [`213fedd`](https://github.com/sveltejs/vite-plugin-svelte/commit/213fedd68ec2c5fcb41752e05dcded4abfa8d0c0)]:
+  - @sveltejs/vite-plugin-svelte-inspector@3.0.0
+
 ## 4.0.0-next.8
 ### Minor Changes
 
