@@ -36,7 +36,7 @@
 
 	let hold_start_ts = $state();
 
-	const show_toggle = $derived(
+	let show_toggle = $derived(
 		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled)
 	);
 
