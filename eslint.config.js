@@ -116,7 +116,8 @@ export default [
 		},
 
 		rules: {
-			'n/no-missing-import': 'off' // n doesn't know some vite specifics or monorepo imports.
+			'n/no-missing-import': 'off', // n doesn't know some vite specifics or monorepo imports.
+			'prefer-const': 'off' // this turns let foo = $derived into a const otherwise
 		}
 	},
 	{

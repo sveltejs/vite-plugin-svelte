@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script>
 	// do not use TS here so that this component works in non-ts projects too
 	import { onMount } from 'svelte';
@@ -8,8 +10,8 @@
 	const nav_keys = Object.values(options.navKeys).map((k) => k?.toLowerCase());
 	const open_key = options.openKey?.toLowerCase();
 
-	let enabled = false;
-	let has_opened = false;
+	let enabled = $state(false);
+	let has_opened = $state(false);
 
 	const icon = `data:image/svg+xml;base64,${btoa(
 		`
@@ -24,17 +26,19 @@
 	)}`;
 
 	// location of code in file
-	let file_loc;
+	let file_loc = $state();
 	// cursor pos and width for file_loc overlay positioning
-	let x, y, w;
+	let x = $state(),
+		y = $state(),
+		w = $state();
 
-	let active_el;
+	let active_el = $state();
 
-	let hold_start_ts;
+	let hold_start_ts = $state();
 
-	$: show_toggle =
-		// eslint-disable-next-line svelte/valid-compile
-		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled);
+	let show_toggle = $derived(
+		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled)
+	);
 
 	function mousemove(e) {
 		x = e.x;
