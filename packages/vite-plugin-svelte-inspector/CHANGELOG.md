@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 3.0.1
+### Patch Changes
+
+
+- fix(inspector): migrate client component to runes and force runes mode ([#1004](https://github.com/sveltejs/vite-plugin-svelte/pull/1004))
+
 ## 3.0.0
 ### Major Changes
 
