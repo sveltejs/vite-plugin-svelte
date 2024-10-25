@@ -81,7 +81,7 @@ if (!isBuild) {
 			expect(await getColor('h2')).toBe('magenta');
 			await editFileAndWaitForHmrComplete(
 				'src/lib/multifile/MultiFile.scss',
-				(c) => c.replace("@import 'someImport';", "/*@import 'someImport';*/"),
+				(c) => c.replace("@use 'someImport';", "/*@use 'someImport';*/"),
 				'/src/lib/multifile/MultiFile.svelte?svelte&type=style&lang.css'
 			);
 			expect(await getColor('h2')).toBe('black');
@@ -93,7 +93,7 @@ if (!isBuild) {
 			expect(await getColor('h2')).toBe('black');
 			await editFileAndWaitForHmrComplete(
 				'src/lib/multifile/MultiFile.scss',
-				(c) => c.replace("/*@import 'someImport';*/", "/*@import 'someImport';*/\n@import 'foo';"),
+				(c) => c.replace("/*@use 'someImport';*/", "/*@use 'someImport';*/\n@use 'foo';"),
 				'/src/lib/multifile/MultiFile.svelte?svelte&type=style&lang.css'
 			);
 			expect(await getColor('h2')).toBe('maroon');
@@ -135,7 +135,7 @@ if (!isBuild) {
 			expect(errorOverlay2).toBeFalsy();
 			await editFileAndWaitForHmrComplete(
 				'src/lib/multifile/MultiFile.scss',
-				(c) => c.replace("@import 'foo';", ''),
+				(c) => c.replace("@use 'foo';", ''),
 				'/src/lib/multifile/MultiFile.svelte?svelte&type=style&lang.css'
 			);
 			expect(await getColor('h2')).toBe('black');

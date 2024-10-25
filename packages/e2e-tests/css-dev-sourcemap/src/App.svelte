@@ -2,7 +2,7 @@
 <div class="foo">magenta</div>
 
 <style lang="scss">
-	@import './foo';
+	@use './foo';
 	#test {
 		& {
 			color: red;
