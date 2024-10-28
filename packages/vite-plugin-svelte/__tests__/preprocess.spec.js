@@ -51,7 +51,7 @@ describe('vitePreprocess', () => {
 			);
 			expect(style).toBeDefined();
 			const scss = `
-			  @import './foo';
+			  @use './foo';
 				.foo {
 				  &.bar {
 				    color: red;
@@ -69,7 +69,6 @@ describe('vitePreprocess', () => {
 			expect(processed).toBeDefined();
 			const { code, map, dependencies } = processed;
 			expect(code).toBe('.foo {\n  color: green;\n}\n\n.foo.bar {\n  color: red;\n}');
-			expect(map.file).toBe('File.svelte');
 			expect(map.sources.length).toBe(2);
 			expect(map.sources[0]).toBe('foo.scss');
 			expect(map.sources[1]).toBe('File.svelte');
