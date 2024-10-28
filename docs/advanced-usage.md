@@ -100,10 +100,8 @@ add `&sourcemap` to `?(raw|direct)&svelte&type=(script|style|all)` queries to in
 ```js
 const compilerOptions = {
   dev: false,
-  generate: 'dom',
-  css: false,
-  hydratable: false,
-  enableSourcemap: false // or {js: true} or {css:true} if sourcemap query is set
+  generate: 'client',
+  css: 'external'
 };
 ```
 
@@ -111,7 +109,7 @@ to get output with different compilerOptions, append them as json like this:
 
 ```js
 //get ssr output of svelte.compile js as {code, map, dependencies}
-import script from 'File.svelte?raw&svelte&type=script&compilerOptions={"generate":"ssr"}';
+import script from 'File.svelte?raw&svelte&type=script&compilerOptions={"generate":"server"}';
 ```
 
 only a subset of compilerOptions is supported
@@ -119,7 +117,5 @@ only a subset of compilerOptions is supported
 - generate
 - dev
 - css
-- hydratable
 - customElement
 - immutable
-- enableSourcemap

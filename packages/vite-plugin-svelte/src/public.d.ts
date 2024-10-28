@@ -92,9 +92,9 @@ export interface PluginOptions {
 	 * @example
 	 * ```
 	 * ({ filename, compileOptions }) => {
-	 *   // Dynamically set hydration per Svelte file
-	 *   if (compileWithHydratable(filename) && !compileOptions.hydratable) {
-	 *     return { hydratable: true };
+	 *   // Dynamically set immutable flag per Svelte file
+	 *   if (compileWithImmutable(filename) && !compileOptions.immutable) {
+	 *     return { immutable: true };
 	 *   }
 	 * }
 	 * ```

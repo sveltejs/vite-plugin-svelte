@@ -240,9 +240,9 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
     plugins: [
       svelte({
         dynamicCompileOptions({ filename, compileOptions }) {
-          // Dynamically set hydration per Svelte file
-          if (compileWithHydratable(filename) && !compileOptions.hydratable) {
-            return { hydratable: true };
+          // Dynamically set immutable flag per Svelte file
+          if (compileWithImmutable(filename) && !compileOptions.immutable) {
+            return { immutable: true };
           }
         }
       })
