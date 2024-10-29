@@ -92,9 +92,9 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * @example
 		 * ```
 		 * ({ filename, compileOptions }) => {
-		 *   // Dynamically set hydration per Svelte file
-		 *   if (compileWithHydratable(filename) && !compileOptions.hydratable) {
-		 *     return { hydratable: true };
+		 *   // Dynamically set runes mode per Svelte file
+		 *   if (forceRunesMode(filename) && !compileOptions.runes) {
+		 *     return { runes: true };
 		 *   }
 		 * }
 		 * ```

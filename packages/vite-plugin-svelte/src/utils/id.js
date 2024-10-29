@@ -8,15 +8,7 @@ import { DEFAULT_SVELTE_MODULE_EXT, DEFAULT_SVELTE_MODULE_INFIX } from './consta
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
 
-const SUPPORTED_COMPILER_OPTIONS = [
-	'generate',
-	'dev',
-	'css',
-	'hydratable',
-	'customElement',
-	'immutable',
-	'enableSourcemap'
-];
+const SUPPORTED_COMPILER_OPTIONS = ['generate', 'dev', 'css', 'customElement', 'immutable'];
 const TYPES_WITH_COMPILER_OPTIONS = ['style', 'script', 'all'];
 
 /**
@@ -102,7 +94,7 @@ function parseRequestQuery(rawQuery) {
 			throw new Error(
 				`Invalid compilerOptions in query ${rawQuery}. CompilerOptions are only supported for raw or direct queries with type in "${TYPES_WITH_COMPILER_OPTIONS.join(
 					', '
-				)}" e.g. '?svelte&raw&type=script&compilerOptions={"generate":"ssr","dev":false}`
+				)}" e.g. '?svelte&raw&type=script&compilerOptions={"generate":"server","dev":false}`
 			);
 		}
 		try {
