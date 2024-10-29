@@ -92,9 +92,9 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * @example
 		 * ```
 		 * ({ filename, compileOptions }) => {
-		 *   // Dynamically set immutable flag per Svelte file
-		 *   if (compileWithImmutable(filename) && !compileOptions.immutable) {
-		 *     return { immutable: true };
+		 *   // Dynamically set runes mode per Svelte file
+		 *   if (forceRunesMode(filename) && !compileOptions.runes) {
+		 *     return { runes: true };
 		 *   }
 		 * }
 		 * ```

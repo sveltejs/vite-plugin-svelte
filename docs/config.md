@@ -240,9 +240,9 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
     plugins: [
       svelte({
         dynamicCompileOptions({ filename, compileOptions }) {
-          // Dynamically set immutable flag per Svelte file
-          if (compileWithImmutable(filename) && !compileOptions.immutable) {
-            return { immutable: true };
+          // Dynamically set runes mode per Svelte file
+          if (forceRunesMode(filename) && !compileOptions.runes) {
+            return { runes: true };
           }
         }
       })
