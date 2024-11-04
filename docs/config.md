@@ -148,6 +148,8 @@ These options are specific to the Svelte compiler and are generally shared acros
   });
   ```
 
+  In addition, Svelte 5's compiler interface also provides a way to filter warnings using the `warningFilter` setting as described in [Svelte 5's docs](https://svelte.dev/docs/svelte/svelte-compiler#ModuleCompileOptions).
+
 ## Plugin options
 
 These options are specific to the Vite plugin itself.
