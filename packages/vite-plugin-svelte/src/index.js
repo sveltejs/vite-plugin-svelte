@@ -67,6 +67,7 @@ export function svelte(inlineOptions) {
 				log.debug('additional vite config', extraViteConfig, 'config');
 				return extraViteConfig;
 			},
+			// @ts-ignore Allow exist in vite 6
 			configEnvironment(name, config) {
 				config.resolve ??= {};
 				if (config.resolve.conditions == null) {
