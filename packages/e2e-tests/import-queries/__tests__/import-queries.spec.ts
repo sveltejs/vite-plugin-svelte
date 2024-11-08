@@ -16,8 +16,7 @@ function snapshotFilename(name: string) {
 	return `./__snapshots__/svelte-${svelteMajor}/${name}.txt`;
 }
 
-// TODO remove .skip in this file once svelte5 output is considered stable
-describe.skip('raw', () => {
+describe('raw', () => {
 	test('does not have failed requests', async () => {
 		browserLogs.forEach((msg) => {
 			expect(msg).not.toMatch('404');
