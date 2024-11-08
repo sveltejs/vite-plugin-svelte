@@ -109,8 +109,8 @@
                   ]
                 },
                 "metadata": {
-                  "hoistable": false,
-                  "hoistable_params": [],
+                  "hoisted": false,
+                  "hoisted_params": [],
                   "scope": {
                     "root": {
                       "conflicts": {}
@@ -313,7 +313,7 @@
                   "id": {
                     "type": "Identifier",
                     "start": 31,
-                    "end": 24,
+                    "end": 35,
                     "loc": {
                       "start": {
                         "line": 2,
@@ -325,7 +325,9 @@
                       }
                     },
                     "name": "name",
-                    "typeAnnotation": null
+                    "typeAnnotation": {
+                      "type": "EmptyStatement"
+                    }
                   },
                   "init": null
                 }
@@ -482,6 +484,7 @@
       "file": "Dummy.svelte",
       "mappings": "AAWkB",
       "names": [],
+      "ignoreList": [],
       "sources": [
         "Dummy.svelte"
       ]
@@ -489,11 +492,12 @@
   },
   "dependencies": [],
   "js": {
-    "code": "import \"svelte/internal/disclose-version\";\nimport * as $ from \"svelte/internal/client\";\n\nvar root = $.template(`<button class=\"svelte-d8vj6a\"> </button>`);\n\nexport default function Dummy($$anchor, $$props) {\n\tlet name = $.prop($$props, \"name\");\n\tlet clicks = $.mutable_source(0);\n\tvar button = root();\n\tvar text = $.child(button);\n\n\t$.template_effect(() => $.set_text(text, `${name() ?? \"\"} clicks: ${$.get(clicks) ?? \"\"}`));\n\n\t$.event(\n\t\t\"click\",\n\t\tbutton,\n\t\t() => {\n\t\t\t$.update(clicks);\n\t\t},\n\t\tfalse\n\t);\n\n\t$.append($$anchor, button);\n}",
+    "code": "import \"svelte/internal/disclose-version\";\nimport * as $ from \"svelte/internal/client\";\n\nvar root = $.template(`<button class=\"svelte-d8vj6a\"> </button>`);\n\nexport default function Dummy($$anchor, $$props) {\n\tlet name = $.prop($$props, \"name\", 8);\n\tlet clicks = $.mutable_state(0);\n\tvar button = root();\n\tvar text = $.child(button);\n\n\t$.reset(button);\n\t$.template_effect(() => $.set_text(text, `${name() ?? \"\"} clicks: ${$.get(clicks) ?? \"\"}`));\n\n\t$.event(\"click\", button, () => {\n\t\t$.update(clicks);\n\t});\n\n\t$.append($$anchor, button);\n}",
     "map": {
       "version": 3,
-      "mappings": ";;;;;;KACY,IAAY;KACnB,MAAM,oBAAG,CAAC;;;;6CAMV,IAAI,0BAAW,MAAM",
+      "mappings": ";;;;;;KACY,IAAY;KACnB,MAAM,mBAAG,CAAC;;;;;6CAMV,IAAI,0BAAW,MAAM;;;WADxB,MAAM",
       "names": [],
+      "ignoreList": [],
       "sources": [
         "Dummy.svelte"
       ]
@@ -509,14 +513,15 @@
     "dependencies": [],
     "map": {
       "version": 3,
-      "mappings": "AAAA,CAAC,MAAM,CAAC,IAAI,CAAC,CAAC,EAAE,CAAC;AACjB,CAAC,MAAM,CAAC,GAAG,CAAC,IAAI,CAAC,CAAC,MAAM;AACxB,CAAC,GAAG,CAAC,MAAM,CAAC,CAAC,CAAC,CAAC;AACf,CAAC,CAAC,MAAM;;AAER,CAAC;AACD,CAAC,EAAE,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC;AACjB,EAAE,MAAM,CAAC,CAAC;AACV,CAAC,CAAC,CAAC,CAAC,CAAC,IAAI,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC;AAC7B;;AAEA,CAAC,KAAK,CAAC,IAAI,CAAC,CAAC,IAAI,CAAC;;CAKlB,CAAC,CAAC,KAAK",
+      "mappings": "AAAA,CAAC,MAAM,CAAC,IAAI,CAAC,CAAC,EAAE,CAAC;AACjB,CAAC,MAAM,CAAC,GAAG,CAAC,IAAI,CAAC,CAAC,MAAM;AACxB,CAAC,GAAG,CAAC,MAAM,CAAC,CAAC,CAAC,CAAC;AACf,CAAC,CAAC,MAAM;;AAER,CAAC;AACD,CAAC,EAAE,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC;AACjB,EAAE,MAAM,CAAC,CAAC;AACV,CAAC,CAAC,CAAC,CAAC,CAAC,IAAI,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC;AAC7B;;AAEA,CAAC,KAAK,CAAC,IAAI,CAAC,CAAC,IAAI,CAAC;;CAMlB,CAAC,CAAC,KAAK",
       "names": [],
+      "ignoreList": [],
       "sources": [
         "Dummy.svelte"
       ]
     }
   },
-  "source": "<script lang=\"ts\">\n\texport let name: string;\n\tlet clicks = 0;\n</script>\n\n<button\n\ton:click={() => {\n\t\tclicks++;\n\t}}>{name} clicks: {clicks}</button\n>\n\n<style lang=\"scss\">\n\t$blue: blue;\n\tbutton {\n\t\tcolor: darken($blue, 20);\n\t}\n</style>\n",
+  "source": "<script lang=\"ts\">\n\texport let name: string;\n\tlet clicks = 0;\n</script>\n\n<button\n\ton:click={() => {\n\t\tclicks++;\n\t}}>{name} clicks: {clicks}</button\n>\n\n<style lang=\"scss\">\n\t@use 'sass:color';\n\t$blue: blue;\n\tbutton {\n\t\tcolor: color.adjust($blue, $lightness: -20%);\n\t}\n</style>\n",
   "ssr": false,
   "warnings": []
 }

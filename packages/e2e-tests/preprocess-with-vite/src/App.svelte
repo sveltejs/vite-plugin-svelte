@@ -11,9 +11,10 @@
 <Bar />
 
 <style lang="scss">
+	@use 'sass:color';
 	$blue: blue;
 	p {
-		color: darken($blue, 20);
+		color: color.adjust($blue, $lightness: -20%);
 	}
 	h1.foo {
 		color: $blue; /* change color an save to see hmr update */
