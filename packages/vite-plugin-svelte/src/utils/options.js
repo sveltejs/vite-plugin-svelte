@@ -30,6 +30,7 @@ import {
 
 import { isCommonDepWithoutSvelteField } from './dependencies.js';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats.js';
+import { isVite6 } from './vite-version.js';
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -347,7 +348,9 @@ export async function buildExtraViteConfig(options, config) {
 	const extraViteConfig = {
 		resolve: {
 			dedupe: [...SVELTE_IMPORTS],
-			conditions: [...SVELTE_EXPORT_CONDITIONS]
+			// In Vite 6, we need to provide the default conditions too as it now replaces the default,
+			// instead of extending it. We set undefined here and extend it in the `configEnvironment` hook instead.
+			conditions: isVite6 ? undefined : [...SVELTE_EXPORT_CONDITIONS]
 		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60

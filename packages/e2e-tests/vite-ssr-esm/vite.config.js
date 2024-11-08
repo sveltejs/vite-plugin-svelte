@@ -14,6 +14,11 @@ export default defineConfig(({ command, mode }) => {
 				}
 			}
 		},
+		// TODO: investigate the condition issue. it's the same thing dominik and ben found.
+		// idk why it's only happening after https://github.com/vitejs/vite/pull/18395
+		ssr: {
+			noExternal: ['esm-env']
+		},
 		server: {
 			watch: {
 				// During tests we edit the files too fast and sometimes chokidar

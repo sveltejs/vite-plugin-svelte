@@ -2,6 +2,11 @@ import { createRequire } from 'node:module';
 
 export const VITE_RESOLVE_MAIN_FIELDS = ['browser', 'module', 'jsnext:main', 'jsnext'];
 
+// These two are required for Vite 6 only, as specifying conditions will remove the default ones,
+// like the `mainFields` option. Vite 6 is working on exposing these which we can use later.
+export const VITE_CLIENT_RESOLVE_CONDITIONS = ['module', 'browser', 'development|production'];
+export const VITE_SERVER_RESOLVE_CONDITIONS = ['module', 'node', 'development|production'];
+
 export const SVELTE_RESOLVE_MAIN_FIELDS = ['svelte'];
 
 export const SVELTE_IMPORTS = Object.entries(

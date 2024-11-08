@@ -18,6 +18,10 @@ import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 import * as svelteCompiler from 'svelte/compiler';
+import {
+	VITE_CLIENT_RESOLVE_CONDITIONS,
+	VITE_SERVER_RESOLVE_CONDITIONS
+} from './utils/constants.js';
 
 /**
  * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
@@ -62,6 +66,17 @@ export function svelte(inlineOptions) {
 				const extraViteConfig = await buildExtraViteConfig(options, config);
 				log.debug('additional vite config', extraViteConfig, 'config');
 				return extraViteConfig;
+			},
+			configEnvironment(name, config) {
+				config.resolve ??= {};
+				if (config.resolve.conditions == null) {
+					if (name === 'client') {
+						config.resolve.conditions = [...VITE_CLIENT_RESOLVE_CONDITIONS];
+					} else {
+						config.resolve.conditions = [...VITE_SERVER_RESOLVE_CONDITIONS];
+					}
+				}
+				config.resolve.conditions.push('svelte');
 			},
 
 			async configResolved(config) {
