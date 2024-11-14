@@ -334,22 +334,24 @@ function resolveViteRoot(viteConfig) {
  * @returns {Promise<Partial<import('vite').UserConfig>>}
  */
 export async function buildExtraViteConfig(options, config) {
-	// make sure we only readd vite default mainFields when no other plugin has changed the config already
-	// see https://github.com/sveltejs/vite-plugin-svelte/issues/581
-	if (!config.resolve) {
-		config.resolve = {};
+	// `resolve.mainFields` override the defaults if set, but we want to extend it, so we directly mutate here.
+	// We only do so for Vite 5 and below, as in Vite 6, `resolve.mainFields` only apply to the client env,
+	// so we use the `configEnvironment` hook to set it up instead.
+	if (!isVite6) {
+		config.resolve ??= {};
+		config.resolve.mainFields = [
+			...SVELTE_RESOLVE_MAIN_FIELDS,
+			...(config.resolve.mainFields ?? VITE_RESOLVE_MAIN_FIELDS)
+		];
 	}
-	config.resolve.mainFields = [
-		...SVELTE_RESOLVE_MAIN_FIELDS,
-		...(config.resolve.mainFields ?? VITE_RESOLVE_MAIN_FIELDS)
-	];
 
 	/** @type {Partial<import('vite').UserConfig>} */
 	const extraViteConfig = {
 		resolve: {
 			dedupe: [...SVELTE_IMPORTS],
-			// In Vite 6, we need to provide the default conditions too as it now replaces the default,
-			// instead of extending it. We set undefined here and extend it in the `configEnvironment` hook instead.
+			// In Vite 6, conditions now override the defaults instead of extending. `resolve.conditions`
+			// also only apply to the client env, so we use the `configEnvironment` hook to set it up
+			// instead, so here we set to `undefined` to skip it.
 			conditions: isVite6 ? undefined : [...SVELTE_EXPORT_CONDITIONS]
 		}
 		// this option is still awaiting a PR in vite to be supported

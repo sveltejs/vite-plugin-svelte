@@ -18,10 +18,6 @@ import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 import * as svelteCompiler from 'svelte/compiler';
-import {
-	VITE_CLIENT_RESOLVE_CONDITIONS,
-	VITE_SERVER_RESOLVE_CONDITIONS
-} from './utils/constants.js';
 
 /**
  * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
@@ -67,14 +63,31 @@ export function svelte(inlineOptions) {
 				log.debug('additional vite config', extraViteConfig, 'config');
 				return extraViteConfig;
 			},
-			// @ts-ignore Allow exist in vite 6
-			configEnvironment(name, config) {
+
+			// @ts-ignore This hook only works in Vite 6
+			async configEnvironment(name, config, opts) {
 				config.resolve ??= {};
-				if (config.resolve.conditions == null) {
-					if (name === 'client') {
-						config.resolve.conditions = [...VITE_CLIENT_RESOLVE_CONDITIONS];
+
+				// Emulate Vite default fallback for `resolve.mainFields` if not set
+				if (config.resolve.mainFields == null) {
+					// These exports only exist in Vite 6
+					const { defaultClientMainFields, defaultServerMainFields } = await import('vite');
+					if (name === 'client' || opts.isSsrTargetWebworker) {
+						config.resolve.mainFields = [...defaultClientMainFields];
 					} else {
-						config.resolve.conditions = [...VITE_SERVER_RESOLVE_CONDITIONS];
+						config.resolve.mainFields = [...defaultServerMainFields];
+					}
+				}
+				config.resolve.mainFields.unshift('svelte');
+
+				// Emulate Vite default fallback for `resolve.conditions` if not set
+				if (config.resolve.conditions == null) {
+					// These exports only exist in Vite 6
+					const { defaultClientConditions, defaultServerConditions } = await import('vite');
+					if (name === 'client' || opts.isSsrTargetWebworker) {
+						config.resolve.conditions = [...defaultClientConditions];
+					} else {
+						config.resolve.conditions = [...defaultServerConditions];
 					}
 				}
 				config.resolve.conditions.push('svelte');
