@@ -65,14 +65,14 @@ export function svelte(inlineOptions) {
 			},
 
 			// @ts-ignore This hook only works in Vite 6
-			async configEnvironment(name, config, opts) {
+			async configEnvironment(_, config, opts) {
 				config.resolve ??= {};
 
 				// Emulate Vite default fallback for `resolve.mainFields` if not set
 				if (config.resolve.mainFields == null) {
-					// These exports only exist in Vite 6
+					// @ts-ignore These exports only exist in Vite 6
 					const { defaultClientMainFields, defaultServerMainFields } = await import('vite');
-					if (name === 'client' || opts.isSsrTargetWebworker) {
+					if (config.consumer === 'client' || opts.isSsrTargetWebworker) {
 						config.resolve.mainFields = [...defaultClientMainFields];
 					} else {
 						config.resolve.mainFields = [...defaultServerMainFields];
@@ -82,9 +82,9 @@ export function svelte(inlineOptions) {
 
 				// Emulate Vite default fallback for `resolve.conditions` if not set
 				if (config.resolve.conditions == null) {
-					// These exports only exist in Vite 6
+					// @ts-ignore These exports only exist in Vite 6
 					const { defaultClientConditions, defaultServerConditions } = await import('vite');
-					if (name === 'client' || opts.isSsrTargetWebworker) {
+					if (config.consumer === 'client' || opts.isSsrTargetWebworker) {
 						config.resolve.conditions = [...defaultClientConditions];
 					} else {
 						config.resolve.conditions = [...defaultServerConditions];
