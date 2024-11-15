@@ -15,6 +15,7 @@ export interface RequestQuery {
 	url?: boolean;
 	raw?: boolean;
 	direct?: boolean;
+	inline?: boolean;
 }
 
 export interface SvelteRequest {
@@ -26,6 +27,7 @@ export interface SvelteRequest {
 	timestamp: number;
 	ssr: boolean;
 	raw: boolean;
+	inline: boolean;
 }
 
 export interface SvelteModuleRequest {
