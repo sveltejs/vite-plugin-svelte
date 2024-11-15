@@ -88,7 +88,7 @@ describe('raw', () => {
 	});
 });
 
-describe.runIf(!isBuild).skip('direct', () => {
+describe.runIf(!isBuild)('direct', () => {
 	test('Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css', async () => {
 		const response = await fetchFromPage(
 			'src/Dummy.svelte?direct&svelte&type=style&sourcemap&lang.css',
@@ -116,7 +116,7 @@ describe.runIf(!isBuild).skip('direct', () => {
 	});
 });
 
-describe.runIf(!isBuild).skip('ssrLoadModule', () => {
+describe.runIf(!isBuild)('ssrLoadModule', () => {
 	let vite: ViteDevServer;
 	let ssrLoadDummy;
 	beforeAll(async () => {

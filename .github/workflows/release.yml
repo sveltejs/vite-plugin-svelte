@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         # pseudo-matrix for convenience, NEVER use more than a single combination
-        node: [20]
+        node: [22]
         os: [ubuntu-latest]
     steps:
       - name: checkout
