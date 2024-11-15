@@ -1,11 +1,12 @@
 import "svelte/internal/disclose-version";
+import "svelte/internal/flags/legacy";
 import * as $ from "svelte/internal/client";
 
 var root = $.template(`<button class="svelte-d8vj6a"> </button>`);
 
 const $$css = {
 	hash: "svelte-d8vj6a",
-	code: "button.svelte-d8vj6a {\n  color: #000099;\n}"
+	code: "button.svelte-d8vj6a {color:#000099;}"
 };
 
 export default function Dummy($$anchor, $$props) {
