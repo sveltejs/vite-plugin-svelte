@@ -10,8 +10,9 @@
 >
 
 <style lang="scss">
+	@use 'sass:color';
 	$blue: blue;
 	button {
-		color: darken($blue, 20);
+		color: color.adjust($blue, $lightness: -20%);
 	}
 </style>
