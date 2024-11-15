@@ -99,7 +99,7 @@ describe.runIf(!isBuild)('direct', () => {
 		expect(response.ok).toBe(true);
 		expect(response.headers.get('Content-Type')).toBe('text/css');
 		const css = await response.text();
-		expect(css).toMatchFileSnapshot(snapshotFilename('direct-css'));
+		await expect(css).toMatchFileSnapshot(snapshotFilename('direct-css'));
 	});
 	test('Dummy.svelte?direct&svelte&type=script&sourcemap&lang.js', async () => {
 		const response = await fetchFromPage(
@@ -112,7 +112,7 @@ describe.runIf(!isBuild)('direct', () => {
 		// vite switched from application/javascript to text/javascript in 5.1
 		expect(response.headers.get('Content-Type')).toMatch(/^(?:text|application)\/javascript$/);
 		const js = await response.text();
-		expect(normalizeSnapshot(js)).toMatchFileSnapshot(snapshotFilename('direct-js'));
+		await expect(normalizeSnapshot(js)).toMatchFileSnapshot(snapshotFilename('direct-js'));
 	});
 });
 
