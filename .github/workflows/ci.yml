@@ -1,4 +1,3 @@
-# build and test on linux, windows, mac with node  18,20
 name: CI
 
 on:
@@ -22,7 +21,7 @@ permissions:
   contents: read # to fetch code (actions/checkout)
 
 jobs:
-  # "checks" job runs on linux + 16 only and checks that install, build, lint and audit work
+  # "checks" job runs on linux + node lts only and checks that install, build, lint and audit work
   # it also primes the pnpm store cache for linux, important for downstream tests
   checks:
     timeout-minutes: 5
@@ -30,7 +29,7 @@ jobs:
     strategy:
       matrix:
         # pseudo-matrix for convenience, NEVER use more than a single combination
-        node: [20]
+        node: [22]
         os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
@@ -68,18 +67,19 @@ jobs:
         if: (${{ success() }} || ${{ failure() }})
         run: pnpm generate:types && [ "`git status --porcelain=v1`" == "" ]
 
+  # "test" job runs on linux, windows, mac with node active lts and linux with node maintenance lts
   test:
     timeout-minutes: 10
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        node: [20]
+        node: [22]
         os: [ubuntu-latest, macos-latest, windows-latest]
         include:
           - node: 18
             os: ubuntu-latest
-          - node: 22
+          - node: 20
             os: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
