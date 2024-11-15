@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.1
+### Patch Changes
+
+
+- removed references to compiler options no longer available in svelte5 ([#1010](https://github.com/sveltejs/vite-plugin-svelte/pull/1010))
+
 ## 4.0.0
 ### Major Changes
 
