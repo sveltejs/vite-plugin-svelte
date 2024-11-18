@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - v4
   pull_request:
     branches:
       - main
+      - v4
 env:
   # we call `pnpm playwright install` instead
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
