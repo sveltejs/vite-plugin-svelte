@@ -14,7 +14,6 @@ import {
 	readFileContent
 } from '~utils';
 
-import { version as viteVersion } from 'vite';
 import glob from 'tiny-glob';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -350,19 +349,11 @@ describe('kit-node', () => {
 					['svelte', 'browser', 'module', 'jsnext:main', 'jsnext'],
 					`resolve.mainFields in ${filename}`
 				);
-				if (viteVersion.startsWith('6.')) {
-					expectArrayEqual(
-						config.resolve.conditions,
-						['browser', 'development|production', 'module', 'svelte'],
-						`resolve.conditions in ${filename}`
-					);
-				} else {
-					expectArrayEqual(
-						config.resolve.conditions,
-						['svelte'],
-						`resolve.conditions in ${filename}`
-					);
-				}
+				expectArrayEqual(
+					config.resolve.conditions,
+					['browser', 'development|production', 'module', 'svelte'],
+					`resolve.conditions in ${filename}`
+				);
 			}
 		});
 	});

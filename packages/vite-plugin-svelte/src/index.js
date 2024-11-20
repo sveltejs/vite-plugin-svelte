@@ -10,7 +10,9 @@ import {
 	validateInlineOptions,
 	resolveOptions,
 	patchResolvedViteConfig,
-	preResolveOptions
+	preResolveOptions,
+	ensureConfigEnvironmentMainFields,
+	ensureConfigEnvironmentConditions
 } from './utils/options.js';
 import { ensureWatchedFile, setupWatchers } from './utils/watch.js';
 import { toRollupError } from './utils/error.js';
@@ -64,32 +66,13 @@ export function svelte(inlineOptions) {
 				return extraViteConfig;
 			},
 
-			// @ts-ignore This hook only works in Vite 6
-			async configEnvironment(_, config, opts) {
-				config.resolve ??= {};
-
-				// Emulate Vite default fallback for `resolve.mainFields` if not set
-				if (config.resolve.mainFields == null) {
-					// @ts-ignore These exports only exist in Vite 6
-					const { defaultClientMainFields, defaultServerMainFields } = await import('vite');
-					if (config.consumer === 'client' || opts.isSsrTargetWebworker) {
-						config.resolve.mainFields = [...defaultClientMainFields];
-					} else {
-						config.resolve.mainFields = [...defaultServerMainFields];
-					}
-				}
+			configEnvironment(_, config, opts) {
+				ensureConfigEnvironmentMainFields(config, opts);
+				// @ts-expect-error the function above should make `resolve.mainFields` non-nullable
 				config.resolve.mainFields.unshift('svelte');
 
-				// Emulate Vite default fallback for `resolve.conditions` if not set
-				if (config.resolve.conditions == null) {
-					// @ts-ignore These exports only exist in Vite 6
-					const { defaultClientConditions, defaultServerConditions } = await import('vite');
-					if (config.consumer === 'client' || opts.isSsrTargetWebworker) {
-						config.resolve.conditions = [...defaultClientConditions];
-					} else {
-						config.resolve.conditions = [...defaultServerConditions];
-					}
-				}
+				ensureConfigEnvironmentConditions(config, opts);
+				// @ts-expect-error the function above should make `resolve.conditions` non-nullable
 				config.resolve.conditions.push('svelte');
 			},
 

@@ -1,14 +1,18 @@
 import process from 'node:process';
-import { normalizePath } from 'vite';
+import {
+	defaultClientMainFields,
+	defaultServerMainFields,
+	defaultClientConditions,
+	defaultServerConditions,
+	normalizePath
+} from 'vite';
 import { isDebugNamespaceEnabled, log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
 import {
 	DEFAULT_SVELTE_EXT,
 	FAQ_LINK_MISSING_EXPORTS_CONDITION,
 	SVELTE_EXPORT_CONDITIONS,
-	SVELTE_IMPORTS,
-	SVELTE_RESOLVE_MAIN_FIELDS,
-	VITE_RESOLVE_MAIN_FIELDS
+	SVELTE_IMPORTS
 } from './constants.js';
 
 import path from 'node:path';
@@ -30,7 +34,6 @@ import {
 
 import { isCommonDepWithoutSvelteField } from './dependencies.js';
 import { VitePluginSvelteStats } from './vite-plugin-svelte-stats.js';
-import { isVite6 } from './vite-version.js';
 
 const allowedPluginOptions = new Set([
 	'include',
@@ -334,25 +337,10 @@ function resolveViteRoot(viteConfig) {
  * @returns {Promise<Partial<import('vite').UserConfig>>}
  */
 export async function buildExtraViteConfig(options, config) {
-	// `resolve.mainFields` override the defaults if set, but we want to extend it, so we directly mutate here.
-	// We only do so for Vite 5 and below, as in Vite 6, `resolve.mainFields` only apply to the client env,
-	// so we use the `configEnvironment` hook to set it up instead.
-	if (!isVite6) {
-		config.resolve ??= {};
-		config.resolve.mainFields = [
-			...SVELTE_RESOLVE_MAIN_FIELDS,
-			...(config.resolve.mainFields ?? VITE_RESOLVE_MAIN_FIELDS)
-		];
-	}
-
 	/** @type {Partial<import('vite').UserConfig>} */
 	const extraViteConfig = {
 		resolve: {
-			dedupe: [...SVELTE_IMPORTS],
-			// In Vite 6, conditions now override the defaults instead of extending. `resolve.conditions`
-			// also only apply to the client env, so we use the `configEnvironment` hook to set it up
-			// instead, so here we set to `undefined` to skip it.
-			conditions: isVite6 ? undefined : [...SVELTE_EXPORT_CONDITIONS]
+			dedupe: [...SVELTE_IMPORTS]
 		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
@@ -612,6 +600,39 @@ export function patchResolvedViteConfig(viteConfig, options) {
 	);
 	if (facadeEsbuildSvelteModulePlugin) {
 		Object.assign(facadeEsbuildSvelteModulePlugin, esbuildSvelteModulePlugin(options));
+	}
+}
+
+/**
+ * Mutates `config` to ensure `resolve.mainFields` is set. If unset, it emulates Vite's default fallback.
+ * @param {import('vite').EnvironmentOptions} config
+ * @param {{ isSsrTargetWebworker?: boolean }} opts
+ */
+export function ensureConfigEnvironmentMainFields(config, opts) {
+	config.resolve ??= {};
+	if (config.resolve.mainFields == null) {
+		if (config.consumer === 'client' || opts.isSsrTargetWebworker) {
+			config.resolve.mainFields = [...defaultClientMainFields];
+		} else {
+			config.resolve.mainFields = [...defaultServerMainFields];
+		}
+	}
+	return true;
+}
+
+/**
+ * Mutates `config` to ensure `resolve.conditions` is set. If unset, it emulates Vite's default fallback.
+ * @param {import('vite').EnvironmentOptions} config
+ * @param {{ isSsrTargetWebworker?: boolean }} opts
+ */
+export function ensureConfigEnvironmentConditions(config, opts) {
+	config.resolve ??= {};
+	if (config.resolve.conditions == null) {
+		if (config.consumer === 'client' || opts.isSsrTargetWebworker) {
+			config.resolve.conditions = [...defaultClientConditions];
+		} else {
+			config.resolve.conditions = [...defaultServerConditions];
+		}
 	}
 }
 
