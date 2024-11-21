@@ -14,7 +14,7 @@ import { enhanceCompileError } from './error.js';
 // which is closer to the other regexes in at least not falling into commented script
 // but ideally would be shared exactly with svelte and other tools that use it
 const scriptLangRE =
-	/<!--[^]*?-->|<script (?:[^>]*|(?:[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)\s+)*)lang=["']?([^"' >]+)["']?[^>]*>/g;
+	/<!--[^]*?-->|<script\s+(?:[^>]*|(?:[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)\s+)*)lang=(["'])?([^"' >]+)\1[^>]*>/g;
 
 /**
  * @returns {import('../types/compile.d.ts').CompileSvelte}
@@ -172,8 +172,8 @@ export function createCompileSvelte() {
 
 		let lang = 'js';
 		for (const match of code.matchAll(scriptLangRE)) {
-			if (match[1]) {
-				lang = match[1];
+			if (match[2]) {
+				lang = match[2];
 				break;
 			}
 		}
