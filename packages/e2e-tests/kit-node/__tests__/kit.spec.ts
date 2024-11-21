@@ -285,7 +285,8 @@ describe('kit-node', () => {
 						'/^svelte\\//', // serialized with toString
 						'e2e-test-dep-svelte-api-only',
 						'svelte-i18n',
-						'esm-env',
+						'esm-env', // first added by svelte-kit
+						'esm-env', // second added by vite-plugin-svelte
 						'@sveltejs/kit'
 					],
 					`ssr.noExternal in ${filename}`

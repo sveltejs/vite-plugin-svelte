@@ -572,6 +572,11 @@ function buildExtraConfigForSvelte(config) {
 	if (!isDepExternaled('svelte', config.ssr?.external ?? [])) {
 		noExternal.push('svelte', /^svelte\//);
 	}
+	// esm-env needs to be bundled by default for the development/production condition
+	// be properly used by svelte
+	if (!isDepExternaled('esm-env', config.ssr?.external ?? [])) {
+		noExternal.push('esm-env');
+	}
 	return { optimizeDeps: { include, exclude }, ssr: { noExternal, external } };
 }
 
