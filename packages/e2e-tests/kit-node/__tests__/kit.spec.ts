@@ -16,6 +16,7 @@ import {
 
 import glob from 'tiny-glob';
 import path from 'node:path';
+import { defaultClientConditions, defaultClientMainFields } from 'vite';
 import { describe, expect, it } from 'vitest';
 
 describe('kit-node', () => {
@@ -347,12 +348,12 @@ describe('kit-node', () => {
 				expectArrayEqual(config.resolve.dedupe, expectedDedupe, `resolve.dedupe in ${filename}`);
 				expectArrayEqual(
 					config.resolve.mainFields,
-					['svelte', 'browser', 'module', 'jsnext:main', 'jsnext'],
+					['svelte', ...defaultClientMainFields],
 					`resolve.mainFields in ${filename}`
 				);
 				expectArrayEqual(
 					config.resolve.conditions,
-					['browser', 'development|production', 'module', 'svelte'],
+					[...defaultClientConditions, 'svelte'],
 					`resolve.conditions in ${filename}`
 				);
 			}
