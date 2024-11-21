@@ -1,9 +1,5 @@
 import { createRequire } from 'node:module';
 
-export const VITE_RESOLVE_MAIN_FIELDS = ['browser', 'module', 'jsnext:main', 'jsnext'];
-
-export const SVELTE_RESOLVE_MAIN_FIELDS = ['svelte'];
-
 export const SVELTE_IMPORTS = Object.entries(
 	createRequire(import.meta.url)('svelte/package.json').exports
 )

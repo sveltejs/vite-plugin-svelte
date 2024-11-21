@@ -10,7 +10,9 @@ import {
 	validateInlineOptions,
 	resolveOptions,
 	patchResolvedViteConfig,
-	preResolveOptions
+	preResolveOptions,
+	ensureConfigEnvironmentMainFields,
+	ensureConfigEnvironmentConditions
 } from './utils/options.js';
 import { ensureWatchedFile, setupWatchers } from './utils/watch.js';
 import { toRollupError } from './utils/error.js';
@@ -62,6 +64,16 @@ export function svelte(inlineOptions) {
 				const extraViteConfig = await buildExtraViteConfig(options, config);
 				log.debug('additional vite config', extraViteConfig, 'config');
 				return extraViteConfig;
+			},
+
+			configEnvironment(name, config, opts) {
+				ensureConfigEnvironmentMainFields(name, config, opts);
+				// @ts-expect-error the function above should make `resolve.mainFields` non-nullable
+				config.resolve.mainFields.unshift('svelte');
+
+				ensureConfigEnvironmentConditions(name, config, opts);
+				// @ts-expect-error the function above should make `resolve.conditions` non-nullable
+				config.resolve.conditions.push('svelte');
 			},
 
 			async configResolved(config) {
