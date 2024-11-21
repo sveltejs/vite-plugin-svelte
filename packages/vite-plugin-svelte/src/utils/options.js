@@ -605,13 +605,14 @@ export function patchResolvedViteConfig(viteConfig, options) {
 
 /**
  * Mutates `config` to ensure `resolve.mainFields` is set. If unset, it emulates Vite's default fallback.
+ * @param {string} name
  * @param {import('vite').EnvironmentOptions} config
  * @param {{ isSsrTargetWebworker?: boolean }} opts
  */
-export function ensureConfigEnvironmentMainFields(config, opts) {
+export function ensureConfigEnvironmentMainFields(name, config, opts) {
 	config.resolve ??= {};
 	if (config.resolve.mainFields == null) {
-		if (config.consumer === 'client' || opts.isSsrTargetWebworker) {
+		if (config.consumer === 'client' || name === 'client' || opts.isSsrTargetWebworker) {
 			config.resolve.mainFields = [...defaultClientMainFields];
 		} else {
 			config.resolve.mainFields = [...defaultServerMainFields];
@@ -622,13 +623,14 @@ export function ensureConfigEnvironmentMainFields(config, opts) {
 
 /**
  * Mutates `config` to ensure `resolve.conditions` is set. If unset, it emulates Vite's default fallback.
+ * @param {string} name
  * @param {import('vite').EnvironmentOptions} config
  * @param {{ isSsrTargetWebworker?: boolean }} opts
  */
-export function ensureConfigEnvironmentConditions(config, opts) {
+export function ensureConfigEnvironmentConditions(name, config, opts) {
 	config.resolve ??= {};
 	if (config.resolve.conditions == null) {
-		if (config.consumer === 'client' || opts.isSsrTargetWebworker) {
+		if (config.consumer === 'client' || name === 'client' || opts.isSsrTargetWebworker) {
 			config.resolve.conditions = [...defaultClientConditions];
 		} else {
 			config.resolve.conditions = [...defaultServerConditions];

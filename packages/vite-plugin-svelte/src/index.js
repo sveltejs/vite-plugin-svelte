@@ -66,12 +66,12 @@ export function svelte(inlineOptions) {
 				return extraViteConfig;
 			},
 
-			configEnvironment(_, config, opts) {
-				ensureConfigEnvironmentMainFields(config, opts);
+			configEnvironment(name, config, opts) {
+				ensureConfigEnvironmentMainFields(name, config, opts);
 				// @ts-expect-error the function above should make `resolve.mainFields` non-nullable
 				config.resolve.mainFields.unshift('svelte');
 
-				ensureConfigEnvironmentConditions(config, opts);
+				ensureConfigEnvironmentConditions(name, config, opts);
 				// @ts-expect-error the function above should make `resolve.conditions` non-nullable
 				config.resolve.conditions.push('svelte');
 			},
