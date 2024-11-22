@@ -50,8 +50,7 @@ function parseToSvelteRequest(id, filename, rawQuery, root, timestamp, ssr) {
 		query,
 		timestamp,
 		ssr,
-		raw,
-		inline: !!query.inline
+		raw
 	};
 }
 

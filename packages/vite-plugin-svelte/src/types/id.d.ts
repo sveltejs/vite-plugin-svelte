@@ -27,7 +27,6 @@ export interface SvelteRequest {
 	timestamp: number;
 	ssr: boolean;
 	raw: boolean;
-	inline: boolean;
 }
 
 export interface SvelteModuleRequest {
