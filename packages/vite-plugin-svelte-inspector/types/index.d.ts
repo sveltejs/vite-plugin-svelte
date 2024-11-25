@@ -74,7 +74,7 @@ declare module '@sveltejs/vite-plugin-svelte-inspector' {
 			base: string;
 		};
 	}
-	export function svelteInspector(options?: Partial<Options> | undefined): import("vite").Plugin;
+	export function svelteInspector(options?: Partial<Options>): import("vite").Plugin;
 
 	export {};
 }
