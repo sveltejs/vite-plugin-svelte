@@ -136,7 +136,11 @@ export function svelte(inlineOptions) {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(importee, ssr);
 				if (svelteRequest?.query.svelte) {
-					if (svelteRequest.query.type === 'style' && !svelteRequest.raw) {
+					if (
+						svelteRequest.query.type === 'style' &&
+						!svelteRequest.raw &&
+						!svelteRequest.query.inline
+					) {
 						// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
 						// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
 						log.debug(

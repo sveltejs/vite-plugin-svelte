@@ -162,4 +162,11 @@ describe.runIf(!isBuild)('ssrLoadModule', () => {
 		const result = await ssrLoadDummy('?raw&svelte&type=style');
 		await expect(result).toMatchFileSnapshot(snapshotFilename('ssr-style'));
 	});
+	test('?inline&svelte&type=style&lang.css', async () => {
+		// Preload Dummy.svelte first so its CSS is processed in the module graph, otherwise loading
+		// its css inlined url directly will return the raw svelte file rather than the style
+		await ssrLoadDummy('');
+		const result = await ssrLoadDummy('?inline&svelte&type=style&lang.css');
+		await expect(result).toMatchFileSnapshot(snapshotFilename('ssr-inline-style'));
+	});
 });

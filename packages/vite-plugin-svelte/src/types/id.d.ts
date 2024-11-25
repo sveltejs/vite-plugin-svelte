@@ -15,6 +15,7 @@ export interface RequestQuery {
 	url?: boolean;
 	raw?: boolean;
 	direct?: boolean;
+	inline?: boolean;
 }
 
 export interface SvelteRequest {
