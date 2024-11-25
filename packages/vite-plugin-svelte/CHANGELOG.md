@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.2
+### Patch Changes
+
+
+- Allow script tags to span multiple lines ([`5309d7b`](https://github.com/sveltejs/vite-plugin-svelte/commit/5309d7bda16eeea740c0e1e94b878e8d0f248b82))
+
 ## 4.0.1
 ### Patch Changes
 
