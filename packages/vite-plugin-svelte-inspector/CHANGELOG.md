@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 4.0.0-next.0
+### Major Changes
+
+
+- Support Vite 6 ([#1026](https://github.com/sveltejs/vite-plugin-svelte/pull/1026))
+
+
+### Patch Changes
+
+- Updated dependencies [[`e3344b4`](https://github.com/sveltejs/vite-plugin-svelte/commit/e3344b471004be8a183b500c4a44e6df95998f9a), [`e3344b4`](https://github.com/sveltejs/vite-plugin-svelte/commit/e3344b471004be8a183b500c4a44e6df95998f9a), [`973ba75`](https://github.com/sveltejs/vite-plugin-svelte/commit/973ba7519a7fef05ae4a3ee2b83f96451aca4de0), [`0db95a9`](https://github.com/sveltejs/vite-plugin-svelte/commit/0db95a9cbcd281b99b8b817c8eda8d9ff8fa2db2), [`e262266`](https://github.com/sveltejs/vite-plugin-svelte/commit/e2622664d9871558e03974524467968c7f906098)]:
+  - @sveltejs/vite-plugin-svelte@5.0.0-next.0
+
 ## 3.0.1
 ### Patch Changes
 
