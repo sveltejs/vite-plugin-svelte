@@ -19,7 +19,8 @@
     "release": "pnpm changeset publish",
     "prepare": "husky",
     "playwright": "playwright-core",
-    "generate:types": "pnpm --filter \"./packages/*\" --parallel generate:types"
+    "generate:types": "pnpm --filter \"./packages/*\" --parallel generate:types",
+    "generate:types-staged": "pnpm generate:types && :"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.10",
@@ -58,9 +59,8 @@
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
-    "*": [
-      "prettier --cache --ignore-path .gitignore --ignore-unknown --write"
-    ]
+    "*": "prettier --cache --ignore-path .gitignore --ignore-unknown --write",
+    "packages/*/src/**/*": "pnpm generate:types-staged"
   },
   "packageManager": "pnpm@9.14.2",
   "engines": {
