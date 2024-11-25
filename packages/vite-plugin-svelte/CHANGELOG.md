@@ -1,5 +1,32 @@
 # @sveltejs/vite-plugin-svelte
 
+## 5.0.0-next.0
+### Major Changes
+
+
+- Handle Vite 6 breaking change and remove Vite 5 handling ([#1020](https://github.com/sveltejs/vite-plugin-svelte/pull/1020))
+
+
+- Support Vite 6 ([#1026](https://github.com/sveltejs/vite-plugin-svelte/pull/1026))
+
+
+### Minor Changes
+
+
+- Add `esm-env` to `ssr.noExternal` by default to resolve its conditions with Vite ([#1020](https://github.com/sveltejs/vite-plugin-svelte/pull/1020))
+
+
+- Support `?inline` query on Svelte style virtual modules ([#1024](https://github.com/sveltejs/vite-plugin-svelte/pull/1024))
+
+
+### Patch Changes
+
+
+- Allow script tags to span multiple lines ([`0db95a9`](https://github.com/sveltejs/vite-plugin-svelte/commit/0db95a9cbcd281b99b8b817c8eda8d9ff8fa2db2))
+
+- Updated dependencies [[`e262266`](https://github.com/sveltejs/vite-plugin-svelte/commit/e2622664d9871558e03974524467968c7f906098)]:
+  - @sveltejs/vite-plugin-svelte-inspector@4.0.0-next.0
+
 ## 4.0.1
 ### Patch Changes
 
