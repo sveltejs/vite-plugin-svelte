@@ -206,9 +206,9 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 */
 		style?: boolean | InlineConfig | ResolvedConfig;
 	}
-	export function svelte(inlineOptions?: Partial<Options> | undefined): import("vite").Plugin[];
-	export function vitePreprocess(opts?: VitePreprocessOptions | undefined): import("svelte/compiler").PreprocessorGroup;
-	export function loadSvelteConfig(viteConfig?: import("vite").UserConfig | undefined, inlineOptions?: Partial<Options> | undefined): Promise<Partial<SvelteConfig> | undefined>;
+	export function svelte(inlineOptions?: Partial<Options>): import("vite").Plugin[];
+	export function vitePreprocess(opts?: VitePreprocessOptions): import("svelte/compiler").PreprocessorGroup;
+	export function loadSvelteConfig(viteConfig?: import("vite").UserConfig, inlineOptions?: Partial<Options>): Promise<Partial<SvelteConfig> | undefined>;
 
 	export {};
 }
