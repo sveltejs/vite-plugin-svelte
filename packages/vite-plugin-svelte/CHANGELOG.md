@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 5.0.1
+### Patch Changes
+
+
+- Fix peer dependencies warning ([#1038](https://github.com/sveltejs/vite-plugin-svelte/pull/1038))
+
 ## 5.0.0
 ### Major Changes
 

@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 4.0.1
+### Patch Changes
+
+
+- Fix peer dependencies warning ([#1038](https://github.com/sveltejs/vite-plugin-svelte/pull/1038))
+
+- Updated dependencies [[`5389d31`](https://github.com/sveltejs/vite-plugin-svelte/commit/5389d3150cbcbb88e48f364c27e1dee9f0870416)]:
+  - @sveltejs/vite-plugin-svelte@5.0.1
+
 ## 4.0.0
 ### Major Changes
 
