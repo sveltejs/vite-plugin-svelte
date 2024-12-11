@@ -182,7 +182,7 @@ export function logCompilerWarnings(svelteRequest, warnings, options) {
  */
 function ignoreCompilerWarning(warning, isBuild, emitCss) {
 	return (
-		(!emitCss && warning.code === 'css-unused-selector') || // same as rollup-plugin-svelte
+		(!emitCss && warning.code === 'css_unused_selector') || // same as rollup-plugin-svelte
 		(!isBuild && isNoScopableElementWarning(warning))
 	);
 }
@@ -194,7 +194,7 @@ function ignoreCompilerWarning(warning, isBuild, emitCss) {
  */
 function isNoScopableElementWarning(warning) {
 	// see https://github.com/sveltejs/vite-plugin-svelte/issues/153
-	return warning.code === 'css-unused-selector' && warning.message.includes('"*"');
+	return warning.code === 'css_unused_selector' && warning.message.includes('"*"');
 }
 
 /**
