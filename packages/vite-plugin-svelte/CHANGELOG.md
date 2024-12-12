@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.3
+### Patch Changes
+
+
+- adapt internal handling of warning and error `code` property to changes in svelte5 ([#1046](https://github.com/sveltejs/vite-plugin-svelte/pull/1046))
+
 ## 4.0.2
 ### Patch Changes
 
