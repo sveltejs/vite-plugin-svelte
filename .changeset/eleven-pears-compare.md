@@ -2,4 +2,4 @@
 '@sveltejs/vite-plugin-svelte': patch
 ---
 
-use correct warning code to hide unused css selector warning coming from vite-plugin-svelte injected code during development
+adapt internal handling of warning and error `code` property to changes in svelte5
