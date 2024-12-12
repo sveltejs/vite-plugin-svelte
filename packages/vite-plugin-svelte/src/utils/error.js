@@ -102,6 +102,16 @@ function formatFrameForVite(frame) {
 }
 
 /**
+ *
+ * @param {string} code the svelte error code
+ * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/compiler/errors.js
+ * @returns {boolean}
+ */
+function couldBeFixedByCssPreprocessor(code) {
+	return code === 'expected_token' || code === 'unexpected_eof' || code.startsWith('css_');
+}
+
+/**
  * @param {import('svelte/compiler').Warning & Error} err a svelte compiler error, which is a mix of Warning and an error
  * @param {string} originalCode
  * @param {import('../public.d.ts').Options['preprocess']} [preprocessors]
@@ -113,7 +123,7 @@ export function enhanceCompileError(err, originalCode, preprocessors) {
 	const additionalMessages = [];
 
 	// Handle incorrect CSS preprocessor usage
-	if (err.code === 'css-syntax-error') {
+	if (couldBeFixedByCssPreprocessor(err.code)) {
 		// Reference from Svelte: https://github.com/sveltejs/svelte/blob/9926347ad9dbdd0f3324d5538e25dcb7f5e442f8/packages/svelte/src/compiler/preprocess/index.js#L257
 		const styleRe =
 			/<!--[^]*?-->|<style((?:\s+[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)|\s+[^=>'"/]+)*\s*)(?:\/>|>([\S\s]*?)<\/style>)/g;
