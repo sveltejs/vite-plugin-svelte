@@ -198,20 +198,10 @@ function mergeConfigs(...configs) {
  * @returns {import('../types/options.d.ts').ResolvedOptions}
  */
 export function resolveOptions(preResolveOptions, viteConfig, cache) {
-	const css = preResolveOptions.emitCss ? 'external' : 'injected';
 	/** @type {Partial<import('../public.d.ts').Options>} */
 	const defaultOptions = {
-		compilerOptions: {
-			css,
-			dev: !viteConfig.isProduction,
-			hmr:
-				!viteConfig.isProduction &&
-				!preResolveOptions.isBuild &&
-				viteConfig.server &&
-				viteConfig.server.hmr !== false
-		}
+		emitCss: true
 	};
-
 	/** @type {Partial<import('../types/options.d.ts').ResolvedOptions>} */
 	const extraOptions = {
 		root: viteConfig.root,
@@ -221,11 +211,9 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 		mergeConfigs(defaultOptions, preResolveOptions, extraOptions)
 	);
 
-	removeIgnoredOptions(merged);
 	handleDeprecatedOptions(merged);
 	addExtraPreprocessors(merged, viteConfig);
-	enforceOptionsForHmr(merged, viteConfig);
-	enforceOptionsForProduction(merged);
+
 	// mergeConfigs would mangle functions on the stats class, so do this afterwards
 	if (log.debug.enabled && isDebugNamespaceEnabled('stats')) {
 		merged.stats = new VitePluginSvelteStats(cache);
@@ -234,64 +222,53 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 }
 
 /**
+ * @param {import('svelte/compiler').CompileOptions} compilerOptions
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @param {import('vite').ResolvedConfig} viteConfig
  */
-function enforceOptionsForHmr(options, viteConfig) {
+export function enforceCompilerOptions(compilerOptions, options) {
 	if (options.hot) {
-		log.warn(
+		log.warn.once(
 			'svelte 5 has hmr integrated in core. Please remove the vitePlugin.hot option and use compilerOptions.hmr instead'
 		);
-		delete options.hot;
-		options.compilerOptions.hmr = true;
+		compilerOptions.hmr = true;
 	}
-	if (options.compilerOptions.hmr && viteConfig.server?.hmr === false) {
-		log.warn(
+	if (compilerOptions.hmr && options.server?.config.server.hmr === false) {
+		log.warn.once(
 			'vite config server.hmr is false but compilerOptions.hmr is true. Forcing compilerOptions.hmr to false as it would not work.'
 		);
-		options.compilerOptions.hmr = false;
+		compilerOptions.hmr = false;
 	}
-}
 
-/**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- */
-function enforceOptionsForProduction(options) {
 	if (options.isProduction) {
-		if (options.compilerOptions.hmr) {
-			log.warn(
+		if (compilerOptions.hmr) {
+			log.warn.once(
 				'you are building for production but compilerOptions.hmr is true, forcing it to false'
 			);
-			options.compilerOptions.hmr = false;
+			compilerOptions.hmr = false;
 		}
-		if (options.compilerOptions.dev) {
-			log.warn(
+		if (compilerOptions.dev) {
+			log.warn.once(
 				'you are building for production but compilerOptions.dev is true, forcing it to false'
 			);
-			options.compilerOptions.dev = false;
+			compilerOptions.dev = false;
 		}
 	}
-}
 
-/**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- */
-function removeIgnoredOptions(options) {
 	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
-	if (options.compilerOptions.hmr && options.emitCss) {
+	if (compilerOptions.hmr && options.emitCss) {
 		ignoredCompilerOptions.push('cssHash');
 	}
-	const passedCompilerOptions = Object.keys(options.compilerOptions || {});
+	const passedCompilerOptions = Object.keys(compilerOptions || {});
 	const passedIgnored = passedCompilerOptions.filter((o) => ignoredCompilerOptions.includes(o));
 	if (passedIgnored.length) {
-		log.warn(
+		log.warn.once(
 			`The following Svelte compilerOptions are controlled by vite-plugin-svelte and essential to its functionality. User-specified values are ignored. Please remove them from your configuration: ${passedIgnored.join(
 				', '
 			)}`
 		);
 		passedIgnored.forEach((ignored) => {
 			// @ts-expect-error string access
-			delete options.compilerOptions[ignored];
+			delete compilerOptions[ignored];
 		});
 	}
 }

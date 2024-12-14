@@ -6,12 +6,15 @@
 		"PluginOptions",
 		"SvelteConfig",
 		"VitePreprocessOptions",
+		"RestrictedSvelteCompileOptions",
+		"DynamicRestrictedSvelteCompileOptions",
 		"svelte",
 		"vitePreprocess",
 		"loadSvelteConfig"
 	],
 	"sources": [
 		"../src/public.d.ts",
+		"../src/types/options.d.ts",
 		"../src/index.js",
 		"../src/preprocess.js",
 		"../src/utils/load-svelte-config.js"
@@ -20,8 +23,9 @@
 		null,
 		null,
 		null,
+		null,
 		null
 	],
-	"mappings": ";;;;aAIYA,OAAOA;;;;;;;;;;;;;kBAaFC,aAAaA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;kBAgGbC,YAAYA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;kBAkFZC,qBAAqBA;;;;;;;;;;;;;iBCxKtBC,MAAMA;iBCXNC,cAAcA;iBCgBRC,gBAAgBA",
+	"mappings": ";;;;aAKYA,OAAOA;;;;;;;;;;;;;kBAaFC,aAAaA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;kBAgGbC,YAAYA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;kBAkFZC,qBAAqBA;;;;;;;;;;;;;MC9L1BC,8BAA8BA;;;;MAI9BC,qCAAqCA;;;iBCiBjCC,MAAMA;iBCXNC,cAAcA;iBCgBRC,gBAAgBA",
 	"ignoreList": []
 }

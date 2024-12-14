@@ -4,9 +4,17 @@ import type { ViteDevServer } from 'vite';
 import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
 import type { Options } from '../public.d.ts';
 
+export type RestrictedSvelteCompileOptions = Omit<
+	CompileOptions,
+	'filename' | 'format' | 'generate'
+>;
+export type DynamicRestrictedSvelteCompileOptions =
+	| RestrictedSvelteCompileOptions
+	| ((args: { filename: string; code: string }) => RestrictedSvelteCompileOptions);
+
 export interface PreResolvedOptions extends Options {
 	// these options are non-nullable after resolve
-	compilerOptions: CompileOptions;
+	compilerOptions: DynamicRestrictedSvelteCompileOptions;
 	// extra options
 	root: string;
 	isBuild: boolean;
