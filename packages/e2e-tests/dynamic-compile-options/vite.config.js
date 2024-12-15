@@ -11,6 +11,18 @@ export default defineConfig(() => {
 							preserveWhitespace: true
 						};
 					}
+				},
+				compilerOptions({ filename }) {
+					if (filename.endsWith('A.svelte')) {
+						return {
+							preserveWhitespace: false // should be overridden by dynamicCompileOptions above
+						};
+					}
+					if (filename.endsWith('C.svelte')) {
+						return {
+							preserveWhitespace: true
+						};
+					}
 				}
 			})
 		],
