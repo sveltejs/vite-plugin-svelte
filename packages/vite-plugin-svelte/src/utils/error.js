@@ -108,7 +108,7 @@ function formatFrameForVite(frame) {
  * @returns {boolean}
  */
 function couldBeFixedByCssPreprocessor(code) {
-	return code === 'expected_token' || code === 'unexpected_eof' || code.startsWith('css_');
+	return code === 'expected_token' || code === 'unexpected_eof' || code?.startsWith('css_');
 }
 
 /**
