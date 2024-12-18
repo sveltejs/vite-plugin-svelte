@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 4.0.4
+### Patch Changes
+
+
+- fix errorhandling to work with errors that don't have a code property ([`1a91581`](https://github.com/sveltejs/vite-plugin-svelte/commit/1a915816d13fb7d9c1e6cf51f3801e1c5be4effe))
+
 ## 4.0.3
 ### Patch Changes
 
