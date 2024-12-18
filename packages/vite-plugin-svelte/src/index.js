@@ -190,9 +190,6 @@ export function svelte(inlineOptions) {
 			},
 
 			handleHotUpdate(ctx) {
-				if (!options.compilerOptions.hmr || !options.emitCss) {
-					return;
-				}
 				const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);
 				if (svelteRequest) {
 					return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);

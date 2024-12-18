@@ -3,12 +3,10 @@ import * as svelte from 'svelte/compiler';
 import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
 
-import {
-	checkPreprocessDependencies,
-	createInjectScopeEverythingRulePreprocessorGroup
-} from './preprocess.js';
+import { checkPreprocessDependencies } from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
 import { enhanceCompileError } from './error.js';
+import { enforceCompilerOptions } from './options.js';
 
 // TODO this is a patched version of https://github.com/sveltejs/vite-plugin-svelte/pull/796/files#diff-3bce0b33034aad4b35ca094893671f7e7ddf4d27254ae7b9b0f912027a001b15R10
 // which is closer to the other regexes in at least not falling into commented script
@@ -22,11 +20,10 @@ const scriptLangRE =
 export function createCompileSvelte() {
 	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 	let stats;
-	const devStylePreprocessor = createInjectScopeEverythingRulePreprocessorGroup();
 	/** @type {import('../types/compile.d.ts').CompileSvelte} */
 	return async function compileSvelte(svelteRequest, code, options) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
-		const { emitCss = true } = options;
+
 		/** @type {string[]} */
 		const dependencies = [];
 		/** @type {import('svelte/compiler').Warning[]} */
@@ -56,30 +53,10 @@ export function createCompileSvelte() {
 				// also they for hmr updates too
 			}
 		}
-		/** @type {import('svelte/compiler').CompileOptions} */
-		const compileOptions = {
-			...options.compilerOptions,
-			filename,
-			generate: ssr ? 'server' : 'client'
-		};
-
-		if (compileOptions.hmr && options.emitCss) {
-			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-			compileOptions.cssHash = () => hash;
-		}
 
 		let preprocessed;
-		let preprocessors = options.preprocess;
-		if (!options.isBuild && options.emitCss && compileOptions.hmr) {
-			// inject preprocessor that ensures css hmr works better
-			if (!Array.isArray(preprocessors)) {
-				preprocessors = preprocessors
-					? [preprocessors, devStylePreprocessor]
-					: [devStylePreprocessor];
-			} else {
-				preprocessors = preprocessors.concat(devStylePreprocessor);
-			}
-		}
+		const preprocessors = options.preprocess;
+
 		if (preprocessors) {
 			try {
 				preprocessed = await svelte.preprocess(code, preprocessors, { filename }); // full filename here so postcss works
@@ -97,8 +74,6 @@ export function createCompileSvelte() {
 					dependencies.push(...checked.dependencies);
 				}
 			}
-
-			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 		}
 		if (typeof preprocessed?.map === 'object') {
 			mapToRelative(preprocessed?.map, filename);
@@ -109,7 +84,32 @@ export function createCompileSvelte() {
 				preprocessed: preprocessed ?? { code }
 			};
 		}
-		const finalCode = preprocessed ? preprocessed.code : code;
+		let finalCode = preprocessed ? preprocessed.code : code;
+		/**@type import('svelte/compiler').CompileOptions */
+		const compileOptions = {
+			css: options.emitCss ? 'external' : 'injected',
+			dev: !options.isProduction,
+			hmr:
+				!options.isProduction &&
+				!options.isBuild &&
+				options.server &&
+				options.server.config.server.hmr !== false,
+			...(typeof options.compilerOptions === 'function'
+				? options.compilerOptions({ filename, code: finalCode })
+				: options.compilerOptions)
+		};
+
+		enforceCompilerOptions(compileOptions, options);
+		compileOptions.filename = filename;
+		compileOptions.generate = ssr ? 'server' : 'client';
+		if (preprocessed?.map) {
+			compileOptions.sourcemap = preprocessed.map;
+		}
+		if (compileOptions.hmr && options.emitCss) {
+			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
+			compileOptions.cssHash = () => hash;
+		}
+
 		const dynamicCompileOptions = await options?.dynamicCompileOptions?.({
 			filename,
 			code: finalCode,
@@ -122,12 +122,27 @@ export function createCompileSvelte() {
 				'compile'
 			);
 		}
-		const finalCompileOptions = dynamicCompileOptions
-			? {
-					...compileOptions,
-					...dynamicCompileOptions
-				}
-			: compileOptions;
+		const finalCompileOptions = {
+			...compileOptions,
+			...dynamicCompileOptions
+		};
+
+		if (!options.isBuild && options.emitCss && finalCompileOptions.hmr) {
+			// use css preprocessor to inject rule that ensures css-only hmr works better
+			const processed = await svelte.preprocess(
+				finalCode,
+				[
+					{
+						name: 'inject-scope-everything-rule',
+						// no sourcemap, we just append 4 chars at the last line so no shifts
+						style: ({ content }) => ({ code: `${content ?? ''} *{}` })
+					}
+				],
+				{ filename }
+			);
+			finalCode = processed.code;
+		}
+
 		const endStat = stats?.start(filename);
 		/** @type {import('svelte/compiler').CompileResult} */
 		let compiled;
@@ -164,7 +179,7 @@ export function createCompileSvelte() {
 			// wire css import and code for hmr
 			const hasCss = compiled.css?.code?.trim()?.length ?? 0 > 0;
 			// compiler might not emit css with mode none or it may be empty
-			if (emitCss && hasCss) {
+			if (options.emitCss && hasCss) {
 				// TODO properly update sourcemap?
 				compiled.js.code += `\nimport ${JSON.stringify(cssId)};\n`;
 			}
