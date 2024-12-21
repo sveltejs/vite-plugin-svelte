@@ -5,7 +5,7 @@ import type { ResolvedOptions } from './options.d.ts';
 export type CompileSvelte = (
 	svelteRequest: SvelteRequest,
 	code: string,
-	options: Partial<ResolvedOptions>
+	options: ResolvedOptions
 ) => Promise<CompileData>;
 
 export interface Code {
