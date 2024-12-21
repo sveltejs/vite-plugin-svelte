@@ -2,7 +2,7 @@ declare module '@sveltejs/vite-plugin-svelte-inspector' {
 	export interface Options {
 		/**
 		 * define a key combo to toggle inspector,
-		 * @default 'meta-shift' on mac, 'control-shift' on other os
+		 * @default 'alt-x'
 		 *
 		 * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
 		 * examples: control-shift, control-o, control-alt-s  meta-x control-meta
@@ -57,7 +57,7 @@ declare module '@sveltejs/vite-plugin-svelte-inspector' {
 
 		/**
 		 * where to display the toggle button
-		 * @default top-right
+		 * @default 'top-right'
 		 */
 		toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 
