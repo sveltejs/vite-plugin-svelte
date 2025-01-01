@@ -313,6 +313,7 @@ describe('kit-node', () => {
 					'svelte',
 					'svelte/internal/disclose-version',
 					'svelte/internal/flags/legacy',
+					'svelte/internal/flags/tracing',
 					'svelte/legacy',
 					'svelte-i18n > deepmerge',
 					'svelte-i18n > cli-color',
@@ -342,6 +343,7 @@ describe('kit-node', () => {
 					'svelte',
 					'svelte/internal/disclose-version',
 					'svelte/internal/flags/legacy',
+					'svelte/internal/flags/tracing',
 					'svelte/internal/server',
 					'svelte/server',
 					'svelte/legacy'
