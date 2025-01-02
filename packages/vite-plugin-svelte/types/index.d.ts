@@ -131,7 +131,7 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 *
 		 * @see https://svelte.dev/docs#svelte_compile
 		 */
-		compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
+		compilerOptions?: DynamicRestrictedSvelteCompileOptions;
 
 		/**
 		 * Handles warning emitted from the Svelte compiler
@@ -206,6 +206,13 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 */
 		style?: boolean | InlineConfig | ResolvedConfig;
 	}
+	type RestrictedSvelteCompileOptions = Omit<
+		CompileOptions,
+		'filename' | 'format' | 'generate'
+	>;
+	type DynamicRestrictedSvelteCompileOptions =
+		| RestrictedSvelteCompileOptions
+		| ((args: { filename: string; code: string }) => RestrictedSvelteCompileOptions);
 	export function svelte(inlineOptions?: Partial<Options>): import("vite").Plugin[];
 	export function vitePreprocess(opts?: VitePreprocessOptions): import("svelte/compiler").PreprocessorGroup;
 	export function loadSvelteConfig(viteConfig?: import("vite").UserConfig, inlineOptions?: Partial<Options>): Promise<Partial<SvelteConfig> | undefined>;
