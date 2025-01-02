@@ -371,10 +371,11 @@
 		position: fixed;
 		background-color: rgba(0, 0, 0, 0.8);
 		color: #fff;
-		padding: 2px 4px;
+		padding: 4px 8px;
 		border-radius: 5px;
 		z-index: 999999;
 		pointer-events: none;
+		font-family: monospace, sans-serif;
 	}
 
 	#svelte-inspector-toggle {
