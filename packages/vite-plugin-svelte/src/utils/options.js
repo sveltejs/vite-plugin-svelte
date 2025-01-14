@@ -563,6 +563,10 @@ function buildExtraConfigForSvelte(config) {
 			'config'
 		);
 	}
+	// clsx may be imported by svelte runtime, make vite optimize it ahead of time
+	if (!isDepExcluded('clsx', config.optimizeDeps?.exclude ?? [])) {
+		include.push('clsx');
+	}
 	/** @type {(string | RegExp)[]} */
 	const noExternal = [];
 	/** @type {string[]} */
