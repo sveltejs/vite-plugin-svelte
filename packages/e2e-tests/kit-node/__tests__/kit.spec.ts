@@ -94,18 +94,24 @@ describe('kit-node', () => {
 
 		if (isBuild) {
 			it('should not include dynamic import from onmount in ssr output', async () => {
-				const serverFiles = await glob('.svelte-kit/output/server/**/*.js', { cwd: testDir });
-				const includesClientOnlyModule = serverFiles.some((file: string) =>
+				const ssrManifest = JSON.parse(
+					readFileContent('.svelte-kit/output/server/.vite/manifest.json')
+				);
+				const serverFilesSrc = Object.values(ssrManifest)
+					.filter((e) => !!e.src)
+					.map((e) => e.src);
+				const includesClientOnlyModule = serverFilesSrc.some((file: string) =>
 					file.includes('client-only-module')
 				);
 				expect(includesClientOnlyModule).toBe(false);
 			});
 			it('should include dynamic import from onmount in client output', async () => {
-				const clientFiles = await glob('.svelte-kit/output/client/**/*.js', { cwd: testDir });
-				const includesClientOnlyModule = clientFiles.some((file: string) =>
-					file.includes('client-only-module')
+				const clientManifest = JSON.parse(
+					readFileContent('.svelte-kit/output/client/.vite/manifest.json')
 				);
-				expect(includesClientOnlyModule).toBe(true);
+				const clientOnlyOutput = clientManifest['src/client-only-module.js'];
+				expect(clientOnlyOutput).toBeDefined();
+				expect(clientOnlyOutput.isDynamicEntry).toBe(true);
 			});
 		}
 
