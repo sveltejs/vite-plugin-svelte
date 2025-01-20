@@ -5,19 +5,19 @@ import * as $ from "/node_modules/.vite/deps/svelte_internal_client.js?v=XXX";
 var root = $.template(`<button class="svelte-d8vj6a"> </button>`);
 
 export default function Dummy($$anchor, $$props) {
-	let name = $.prop($$props, "name", 8);
+	let name = $.prop($$props, 'name', 8);
 	let clicks = $.mutable_state(0);
 	var button = root();
 	var text = $.child(button);
 
 	$.reset(button);
-	$.template_effect(() => $.set_text(text, `${name() ?? ""} clicks: ${$.get(clicks) ?? ""}`));
+	$.template_effect(() => $.set_text(text, `${name() ?? ''} clicks: ${$.get(clicks) ?? ''}`));
 
-	$.event("click", button, () => {
+	$.event('click', button, () => {
 		$.update(clicks);
 	});
 
 	$.append($$anchor, button);
 }
 
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7OztLQUNZLElBQVk7S0FDbkIsTUFBTSxtQkFBRyxDQUFDOzs7Ozs2Q0FNVixJQUFJLDBCQUFXLE1BQU07OztXQUR4QixNQUFNIiwibmFtZXMiOltdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJEdW1teS5zdmVsdGUiXX0=
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7Ozs7OztLQUNZLElBQVk7S0FDbkIsTUFBTSxtQkFBRyxDQUFDOzs7Ozs2Q0FNVixJQUFJLDBCQUFXLE1BQU07O2dDQUZUO1dBQ2YsTUFBTTtDQUNQLENBQUMiLCJuYW1lcyI6W10sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIkR1bW15LnN2ZWx0ZSJdfQ==

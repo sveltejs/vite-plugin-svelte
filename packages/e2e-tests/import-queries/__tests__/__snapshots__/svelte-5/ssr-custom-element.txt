@@ -1,27 +1,27 @@
-import "svelte/internal/disclose-version";
-import "svelte/internal/flags/legacy";
-import * as $ from "svelte/internal/client";
+import 'svelte/internal/disclose-version';
+import 'svelte/internal/flags/legacy';
+import * as $ from 'svelte/internal/client';
 
 var root = $.template(`<button class="svelte-d8vj6a"> </button>`);
 
 const $$css = {
-	hash: "svelte-d8vj6a",
-	code: "button.svelte-d8vj6a {color:#000099;}"
+	hash: 'svelte-d8vj6a',
+	code: 'button.svelte-d8vj6a {color:#000099;}'
 };
 
 export default function Dummy($$anchor, $$props) {
 	$.push($$props, false);
 	$.append_styles($$anchor, $$css);
 
-	let name = $.prop($$props, "name", 12);
+	let name = $.prop($$props, 'name', 12);
 	let clicks = $.mutable_state(0);
 	var button = root();
 	var text = $.child(button);
 
 	$.reset(button);
-	$.template_effect(() => $.set_text(text, `${name() ?? ""} clicks: ${$.get(clicks) ?? ""}`));
+	$.template_effect(() => $.set_text(text, `${name() ?? ''} clicks: ${$.get(clicks) ?? ''}`));
 
-	$.event("click", button, () => {
+	$.event('click', button, () => {
 		$.update(clicks);
 	});
 
