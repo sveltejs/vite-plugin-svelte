@@ -27,11 +27,11 @@ importers:
         specifier: ^9.19.0
         version: 9.19.0
       '@stylistic/eslint-plugin-js':
-        specifier: ^2.13.0
-        version: 2.13.0(eslint@9.19.0)
+        specifier: ^3.0.1
+        version: 3.0.1(eslint@9.19.0)
       '@sveltejs/eslint-config':
         specifier: ^8.1.0
-        version: 8.1.0(@stylistic/eslint-plugin-js@2.13.0(eslint@9.19.0))(eslint-config-prettier@9.1.0(eslint@9.19.0))(eslint-plugin-n@17.15.1(eslint@9.19.0))(eslint-plugin-svelte@2.46.1(eslint@9.19.0)(svelte@5.19.7))(eslint@9.19.0)(typescript-eslint@8.23.0(eslint@9.19.0)(typescript@5.7.3))(typescript@5.7.3)
+        version: 8.1.0(@stylistic/eslint-plugin-js@3.0.1(eslint@9.19.0))(eslint-config-prettier@9.1.0(eslint@9.19.0))(eslint-plugin-n@17.15.1(eslint@9.19.0))(eslint-plugin-svelte@2.46.1(eslint@9.19.0)(svelte@5.19.7))(eslint@9.19.0)(typescript-eslint@8.23.0(eslint@9.19.0)(typescript@5.7.3))(typescript@5.7.3)
       '@svitejs/changesets-changelog-github-compact':
         specifier: ^1.2.0
         version: 1.2.0
@@ -1545,8 +1545,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@stylistic/eslint-plugin-js@2.13.0':
-    resolution: {integrity: sha512-GPPDK4+fcbsQD58a3abbng2Dx+jBoxM5cnYjBM4T24WFZRZdlNSKvR19TxP8CPevzMOodQ9QVzNeqWvMXzfJRA==}
+  '@stylistic/eslint-plugin-js@3.0.1':
+    resolution: {integrity: sha512-hjp6BKXSUdlY4l20pDb0EjIB5PtQDGihk2EUKCjJ5gaRVfcmMMkaIyVd/yK3oH7OLxWWBxJ8qSSo+zEdkmpnYA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: '>=8.40.0'
@@ -4315,7 +4315,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.28.1':
     optional: true
 
-  '@stylistic/eslint-plugin-js@2.13.0(eslint@9.19.0)':
+  '@stylistic/eslint-plugin-js@3.0.1(eslint@9.19.0)':
     dependencies:
       eslint: 9.19.0
       eslint-visitor-keys: 4.2.0
@@ -4334,9 +4334,9 @@ snapshots:
       '@sveltejs/kit': 2.17.1(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.19.7)(vite@6.0.11(@types/node@20.17.17)(sass@1.83.4)(stylus@0.64.0)(yaml@2.7.0))
       rollup: 4.28.1
 
-  '@sveltejs/eslint-config@8.1.0(@stylistic/eslint-plugin-js@2.13.0(eslint@9.19.0))(eslint-config-prettier@9.1.0(eslint@9.19.0))(eslint-plugin-n@17.15.1(eslint@9.19.0))(eslint-plugin-svelte@2.46.1(eslint@9.19.0)(svelte@5.19.7))(eslint@9.19.0)(typescript-eslint@8.23.0(eslint@9.19.0)(typescript@5.7.3))(typescript@5.7.3)':
+  '@sveltejs/eslint-config@8.1.0(@stylistic/eslint-plugin-js@3.0.1(eslint@9.19.0))(eslint-config-prettier@9.1.0(eslint@9.19.0))(eslint-plugin-n@17.15.1(eslint@9.19.0))(eslint-plugin-svelte@2.46.1(eslint@9.19.0)(svelte@5.19.7))(eslint@9.19.0)(typescript-eslint@8.23.0(eslint@9.19.0)(typescript@5.7.3))(typescript@5.7.3)':
     dependencies:
-      '@stylistic/eslint-plugin-js': 2.13.0(eslint@9.19.0)
+      '@stylistic/eslint-plugin-js': 3.0.1(eslint@9.19.0)
       eslint: 9.19.0
       eslint-config-prettier: 9.1.0(eslint@9.19.0)
       eslint-plugin-n: 17.15.1(eslint@9.19.0)
