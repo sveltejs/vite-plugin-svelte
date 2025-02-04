@@ -23,17 +23,17 @@
     "generate:types-staged": "pnpm generate:types && :"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.11",
+    "@changesets/cli": "^2.27.12",
     "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.18.0",
+    "@eslint/js": "^9.19.0",
     "@stylistic/eslint-plugin-js": "^2.13.0",
     "@sveltejs/eslint-config": "^8.1.0",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.10.7",
+    "@types/node": "^22.13.1",
     "cross-env": "^7.0.3",
     "dts-buddy": "^0.5.4",
-    "eslint": "^9.18.0",
+    "eslint": "^9.19.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-markdown": "^5.1.0",
     "eslint-plugin-n": "^17.15.1",
@@ -43,26 +43,26 @@
     "fs-extra": "^11.3.0",
     "globals": "^15.14.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.4.1",
+    "lint-staged": "^15.4.3",
     "node-fetch": "^3.3.2",
     "npm-run-all2": "^7.0.2",
-    "playwright-core": "~1.49.1",
+    "playwright-core": "~1.50.1",
     "prettier": "^3.4.2",
     "prettier-plugin-svelte": "^3.3.3",
     "publint": "^0.3.2",
-    "svelte": "^5.19.0",
+    "svelte": "^5.19.7",
     "svelte-eslint-parser": "^0.43.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0",
-    "vite": "^6.0.9",
-    "vitest": "^3.0.2"
+    "typescript-eslint": "^8.23.0",
+    "vite": "^6.0.11",
+    "vitest": "^3.0.5"
   },
   "lint-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
     "*": "prettier --cache --ignore-path .gitignore --ignore-unknown --write",
     "packages/*/src/**/*": "pnpm generate:types-staged"
   },
-  "packageManager": "pnpm@9.15.4",
+  "packageManager": "pnpm@9.15.5",
   "engines": {
     "pnpm": "^9.0.0",
     "node": "^18.0.0 || >=20"
@@ -74,8 +74,8 @@
       "@sveltejs/vite-plugin-svelte-inspector": "workspace:^",
       "svelte": "$svelte",
       "vite": "$vite",
-      "@types/node@<=20.12.0": "20.11.5",
-      "send@<0.19.0": "^0.19.0"
+      "@types/node@<=20.12.0": "20.17.17",
+      "send@<0.19.0": "^0.19.1"
     },
     "onlyBuiltDependencies": [
       "esbuild"
