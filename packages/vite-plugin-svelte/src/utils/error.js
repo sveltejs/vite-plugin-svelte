@@ -31,11 +31,13 @@ export function toRollupError(error, options) {
  * convert an error thrown by svelte.compile to an esbuild PartialMessage
  * @param {import('svelte/compiler').Warning & Error  & {frame?: string}} error a svelte compiler error, which is a mix of Warning and an error
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {import('esbuild').PartialMessage} the converted error
+ * @returns {any} the converted error as esbuild PartialMessage
+ *
+ * note: typed any to avoid esbuild devDependency for a single internal type import
  */
 export function toESBuildError(error, options) {
 	const { filename, frame, start, stack } = error;
-	/** @type {import('esbuild').PartialMessage} */
+	/** @type any */
 	const partialMessage = {
 		text: buildExtendedLogMessage(error)
 	};
