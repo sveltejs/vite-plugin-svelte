@@ -118,9 +118,20 @@ export function svelte(inlineOptions) {
 						};
 					} else {
 						if (query.svelte && query.type === 'style') {
-							const css = cache.getCSS(svelteRequest);
+							// @ts-expect-error __meta does not exist
+							const { __meta, ...css } = cache.getCSS(svelteRequest);
 							if (css) {
-								return css;
+								if (__meta?.hasUnscopedGlobalCss) {
+									return css; // css contains unscoped global, do not scope to component
+								}
+								return {
+									...css,
+									meta: {
+										vite: {
+											cssScopeTo: [svelteRequest.filename, 'default']
+										}
+									}
+								};
 							}
 						}
 						// prevent vite asset plugin from loading files as url that should be compiled in transform
