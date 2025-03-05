@@ -2,7 +2,6 @@ import markdown from 'eslint-plugin-markdown';
 import globals from 'globals';
 import n from 'eslint-plugin-n';
 import svelteOrgEslintConfig from '@sveltejs/eslint-config';
-import svelteParser from 'svelte-eslint-parser';
 export default [
 	{
 		name: 'local/ignores',
@@ -15,7 +14,8 @@ export default [
 			'packages/playground/big/src/pages/**', // lots of generated files
 			'packages/*/types/index.d.ts',
 			'packages/*/types/index.d.ts.map',
-			'packages/*/CHANGELOG.md'
+			'packages/*/CHANGELOG.md',
+			'docs/**/*.svelte'
 		]
 	},
 	...svelteOrgEslintConfig, // contains setup for svelte and typescript
@@ -118,13 +118,6 @@ export default [
 		rules: {
 			'n/no-missing-import': 'off', // n doesn't know some vite specifics or monorepo imports.
 			'prefer-const': 'off' // this turns let foo = $derived into a const otherwise
-		}
-	},
-	{
-		name: 'local/svelte-runes-globals',
-		files: ['**/*.svelte.js', '**/*.svelte.ts', '**/*.svelte.*.js', '**/*.svelte.*.ts'],
-		languageOptions: {
-			parser: svelteParser
 		}
 	},
 	{

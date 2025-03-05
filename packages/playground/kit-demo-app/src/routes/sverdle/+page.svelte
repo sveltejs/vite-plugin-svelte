@@ -67,9 +67,11 @@
 		const key = /** @type {HTMLButtonElement} */ (event.target).getAttribute('data-key');
 
 		if (key === 'backspace') {
+			// eslint-disable-next-line svelte/no-reactive-reassign
 			currentGuess = currentGuess.slice(0, -1);
 			if (form?.badGuess) form.badGuess = false;
 		} else if (currentGuess.length < 5) {
+			// eslint-disable-next-line svelte/no-reactive-reassign
 			currentGuess += key;
 		}
 	}
@@ -166,9 +168,9 @@
 					back
 				</button>
 
-				{#each ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'] as row}
+				{#each ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'] as row (row)}
 					<div class="row">
-						{#each row as letter}
+						{#each row as letter, index (index)}
 							<button
 								on:click|preventDefault={update}
 								data-key={letter}
