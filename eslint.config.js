@@ -14,11 +14,21 @@ export default [
 			'packages/playground/big/src/pages/**', // lots of generated files
 			'packages/*/types/index.d.ts',
 			'packages/*/types/index.d.ts.map',
-			'packages/*/CHANGELOG.md',
-			'docs/**/*.svelte'
+			'packages/*/CHANGELOG.md'
 		]
 	},
 	...svelteOrgEslintConfig, // contains setup for svelte and typescript
+	{
+		name: 'local/typescript-parser-options',
+		files: ['docs/*.md/*.svelte'],
+		languageOptions: {
+			parserOptions: {
+				projectService: {
+					allowDefaultProject: ['docs/*.md/*.svelte']
+				}
+			}
+		}
+	},
 	n.configs['flat/recommended-module'],
 	...markdown.configs.recommended,
 	{
