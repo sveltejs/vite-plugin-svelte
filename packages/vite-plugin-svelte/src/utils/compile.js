@@ -1,7 +1,7 @@
 import * as svelte from 'svelte/compiler';
-
 import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
+import { walk } from 'zimmerframe';
 
 import {
 	checkPreprocessDependencies,
@@ -133,6 +133,32 @@ export function createCompileSvelte() {
 		let compiled;
 		try {
 			compiled = svelte.compile(finalCode, { ...finalCompileOptions, filename });
+
+			// check if css has unscoped :global.
+			// This is later used to decide if css output can be scoped to the js module for treeshaking
+			if (compiled.css && compiled.ast.css && finalCode.includes(':global')) {
+				walk(
+					compiled.ast.css,
+					{},
+					{
+						Selector(node, { stop }) {
+							if (
+								node.children?.[0].type === 'PseudoClassSelector' &&
+								node.children[0].name === 'global'
+							) {
+								Object.defineProperty(compiled.css, '__meta', {
+									value: { hasUnscopedGlobalCss: true },
+									writable: false,
+									enumerable: false,
+									configurable: false
+								});
+								stop();
+							}
+						}
+					}
+				);
+			}
+
 			// patch output with partial accept until svelte does it
 			// TODO remove later
 			if (
