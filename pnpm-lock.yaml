@@ -31,7 +31,7 @@ importers:
         version: 4.2.0(eslint@9.21.0)
       '@sveltejs/eslint-config':
         specifier: 8.1.0
-        version: 8.1.0(@stylistic/eslint-plugin-js@4.2.0(eslint@9.21.0))(eslint-config-prettier@10.0.2(eslint@9.21.0))(eslint-plugin-n@17.16.2(eslint@9.21.0))(eslint-plugin-svelte@2.46.1(eslint@9.21.0)(svelte@5.22.2))(eslint@9.21.0)(typescript-eslint@8.26.0(eslint@9.21.0)(typescript@5.8.2))(typescript@5.8.2)
+        version: 8.1.0(@stylistic/eslint-plugin-js@4.2.0(eslint@9.21.0))(eslint-config-prettier@10.0.2(eslint@9.21.0))(eslint-plugin-n@17.16.2(eslint@9.21.0))(eslint-plugin-svelte@3.0.3(eslint@9.21.0)(svelte@5.22.2))(eslint@9.21.0)(typescript-eslint@8.26.0(eslint@9.21.0)(typescript@5.8.2))(typescript@5.8.2)
       '@svitejs/changesets-changelog-github-compact':
         specifier: ^1.2.0
         version: 1.2.0
@@ -63,8 +63,8 @@ importers:
         specifier: ^5.2.3
         version: 5.2.3(@types/eslint@9.6.1)(eslint-config-prettier@10.0.2(eslint@9.21.0))(eslint@9.21.0)(prettier@3.5.3)
       eslint-plugin-svelte:
-        specifier: ^2.46.1
-        version: 2.46.1(eslint@9.21.0)(svelte@5.22.2)
+        specifier: ^3.0.3
+        version: 3.0.3(eslint@9.21.0)(svelte@5.22.2)
       execa:
         specifier: ^8.0.1
         version: 8.0.1
@@ -2280,6 +2280,12 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
+  eslint-compat-utils@0.6.4:
+    resolution: {integrity: sha512-/u+GQt8NMfXO8w17QendT4gvO5acfxQsAKirAt0LVxDnr2N8YLCVbregaNc/Yhp7NM128DwCaRvr8PLDfeNkQw==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      eslint: '>=6.0.0'
+
   eslint-config-prettier@10.0.2:
     resolution: {integrity: sha512-1105/17ZIMjmCOJOPNfVdbXafLCLj3hPmkmB7dLgt7XsQ/zkxSuDerE/xgO3RxoHysR1N1whmquY0lSn2O0VLg==}
     hasBin: true
@@ -2318,11 +2324,11 @@ packages:
       eslint-config-prettier:
         optional: true
 
-  eslint-plugin-svelte@2.46.1:
-    resolution: {integrity: sha512-7xYr2o4NID/f9OEYMqxsEQsCsj4KaMy4q5sANaKkAb6/QeCjYFxRmDm2S3YC3A3pl1kyPZ/syOx/i7LcWYSbIw==}
-    engines: {node: ^14.17.0 || >=16.0.0}
+  eslint-plugin-svelte@3.0.3:
+    resolution: {integrity: sha512-R7HSKkLN33P6WwYhVbO+5xPT0YIpO+YAZfWxow7I1IvjVgZOxuI7zReqxFL3B7F028u16Megx+hn8SEXDNcDvw==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
-      eslint: ^7.0.0 || ^8.0.0-0 || ^9.0.0-0
+      eslint: ^8.57.1 || ^9.0.0
       svelte: ^5.22.2
     peerDependenciesMeta:
       svelte:
@@ -3160,11 +3166,11 @@ packages:
       yaml:
         optional: true
 
-  postcss-safe-parser@6.0.0:
-    resolution: {integrity: sha512-FARHN8pwH+WiS2OPCxJI8FuRJpTVnn6ZNFiqAM2aeW2LwTHWWmWgIyKC6cUo0L8aeKiF/14MNvnpls6R2PBeMQ==}
-    engines: {node: '>=12.0'}
+  postcss-safe-parser@7.0.1:
+    resolution: {integrity: sha512-0AioNCJZ2DPYz5ABT6bddIqlhgwhpHZ/l65YAYo0BCIn0xiDpsnTHz0gnoTGk0OXZW0JRs+cDwL8u/teRdz+8A==}
+    engines: {node: '>=18.0'}
     peerDependencies:
-      postcss: ^8.3.3
+      postcss: ^8.4.31
 
   postcss-scss@4.0.9:
     resolution: {integrity: sha512-AjKOeiwAitL/MXxQW2DliT28EKukvvbEWx3LBmJIRN8KfBGZbRTxNYW0kSqi1COiTZ57nZ9NW06S6ux//N1c9A==}
@@ -3172,8 +3178,8 @@ packages:
     peerDependencies:
       postcss: ^8.4.29
 
-  postcss-selector-parser@6.1.2:
-    resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
+  postcss-selector-parser@7.1.0:
+    resolution: {integrity: sha512-8sLjZwK0R+JlxlYcTuVnyT2v+htpdrjDOKuMcOVdYjt52Lh8hWRYpxBPoKx/Zg+bcjc3wx6fmQevMmUztS/ccA==}
     engines: {node: '>=4'}
 
   postcss-value-parser@4.2.0:
@@ -3465,6 +3471,15 @@ packages:
   svelte-eslint-parser@0.43.0:
     resolution: {integrity: sha512-GpU52uPKKcVnh8tKN5P4UZpJ/fUDndmq7wfsvoVXsyP+aY0anol7Yqo01fyrlaWGMFfm4av5DyrjlaXdLRJvGA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    peerDependencies:
+      svelte: ^5.22.2
+    peerDependenciesMeta:
+      svelte:
+        optional: true
+
+  svelte-eslint-parser@1.0.1:
+    resolution: {integrity: sha512-JjdEMXOJqy+dxeaElxbN+meTOtVpHfLnq9VGpiTAOLgM0uHO+ogmUsA3IFgx0x3Wl15pqTZWycCikcD7cAQN/g==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       svelte: ^5.22.2
     peerDependenciesMeta:
@@ -4504,13 +4519,13 @@ snapshots:
       '@sveltejs/kit': 2.18.0(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.22.2)(vite@6.2.0(@types/node@20.17.23)(sass@1.85.1)(stylus@0.64.0)(yaml@2.7.0))
       rollup: 4.28.1
 
-  '@sveltejs/eslint-config@8.1.0(@stylistic/eslint-plugin-js@4.2.0(eslint@9.21.0))(eslint-config-prettier@10.0.2(eslint@9.21.0))(eslint-plugin-n@17.16.2(eslint@9.21.0))(eslint-plugin-svelte@2.46.1(eslint@9.21.0)(svelte@5.22.2))(eslint@9.21.0)(typescript-eslint@8.26.0(eslint@9.21.0)(typescript@5.8.2))(typescript@5.8.2)':
+  '@sveltejs/eslint-config@8.1.0(@stylistic/eslint-plugin-js@4.2.0(eslint@9.21.0))(eslint-config-prettier@10.0.2(eslint@9.21.0))(eslint-plugin-n@17.16.2(eslint@9.21.0))(eslint-plugin-svelte@3.0.3(eslint@9.21.0)(svelte@5.22.2))(eslint@9.21.0)(typescript-eslint@8.26.0(eslint@9.21.0)(typescript@5.8.2))(typescript@5.8.2)':
     dependencies:
       '@stylistic/eslint-plugin-js': 4.2.0(eslint@9.21.0)
       eslint: 9.21.0
       eslint-config-prettier: 10.0.2(eslint@9.21.0)
       eslint-plugin-n: 17.16.2(eslint@9.21.0)
-      eslint-plugin-svelte: 2.46.1(eslint@9.21.0)(svelte@5.22.2)
+      eslint-plugin-svelte: 3.0.3(eslint@9.21.0)(svelte@5.22.2)
       globals: 15.15.0
       typescript: 5.8.2
       typescript-eslint: 8.26.0(eslint@9.21.0)(typescript@5.8.2)
@@ -5203,6 +5218,11 @@ snapshots:
       eslint: 9.21.0
       semver: 7.6.3
 
+  eslint-compat-utils@0.6.4(eslint@9.21.0):
+    dependencies:
+      eslint: 9.21.0
+      semver: 7.6.3
+
   eslint-config-prettier@10.0.2(eslint@9.21.0):
     dependencies:
       eslint: 9.21.0
@@ -5243,20 +5263,19 @@ snapshots:
       '@types/eslint': 9.6.1
       eslint-config-prettier: 10.0.2(eslint@9.21.0)
 
-  eslint-plugin-svelte@2.46.1(eslint@9.21.0)(svelte@5.22.2):
+  eslint-plugin-svelte@3.0.3(eslint@9.21.0)(svelte@5.22.2):
     dependencies:
       '@eslint-community/eslint-utils': 4.4.1(eslint@9.21.0)
       '@jridgewell/sourcemap-codec': 1.5.0
       eslint: 9.21.0
-      eslint-compat-utils: 0.5.1(eslint@9.21.0)
+      eslint-compat-utils: 0.6.4(eslint@9.21.0)
       esutils: 2.0.3
       known-css-properties: 0.35.0
       postcss: 8.5.3
       postcss-load-config: 3.1.4(postcss@8.5.3)
-      postcss-safe-parser: 6.0.0(postcss@8.5.3)
-      postcss-selector-parser: 6.1.2
+      postcss-safe-parser: 7.0.1(postcss@8.5.3)
       semver: 7.6.3
-      svelte-eslint-parser: 0.43.0(svelte@5.22.2)
+      svelte-eslint-parser: 1.0.1(svelte@5.22.2)
     optionalDependencies:
       svelte: 5.22.2
     transitivePeerDependencies:
@@ -6087,7 +6106,7 @@ snapshots:
       postcss: 8.5.3
       yaml: 2.7.0
 
-  postcss-safe-parser@6.0.0(postcss@8.5.3):
+  postcss-safe-parser@7.0.1(postcss@8.5.3):
     dependencies:
       postcss: 8.5.3
 
@@ -6095,7 +6114,7 @@ snapshots:
     dependencies:
       postcss: 8.5.3
 
-  postcss-selector-parser@6.1.2:
+  postcss-selector-parser@7.1.0:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
@@ -6447,6 +6466,17 @@ snapshots:
       espree: 9.6.1
       postcss: 8.5.3
       postcss-scss: 4.0.9(postcss@8.5.3)
+    optionalDependencies:
+      svelte: 5.22.2
+
+  svelte-eslint-parser@1.0.1(svelte@5.22.2):
+    dependencies:
+      eslint-scope: 8.2.0
+      eslint-visitor-keys: 4.2.0
+      espree: 10.3.0
+      postcss: 8.5.3
+      postcss-scss: 4.0.9(postcss@8.5.3)
+      postcss-selector-parser: 7.1.0
     optionalDependencies:
       svelte: 5.22.2
 
