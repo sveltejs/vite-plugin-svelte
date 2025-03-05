@@ -13,7 +13,9 @@
 <nav>
 	<h2>This is a huge app</h2>
 	{#each Object.entries(pages) as [name, cmp] (cmp)}
-		<a class="App-link" href on:click|preventDefault={go(cmp)}>{name.replace('_', ' ')}</a>
+		<a class="App-link" href={`?page=${name}`} on:click|preventDefault={go(cmp)}
+			>{name.replace('_', ' ')}</a
+		>
 	{/each}
 </nav>
 
