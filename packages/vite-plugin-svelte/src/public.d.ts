@@ -1,6 +1,7 @@
 import type { InlineConfig, ResolvedConfig } from 'vite';
 import type { CompileOptions, Warning, PreprocessorGroup } from 'svelte/compiler';
 import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
+import type { DynamicRestrictedSvelteCompileOptions } from './types/options.d.ts';
 
 export type Options = Omit<SvelteConfig, 'vitePlugin'> & PluginOptionsInline;
 
@@ -131,7 +132,7 @@ export interface SvelteConfig {
 	 *
 	 * @see https://svelte.dev/docs#svelte_compile
 	 */
-	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
+	compilerOptions?: DynamicRestrictedSvelteCompileOptions;
 
 	/**
 	 * Handles warning emitted from the Svelte compiler

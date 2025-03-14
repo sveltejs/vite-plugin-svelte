@@ -56,16 +56,13 @@ export function esbuildSveltePlugin(options) {
  * @returns {Promise<string>}
  */
 async function compileSvelte(options, { filename, code }, statsCollection) {
-	let css = options.compilerOptions.css;
-	if (css !== 'injected') {
-		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
-		css = 'injected';
-	}
 	/** @type {import('svelte/compiler').CompileOptions} */
 	const compileOptions = {
 		dev: true, // default to dev: true because prebundling is only used in dev
-		...options.compilerOptions,
-		css,
+		...(typeof options.compilerOptions === 'function'
+			? options.compilerOptions({ filename, code })
+			: options.compilerOptions),
+		css: 'injected', // TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
 		filename,
 		generate: 'client'
 	};
@@ -163,8 +160,14 @@ export function esbuildSvelteModulePlugin(options) {
  */
 async function compileSvelteModule(options, { filename, code }, statsCollection) {
 	const endStat = statsCollection?.start(filename);
+	// default to dev: true because prebundling is only used in dev
+	const dev =
+		(typeof options.compilerOptions === 'function'
+			? options.compilerOptions({ filename, code })
+			: options.compilerOptions
+		)?.dev ?? true;
 	const compiled = svelte.compileModule(code, {
-		dev: options.compilerOptions?.dev ?? true, // default to dev: true because prebundling is only used in dev
+		dev,
 		filename,
 		generate: 'client'
 	});
