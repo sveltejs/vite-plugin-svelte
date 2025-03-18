@@ -1,7 +1,6 @@
 import * as svelte from 'svelte/compiler';
 import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
-import { walk } from 'zimmerframe';
 
 import {
 	checkPreprocessDependencies,
@@ -69,18 +68,31 @@ export function createCompileSvelte() {
 		}
 
 		let preprocessed;
-		let preprocessors = options.preprocess;
+		let hasUnscopedGlobalCss = false;
+		const preprocessors = options.preprocess
+			? Array.isArray(options.preprocess)
+				? [...options.preprocess]
+				: [options.preprocess]
+			: [];
+
 		if (!options.isBuild && options.emitCss && compileOptions.hmr) {
 			// inject preprocessor that ensures css hmr works better
-			if (!Array.isArray(preprocessors)) {
-				preprocessors = preprocessors
-					? [preprocessors, devStylePreprocessor]
-					: [devStylePreprocessor];
-			} else {
-				preprocessors = preprocessors.concat(devStylePreprocessor);
-			}
+			preprocessors.push(devStylePreprocessor);
 		}
-		if (preprocessors) {
+
+		if (options.emitCss) {
+			// check if css has unscoped global rules
+			// This is later used to decide if css output can be scoped to the js module for treeshaking
+			preprocessors.push({
+				name: 'test-has-global-style',
+				style({ content }) {
+					hasUnscopedGlobalCss =
+						content?.length > 0 && /(?:^|,)\s*(?::global[\s{(]|@keyframes -global-)/m.test(content);
+				}
+			});
+		}
+
+		if (preprocessors.length > 0) {
 			try {
 				preprocessed = await svelte.preprocess(code, preprocessors, { filename }); // full filename here so postcss works
 			} catch (e) {
@@ -134,29 +146,13 @@ export function createCompileSvelte() {
 		try {
 			compiled = svelte.compile(finalCode, { ...finalCompileOptions, filename });
 
-			// check if css has unscoped :global.
-			// This is later used to decide if css output can be scoped to the js module for treeshaking
-			if (compiled.css && compiled.ast.css && finalCode.includes(':global')) {
-				walk(
-					compiled.ast.css,
-					{},
-					{
-						Selector(node, { stop }) {
-							if (
-								node.children?.[0].type === 'PseudoClassSelector' &&
-								node.children[0].name === 'global'
-							) {
-								Object.defineProperty(compiled.css, '__meta', {
-									value: { hasUnscopedGlobalCss: true },
-									writable: false,
-									enumerable: false,
-									configurable: false
-								});
-								stop();
-							}
-						}
-					}
-				);
+			if (compiled.css && hasUnscopedGlobalCss) {
+				Object.defineProperty(compiled.css, '__meta', {
+					value: { hasUnscopedGlobalCss },
+					writable: false,
+					enumerable: false,
+					configurable: false
+				});
 			}
 
 			// patch output with partial accept until svelte does it
