@@ -86,8 +86,7 @@ export function createCompileSvelte() {
 			preprocessors.push({
 				name: 'test-has-global-style',
 				style({ content }) {
-					hasUnscopedGlobalCss =
-						content?.length > 0 && /(?:^|,)\s*(?::global[\s{(]|@keyframes -global-)/m.test(content);
+					hasUnscopedGlobalCss = /(?:^|,)\s*(?::global[\s{(]|@keyframes -global-)/m.test(content);
 				}
 			});
 		}
