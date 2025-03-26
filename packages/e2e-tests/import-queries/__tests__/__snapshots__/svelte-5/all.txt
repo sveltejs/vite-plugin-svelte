@@ -495,10 +495,10 @@
   },
   "dependencies": [],
   "js": {
-    "code": "import 'svelte/internal/disclose-version';\nimport 'svelte/internal/flags/legacy';\nimport * as $ from 'svelte/internal/client';\n\nvar root = $.template(`<button class=\"svelte-d8vj6a\"> </button>`);\n\nexport default function Dummy($$anchor, $$props) {\n\tlet name = $.prop($$props, 'name', 8);\n\tlet clicks = $.mutable_state(0);\n\tvar button = root();\n\tvar text = $.child(button);\n\n\t$.reset(button);\n\t$.template_effect(() => $.set_text(text, `${name() ?? ''} clicks: ${$.get(clicks) ?? ''}`));\n\n\t$.event('click', button, () => {\n\t\t$.update(clicks);\n\t});\n\n\t$.append($$anchor, button);\n}",
+    "code": "import 'svelte/internal/disclose-version';\nimport 'svelte/internal/flags/legacy';\nimport * as $ from 'svelte/internal/client';\n\nvar root = $.template(`<button class=\"svelte-d8vj6a\"> </button>`);\n\nexport default function Dummy($$anchor, $$props) {\n\tlet name = $.prop($$props, 'name', 8);\n\tlet clicks = $.mutable_source(0);\n\tvar button = root();\n\tvar text = $.child(button);\n\n\t$.reset(button);\n\t$.template_effect(() => $.set_text(text, `${name() ?? ''} clicks: ${$.get(clicks) ?? ''}`));\n\n\t$.event('click', button, () => {\n\t\t$.update(clicks);\n\t});\n\n\t$.append($$anchor, button);\n}",
     "map": {
       "version": 3,
-      "mappings": ";;;;;;;KACY,IAAY;KACnB,MAAM,mBAAG,CAAC;;;;;6CAMV,IAAI,0BAAW,MAAM;;gCAFT;WACf,MAAM;CACP,CAAC",
+      "mappings": ";;;;;;;KACY,IAAY;KACnB,MAAM,oBAAG,CAAC;;;;;6CAMV,IAAI,0BAAW,MAAM;;gCAFT;WACf,MAAM;CACP,CAAC",
       "names": [],
       "ignoreList": [],
       "sources": [

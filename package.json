@@ -54,7 +54,7 @@
     "svelte-eslint-parser": "^0.43.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.28.0",
-    "vite": "^6.2.0",
+    "vite": "^6.2.3",
     "vitest": "^3.0.9"
   },
   "lint-staged": {
@@ -81,7 +81,9 @@
       "esbuild"
     ],
     "ignoredBuiltDependencies": [
+      "@parcel/watcher",
       "carbon-components-svelte",
+      "es5-ext",
       "svelte-preprocess"
     ],
     "auditConfig": {
