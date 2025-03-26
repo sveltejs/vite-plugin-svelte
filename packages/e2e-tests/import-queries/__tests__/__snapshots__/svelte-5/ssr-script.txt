@@ -6,7 +6,7 @@ var root = $.template(`<button class="svelte-d8vj6a"> </button>`);
 
 export default function Dummy($$anchor, $$props) {
 	let name = $.prop($$props, 'name', 8);
-	let clicks = $.mutable_state(0);
+	let clicks = $.mutable_source(0);
 	var button = root();
 	var text = $.child(button);
 

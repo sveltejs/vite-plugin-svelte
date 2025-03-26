@@ -14,7 +14,7 @@ export default function Dummy($$anchor, $$props) {
 	$.append_styles($$anchor, $$css);
 
 	let name = $.prop($$props, 'name', 12);
-	let clicks = $.mutable_state(0);
+	let clicks = $.mutable_source(0);
 	var button = root();
 	var text = $.child(button);
 
