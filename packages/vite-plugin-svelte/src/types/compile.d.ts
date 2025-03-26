@@ -12,6 +12,9 @@ export interface Code {
 	code: string;
 	map?: any;
 	dependencies?: any[];
+	__meta?: {
+		hasUnscopedGlobalCss?: boolean;
+	};
 }
 
 export interface CompileData {
