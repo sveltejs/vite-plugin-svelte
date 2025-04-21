@@ -118,20 +118,16 @@ export function svelte(inlineOptions) {
 						};
 					} else {
 						if (query.svelte && query.type === 'style') {
-							// @ts-expect-error __meta does not exist
-							const { __meta, ...css } = cache.getCSS(svelteRequest);
-							if (css) {
-								if (__meta?.hasUnscopedGlobalCss) {
-									return css; // css contains unscoped global, do not scope to component
+							const cachedCss = cache.getCSS(svelteRequest);
+							if (cachedCss) {
+								const { hasGlobal, ...css } = cachedCss;
+								if (hasGlobal === false) {
+									// hasGlobal was added in svelte 5.26.0, so make sure it is boolean false
+									css.meta ??= {};
+									css.meta.vite ??= {};
+									css.meta.vite.cssScopeTo = [svelteRequest.filename, 'default'];
 								}
-								return {
-									...css,
-									meta: {
-										vite: {
-											cssScopeTo: [svelteRequest.filename, 'default']
-										}
-									}
-								};
+								return css;
 							}
 						}
 						// prevent vite asset plugin from loading files as url that should be compiled in transform
