@@ -11,9 +11,9 @@ export function transformValidation() {
 			enforce: 'pre',
 			transform(code, id) {
 				if (id.endsWith('.svelte')) {
-					return code.replace('__JS_TRANSFORM_1__', '__JS_TRANSFORM_2__');
+					return code.replaceAll('__JS_TRANSFORM_1__', '__JS_TRANSFORM_2__');
 				} else if (id.endsWith('.css')) {
-					return code.replace('__CSS_TRANSFORM_1__', '__CSS_TRANSFORM_2__');
+					return code.replaceAll('__CSS_TRANSFORM_1__', '__CSS_TRANSFORM_2__');
 				}
 			}
 		},
@@ -21,9 +21,9 @@ export function transformValidation() {
 			name: 'transform-validation:2',
 			transform(code, id) {
 				if (id.endsWith('.svelte')) {
-					return code.replace('__JS_TRANSFORM_2__', '__JS_TRANSFORM_3__');
+					return code.replaceAll('__JS_TRANSFORM_2__', '__JS_TRANSFORM_3__');
 				} else if (id.endsWith('.css')) {
-					return code.replace('__CSS_TRANSFORM_2__', 'red');
+					return code.replaceAll('__CSS_TRANSFORM_2__', 'red');
 				}
 			}
 		},
@@ -32,7 +32,7 @@ export function transformValidation() {
 			enforce: 'post',
 			transform(code, id) {
 				if (id.endsWith('.svelte')) {
-					return code.replace('__JS_TRANSFORM_3__', 'Hello world');
+					return code.replaceAll('__JS_TRANSFORM_3__', 'Hello world');
 				}
 				// can't handle css here as in build, it would be `export default {}`
 			}
