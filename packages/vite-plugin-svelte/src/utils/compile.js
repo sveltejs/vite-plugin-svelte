@@ -68,19 +68,18 @@ export function createCompileSvelte() {
 		}
 
 		let preprocessed;
-
-		const preprocessors = options.preprocess
-			? Array.isArray(options.preprocess)
-				? [...options.preprocess]
-				: [options.preprocess]
-			: [];
-
+		let preprocessors = options.preprocess;
 		if (!options.isBuild && options.emitCss && compileOptions.hmr) {
 			// inject preprocessor that ensures css hmr works better
-			preprocessors.push(devStylePreprocessor);
+			if (!Array.isArray(preprocessors)) {
+				preprocessors = preprocessors
+					? [preprocessors, devStylePreprocessor]
+					: [devStylePreprocessor];
+			} else {
+				preprocessors = preprocessors.concat(devStylePreprocessor);
+			}
 		}
-
-		if (preprocessors.length > 0) {
+		if (preprocessors) {
 			try {
 				preprocessed = await svelte.preprocess(code, preprocessors, { filename }); // full filename here so postcss works
 			} catch (e) {
