@@ -28,6 +28,7 @@
     "@eslint/js": "^9.25.0",
     "@stylistic/eslint-plugin-js": "^4.2.0",
     "@sveltejs/eslint-config": "^8.2.0",
+    "@sveltejs/kit": "^2.20.7",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.14.1",
@@ -69,6 +70,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@sveltejs/kit": "$@sveltejs/kit",
       "@sveltejs/kit>@sveltejs/vite-plugin-svelte": "workspace:^",
       "@sveltejs/vite-plugin-svelte": "workspace:^",
       "@sveltejs/vite-plugin-svelte-inspector": "workspace:^",
