@@ -1,5 +1,4 @@
 import * as svelte from 'svelte/compiler';
-
 import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
 
@@ -133,6 +132,7 @@ export function createCompileSvelte() {
 		let compiled;
 		try {
 			compiled = svelte.compile(finalCode, { ...finalCompileOptions, filename });
+
 			// patch output with partial accept until svelte does it
 			// TODO remove later
 			if (

@@ -118,8 +118,15 @@ export function svelte(inlineOptions) {
 						};
 					} else {
 						if (query.svelte && query.type === 'style') {
-							const css = cache.getCSS(svelteRequest);
-							if (css) {
+							const cachedCss = cache.getCSS(svelteRequest);
+							if (cachedCss) {
+								const { hasGlobal, ...css } = cachedCss;
+								if (hasGlobal === false) {
+									// hasGlobal was added in svelte 5.26.0, so make sure it is boolean false
+									css.meta ??= {};
+									css.meta.vite ??= {};
+									css.meta.vite.cssScopeTo = [svelteRequest.filename, 'default'];
+								}
 								return css;
 							}
 						}

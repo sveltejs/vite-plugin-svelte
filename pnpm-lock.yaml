@@ -262,6 +262,21 @@ importers:
         specifier: ^6.3.2
         version: 6.3.2(@types/node@20.17.30)(sass@1.86.3)(stylus@0.64.0)(yaml@2.7.0)
 
+  packages/e2e-tests/css-treeshake:
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: workspace:^
+        version: link:../../vite-plugin-svelte
+      sass:
+        specifier: ^1.85.1
+        version: 1.86.3
+      svelte:
+        specifier: ^5.28.1
+        version: 5.28.1
+      vite:
+        specifier: ^6.3.2
+        version: 6.3.2(@types/node@20.17.30)(sass@1.86.3)(stylus@0.64.0)(yaml@2.7.0)
+
   packages/e2e-tests/custom-extensions:
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
