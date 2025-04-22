@@ -3,9 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
-import express from 'express';
+import polka from 'polka';
 import compression from 'compression';
-import serveStatic from 'serve-static';
+import sirv from 'sirv';
 
 let port = 3000;
 const args = process.argv.slice(2);
@@ -23,7 +23,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 		? JSON.parse(fs.readFileSync(resolve('dist/client/.vite/ssr-manifest.json'), 'utf-8'))
 		: {};
 
-	const app = express();
+	const app = polka();
 
 	/**
 	 * @type {import('vite').ViteDevServer}
@@ -52,8 +52,8 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 	} else {
 		app.use(compression());
 		app.use(
-			serveStatic(resolve('dist/client'), {
-				index: false
+			sirv(resolve('dist/client'), {
+				extensions: []
 			})
 		);
 	}
@@ -79,12 +79,11 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 			const html = template
 				.replace('<!--head-outlet-->', headElements)
 				.replace('<!--app-outlet-->', appHtml);
-
-			res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
+			res.writeHead(200, { 'Content-Type': 'text/html' }).end(html);
 		} catch (e) {
 			if (vite) vite.ssrFixStacktrace(e);
 			console.log(e.stack);
-			res.status(500).end(e.stack);
+			res.writeHead(500, { 'Content-Type': 'text/plain' }).end(e.stack);
 		}
 	});
 
@@ -92,7 +91,7 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 }
 
 createServer().then(({ app }) => {
-	const server = app.listen(port, () => {
+	app.listen(port, () => {
 		console.log('http://localhost:' + port);
 	});
 	const exitProcess = async () => {
@@ -100,8 +99,11 @@ createServer().then(({ app }) => {
 		process.off('SIGINT', exitProcess);
 		process.stdin.off('end', exitProcess);
 		try {
-			await server.close(() => {
-				console.log('ssr server closed');
+			await new Promise((resolve) => {
+				app.server.close(() => {
+					console.log('ssr server closed');
+					resolve();
+				});
 			});
 		} finally {
 			// eslint-disable-next-line n/no-process-exit
