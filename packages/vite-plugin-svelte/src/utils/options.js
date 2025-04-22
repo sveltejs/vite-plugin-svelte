@@ -577,6 +577,10 @@ function buildExtraConfigForSvelte(config) {
 	if (!isDepExternaled('esm-env', config.ssr?.external ?? [])) {
 		noExternal.push('esm-env');
 	}
+	// prevent server restart when clsx is lazily discovered by vite - it does not need optimization
+	if (!isDepIncluded('clsx', config.optimizeDeps?.include ?? [])) {
+		exclude.push('clsx');
+	}
 	return { optimizeDeps: { include, exclude }, ssr: { noExternal, external } };
 }
 
