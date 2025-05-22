@@ -307,6 +307,7 @@ describe('kit-node', () => {
 					'svelte-i18n',
 					'e2e-test-dep-svelte-api-only',
 					'svelte/animate',
+					'svelte/attachments',
 					'svelte/easing',
 					'svelte/events',
 					'svelte/internal',
@@ -337,6 +338,7 @@ describe('kit-node', () => {
 				);
 				const expectedDedupe = [
 					'svelte/animate',
+					'svelte/attachments',
 					'svelte/easing',
 					'svelte/events',
 					'svelte/internal',
