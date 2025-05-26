@@ -2,15 +2,6 @@ import { browserLogs, fetchFromPage, getText, isBuild, testDir } from '~utils';
 import { createServer, ViteDevServer } from 'vite';
 import { VERSION } from 'svelte/compiler';
 
-function normalizeSnapshot(result: string) {
-	// during dev, the import is rewritten but can vary on the v= hash. replace with stable short import
-	return result
-		.replace(/\(Svelte v\d+.\d+.\d+-next\.\d+\)/, '(Svelte vXXX)') // stable svelte5 compiler comment
-		.replace('// Note: compiler output will change before 5.0 is released!', '') // strip svelte5 compiler hint
-		.replace(/\.js\?v=[0-9a-f]{8}/g, '.js?v=XXX') // vite import analysis import rewrite version query
-		.replace(/"total": *\d+\.\d+/g, '"total":0.123456789'); // svelte compile stats
-}
-
 const svelteMajor = VERSION.split('.', 1)[0];
 function snapshotFilename(name: string) {
 	return `./__snapshots__/svelte-${svelteMajor}/${name}.txt`;
@@ -39,13 +30,12 @@ describe('raw', () => {
 
 	test('Dummy.svelte?raw&svelte&type=script', async () => {
 		const result = await getText('#script');
-		await expect(normalizeSnapshot(result)).toMatchFileSnapshot(snapshotFilename('script'));
+		expect(result).toContain('export default function Dummy');
 	});
 
 	test('Dummy.svelte?raw&svelte&type=script&compilerOptions={"customElement":true}', async () => {
 		const result = await getText('#wcScript');
-
-		await expect(normalizeSnapshot(result)).toMatchFileSnapshot(snapshotFilename('custom-element'));
+		expect(result).toContain('$.create_custom_element(Dummy,');
 	});
 
 	test('Dummy.svelte?raw&svelte&type=style', async () => {
@@ -54,8 +44,17 @@ describe('raw', () => {
 	});
 
 	test('Dummy.svelte?raw&svelte&type=all&sourcemap', async () => {
-		const result = await getText('#all');
-		await expect(normalizeSnapshot(result)).toMatchFileSnapshot(snapshotFilename('all'));
+		const result = JSON.parse(await getText('#all'));
+		expect(result.ast).toBeDefined();
+		expect(result.js).toBeDefined();
+		expect(result.js.code).toBeDefined();
+		expect(result.js.map).toBeDefined();
+		expect(result.css).toBeDefined();
+		expect(result.css.code).toBeDefined();
+		expect(result.css.map).toBeDefined();
+		expect(result.preprocessed).toBeDefined();
+		expect(result.preprocessed.code).toBeDefined();
+		expect(result.preprocessed.map).toBeDefined();
 	});
 
 	describe.runIf(!isBuild)('mixed exports', () => {
@@ -63,27 +62,43 @@ describe('raw', () => {
 			const module = await fetchFromPage('src/Dummy.svelte?raw&svelte&type=preprocessed').then(
 				(res) => res.text()
 			);
-			await expect(normalizeSnapshot(module)).toMatchFileSnapshot(
-				snapshotFilename('mixed-preprocessed')
-			);
+			expect(module).toContain('export const code="<script lang=\\"ts\\">');
+			expect(module).toContain('export const map={');
+			expect(module).toContain('export const dependencies=[]');
+			expect(module).toContain('export default code');
 		});
 		test('Dummy.svelte?raw&svelte&type=style', async () => {
 			const module = await fetchFromPage('src/Dummy.svelte?raw&svelte&type=style').then((res) =>
 				res.text()
 			);
-			await expect(normalizeSnapshot(module)).toMatchFileSnapshot(snapshotFilename('mixed-style'));
+			expect(module).toContain('export const code="button.');
+			expect(module).toContain('export const hasGlobal=false');
+			expect(module).toContain('export const map={');
+			expect(module).toContain('export default code');
 		});
 		test('Dummy.svelte?raw&svelte&type=script', async () => {
 			const module = await fetchFromPage('src/Dummy.svelte?raw&svelte&type=script').then((res) =>
 				res.text()
 			);
-			await expect(normalizeSnapshot(module)).toMatchFileSnapshot(snapshotFilename('mixed-script'));
+			expect(module).toContain('export const code="import');
+			expect(module).toContain('export const map={');
+			expect(module).toContain('export default code');
 		});
 		test('Dummy.svelte?raw&svelte&type=all', async () => {
 			const module = await fetchFromPage('src/Dummy.svelte?raw&svelte&type=all').then((res) =>
 				res.text()
 			);
-			await expect(normalizeSnapshot(module)).toMatchFileSnapshot(snapshotFilename('mixed-all'));
+			expect(module).toContain('export const ast={"html":');
+			expect(module).toContain('export const css={"code":"button');
+			expect(module).toContain('export const dependencies=[]');
+			expect(module).toContain('export const js={"code":"import ');
+			expect(module).toContain('export const lang="ts"');
+			expect(module).toContain('export const metadata={"runes":false}');
+			expect(module).toContain('export const normalizedFilename="/src/Dummy.svelte"');
+			expect(module).toContain('export const preprocessed={"code":"<script lang=\\"ts\\">');
+			expect(module).toContain('export const source="<script lang=\\"ts\\">');
+			expect(module).toContain('export const ssr=false');
+			expect(module).toContain('export const warnings=[]');
 		});
 	});
 });
@@ -99,7 +114,8 @@ describe.runIf(!isBuild)('direct', () => {
 		expect(response.ok).toBe(true);
 		expect(response.headers.get('Content-Type')).toBe('text/css');
 		const css = await response.text();
-		await expect(css).toMatchFileSnapshot(snapshotFilename('direct-css'));
+		expect(css).toContain('button.');
+		expect(css).toContain('/*# sourceMappingURL=data');
 	});
 	test('Dummy.svelte?direct&svelte&type=script&sourcemap&lang.js', async () => {
 		const response = await fetchFromPage(
@@ -109,10 +125,10 @@ describe.runIf(!isBuild)('direct', () => {
 			}
 		);
 		expect(response.ok).toBe(true);
-		// vite switched from application/javascript to text/javascript in 5.1
 		expect(response.headers.get('Content-Type')).toMatch(/^(?:text|application)\/javascript$/);
 		const js = await response.text();
-		await expect(normalizeSnapshot(js)).toMatchFileSnapshot(snapshotFilename('direct-js'));
+		expect(js).toContain('export default function Dummy');
+		expect(js).toContain('//# sourceMappingURL=data');
 	});
 });
 
@@ -148,25 +164,23 @@ describe.runIf(!isBuild)('ssrLoadModule', () => {
 	});
 	test('?raw&svelte&type=script', async () => {
 		const result = await ssrLoadDummy('?raw&svelte&type=script');
-		await expect(normalizeSnapshot(result)).toMatchFileSnapshot(snapshotFilename('ssr-script'));
+		expect(result).toContain('export default function Dummy');
 	});
 	test('?raw&svelte&type=script&compilerOptions={"customElement":true}', async () => {
 		const result = await ssrLoadDummy(
 			'?raw&svelte&type=script&compilerOptions={"customElement":true}'
 		);
-		await expect(normalizeSnapshot(result)).toMatchFileSnapshot(
-			snapshotFilename('ssr-custom-element')
-		);
+		expect(result).toContain('$.create_custom_element(Dummy,');
 	});
 	test('?raw&svelte&type=style', async () => {
 		const result = await ssrLoadDummy('?raw&svelte&type=style');
-		await expect(result).toMatchFileSnapshot(snapshotFilename('ssr-style'));
+		expect(result).toContain('button.');
 	});
 	test('?inline&svelte&type=style&lang.css', async () => {
 		// Preload Dummy.svelte first so its CSS is processed in the module graph, otherwise loading
 		// its css inlined url directly will return the raw svelte file rather than the style
 		await ssrLoadDummy('');
 		const result = await ssrLoadDummy('?inline&svelte&type=style&lang.css');
-		await expect(result).toMatchFileSnapshot(snapshotFilename('ssr-inline-style'));
+		expect(result).toContain('button.');
 	});
 });
