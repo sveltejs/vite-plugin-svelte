@@ -318,6 +318,7 @@ describe('kit-node', () => {
 					'svelte/store',
 					'svelte/transition',
 					'svelte',
+					'svelte > clsx',
 					'svelte/internal/disclose-version',
 					'svelte/internal/flags/legacy',
 					'svelte/internal/flags/tracing',

@@ -33,6 +33,8 @@ if (!isBuild) {
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-api-only');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-nested');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-module');
+		expect(optimizedPaths).toContain('svelte');
+		expect(optimizedPaths).toContain('svelte > clsx');
 	});
 
 	test('should not optimize excluded svelte dependencies', () => {
