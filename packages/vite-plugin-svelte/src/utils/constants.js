@@ -1,8 +1,10 @@
 import { createRequire } from 'node:module';
 
-export const SVELTE_IMPORTS = Object.entries(
-	createRequire(import.meta.url)('svelte/package.json').exports
-)
+const sveltePkg = createRequire(import.meta.url)('svelte/package.json');
+// ensure we only include deps used for the client runtime of current svelte version
+export const SVELTE_RUNTIME_DEPENDENCIES = ['clsx'].filter((dep) => !!sveltePkg.dependencies[dep]);
+
+export const SVELTE_IMPORTS = Object.entries(sveltePkg.exports)
 	.map(([name, config]) => {
 		// ignore type only
 		if (typeof config === 'object' && Object.keys(config).length === 1 && config.types) {
