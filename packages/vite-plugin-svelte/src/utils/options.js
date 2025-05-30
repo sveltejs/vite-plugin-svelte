@@ -12,7 +12,8 @@ import {
 	DEFAULT_SVELTE_EXT,
 	FAQ_LINK_MISSING_EXPORTS_CONDITION,
 	SVELTE_EXPORT_CONDITIONS,
-	SVELTE_IMPORTS
+	SVELTE_IMPORTS,
+	SVELTE_RUNTIME_DEPENDENCIES
 } from './constants.js';
 
 import path from 'node:path';
@@ -550,8 +551,9 @@ function buildExtraConfigForSvelte(config) {
 		const svelteImportsToInclude = SVELTE_IMPORTS.filter(
 			(si) => !(si.endsWith('/server') || si.includes('/server/'))
 		);
+		svelteImportsToInclude.push(...SVELTE_RUNTIME_DEPENDENCIES.map((dep) => `svelte > ${dep}`));
 		log.debug(
-			`adding bare svelte packages to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `,
+			`adding bare svelte packages and runtime dependencies to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `,
 			undefined,
 			'config'
 		);
