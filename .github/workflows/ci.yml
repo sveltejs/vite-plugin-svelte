@@ -84,9 +84,10 @@ jobs:
           - node: 24
             os: ubuntu-latest
             vite: 'current'
-          - node: 20
+          # baseline test lowest vite and node version
+          - node: 20.19
             os: ubuntu-latest
-            vite: '~6.3.0'
+            vite: '6.3.0'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -119,7 +120,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}
+          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}-${{ matrix.vite }}
           path: |
             test-temp.tar
             pnpm-debug.log
