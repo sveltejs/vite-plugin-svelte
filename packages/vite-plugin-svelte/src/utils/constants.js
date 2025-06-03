@@ -1,8 +1,11 @@
 import { createRequire } from 'node:module';
 
 const sveltePkg = createRequire(import.meta.url)('svelte/package.json');
-// ensure we only include deps used for the client runtime of current svelte version
-export const SVELTE_RUNTIME_DEPENDENCIES = ['clsx'].filter((dep) => !!sveltePkg.dependencies[dep]);
+
+// list of svelte runtime dependencies to optimize together with svelte itself
+export const SVELTE_RUNTIME_DEPENDENCIES = [
+	'clsx' // avoids dev server restart after page load with npm + vite6 (see #1067)
+].filter((dep) => !!sveltePkg.dependencies?.[dep]);
 
 export const SVELTE_IMPORTS = Object.entries(sveltePkg.exports)
 	.map(([name, config]) => {
