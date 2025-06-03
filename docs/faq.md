@@ -181,31 +181,16 @@ You should not use prebundleSvelteLibraries during build or for ssr, disable one
 
 You really shouldn't. Svelte and Vite are esm first and the ecosystem is moving away from commonjs and so should you. Consider migrating to esm.
 
-In case you have to, use dynamic import to load vite-plugin-svelte's esm code from cjs like this:
+In case you have to, you can rely on node's "require esm" feature available in v20.19+
 
-```diff
+```js
 // vite.config.cjs
 const { defineConfig } = require('vite');
-- const { svelte } = require('@sveltejs/vite-plugin-svelte');
-module.exports = defineConfig(async ({ command, mode }) => {
-+ const { svelte } = await import('@sveltejs/vite-plugin-svelte');
-  return {plugins:[svelte()]}
-}
-```
+const { svelte, vitePreprocess } = require('@sveltejs/vite-plugin-svelte');
 
-And for `vitePreprocess` you have to set up a lazy promise as top-level-await doesn't work for esm imports in cjs:
-
-```diff
-- const {vitePreprocess} = require('@sveltejs/vite-plugin-svelte')
-+ const vitePreprocess = import('@sveltejs/vite-plugin-svelte').then(m => m.vitePreprocess())
-
-module.exports = {
--    preprocess: vitePreprocess()
-+    preprocess: {
-+        script:async (options) => (await vitePreprocess).script(options),
-+        style:async (options) => (await vitePreprocess).style(options),
-+    }
-}
+module.exports = defineConfig({
+  plugins: [svelte({ preprocess: vitePreprocess() })]
+});
 ```
 
 <!-- the following header generates an anchor that is used in logging, do not modify!-->
