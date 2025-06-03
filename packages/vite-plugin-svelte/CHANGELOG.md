@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 5.1.0
+### Minor Changes
+
+
+- scope css to js module to enable treeshaking scoped css from unused components. Requires vite 6.2 and svelte 5.26 ([#1092](https://github.com/sveltejs/vite-plugin-svelte/pull/1092))
+
+
+### Patch Changes
+
+
+- add `svelte > clsx` to optimizeDeps.include to avoid page reload when using vite6 and npm ([#1124](https://github.com/sveltejs/vite-plugin-svelte/pull/1124))
+
 ## 5.0.3
 ### Patch Changes
 
