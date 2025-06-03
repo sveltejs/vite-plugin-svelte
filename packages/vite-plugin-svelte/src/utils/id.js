@@ -3,7 +3,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { log } from './log.js';
-import { DEFAULT_SVELTE_MODULE_EXT, DEFAULT_SVELTE_MODULE_INFIX } from './constants.js';
+import {
+	DEFAULT_SVELTE_MODULE_EXT,
+	DEFAULT_SVELTE_MODULE_INFIX,
+	SVELTE_VIRTUAL_STYLE_ID_REGEX
+} from './constants.js';
 
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
@@ -181,6 +185,53 @@ function buildModuleFilter(include, exclude, infixes, extensions) {
 			infixes.some((infix) => basename.includes(infix)) &&
 			extensions.some((ext) => basename.endsWith(ext))
 		);
+	};
+}
+
+/**
+ * @template T
+ * @param {(undefined|T|Array<T>)} x
+ * @returns {Array<T>}
+ */
+function asArray(x) {
+	if (x == null) {
+		return [];
+	}
+	return Array.isArray(x) ? x : [x];
+}
+
+/**
+ *
+ * @param {string} s
+ * @returns {string}
+ */
+function escapeRE(s) {
+	return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {import('../types/id.d.ts').IdFilter}
+ */
+export function buildIdFilter(options) {
+	const { include, exclude, extensions } = options;
+	const extensionsRE = extensions
+		? new RegExp(
+				`\\.(?:${extensions
+					.map((e) => (e.startsWith('.') ? e.slice(1) : e))
+					.map(escapeRE)
+					.join('|')})$`
+			)
+		: /\.svelte$/;
+	return {
+		id: {
+			include: [
+				extensionsRE,
+				SVELTE_VIRTUAL_STYLE_ID_REGEX,
+				.../**@type {Array<string|RegExp>}*/ asArray(include)
+			],
+			exclude: /**@type {Array<string|RegExp>}*/ asArray(exclude)
+		}
 	};
 }
 

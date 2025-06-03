@@ -4,7 +4,7 @@ import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
-import { buildIdParser, buildModuleIdParser } from './utils/id.js';
+import { buildIdFilter, buildIdParser, buildModuleIdParser } from './utils/id.js';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
@@ -20,6 +20,7 @@ import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 import * as svelteCompiler from 'svelte/compiler';
+import { SVELTE_VIRTUAL_STYLE_ID_REGEX } from './utils/constants.js';
 
 /**
  * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
@@ -42,8 +43,13 @@ export function svelte(inlineOptions) {
 	let viteConfig;
 	/** @type {import('./types/compile.d.ts').CompileSvelte} */
 	let compileSvelte;
+
+	/** @type {import('./types/id.d.ts').IdFilter} */
+	let filter = { id: { include: [], exclude: [] } }; // set with correct values in configResolved
+
 	/** @type {import('./types/plugin-api.d.ts').PluginAPI} */
 	const api = {};
+
 	/** @type {import('vite').Plugin[]} */
 	const plugins = [
 		{
@@ -79,6 +85,7 @@ export function svelte(inlineOptions) {
 			async configResolved(config) {
 				options = resolveOptions(options, config, cache);
 				patchResolvedViteConfig(config, options);
+				filter = buildIdFilter(options);
 				requestParser = buildIdParser(options);
 				compileSvelte = createCompileSvelte();
 				viteConfig = config;
@@ -102,98 +109,95 @@ export function svelte(inlineOptions) {
 				setupWatchers(options, cache, requestParser);
 			},
 
-			async load(id, opts) {
-				const ssr = !!opts?.ssr;
-				const svelteRequest = requestParser(id, !!ssr);
-				if (svelteRequest) {
-					const { filename, query, raw } = svelteRequest;
-					if (raw) {
-						const code = await loadRaw(svelteRequest, compileSvelte, options);
-						// prevent vite from injecting sourcemaps in the results.
-						return {
-							code,
-							map: {
-								mappings: ''
-							}
-						};
-					} else {
-						if (query.svelte && query.type === 'style') {
-							const cachedCss = cache.getCSS(svelteRequest);
-							if (cachedCss) {
-								const { hasGlobal, ...css } = cachedCss;
-								if (hasGlobal === false) {
-									// hasGlobal was added in svelte 5.26.0, so make sure it is boolean false
-									css.meta ??= {};
-									css.meta.vite ??= {};
-									css.meta.vite.cssScopeTo = [svelteRequest.filename, 'default'];
+			load: {
+				filter,
+				async handler(id, opts) {
+					const ssr = !!opts?.ssr;
+					const svelteRequest = requestParser(id, !!ssr);
+					if (svelteRequest) {
+						const { filename, query, raw } = svelteRequest;
+						if (raw) {
+							const code = await loadRaw(svelteRequest, compileSvelte, options);
+							// prevent vite from injecting sourcemaps in the results.
+							return {
+								code,
+								map: {
+									mappings: ''
 								}
-								return css;
+							};
+						} else {
+							if (query.svelte && query.type === 'style') {
+								const cachedCss = cache.getCSS(svelteRequest);
+								if (cachedCss) {
+									const { hasGlobal, ...css } = cachedCss;
+									if (hasGlobal === false) {
+										// hasGlobal was added in svelte 5.26.0, so make sure it is boolean false
+										css.meta ??= {};
+										css.meta.vite ??= {};
+										css.meta.vite.cssScopeTo = [svelteRequest.filename, 'default'];
+									}
+									return css;
+								}
+							}
+							// prevent vite asset plugin from loading files as url that should be compiled in transform
+							if (viteConfig.assetsInclude(filename)) {
+								log.debug(`load returns raw content for ${filename}`, undefined, 'load');
+								return fs.readFileSync(filename, 'utf-8');
 							}
 						}
-						// prevent vite asset plugin from loading files as url that should be compiled in transform
-						if (viteConfig.assetsInclude(filename)) {
-							log.debug(`load returns raw content for ${filename}`, undefined, 'load');
-							return fs.readFileSync(filename, 'utf-8');
-						}
 					}
 				}
 			},
 
-			async resolveId(importee, importer, opts) {
-				const ssr = !!opts?.ssr;
-				const svelteRequest = requestParser(importee, ssr);
-				if (svelteRequest?.query.svelte) {
-					if (
-						svelteRequest.query.type === 'style' &&
-						!svelteRequest.raw &&
-						!svelteRequest.query.inline
-					) {
-						// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
-						// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
-						log.debug(
-							`resolveId resolved virtual css module ${svelteRequest.cssId}`,
-							undefined,
-							'resolve'
-						);
-						return svelteRequest.cssId;
-					}
+			resolveId: {
+				// we don't use our generic filter here but a reduced one that only matches our virtual css
+				filter: { id: SVELTE_VIRTUAL_STYLE_ID_REGEX },
+				handler(id) {
+					// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
+					// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
+					log.debug(`resolveId resolved virtual css module ${id}`, undefined, 'resolve');
+					// TODO: do we have to repeat the dance for constructing the virtual id here? our transform added it that way
+					return id;
 				}
 			},
 
-			async transform(code, id, opts) {
-				const ssr = !!opts?.ssr;
-				const svelteRequest = requestParser(id, ssr);
-				if (!svelteRequest || svelteRequest.query.type === 'style' || svelteRequest.raw) {
-					return;
-				}
-				let compileData;
-				try {
-					compileData = await compileSvelte(svelteRequest, code, options);
-				} catch (e) {
-					cache.setError(svelteRequest, e);
-					throw toRollupError(e, options);
-				}
-				logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
-				cache.update(compileData);
-				if (compileData.dependencies?.length) {
-					if (options.server) {
-						for (const dep of compileData.dependencies) {
-							ensureWatchedFile(options.server.watcher, dep, options.root);
-						}
-					} else if (options.isBuild && viteConfig.build.watch) {
-						for (const dep of compileData.dependencies) {
-							this.addWatchFile(dep);
+			transform: {
+				filter,
+				async handler(code, id, opts) {
+					const ssr = !!opts?.ssr;
+					const svelteRequest = requestParser(id, ssr);
+					if (!svelteRequest || svelteRequest.query.type === 'style' || svelteRequest.raw) {
+						return;
+					}
+					let compileData;
+					try {
+						compileData = await compileSvelte(svelteRequest, code, options);
+					} catch (e) {
+						cache.setError(svelteRequest, e);
+						throw toRollupError(e, options);
+					}
+					logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
+					cache.update(compileData);
+					if (compileData.dependencies?.length) {
+						if (options.server) {
+							for (const dep of compileData.dependencies) {
+								ensureWatchedFile(options.server.watcher, dep, options.root);
+							}
+						} else if (options.isBuild && viteConfig.build.watch) {
+							for (const dep of compileData.dependencies) {
+								this.addWatchFile(dep);
+							}
 						}
 					}
-				}
-				return {
-					...compileData.compiled.js,
-					meta: {
-						vite: {
-							lang: compileData.lang
+					return {
+						...compileData.compiled.js,
+						meta: {
+							vite: {
+								lang: compileData.lang
+							}
 						}
-					}
-				};
+					};
+				}
 			},
 
 			handleHotUpdate(ctx) {
