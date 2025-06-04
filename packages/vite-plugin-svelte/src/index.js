@@ -4,7 +4,12 @@ import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
-import { buildIdFilter, buildIdParser, buildModuleIdParser } from './utils/id.js';
+import {
+	buildIdFilter,
+	buildIdParser,
+	buildModuleIdFilter,
+	buildModuleIdParser
+} from './utils/id.js';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
@@ -46,6 +51,9 @@ export function svelte(inlineOptions) {
 
 	/** @type {import('./types/id.d.ts').IdFilter} */
 	let filter = { id: { include: [], exclude: [] } }; // set with correct values in configResolved
+
+	/** @type {import('./types/id.d.ts').IdFilter} */
+	let moduleFilter = { id: { include: [], exclude: [] } }; // set with correct values in configResolved
 
 	/** @type {import('./types/plugin-api.d.ts').PluginAPI} */
 	const api = {};
@@ -217,24 +225,28 @@ export function svelte(inlineOptions) {
 			name: 'vite-plugin-svelte-module',
 			enforce: 'post',
 			async configResolved() {
+				moduleFilter = buildModuleIdFilter(options);
 				moduleRequestParser = buildModuleIdParser(options);
 			},
-			async transform(code, id, opts) {
-				const ssr = !!opts?.ssr;
-				const moduleRequest = moduleRequestParser(id, ssr);
-				if (!moduleRequest) {
-					return;
-				}
-				try {
-					const compileResult = svelteCompiler.compileModule(code, {
-						dev: !viteConfig.isProduction,
-						generate: ssr ? 'server' : 'client',
-						filename: moduleRequest.filename
-					});
-					logCompilerWarnings(moduleRequest, compileResult.warnings, options);
-					return compileResult.js;
-				} catch (e) {
-					throw toRollupError(e, options);
+			transform: {
+				filter: moduleFilter,
+				async handler(code, id, opts) {
+					const ssr = !!opts?.ssr;
+					const moduleRequest = moduleRequestParser(id, ssr);
+					if (!moduleRequest) {
+						return;
+					}
+					try {
+						const compileResult = svelteCompiler.compileModule(code, {
+							dev: !viteConfig.isProduction,
+							generate: ssr ? 'server' : 'client',
+							filename: moduleRequest.filename
+						});
+						logCompilerWarnings(moduleRequest, compileResult.warnings, options);
+						return compileResult.js;
+					} catch (e) {
+						throw toRollupError(e, options);
+					}
 				}
 			}
 		},

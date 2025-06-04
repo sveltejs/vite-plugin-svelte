@@ -4,6 +4,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { log } from './log.js';
 import {
+	DEFAULT_SVELTE_EXT,
 	DEFAULT_SVELTE_MODULE_EXT,
 	DEFAULT_SVELTE_MODULE_INFIX,
 	SVELTE_VIRTUAL_STYLE_ID_REGEX
@@ -214,15 +215,13 @@ function escapeRE(s) {
  * @returns {import('../types/id.d.ts').IdFilter}
  */
 export function buildIdFilter(options) {
-	const { include, exclude, extensions } = options;
-	const extensionsRE = extensions
-		? new RegExp(
-				`\\.(?:${extensions
-					.map((e) => (e.startsWith('.') ? e.slice(1) : e))
-					.map(escapeRE)
-					.join('|')})$`
-			)
-		: /\.svelte$/;
+	const { include = [], exclude = [], extensions = DEFAULT_SVELTE_EXT } = options;
+	const extensionsRE = new RegExp(
+		`\\.(?:${extensions
+			.map((e) => (e.startsWith('.') ? e.slice(1) : e))
+			.map(escapeRE)
+			.join('|')})$`
+	);
 	return {
 		id: {
 			include: [
@@ -247,6 +246,31 @@ export function buildIdParser(options) {
 		const { filename, rawQuery } = splitId(id);
 		if (filter(filename)) {
 			return parseToSvelteRequest(id, filename, rawQuery, normalizedRoot, timestamp, ssr);
+		}
+	};
+}
+
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {import('../types/id.d.ts').IdFilter}
+ */
+export function buildModuleIdFilter(options) {
+	const {
+		infixes = DEFAULT_SVELTE_MODULE_INFIX,
+		include = [],
+		exclude = [],
+		extensions = DEFAULT_SVELTE_MODULE_EXT
+	} = options.experimental?.compileModule ?? {};
+	const infixWithExtRE = new RegExp(
+		`(?:${infixes.map(escapeRE).join('|')})(?:[^.\\\\/]+\\.)*(?:${extensions
+			.map((e) => (e.startsWith('.') ? e.slice(1) : e))
+			.map(escapeRE)
+			.join('|')})$`
+	);
+	return {
+		id: {
+			include: [infixWithExtRE, .../**@type {Array<string|RegExp>}*/ asArray(include)],
+			exclude: /**@type {Array<string|RegExp>}*/ asArray(exclude)
 		}
 	};
 }
