@@ -13,6 +13,12 @@ describe('buildIdFilter', () => {
 		expect(passes(filter, '/src/Foo.svelte?something')).toBe(true);
 	});
 
+	it('default filter does not match .js files', () => {
+		const filter = buildIdFilter({});
+		expect(passes(filter, '/src/foo.js')).toBe(false);
+		expect(passes(filter, '/src/foo.js?something')).toBe(false);
+	});
+
 	it('custom filter matches .svx files', () => {
 		const filter = buildIdFilter({ extensions: ['.svelte', '.svx'] });
 		expect(passes(filter, '/src/Foo.svx')).toBe(true);
@@ -21,12 +27,20 @@ describe('buildIdFilter', () => {
 });
 
 describe('buildModuleIdFilter', () => {
-	it('default filter matches .svelte. files', () => {
+	it('default filter matches .svelte.*.js/ts files', () => {
 		const filter = buildModuleIdFilter({});
 		expect(passes(filter, '/src/foo.svelte.js')).toBe(true);
 		expect(passes(filter, '/src/foo.svelte.ts')).toBe(true);
 		expect(passes(filter, '/src/foo.svelte.test.js')).toBe(true);
 		expect(passes(filter, '/src/foo.svelte.test.ts')).toBe(true);
+	});
+
+	it('default filter does not match files without .svelte.', () => {
+		const filter = buildModuleIdFilter({});
+		expect(passes(filter, '/src/foo.js')).toBe(false);
+		expect(passes(filter, '/src/foo.ts')).toBe(false);
+		expect(passes(filter, '/src/foo.test.js')).toBe(false);
+		expect(passes(filter, '/src/foo.test.ts')).toBe(false);
 	});
 
 	it('custom filter matches .svx. files', () => {
