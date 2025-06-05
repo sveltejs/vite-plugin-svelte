@@ -76,11 +76,18 @@ jobs:
       matrix:
         node: [22]
         os: [ubuntu-latest, macos-latest, windows-latest]
+        vite: ['current']
         include:
           - node: 20
             os: ubuntu-latest
+            vite: 'current'
           - node: 24
             os: ubuntu-latest
+            vite: 'current'
+          # baseline test lowest vite and node version
+          - node: 20.19
+            os: ubuntu-latest
+            vite: '6.3.0'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -99,6 +106,9 @@ jobs:
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
         run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: update vite version
+        if: matrix.vite != 'current'
+        run: pnpm update -r --no-save vite@${{matrix.vite}}
       - name: install playwright chromium
         run: pnpm playwright install chromium
       - name: run tests
@@ -110,7 +120,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}
+          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}-${{ matrix.vite }}
           path: |
             test-temp.tar
             pnpm-debug.log
