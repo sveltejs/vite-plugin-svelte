@@ -167,7 +167,6 @@ export function svelte(inlineOptions) {
 
 		transform: {
 			async handler(code, id, opts) {
-				log.debug(`transforming ${id}`, undefined, 'transform');
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, ssr);
 				if (!svelteRequest || svelteRequest.query.type === 'style' || svelteRequest.raw) {

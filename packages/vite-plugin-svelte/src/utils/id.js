@@ -172,7 +172,7 @@ function escapeRE(s) {
  */
 export function buildIdFilter(options) {
 	const { include = [], exclude = [], extensions = DEFAULT_SVELTE_EXT } = options;
-	// the final regex looks like this
+	// this regex combines configured extensions and looks for them at the end of the string or directly before first ? or #
 	const extensionsRE = new RegExp(
 		`^[^?#]+\\.(?:${extensions
 			.map((e) => (e.startsWith('.') ? e.slice(1) : e))
@@ -211,6 +211,8 @@ export function buildModuleIdFilter(options) {
 		exclude = [],
 		extensions = DEFAULT_SVELTE_MODULE_EXT
 	} = options.experimental?.compileModule ?? {};
+	// this regex combines configured infixes and extensions
+	// and looks for them at the end of the string or directly before first ? or #
 	const infixWithExtRE = new RegExp(
 		`^[^?#]+(?:${infixes.map(escapeRE).join('|')})(?:[^.\\\\/]+\\.)*(?:${extensions
 			.map((e) => (e.startsWith('.') ? e.slice(1) : e))
