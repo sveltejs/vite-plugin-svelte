@@ -139,6 +139,13 @@ export default [
 		}
 	},
 	{
+		name: 'local/markdown-codefences/allow-require',
+		files: ['**/docs/faq.md/*.js'],
+		rules: {
+			'@typescript-eslint/no-require-imports': 'off'
+		}
+	},
+	{
 		name: 'local/spec-files',
 		files: ['**/__tests__/**/*.spec.ts'],
 
