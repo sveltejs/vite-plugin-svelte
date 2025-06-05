@@ -647,9 +647,9 @@ export function ensureConfigEnvironmentConditions(name, config, opts) {
 
 /**
  * @template T
- * @param {T | T[]} value
+ * @param {T | T[] | null | undefined } value
  * @returns {T[]}
  */
-function arraify(value) {
-	return Array.isArray(value) ? value : [value];
+export function arraify(value) {
+	return value == null ? [] : Array.isArray(value) ? value : [value];
 }

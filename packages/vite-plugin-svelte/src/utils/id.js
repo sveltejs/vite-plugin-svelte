@@ -1,14 +1,13 @@
-import { createFilter, normalizePath } from 'vite';
+import { normalizePath } from 'vite';
 import fs from 'node:fs';
-import path from 'node:path';
 import process from 'node:process';
 import { log } from './log.js';
 import {
 	DEFAULT_SVELTE_EXT,
 	DEFAULT_SVELTE_MODULE_EXT,
-	DEFAULT_SVELTE_MODULE_INFIX,
-	SVELTE_VIRTUAL_STYLE_ID_REGEX
+	DEFAULT_SVELTE_MODULE_INFIX
 } from './constants.js';
+import { arraify } from './options.js';
 
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
@@ -159,49 +158,6 @@ function stripRoot(normalizedFilename, normalizedRoot) {
 }
 
 /**
- * @param {import('../public.d.ts').Options['include'] | undefined} include
- * @param {import('../public.d.ts').Options['exclude'] | undefined} exclude
- * @param {string[]} extensions
- * @returns {(filename: string) => boolean}
- */
-function buildFilter(include, exclude, extensions) {
-	const rollupFilter = createFilter(include, exclude);
-	return (filename) => rollupFilter(filename) && extensions.some((ext) => filename.endsWith(ext));
-}
-
-/**
- * @param {import('../public.d.ts').Options['include'] | undefined} include
- * @param {import('../public.d.ts').Options['exclude'] | undefined} exclude
- * @param {string[]} infixes
- * @param {string[]} extensions
- * @returns {(filename: string) => boolean}
- */
-function buildModuleFilter(include, exclude, infixes, extensions) {
-	const rollupFilter = createFilter(include, exclude);
-	return (filename) => {
-		const basename = path.basename(filename);
-
-		return (
-			rollupFilter(filename) &&
-			infixes.some((infix) => basename.includes(infix)) &&
-			extensions.some((ext) => basename.endsWith(ext))
-		);
-	};
-}
-
-/**
- * @template T
- * @param {(undefined|T|Array<T>)} x
- * @returns {Array<T>}
- */
-function asArray(x) {
-	if (x == null) {
-		return [];
-	}
-	return Array.isArray(x) ? x : [x];
-}
-
-/**
  *
  * @param {string} s
  * @returns {string}
@@ -216,22 +172,20 @@ function escapeRE(s) {
  */
 export function buildIdFilter(options) {
 	const { include = [], exclude = [], extensions = DEFAULT_SVELTE_EXT } = options;
+	// the final regex looks like this
 	const extensionsRE = new RegExp(
-		`\\.(?:${extensions
+		`^[^?#]+\\.(?:${extensions
 			.map((e) => (e.startsWith('.') ? e.slice(1) : e))
 			.map(escapeRE)
-			.join('|')})$`
+			.join('|')})(?:[?#]|$)`
 	);
-	return {
+	const filter = {
 		id: {
-			include: [
-				extensionsRE,
-				SVELTE_VIRTUAL_STYLE_ID_REGEX,
-				.../**@type {Array<string|RegExp>}*/ asArray(include)
-			],
-			exclude: /**@type {Array<string|RegExp>}*/ asArray(exclude)
+			include: [extensionsRE, .../**@type {Array<string|RegExp>}*/ arraify(include)],
+			exclude: /**@type {Array<string|RegExp>}*/ arraify(exclude)
 		}
 	};
+	return filter;
 }
 
 /**
@@ -239,14 +193,10 @@ export function buildIdFilter(options) {
  * @returns {import('../types/id.d.ts').IdParser}
  */
 export function buildIdParser(options) {
-	const { include, exclude, extensions, root } = options;
-	const normalizedRoot = normalizePath(root);
-	const filter = buildFilter(include, exclude, extensions ?? []);
+	const normalizedRoot = normalizePath(options.root);
 	return (id, ssr, timestamp = Date.now()) => {
 		const { filename, rawQuery } = splitId(id);
-		if (filter(filename)) {
-			return parseToSvelteRequest(id, filename, rawQuery, normalizedRoot, timestamp, ssr);
-		}
+		return parseToSvelteRequest(id, filename, rawQuery, normalizedRoot, timestamp, ssr);
 	};
 }
 
@@ -262,15 +212,15 @@ export function buildModuleIdFilter(options) {
 		extensions = DEFAULT_SVELTE_MODULE_EXT
 	} = options.experimental?.compileModule ?? {};
 	const infixWithExtRE = new RegExp(
-		`(?:${infixes.map(escapeRE).join('|')})(?:[^.\\\\/]+\\.)*(?:${extensions
+		`^[^?#]+(?:${infixes.map(escapeRE).join('|')})(?:[^.\\\\/]+\\.)*(?:${extensions
 			.map((e) => (e.startsWith('.') ? e.slice(1) : e))
 			.map(escapeRE)
-			.join('|')})$`
+			.join('|')})(?:[?#]|$)`
 	);
 	return {
 		id: {
-			include: [infixWithExtRE, .../**@type {Array<string|RegExp>}*/ asArray(include)],
-			exclude: /**@type {Array<string|RegExp>}*/ asArray(exclude)
+			include: [infixWithExtRE, .../**@type {Array<string|RegExp>}*/ arraify(include)],
+			exclude: /**@type {Array<string|RegExp>}*/ arraify(exclude)
 		}
 	};
 }
@@ -280,20 +230,11 @@ export function buildModuleIdFilter(options) {
  * @returns {import('../types/id.d.ts').ModuleIdParser}
  */
 export function buildModuleIdParser(options) {
-	const {
-		include,
-		exclude,
-		infixes = DEFAULT_SVELTE_MODULE_INFIX,
-		extensions = DEFAULT_SVELTE_MODULE_EXT
-	} = options?.experimental?.compileModule ?? {};
 	const root = options.root;
 	const normalizedRoot = normalizePath(root);
-	const filter = buildModuleFilter(include, exclude, infixes, extensions);
 	return (id, ssr, timestamp = Date.now()) => {
 		const { filename, rawQuery } = splitId(id);
-		if (filter(filename)) {
-			return parseToSvelteModuleRequest(id, filename, rawQuery, normalizedRoot, timestamp, ssr);
-		}
+		return parseToSvelteModuleRequest(id, filename, rawQuery, normalizedRoot, timestamp, ssr);
 	};
 }
 
