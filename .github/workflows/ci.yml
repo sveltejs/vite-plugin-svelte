@@ -88,6 +88,10 @@ jobs:
           - node: 20.19
             os: ubuntu-latest
             vite: '6.3.0'
+          # future test with rolldown-vite
+          - node: 24
+            os: ubuntu-latest
+            vite: 'npm:rolldown-vite@latest'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
