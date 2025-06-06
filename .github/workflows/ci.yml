@@ -87,11 +87,11 @@ jobs:
           # baseline test lowest vite and node version
           - node: 20.19
             os: ubuntu-latest
-            vite: '6.3.0'
+            vite: 'baseline'
           # future test with rolldown-vite
           - node: 24
             os: ubuntu-latest
-            vite: 'npm:rolldown-vite@latest'
+            vite: 'rolldown-vite'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -110,9 +110,16 @@ jobs:
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
         run: pnpm install --frozen-lockfile --ignore-scripts
-      - name: update vite version
-        if: matrix.vite != 'current'
-        run: pnpm update -r --no-save vite@${{matrix.vite}}
+      - name: downgrade vite to baseline
+        if: matrix.vite == 'baseline'
+        run: |
+          pnpm update -r --no-save vite@6.3.0
+          pnpm ls vite
+      - name: update vite to rolldown-vite
+        if: matrix.vite == 'rolldown-vite'
+        run: |
+          pnpm update -r --no-save vite@npm:rolldown-vite@latest
+          pnpm ls rolldown-vite
       - name: install playwright chromium
         run: pnpm playwright install chromium
       - name: run tests
