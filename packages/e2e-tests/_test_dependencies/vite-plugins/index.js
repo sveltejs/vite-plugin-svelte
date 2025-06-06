@@ -63,7 +63,7 @@ export function writeResolvedConfig() {
 			};
 			const dir = path.join(config.root, 'logs', 'resolved-configs');
 			if (!fs.existsSync(dir)) {
-				fs.mkdirSync(dir);
+				fs.mkdirSync(dir, { recursive: true });
 			}
 			const filename = path.join(dir, `vite.config.${cmd}${config.build.ssr ? '.ssr' : ''}.json`);
 			fs.writeFileSync(filename, JSON.stringify(serializableConfig, replacer, '\t'), 'utf-8');

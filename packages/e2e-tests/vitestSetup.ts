@@ -141,8 +141,11 @@ beforeAll(
 				if (fs.existsSync(tempViteCache)) {
 					await fs.rm(tempViteCache, { force: true, recursive: true });
 				}
-
-				await fs.mkdir(path.join(tempDir, 'logs'));
+				const logsDir = path.join(tempDir, 'logs');
+				if (fs.existsSync(logsDir)) {
+					fs.rmSync(logsDir, { recursive: true, force: true });
+				}
+				await fs.mkdir(logsDir);
 				const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
 				const defaultServerScript = path.resolve(e2eTestsRoot, 'e2e-server.js');
 				const hasCustomServer = fs.existsSync(customServerScript);
