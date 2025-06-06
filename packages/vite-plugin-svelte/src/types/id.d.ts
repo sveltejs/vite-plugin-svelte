@@ -39,6 +39,13 @@ export interface SvelteModuleRequest {
 }
 
 export type IdParser = (id: string, ssr: boolean, timestamp?: number) => SvelteRequest | undefined;
+
+export type IdFilter = {
+	id: {
+		include: Array<string | RegExp>;
+		exclude: Array<string | RegExp>;
+	};
+};
 export type ModuleIdParser = (
 	id: string,
 	ssr: boolean,

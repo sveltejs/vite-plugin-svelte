@@ -22,14 +22,14 @@ export interface PluginOptions {
 	 *
 	 * @see https://github.com/micromatch/picomatch
 	 */
-	include?: Arrayable<string>;
+	include?: Arrayable<string | RegExp>;
 	/**
 	 * A `picomatch` pattern, or array of patterns, which specifies the files to be ignored by the
 	 * plugin. By default, no files are ignored.
 	 *
 	 * @see https://github.com/micromatch/picomatch
 	 */
-	exclude?: Arrayable<string>;
+	exclude?: Arrayable<string | RegExp>;
 	/**
 	 * Emit Svelte styles as virtual CSS files for Vite and other plugins to process
 	 *
@@ -187,8 +187,8 @@ interface CompileModuleOptions {
 	 * @default ['.ts','.js']
 	 */
 	extensions?: string[];
-	include?: Arrayable<string>;
-	exclude?: Arrayable<string>;
+	include?: Arrayable<string | RegExp>;
+	exclude?: Arrayable<string | RegExp>;
 }
 
 type Arrayable<T> = T | T[];

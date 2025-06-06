@@ -4,7 +4,12 @@ import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
 import { handleHotUpdate } from './handle-hot-update.js';
 import { log, logCompilerWarnings } from './utils/log.js';
 import { createCompileSvelte } from './utils/compile.js';
-import { buildIdParser, buildModuleIdParser } from './utils/id.js';
+import {
+	buildIdFilter,
+	buildIdParser,
+	buildModuleIdFilter,
+	buildModuleIdParser
+} from './utils/id.js';
 import {
 	buildExtraViteConfig,
 	validateInlineOptions,
@@ -20,6 +25,7 @@ import { saveSvelteMetadata } from './utils/optimizer.js';
 import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 import * as svelteCompiler from 'svelte/compiler';
+import { SVELTE_VIRTUAL_STYLE_ID_REGEX } from './utils/constants.js';
 
 /**
  * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
@@ -42,67 +48,74 @@ export function svelte(inlineOptions) {
 	let viteConfig;
 	/** @type {import('./types/compile.d.ts').CompileSvelte} */
 	let compileSvelte;
-	/** @type {import('./types/plugin-api.d.ts').PluginAPI} */
-	const api = {};
-	/** @type {import('vite').Plugin[]} */
-	const plugins = [
-		{
-			name: 'vite-plugin-svelte',
-			// make sure our resolver runs before vite internal resolver to resolve svelte field correctly
-			enforce: 'pre',
-			api,
-			async config(config, configEnv) {
-				// setup logger
-				if (process.env.DEBUG) {
-					log.setLevel('debug');
-				} else if (config.logLevel) {
-					log.setLevel(config.logLevel);
-				}
-				// @ts-expect-error temporarily lend the options variable until fixed in configResolved
-				options = await preResolveOptions(inlineOptions, config, configEnv);
-				// extra vite config
-				const extraViteConfig = await buildExtraViteConfig(options, config);
-				log.debug('additional vite config', extraViteConfig, 'config');
-				return extraViteConfig;
-			},
 
-			configEnvironment(name, config, opts) {
-				ensureConfigEnvironmentMainFields(name, config, opts);
-				// @ts-expect-error the function above should make `resolve.mainFields` non-nullable
-				config.resolve.mainFields.unshift('svelte');
+	/** @type {import('vite').Plugin} */
+	const compilePlugin = {
+		name: 'vite-plugin-svelte',
+		// make sure our resolver runs before vite internal resolver to resolve svelte field correctly
+		enforce: 'pre',
+		/** @type {import('./types/plugin-api.d.ts').PluginAPI} */
+		api: {},
+		async config(config, configEnv) {
+			// setup logger
+			if (process.env.DEBUG) {
+				log.setLevel('debug');
+			} else if (config.logLevel) {
+				log.setLevel(config.logLevel);
+			}
+			// @ts-expect-error temporarily lend the options variable until fixed in configResolved
+			options = await preResolveOptions(inlineOptions, config, configEnv);
+			// extra vite config
+			const extraViteConfig = await buildExtraViteConfig(options, config);
+			log.debug('additional vite config', extraViteConfig, 'config');
+			return extraViteConfig;
+		},
 
-				ensureConfigEnvironmentConditions(name, config, opts);
-				// @ts-expect-error the function above should make `resolve.conditions` non-nullable
-				config.resolve.conditions.push('svelte');
-			},
+		configEnvironment(name, config, opts) {
+			ensureConfigEnvironmentMainFields(name, config, opts);
+			// @ts-expect-error the function above should make `resolve.mainFields` non-nullable
+			config.resolve.mainFields.unshift('svelte');
 
-			async configResolved(config) {
-				options = resolveOptions(options, config, cache);
-				patchResolvedViteConfig(config, options);
-				requestParser = buildIdParser(options);
-				compileSvelte = createCompileSvelte();
-				viteConfig = config;
-				// TODO deep clone to avoid mutability from outside?
-				api.options = options;
-				log.debug('resolved options', options, 'config');
-			},
+			ensureConfigEnvironmentConditions(name, config, opts);
+			// @ts-expect-error the function above should make `resolve.conditions` non-nullable
+			config.resolve.conditions.push('svelte');
+		},
 
-			async buildStart() {
-				if (!options.prebundleSvelteLibraries) return;
-				const isSvelteMetadataChanged = await saveSvelteMetadata(viteConfig.cacheDir, options);
-				if (isSvelteMetadataChanged) {
-					// Force Vite to optimize again. Although we mutate the config here, it works because
-					// Vite's optimizer runs after `buildStart()`.
-					viteConfig.optimizeDeps.force = true;
-				}
-			},
+		async configResolved(config) {
+			options = resolveOptions(options, config, cache);
+			patchResolvedViteConfig(config, options);
+			const filter = buildIdFilter(options);
+			//@ts-expect-error transform defined below but filter not in type
+			compilePlugin.transform.filter = filter;
+			//@ts-expect-error load defined below but filter not in type
+			compilePlugin.load.filter = filter;
 
-			configureServer(server) {
-				options.server = server;
-				setupWatchers(options, cache, requestParser);
-			},
+			requestParser = buildIdParser(options);
+			compileSvelte = createCompileSvelte();
+			viteConfig = config;
+			// TODO deep clone to avoid mutability from outside?
+			compilePlugin.api.options = options;
+			log.debug('resolved options', options, 'config');
+			log.debug('filters', filter, 'config');
+		},
 
-			async load(id, opts) {
+		async buildStart() {
+			if (!options.prebundleSvelteLibraries) return;
+			const isSvelteMetadataChanged = await saveSvelteMetadata(viteConfig.cacheDir, options);
+			if (isSvelteMetadataChanged) {
+				// Force Vite to optimize again. Although we mutate the config here, it works because
+				// Vite's optimizer runs after `buildStart()`.
+				viteConfig.optimizeDeps.force = true;
+			}
+		},
+
+		configureServer(server) {
+			options.server = server;
+			setupWatchers(options, cache, requestParser);
+		},
+
+		load: {
+			async handler(id, opts) {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, !!ssr);
 				if (svelteRequest) {
@@ -137,30 +150,23 @@ export function svelte(inlineOptions) {
 						}
 					}
 				}
-			},
+			}
+		},
 
-			async resolveId(importee, importer, opts) {
-				const ssr = !!opts?.ssr;
-				const svelteRequest = requestParser(importee, ssr);
-				if (svelteRequest?.query.svelte) {
-					if (
-						svelteRequest.query.type === 'style' &&
-						!svelteRequest.raw &&
-						!svelteRequest.query.inline
-					) {
-						// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
-						// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
-						log.debug(
-							`resolveId resolved virtual css module ${svelteRequest.cssId}`,
-							undefined,
-							'resolve'
-						);
-						return svelteRequest.cssId;
-					}
-				}
-			},
+		resolveId: {
+			// we don't use our generic filter here but a reduced one that only matches our virtual css
+			filter: { id: SVELTE_VIRTUAL_STYLE_ID_REGEX },
+			handler(id) {
+				// return cssId with root prefix so postcss pipeline of vite finds the directory correctly
+				// see https://github.com/sveltejs/vite-plugin-svelte/issues/14
+				log.debug(`resolveId resolved virtual css module ${id}`, undefined, 'resolve');
+				// TODO: do we have to repeat the dance for constructing the virtual id here? our transform added it that way
+				return id;
+			}
+		},
 
-			async transform(code, id, opts) {
+		transform: {
+			async handler(code, id, opts) {
 				const ssr = !!opts?.ssr;
 				const svelteRequest = requestParser(id, ssr);
 				if (!svelteRequest || svelteRequest.query.type === 'style' || svelteRequest.raw) {
@@ -194,28 +200,34 @@ export function svelte(inlineOptions) {
 						}
 					}
 				};
-			},
-
-			handleHotUpdate(ctx) {
-				if (!options.compilerOptions.hmr || !options.emitCss) {
-					return;
-				}
-				const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);
-				if (svelteRequest) {
-					return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
-				}
-			},
-			async buildEnd() {
-				await options.stats?.finishAll();
 			}
 		},
-		{
-			name: 'vite-plugin-svelte-module',
-			enforce: 'post',
-			async configResolved() {
-				moduleRequestParser = buildModuleIdParser(options);
-			},
-			async transform(code, id, opts) {
+
+		handleHotUpdate(ctx) {
+			if (!options.compilerOptions.hmr || !options.emitCss) {
+				return;
+			}
+			const svelteRequest = requestParser(ctx.file, false, ctx.timestamp);
+			if (svelteRequest) {
+				return handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, options);
+			}
+		},
+		async buildEnd() {
+			await options.stats?.finishAll();
+		}
+	};
+
+	/** @type {import('vite').Plugin} */
+	const moduleCompilePlugin = {
+		name: 'vite-plugin-svelte-module',
+		enforce: 'post',
+		async configResolved() {
+			//@ts-expect-error transform defined below but filter not in type
+			moduleCompilePlugin.transform.filter = buildModuleIdFilter(options);
+			moduleRequestParser = buildModuleIdParser(options);
+		},
+		transform: {
+			async handler(code, id, opts) {
 				const ssr = !!opts?.ssr;
 				const moduleRequest = moduleRequestParser(id, ssr);
 				if (!moduleRequest) {
@@ -233,9 +245,11 @@ export function svelte(inlineOptions) {
 					throw toRollupError(e, options);
 				}
 			}
-		},
-		svelteInspector()
-	];
+		}
+	};
+
+	/** @type {import('vite').Plugin[]} */
+	const plugins = [compilePlugin, moduleCompilePlugin, svelteInspector()];
 	return plugins;
 }
 

@@ -29,3 +29,8 @@ export const FAQ_LINK_MISSING_EXPORTS_CONDITION =
 export const DEFAULT_SVELTE_EXT = ['.svelte'];
 export const DEFAULT_SVELTE_MODULE_INFIX = ['.svelte.'];
 export const DEFAULT_SVELTE_MODULE_EXT = ['.js', '.ts'];
+
+export const SVELTE_VIRTUAL_STYLE_SUFFIX = '?svelte&type=style&lang.css';
+export const SVELTE_VIRTUAL_STYLE_ID_REGEX = new RegExp(
+	`${SVELTE_VIRTUAL_STYLE_SUFFIX.replace(/[?.]/g, '\\$&')}$`
+);
