@@ -1,5 +1,5 @@
 import App from './App.svelte';
-import { Hello } from './types.js';
+import { type Hello } from './types.ts';
 import { mount } from 'svelte';
 
 const hello: Hello = 'Hello';

@@ -7,6 +7,7 @@ test('should render App', async () => {
 	expect(await getText('#foo-title')).toBe('Styles with stylus blub');
 	expect(await getColor('#foo-title')).toBe('magenta');
 	expect(await getColor('p.note')).toBe('rgb(255, 62, 0)');
+	expect(await getText('#enum')).toBe('qoox');
 });
 
 test('should not mangle code from esbuild pure annotations', async () => {

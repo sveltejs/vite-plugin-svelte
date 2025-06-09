@@ -1,7 +1,15 @@
 import process from 'node:process';
-import { isCSSRequest, preprocessCSS, resolveConfig, transformWithEsbuild } from 'vite';
+import * as vite from 'vite';
 import { mapToRelative, removeLangSuffix } from './utils/sourcemaps.js';
-
+//@ts-expect-error rolldown types don't exist
+const {
+	isCSSRequest,
+	preprocessCSS,
+	resolveConfig,
+	transformWithEsbuild,
+	rolldownVersion,
+	transformWithOxc
+} = vite;
 /**
  * @typedef {(code: string, filename: string) => Promise<{ code: string; map?: any; deps?: Set<string> }>} CssTransform
  */
@@ -18,7 +26,7 @@ export function vitePreprocess(opts) {
 	/** @type {import('svelte/compiler').PreprocessorGroup} */
 	const preprocessor = { name: 'vite-preprocess' };
 	if (opts?.script === true) {
-		preprocessor.script = viteScript().script;
+		preprocessor.script = rolldownVersion ? viteScriptOxc().script : viteScript().script;
 	}
 	if (opts?.style !== false) {
 		const styleOpts = typeof opts?.style == 'object' ? opts?.style : undefined;
@@ -45,6 +53,37 @@ function viteScript() {
 						preserveValueImports: true
 					}
 				}
+			});
+
+			mapToRelative(map, filename);
+
+			return {
+				code,
+				map
+			};
+		}
+	};
+}
+
+/**
+ * @returns {{ script: import('svelte/compiler').Preprocessor }}
+ */
+function viteScriptOxc() {
+	return {
+		async script({ attributes, content, filename = '' }) {
+			const lang = /** @type {string} */ (attributes.lang);
+			if (!supportedScriptLangs.includes(lang)) return;
+			const { code, map } = await transformWithOxc(content, filename, {
+				lang,
+				target: 'esnext'
+				// TODO, how to pass tsconfig compilerOptions (or not needed as config is loaded for file
+				/*tsconfigRaw: {
+					compilerOptions: {
+						// svelte typescript needs this flag to work with type imports
+						importsNotUsedAsValues: 'preserve',
+						preserveValueImports: true
+					}
+				}*/
 			});
 
 			mapToRelative(map, filename);
