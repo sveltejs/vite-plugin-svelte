@@ -294,7 +294,8 @@ describe('kit-node', () => {
 						'svelte-i18n',
 						'esm-env', // first added by svelte-kit
 						'esm-env', // second added by vite-plugin-svelte
-						'@sveltejs/kit'
+						'@sveltejs/kit',
+						'@sveltejs/adapter-node'
 					],
 					`ssr.noExternal in ${filename}`
 				);
