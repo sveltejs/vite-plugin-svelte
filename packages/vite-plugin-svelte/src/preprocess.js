@@ -1,13 +1,14 @@
 import process from 'node:process';
 import * as vite from 'vite';
 import { mapToRelative, removeLangSuffix } from './utils/sourcemaps.js';
-//@ts-expect-error rolldown types don't exist
 const {
 	isCSSRequest,
 	preprocessCSS,
 	resolveConfig,
 	transformWithEsbuild,
+	//@ts-expect-error rolldown types don't exist
 	rolldownVersion,
+	//@ts-expect-error rolldown types don't exist
 	transformWithOxc
 } = vite;
 /**
