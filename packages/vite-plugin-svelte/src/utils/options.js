@@ -1,11 +1,14 @@
 import process from 'node:process';
-import {
+import * as vite from 'vite';
+const {
 	defaultClientMainFields,
 	defaultServerMainFields,
 	defaultClientConditions,
 	defaultServerConditions,
-	normalizePath
-} from 'vite';
+	normalizePath,
+	//@ts-expect-error rolldownVersion not in type
+	rolldownVersion
+} = vite;
 import { isDebugNamespaceEnabled, log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
 import {
@@ -20,9 +23,11 @@ import path from 'node:path';
 import {
 	esbuildSvelteModulePlugin,
 	esbuildSveltePlugin,
-	facadeEsbuildSvelteModulePluginName,
-	facadeEsbuildSveltePluginName
-} from './esbuild.js';
+	facadeOptimizeSvelteModulePluginName,
+	facadeOptimizeSveltePluginName,
+	rolldownOptimizeSvelteModulePlugin,
+	rolldownOptimizeSveltePlugin
+} from './optimizer-plugins.js';
 import { addExtraPreprocessors } from './preprocess.js';
 import deepmerge from 'deepmerge';
 import {
@@ -386,17 +391,32 @@ export async function buildExtraViteConfig(options, config) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
-			extensions: options.extensions ?? ['.svelte'],
-			// Add esbuild plugin to prebundle Svelte files.
-			// Currently a placeholder as more information is needed after Vite config is resolved,
-			// the real Svelte plugin is added in `patchResolvedViteConfig()`
-			esbuildOptions: {
-				plugins: [
-					{ name: facadeEsbuildSveltePluginName, setup: () => {} },
-					{ name: facadeEsbuildSvelteModulePluginName, setup: () => {} }
-				]
-			}
+			extensions: options.extensions ?? ['.svelte']
 		};
+		// Add esbuild plugin to prebundle Svelte files.
+		// Currently a placeholder as more information is needed after Vite config is resolved,
+		// the real Svelte plugin is added in `patchResolvedViteConfig()`
+		if (rolldownVersion) {
+			//@ts-expect-error rolldown-vite types not finished
+			extraViteConfig.optimizeDeps.rollupOptions = {
+				plugins: [
+					{ name: facadeOptimizeSveltePluginName, transform() {}, buildStart() {}, buildEnd() {} },
+					{
+						name: facadeOptimizeSvelteModulePluginName,
+						transform() {},
+						buildStart() {},
+						buildEnd() {}
+					}
+				]
+			};
+		} else {
+			extraViteConfig.optimizeDeps.esbuildOptions = {
+				plugins: [
+					{ name: facadeOptimizeSveltePluginName, setup: () => {} },
+					{ name: facadeOptimizeSvelteModulePluginName, setup: () => {} }
+				]
+			};
+		}
 	}
 
 	// enable hmrPartialAccept if not explicitly disabled
@@ -594,19 +614,37 @@ export function patchResolvedViteConfig(viteConfig, options) {
 			}
 		}
 	}
-
-	// replace facade esbuild plugin with a real one
-	const facadeEsbuildSveltePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
-		(plugin) => plugin.name === facadeEsbuildSveltePluginName
-	);
-	if (facadeEsbuildSveltePlugin) {
-		Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
-	}
-	const facadeEsbuildSvelteModulePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
-		(plugin) => plugin.name === facadeEsbuildSvelteModulePluginName
-	);
-	if (facadeEsbuildSvelteModulePlugin) {
-		Object.assign(facadeEsbuildSvelteModulePlugin, esbuildSvelteModulePlugin(options));
+	if (rolldownVersion) {
+		// @ts-expect-error not typed
+		const plugins = viteConfig.optimizeDeps.rollupOptions.plugins;
+		if (plugins) {
+			const facadeSveltePlugin = plugins.find(
+				(/** @type {{ name: any; }} */ p) => p.name === facadeOptimizeSveltePluginName
+			);
+			if (facadeSveltePlugin) {
+				Object.assign(facadeSveltePlugin, rolldownOptimizeSveltePlugin(options));
+			}
+			const facadeSvelteModulePlugin = plugins.find(
+				(/** @type {{ name: string; }} */ p) => p.name === facadeOptimizeSvelteModulePluginName
+			);
+			if (facadeSvelteModulePlugin) {
+				Object.assign(facadeSvelteModulePlugin, rolldownOptimizeSvelteModulePlugin(options));
+			}
+		}
+	} else {
+		const plugins = viteConfig.optimizeDeps.esbuildOptions?.plugins;
+		if (plugins) {
+			const facadeSveltePlugin = plugins.find((p) => p.name === facadeOptimizeSveltePluginName);
+			if (facadeSveltePlugin) {
+				Object.assign(facadeSveltePlugin, esbuildSveltePlugin(options));
+			}
+			const facadeSvelteModulePlugin = plugins.find(
+				(p) => p.name === facadeOptimizeSvelteModulePluginName
+			);
+			if (facadeSvelteModulePlugin) {
+				Object.assign(facadeSvelteModulePlugin, esbuildSvelteModulePlugin(options));
+			}
+		}
 	}
 }
 

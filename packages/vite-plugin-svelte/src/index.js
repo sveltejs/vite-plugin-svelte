@@ -140,6 +140,8 @@ export function svelte(inlineOptions) {
 									css.meta.vite ??= {};
 									css.meta.vite.cssScopeTo = [svelteRequest.filename, 'default'];
 								}
+								css.moduleType = 'css';
+
 								return css;
 							}
 						}
@@ -194,6 +196,7 @@ export function svelte(inlineOptions) {
 				}
 				return {
 					...compileData.compiled.js,
+					moduleType: 'js',
 					meta: {
 						vite: {
 							lang: compileData.lang

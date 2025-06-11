@@ -14,7 +14,8 @@ export default [
 			'packages/playground/big/src/pages/**', // lots of generated files
 			'packages/*/types/index.d.ts',
 			'packages/*/types/index.d.ts.map',
-			'packages/*/CHANGELOG.md'
+			'packages/*/CHANGELOG.md',
+			'packages/e2e-tests/**/logs/**'
 		]
 	},
 	...svelteOrgEslintConfig, // contains setup for svelte and typescript

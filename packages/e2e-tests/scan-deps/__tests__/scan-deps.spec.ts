@@ -3,10 +3,7 @@ import { describe, expect, it } from 'vitest';
 describe('vite import scan', () => {
 	it('should not fail to discover dependencies exported from script module', async () => {
 		// vite logs an error if scan fails but continues, so validate no errors logged
-		// rolldown-vite logs an error for optimizeDeps.esbuildOptions that is unrelated
-		const errorLogs = e2eServer.logs.server.err.filter(
-			(m) => !m.includes('optimizeDeps.esbuildOptions')
-		);
+		const errorLogs = e2eServer.logs.server.err;
 		expect(errorLogs.length, `unexpected errors:\n${errorLogs.join('\n')}`).toBe(0);
 	});
 	it('should work with exports from module context', async () => {

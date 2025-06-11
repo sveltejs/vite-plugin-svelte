@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import * as svelte from 'svelte/compiler';
 import { log } from './log.js';
-import { toESBuildError } from './error.js';
+import { toESBuildError, toRollupError } from './error.js';
 import { safeBase64Hash } from './hash.js';
 import { normalize } from './id.js';
 
@@ -9,9 +9,25 @@ import { normalize } from './id.js';
  * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
  * @typedef {NonNullable<EsbuildOptions['plugins']>[number]} EsbuildPlugin
  */
-
-export const facadeEsbuildSveltePluginName = 'vite-plugin-svelte:facade';
-export const facadeEsbuildSvelteModulePluginName = 'vite-plugin-svelte-module:facade';
+/*
+ * @typedef {NonNullable<import('vite').DepOptimizationOptions['rollupOptions']>} RollupOptions
+ * @typedef {NonNullable<RollupOptions['plugins']>[number]} RolldownPlugin
+ */
+// TODO type correctly when the above works
+/**
+ * @typedef {{
+ *   name: string,
+ *   options: ()=>void,
+ *   transform?:{
+ *    filter: any
+ *    handler: (code: string,id: string)=>Promise<any>
+ *   },
+ *   buildStart?:()=>void,
+ *   buildEnd?:()=>void
+ * }} RolldownPlugin
+ */
+export const facadeOptimizeSveltePluginName = 'vite-plugin-svelte:facade';
+export const facadeOptimizeSvelteModulePluginName = 'vite-plugin-svelte-module:facade';
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
@@ -36,7 +52,10 @@ export function esbuildSveltePlugin(options) {
 			build.onLoad({ filter }, async ({ path: filename }) => {
 				const code = readFileSync(filename, 'utf8');
 				try {
-					const contents = await compileSvelte(options, { filename, code }, statsCollection);
+					const result = await compileSvelte(options, { filename, code }, statsCollection);
+					const contents = result.map
+						? result.code + '//# sourceMappingURL=' + result.map.toUrl()
+						: result.code;
 					return { contents };
 				} catch (e) {
 					return { errors: [toESBuildError(e, options)] };
@@ -51,9 +70,61 @@ export function esbuildSveltePlugin(options) {
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {RolldownPlugin}
+ */
+export function rolldownOptimizeSveltePlugin(options) {
+	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+	let statsCollection;
+	/** @type {RolldownPlugin} */
+	const plugin = {
+		name: 'vite-plugin-svelte:rolldown-optimize-svelte',
+		// @ts-expect-error not typed in rolldown yet
+		options(opts) {
+			if (
+				opts.plugins?.some((/** @type {{ name: string; }} */ p) =>
+					p.name.startsWith('vite:dep-scan')
+				)
+			) {
+				delete plugin.transform;
+				delete plugin.buildStart;
+				delete plugin.buildEnd;
+			}
+		},
+		transform: {
+			filter: {
+				// TODO: remove excludes once above options hook works
+				id: { include: [/^[^?#]+\.svelte(?:[?#]|$)/], exclude: [/^virtual-module:/] },
+				code: { exclude: [/(?:import|export)[^"\n]+"virtual-module:/] }
+			},
+			/**
+			 * @param {string} code
+			 * @param {string} filename
+			 */
+			async handler(code, filename) {
+				try {
+					return await compileSvelte(options, { filename, code }, statsCollection);
+				} catch (e) {
+					throw toRollupError(e, options);
+				}
+			}
+		},
+		buildStart() {
+			statsCollection = options.stats?.startCollection('prebundle library components', {
+				logResult: (c) => c.stats.length > 1
+			});
+		},
+		buildEnd() {
+			statsCollection?.finish();
+		}
+	};
+	return plugin;
+}
+
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {{ filename: string, code: string }} input
  * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
- * @returns {Promise<string>}
+ * @returns {Promise<import('../types/compile.d.ts').Code>}
  */
 async function compileSvelte(options, { filename, code }, statsCollection) {
 	let css = options.compilerOptions.css;
@@ -114,9 +185,10 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 	if (endStat) {
 		endStat();
 	}
-	return compiled.js.map
-		? compiled.js.code + '//# sourceMappingURL=' + compiled.js.map.toUrl()
-		: compiled.js.code;
+	return {
+		...compiled.js,
+		moduleType: 'js'
+	};
 }
 
 /**
@@ -142,7 +214,10 @@ export function esbuildSvelteModulePlugin(options) {
 			build.onLoad({ filter }, async ({ path: filename }) => {
 				const code = readFileSync(filename, 'utf8');
 				try {
-					const contents = await compileSvelteModule(options, { filename, code }, statsCollection);
+					const result = await compileSvelteModule(options, { filename, code }, statsCollection);
+					const contents = result.map
+						? result.code + '//# sourceMappingURL=' + result.map.toUrl()
+						: result.code;
 					return { contents };
 				} catch (e) {
 					return { errors: [toESBuildError(e, options)] };
@@ -157,9 +232,61 @@ export function esbuildSvelteModulePlugin(options) {
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {RolldownPlugin}
+ */
+export function rolldownOptimizeSvelteModulePlugin(options) {
+	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+	let statsCollection;
+	/** @type {RolldownPlugin} */
+	const plugin = {
+		name: 'vite-plugin-svelte:rolldown-optimize-svelte-module',
+		// @ts-expect-error not typed in rolldown yet
+		options(opts) {
+			if (
+				opts.plugins?.some((/** @type {{ name: string; }} */ p) =>
+					p.name.startsWith('vite:dep-scan')
+				)
+			) {
+				delete plugin.transform;
+				delete plugin.buildStart;
+				delete plugin.buildEnd;
+			}
+		},
+		transform: {
+			filter: {
+				// TODO: remove excludes once above options hook works
+				id: { include: [/^[^?#]+\.svelte\.js(?:[?#]|$)/], exclude: [/^virtual-module:/] },
+				code: { exclude: [/(?:import|export)[^"\n]+"virtual-module:/] }
+			},
+			/**
+			 * @param {string} code
+			 * @param {string} filename
+			 */
+			async handler(code, filename) {
+				try {
+					return await compileSvelteModule(options, { filename, code }, statsCollection);
+				} catch (e) {
+					throw toRollupError(e, options);
+				}
+			}
+		},
+		buildStart() {
+			statsCollection = options.stats?.startCollection('prebundle library components', {
+				logResult: (c) => c.stats.length > 1
+			});
+		},
+		buildEnd() {
+			statsCollection?.finish();
+		}
+	};
+	return plugin;
+}
+
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {{ filename: string; code: string }} input
  * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
- * @returns {Promise<string>}
+ * @returns {Promise<import('../types/compile.d.ts').Code>}
  */
 async function compileSvelteModule(options, { filename, code }, statsCollection) {
 	const endStat = statsCollection?.start(filename);
@@ -171,7 +298,8 @@ async function compileSvelteModule(options, { filename, code }, statsCollection)
 	if (endStat) {
 		endStat();
 	}
-	return compiled.js.map
-		? compiled.js.code + '//# sourceMappingURL=' + compiled.js.map.toUrl()
-		: compiled.js.code;
+	return {
+		...compiled.js,
+		moduleType: 'js'
+	};
 }
