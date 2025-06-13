@@ -21,12 +21,10 @@ import {
 
 import path from 'node:path';
 import {
-	esbuildSvelteModulePlugin,
-	esbuildSveltePlugin,
-	facadeOptimizeSvelteModulePluginName,
-	facadeOptimizeSveltePluginName,
-	rolldownOptimizeSvelteModulePlugin,
-	rolldownOptimizeSveltePlugin
+	optimizeSvelteModulePluginName,
+	optimizeSveltePluginName,
+	patchESBuildOptimizerPlugin,
+	patchRolldownOptimizerPlugin
 } from './optimizer-plugins.js';
 import { addExtraPreprocessors } from './preprocess.js';
 import deepmerge from 'deepmerge';
@@ -393,27 +391,34 @@ export async function buildExtraViteConfig(options, config) {
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
 			extensions: options.extensions ?? ['.svelte']
 		};
-		// Add esbuild plugin to prebundle Svelte files.
+		// Add optimizer plugins to prebundle Svelte files.
 		// Currently a placeholder as more information is needed after Vite config is resolved,
-		// the real Svelte plugin is added in `patchResolvedViteConfig()`
+		// the added plugins are patched in `patchResolvedViteConfig()`
 		if (rolldownVersion) {
-			//@ts-expect-error rolldown-vite types not finished
+			/**
+			 *
+			 * @param {string} name
+			 * @returns {import('vite').Rollup.Plugin}
+			 */
+			const placeholderRolldownOptimizerPlugin = (name) => ({
+				name,
+				options() {},
+				buildStart() {},
+				buildEnd() {},
+				transform: { filter: { id: /^$/ }, handler() {} }
+			});
+			//@ts-expect-error rolldown types not finished
 			extraViteConfig.optimizeDeps.rollupOptions = {
 				plugins: [
-					{ name: facadeOptimizeSveltePluginName, transform() {}, buildStart() {}, buildEnd() {} },
-					{
-						name: facadeOptimizeSvelteModulePluginName,
-						transform() {},
-						buildStart() {},
-						buildEnd() {}
-					}
+					placeholderRolldownOptimizerPlugin(optimizeSveltePluginName),
+					placeholderRolldownOptimizerPlugin(optimizeSvelteModulePluginName)
 				]
 			};
 		} else {
 			extraViteConfig.optimizeDeps.esbuildOptions = {
 				plugins: [
-					{ name: facadeOptimizeSveltePluginName, setup: () => {} },
-					{ name: facadeOptimizeSvelteModulePluginName, setup: () => {} }
+					{ name: optimizeSveltePluginName, setup: () => {} },
+					{ name: optimizeSvelteModulePluginName, setup: () => {} }
 				]
 			};
 		}
@@ -615,35 +620,21 @@ export function patchResolvedViteConfig(viteConfig, options) {
 		}
 	}
 	if (rolldownVersion) {
-		// @ts-expect-error not typed
-		const plugins = viteConfig.optimizeDeps.rollupOptions.plugins;
-		if (plugins) {
-			const facadeSveltePlugin = plugins.find(
-				(/** @type {{ name: any; }} */ p) => p.name === facadeOptimizeSveltePluginName
-			);
-			if (facadeSveltePlugin) {
-				Object.assign(facadeSveltePlugin, rolldownOptimizeSveltePlugin(options));
-			}
-			const facadeSvelteModulePlugin = plugins.find(
-				(/** @type {{ name: string; }} */ p) => p.name === facadeOptimizeSvelteModulePluginName
-			);
-			if (facadeSvelteModulePlugin) {
-				Object.assign(facadeSvelteModulePlugin, rolldownOptimizeSvelteModulePlugin(options));
-			}
+		const plugins =
+			// @ts-expect-error not typed
+			viteConfig.optimizeDeps.rollupOptions?.plugins?.filter((p) =>
+				[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
+			) ?? [];
+		for (const plugin of plugins) {
+			patchRolldownOptimizerPlugin(plugin, options);
 		}
 	} else {
-		const plugins = viteConfig.optimizeDeps.esbuildOptions?.plugins;
-		if (plugins) {
-			const facadeSveltePlugin = plugins.find((p) => p.name === facadeOptimizeSveltePluginName);
-			if (facadeSveltePlugin) {
-				Object.assign(facadeSveltePlugin, esbuildSveltePlugin(options));
-			}
-			const facadeSvelteModulePlugin = plugins.find(
-				(p) => p.name === facadeOptimizeSvelteModulePluginName
-			);
-			if (facadeSvelteModulePlugin) {
-				Object.assign(facadeSvelteModulePlugin, esbuildSvelteModulePlugin(options));
-			}
+		const plugins =
+			viteConfig.optimizeDeps.esbuildOptions?.plugins?.filter((p) =>
+				[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
+			) ?? [];
+		for (const plugin of plugins) {
+			patchESBuildOptimizerPlugin(plugin, options);
 		}
 	}
 }

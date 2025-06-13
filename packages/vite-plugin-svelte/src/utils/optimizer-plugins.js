@@ -9,139 +9,106 @@ import { normalize } from './id.js';
  * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
  * @typedef {NonNullable<EsbuildOptions['plugins']>[number]} EsbuildPlugin
  */
-/*
- * @typedef {NonNullable<import('vite').DepOptimizationOptions['rollupOptions']>} RollupOptions
- * @typedef {NonNullable<RollupOptions['plugins']>[number]} RolldownPlugin
- */
-// TODO type correctly when the above works
 /**
- * @typedef {{
- *   name: string,
- *   options: ()=>void,
- *   transform?:{
- *    filter?: {id?:{include?:Array<RegExp>,exclude?:Array<RegExp>}}
- *    handler: (code: string,id: string)=>Promise<any>
- *   },
- *   buildStart?:{handler: ()=>void,}
- *   buildEnd?:{handler: ()=>void,}
- * }} RolldownPlugin
+ * @typedef {NonNullable<import('vite').Rollup.Plugin>} RollupPlugin
  */
-export const facadeOptimizeSveltePluginName = 'vite-plugin-svelte:facade';
-export const facadeOptimizeSvelteModulePluginName = 'vite-plugin-svelte-module:facade';
+
+export const optimizeSveltePluginName = 'vite-plugin-svelte:optimize';
+export const optimizeSvelteModulePluginName = 'vite-plugin-svelte-module:optimize';
 
 /**
+ * @param {EsbuildPlugin} plugin
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {EsbuildPlugin}
  */
-export function esbuildSveltePlugin(options) {
-	return {
-		name: 'vite-plugin-svelte:optimize-svelte',
-		setup(build) {
-			// Skip in scanning phase as Vite already handles scanning Svelte files.
-			// Otherwise this would heavily slow down the scanning phase.
-			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
+export function patchESBuildOptimizerPlugin(plugin, options) {
+	const components = plugin.name === optimizeSveltePluginName;
+	const compileFn = components ? compileSvelte : compileSvelteModule;
+	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
+	const filter = components ? /\.svelte(?:\?.*)?$/ : /\.svelte\.[jt]s(?:\?.*)?$/;
+	plugin.setup = (build) => {
+		if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
 
-			const filter = /\.svelte(?:\?.*)?$/;
-			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
-			let statsCollection;
-			build.onStart(() => {
-				statsCollection = options.stats?.startCollection('prebundle library components', {
-					logResult: (c) => c.stats.length > 1
-				});
+		/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+		let statsCollection;
+		build.onStart(() => {
+			statsCollection = options.stats?.startCollection(statsName, {
+				logResult: (c) => c.stats.length > 1
 			});
-			build.onLoad({ filter }, async ({ path: filename }) => {
-				const code = readFileSync(filename, 'utf8');
-				try {
-					const result = await compileSvelte(options, { filename, code }, statsCollection);
-					const contents = result.map
-						? result.code + '//# sourceMappingURL=' + result.map.toUrl()
-						: result.code;
-					return { contents };
-				} catch (e) {
-					return { errors: [toESBuildError(e, options)] };
-				}
-			});
-			build.onEnd(() => {
-				statsCollection?.finish();
-			});
-		}
+		});
+		build.onLoad({ filter }, async ({ path: filename }) => {
+			const code = readFileSync(filename, 'utf8');
+			try {
+				const result = await compileFn(options, { filename, code }, statsCollection);
+				const contents = result.map
+					? result.code + '//# sourceMappingURL=' + result.map.toUrl()
+					: result.code;
+				return { contents };
+			} catch (e) {
+				return { errors: [toESBuildError(e, options)] };
+			}
+		});
+		build.onEnd(() => {
+			statsCollection?.finish();
+		});
 	};
 }
 
 /**
+ * @param {RollupPlugin} plugin
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @param {boolean} components
- * @returns {RolldownPlugin}
  */
-function createOptimizerPlugin(options, components = true) {
+export function patchRolldownOptimizerPlugin(plugin, options) {
+	const components = plugin.name === optimizeSveltePluginName;
 	const compileFn = components ? compileSvelte : compileSvelteModule;
-	const name = components
-		? 'vite-plugin-svelte:prebundle-components'
-		: 'vite-plugin-svelte:prebundle-modules';
 	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
 	const includeRe = components ? /^[^?#]+\.svelte(?:[?#]|$)/ : /^[^?#]+\.svelte\.[jt]s(?:[?#]|$)/;
 	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 	let statsCollection;
-	/** @type boolean */
-	let isScanner;
-	/** @type {RolldownPlugin} */
-	const plugin = {
-		name,
-		// @ts-expect-error not typed in rolldown yet
-		options(opts) {
-			// workaround to not run this plugin in scanner, only define hooks in options if there's no scanner plugins in the pipeline
-			isScanner = opts.plugins?.some(
-				(/** @type {{ name: string; }} */ p) => p.name === 'vite:dep-scan:resolve'
-			);
-		},
-		transform: {
-			filter: {
-				id: {
-					get include() {
-						return isScanner ? [/^$/] : [includeRe];
+
+	plugin.options = (opts) => {
+		// @ts-expect-error plugins is an array here
+		const isScanner = opts.plugins.some(
+			(/** @type {{ name: string; }} */ p) => p.name === 'vite:dep-scan:resolve'
+		);
+		if (isScanner) {
+			delete plugin.buildStart;
+			delete plugin.transform;
+			delete plugin.buildEnd;
+		} else {
+			plugin.transform = {
+				filter: { id: includeRe },
+				/**
+				 * @param {string} code
+				 * @param {string} filename
+				 */
+				async handler(code, filename) {
+					try {
+						return await compileFn(options, { filename, code }, statsCollection);
+					} catch (e) {
+						throw toRollupError(e, options);
 					}
 				}
-			},
-			/**
-			 * @param {string} code
-			 * @param {string} filename
-			 */
-			async handler(code, filename) {
-				try {
-					return await compileFn(options, { filename, code }, statsCollection);
-				} catch (e) {
-					throw toRollupError(e, options);
+			};
+			plugin.buildStart = {
+				handler: () => {
+					if (isScanner) {
+						return;
+					}
+					statsCollection = options.stats?.startCollection(statsName, {
+						logResult: (c) => c.stats.length > 1
+					});
 				}
-			}
-		},
-		buildStart: {
-			handler: () => {
-				if (isScanner) {
-					return;
+			};
+			plugin.buildEnd = {
+				handler: () => {
+					if (isScanner) {
+						return;
+					}
+					statsCollection?.finish();
 				}
-				statsCollection = options.stats?.startCollection(statsName, {
-					logResult: (c) => c.stats.length > 1
-				});
-			}
-		},
-		buildEnd: {
-			handler: () => {
-				if (isScanner) {
-					return;
-				}
-				statsCollection?.finish();
-			}
+			};
 		}
 	};
-	return plugin;
-}
-
-/**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {RolldownPlugin}
- */
-export function rolldownOptimizeSveltePlugin(options) {
-	return createOptimizerPlugin(options, true);
 }
 
 /**
@@ -213,53 +180,6 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		...compiled.js,
 		moduleType: 'js'
 	};
-}
-
-/**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {EsbuildPlugin}
- */
-export function esbuildSvelteModulePlugin(options) {
-	return {
-		name: 'vite-plugin-svelte-module:optimize-svelte',
-		setup(build) {
-			// Skip in scanning phase as Vite already handles scanning Svelte files.
-			// Otherwise this would heavily slow down the scanning phase.
-			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
-
-			const filter = /\.svelte\.[jt]s(?:\?.*)?$/;
-			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
-			let statsCollection;
-			build.onStart(() => {
-				statsCollection = options.stats?.startCollection('prebundle library modules', {
-					logResult: (c) => c.stats.length > 1
-				});
-			});
-			build.onLoad({ filter }, async ({ path: filename }) => {
-				const code = readFileSync(filename, 'utf8');
-				try {
-					const result = await compileSvelteModule(options, { filename, code }, statsCollection);
-					const contents = result.map
-						? result.code + '//# sourceMappingURL=' + result.map.toUrl()
-						: result.code;
-					return { contents };
-				} catch (e) {
-					return { errors: [toESBuildError(e, options)] };
-				}
-			});
-			build.onEnd(() => {
-				statsCollection?.finish();
-			});
-		}
-	};
-}
-
-/**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {RolldownPlugin}
- */
-export function rolldownOptimizeSvelteModulePlugin(options) {
-	return createOptimizerPlugin(options, false);
 }
 
 /**
