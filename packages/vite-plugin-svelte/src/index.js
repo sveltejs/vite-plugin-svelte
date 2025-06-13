@@ -39,10 +39,9 @@ export function svelte(inlineOptions) {
 		log.setLevel('debug');
 	}
 	if (rolldownVersion) {
-		log.warn.once('!!! Support for rolldown-vite in vite-plugin-svelte is experimental !!!', {
-			rolldownVersion,
-			viteVersion
-		});
+		log.warn.once(
+			`!!! Support for rolldown-vite in vite-plugin-svelte is experimental (rolldown: ${rolldownVersion}, vite: ${viteVersion}) !!!`
+		);
 	}
 
 	validateInlineOptions(inlineOptions);
