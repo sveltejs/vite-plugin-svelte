@@ -26,6 +26,9 @@ import { VitePluginSvelteCache } from './utils/vite-plugin-svelte-cache.js';
 import { loadRaw } from './utils/load-raw.js';
 import * as svelteCompiler from 'svelte/compiler';
 import { SVELTE_VIRTUAL_STYLE_ID_REGEX } from './utils/constants.js';
+import * as vite from 'vite';
+// @ts-expect-error rolldownVersion
+const { version: viteVersion, rolldownVersion } = vite;
 
 /**
  * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
@@ -35,6 +38,12 @@ export function svelte(inlineOptions) {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
 	}
+	if (rolldownVersion) {
+		log.warn.once(
+			`!!! Support for rolldown-vite in vite-plugin-svelte is experimental (rolldown: ${rolldownVersion}, vite: ${viteVersion}) !!!`
+		);
+	}
+
 	validateInlineOptions(inlineOptions);
 	const cache = new VitePluginSvelteCache();
 	// updated in configResolved hook
@@ -140,6 +149,8 @@ export function svelte(inlineOptions) {
 									css.meta.vite ??= {};
 									css.meta.vite.cssScopeTo = [svelteRequest.filename, 'default'];
 								}
+								css.moduleType = 'css';
+
 								return css;
 							}
 						}
@@ -194,6 +205,7 @@ export function svelte(inlineOptions) {
 				}
 				return {
 					...compileData.compiled.js,
+					moduleType: 'js',
 					meta: {
 						vite: {
 							lang: compileData.lang

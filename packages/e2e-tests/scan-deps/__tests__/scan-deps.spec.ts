@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest';
 describe('vite import scan', () => {
 	it('should not fail to discover dependencies exported from script module', async () => {
 		// vite logs an error if scan fails but continues, so validate no errors logged
-		expect(
-			e2eServer.logs.server.err.length,
-			`unexpected errors:\n${e2eServer.logs.server.err.join('\n')}`
-		).toBe(0);
+		const errorLogs = e2eServer.logs.server.err.filter(
+			(line) => !line.includes('Support for rolldown-vite in vite-plugin-svelte is experimental')
+		);
+		expect(errorLogs.length, `unexpected errors:\n${errorLogs.join('\n')}`).toBe(0);
 	});
 	it('should work with exports from module context', async () => {
 		expect(await getText('#svelte5')).toBe('svelte5');

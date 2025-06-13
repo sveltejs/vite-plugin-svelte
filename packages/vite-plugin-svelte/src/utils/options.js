@@ -1,11 +1,14 @@
 import process from 'node:process';
-import {
+import * as vite from 'vite';
+const {
 	defaultClientMainFields,
 	defaultServerMainFields,
 	defaultClientConditions,
 	defaultServerConditions,
-	normalizePath
-} from 'vite';
+	normalizePath,
+	//@ts-expect-error rolldownVersion not in type
+	rolldownVersion
+} = vite;
 import { isDebugNamespaceEnabled, log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
 import {
@@ -18,11 +21,11 @@ import {
 
 import path from 'node:path';
 import {
-	esbuildSvelteModulePlugin,
-	esbuildSveltePlugin,
-	facadeEsbuildSvelteModulePluginName,
-	facadeEsbuildSveltePluginName
-} from './esbuild.js';
+	optimizeSvelteModulePluginName,
+	optimizeSveltePluginName,
+	patchESBuildOptimizerPlugin,
+	patchRolldownOptimizerPlugin
+} from './optimizer-plugins.js';
 import { addExtraPreprocessors } from './preprocess.js';
 import deepmerge from 'deepmerge';
 import {
@@ -386,17 +389,39 @@ export async function buildExtraViteConfig(options, config) {
 		extraViteConfig.optimizeDeps = {
 			...extraViteConfig.optimizeDeps,
 			// Experimental Vite API to allow these extensions to be scanned and prebundled
-			extensions: options.extensions ?? ['.svelte'],
-			// Add esbuild plugin to prebundle Svelte files.
-			// Currently a placeholder as more information is needed after Vite config is resolved,
-			// the real Svelte plugin is added in `patchResolvedViteConfig()`
-			esbuildOptions: {
-				plugins: [
-					{ name: facadeEsbuildSveltePluginName, setup: () => {} },
-					{ name: facadeEsbuildSvelteModulePluginName, setup: () => {} }
-				]
-			}
+			extensions: options.extensions ?? ['.svelte']
 		};
+		// Add optimizer plugins to prebundle Svelte files.
+		// Currently a placeholder as more information is needed after Vite config is resolved,
+		// the added plugins are patched in `patchResolvedViteConfig()`
+		if (rolldownVersion) {
+			/**
+			 *
+			 * @param {string} name
+			 * @returns {import('vite').Rollup.Plugin}
+			 */
+			const placeholderRolldownOptimizerPlugin = (name) => ({
+				name,
+				options() {},
+				buildStart() {},
+				buildEnd() {},
+				transform: { filter: { id: /^$/ }, handler() {} }
+			});
+			//@ts-expect-error rolldown types not finished
+			extraViteConfig.optimizeDeps.rollupOptions = {
+				plugins: [
+					placeholderRolldownOptimizerPlugin(optimizeSveltePluginName),
+					placeholderRolldownOptimizerPlugin(optimizeSvelteModulePluginName)
+				]
+			};
+		} else {
+			extraViteConfig.optimizeDeps.esbuildOptions = {
+				plugins: [
+					{ name: optimizeSveltePluginName, setup: () => {} },
+					{ name: optimizeSvelteModulePluginName, setup: () => {} }
+				]
+			};
+		}
 	}
 
 	// enable hmrPartialAccept if not explicitly disabled
@@ -594,19 +619,23 @@ export function patchResolvedViteConfig(viteConfig, options) {
 			}
 		}
 	}
-
-	// replace facade esbuild plugin with a real one
-	const facadeEsbuildSveltePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
-		(plugin) => plugin.name === facadeEsbuildSveltePluginName
-	);
-	if (facadeEsbuildSveltePlugin) {
-		Object.assign(facadeEsbuildSveltePlugin, esbuildSveltePlugin(options));
-	}
-	const facadeEsbuildSvelteModulePlugin = viteConfig.optimizeDeps.esbuildOptions?.plugins?.find(
-		(plugin) => plugin.name === facadeEsbuildSvelteModulePluginName
-	);
-	if (facadeEsbuildSvelteModulePlugin) {
-		Object.assign(facadeEsbuildSvelteModulePlugin, esbuildSvelteModulePlugin(options));
+	if (rolldownVersion) {
+		const plugins =
+			// @ts-expect-error not typed
+			viteConfig.optimizeDeps.rollupOptions?.plugins?.filter((p) =>
+				[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
+			) ?? [];
+		for (const plugin of plugins) {
+			patchRolldownOptimizerPlugin(plugin, options);
+		}
+	} else {
+		const plugins =
+			viteConfig.optimizeDeps.esbuildOptions?.plugins?.filter((p) =>
+				[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
+			) ?? [];
+		for (const plugin of plugins) {
+			patchESBuildOptimizerPlugin(plugin, options);
+		}
 	}
 }
 
