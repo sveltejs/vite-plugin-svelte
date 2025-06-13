@@ -1,5 +1,37 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.0.0-next.0
+### Major Changes
+
+
+- drop support for node18 and update exports map to use default export. cjs is supported via require esm in node 20.19+ ([#1129](https://github.com/sveltejs/vite-plugin-svelte/pull/1129))
+
+
+- Using the typescript preprocessor now requires a tsconfig.json with verbatimModuleSyntax enabled, eg @tsconfig/svelte ([#1135](https://github.com/sveltejs/vite-plugin-svelte/pull/1135))
+
+
+- bump vite peer dependency to ^6.3.0 || ^7.0.0 ([#1130](https://github.com/sveltejs/vite-plugin-svelte/pull/1130))
+
+
+- define filters using object hook syntax and optimize the filter for resolveId ([#1132](https://github.com/sveltejs/vite-plugin-svelte/pull/1132))
+  
+  > [!NOTE]
+  > include logic has changed to files matching `svelteConfig.include` **OR** `svelteConfig.extensions`. Previously only files matching both were loaded and transformed.
+
+### Minor Changes
+
+
+- Add experimental support for rolldown-vite ([#1135](https://github.com/sveltejs/vite-plugin-svelte/pull/1135))
+
+
+- replace esbuild optimizer with rolldown optimizer if rolldown-vite is used ([#1135](https://github.com/sveltejs/vite-plugin-svelte/pull/1135))
+
+
+### Patch Changes
+
+- Updated dependencies [[`63d1fc6`](https://github.com/sveltejs/vite-plugin-svelte/commit/63d1fc6809c5f9e1e5ed3116d417c82d8781079d), [`59e082e`](https://github.com/sveltejs/vite-plugin-svelte/commit/59e082e50277aeb71a7ce8373128d73f4ceeb5fd)]:
+  - @sveltejs/vite-plugin-svelte-inspector@5.0.0-next.0
+
 ## 5.1.0
 ### Minor Changes
 

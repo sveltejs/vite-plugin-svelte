@@ -1,5 +1,20 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 5.0.0-next.0
+### Major Changes
+
+
+- drop support for node18 and update exports map to use default export. cjs is supported via require esm in node 20.19+ ([#1129](https://github.com/sveltejs/vite-plugin-svelte/pull/1129))
+
+
+- bump vite peer dependency to ^6.3.0 || ^7.0.0 ([#1130](https://github.com/sveltejs/vite-plugin-svelte/pull/1130))
+
+
+### Patch Changes
+
+- Updated dependencies [[`63d1fc6`](https://github.com/sveltejs/vite-plugin-svelte/commit/63d1fc6809c5f9e1e5ed3116d417c82d8781079d), [`7cd6064`](https://github.com/sveltejs/vite-plugin-svelte/commit/7cd606497336b08882eb8538dca178071eb88847), [`7cd6064`](https://github.com/sveltejs/vite-plugin-svelte/commit/7cd606497336b08882eb8538dca178071eb88847), [`7cd6064`](https://github.com/sveltejs/vite-plugin-svelte/commit/7cd606497336b08882eb8538dca178071eb88847), [`59e082e`](https://github.com/sveltejs/vite-plugin-svelte/commit/59e082e50277aeb71a7ce8373128d73f4ceeb5fd), [`7af3cd2`](https://github.com/sveltejs/vite-plugin-svelte/commit/7af3cd281a3d6e22de2f5f7e60822455b0d56c29)]:
+  - @sveltejs/vite-plugin-svelte@6.0.0-next.0
+
 ## 4.0.1
 ### Patch Changes
 
