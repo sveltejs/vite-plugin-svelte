@@ -89,23 +89,13 @@ export function patchRolldownOptimizerPlugin(plugin, options) {
 					}
 				}
 			};
-			plugin.buildStart = {
-				handler: () => {
-					if (isScanner) {
-						return;
-					}
-					statsCollection = options.stats?.startCollection(statsName, {
-						logResult: (c) => c.stats.length > 1
-					});
-				}
+			plugin.buildStart = () => {
+				statsCollection = options.stats?.startCollection(statsName, {
+					logResult: (c) => c.stats.length > 1
+				});
 			};
-			plugin.buildEnd = {
-				handler: () => {
-					if (isScanner) {
-						return;
-					}
-					statsCollection?.finish();
-				}
+			plugin.buildEnd = () => {
+				statsCollection?.finish();
 			};
 		}
 	};
