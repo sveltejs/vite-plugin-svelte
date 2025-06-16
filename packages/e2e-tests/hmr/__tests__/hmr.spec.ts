@@ -164,10 +164,10 @@ if (!isBuild) {
 		});
 
 		test('should work with emitCss: false in svelte config', async () => {
-			addFile('svelte.config.cjs', 'module.exports={vitePlugin:{emitCss:false}}');
+			addFile('svelte.config.js', 'export default {vitePlugin:{emitCss:false}}');
 			await waitForServerRestartAndPageReload();
 			expect(await getColor('#hmr-test-1 .label')).toBe('red');
-			removeFile('svelte.config.cjs');
+			removeFile('svelte.config.js');
 		});
 
 		test('should detect changes in svelte config and restart', async () => {
@@ -182,8 +182,8 @@ if (!isBuild) {
 				}
 			};
 			await addFile(
-				'svelte.config.cjs',
-				`module.exports = {
+				'svelte.config.js',
+				`export default {
 			  preprocess:[{markup:${injectPreprocessor.toString()}}]};`
 			);
 			await waitForServerRestartAndPageReload();
@@ -196,7 +196,7 @@ if (!isBuild) {
 			await updateHmrTest((content) => content.replace('color: red', 'color: green'));
 			expect(await getColor('#hmr-test-1 .label')).toBe('green');
 			expect(await getText('#hmr-test-1 .counter')).toBe('1');
-			await editFile('svelte.config.cjs', (content) =>
+			await editFile('svelte.config.js', (content) =>
 				content
 					.replace('preprocess-inject', 'preprocess-inject-2')
 					.replace('Injected', 'Injected 2')
@@ -212,7 +212,7 @@ if (!isBuild) {
 			await updateHmrTest((content) => content.replace('color: green', 'color: red'));
 			expect(await getColor('#hmr-test-1 .label')).toBe('red');
 			expect(await getText('#hmr-test-1 .counter')).toBe('1');
-			await removeFile('svelte.config.cjs');
+			await removeFile('svelte.config.js');
 			await waitForServerRestartAndPageReload();
 			expect(await getEl('#preprocess-inject-2')).toBe(null);
 			expect(await getEl('#preprocess-inject')).toBe(null);

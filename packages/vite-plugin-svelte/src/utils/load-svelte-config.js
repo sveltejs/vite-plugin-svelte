@@ -1,21 +1,12 @@
-import { createRequire } from 'node:module';
 import path from 'node:path';
 import process from 'node:process';
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { log } from './log.js';
 
-// used to require cjs config in esm.
-// NOTE dynamic import() cjs technically works, but timestamp query cache bust
-// have no effect, likely because it has another internal cache?
-/** @type {NodeRequire}*/
-let esmRequire;
-
-export const knownSvelteConfigNames = [
-	'svelte.config.js',
-	'svelte.config.cjs',
-	'svelte.config.mjs'
-];
+export const knownSvelteConfigNames = ['js', 'ts', 'mjs', 'mts'].map(
+	(ext) => `svelte.config.${ext}`
+);
 
 /**
  * @param {string} filePath
@@ -36,56 +27,23 @@ export async function loadSvelteConfig(viteConfig, inlineOptions) {
 	}
 	const configFile = findConfigToLoad(viteConfig, inlineOptions);
 	if (configFile) {
-		let err;
-		// try to use dynamic import for svelte.config.js first
-		if (configFile.endsWith('.js') || configFile.endsWith('.mjs')) {
-			try {
-				const result = await dynamicImportDefault(
-					pathToFileURL(configFile).href,
-					fs.statSync(configFile).mtimeMs
-				);
-				if (result != null) {
-					return {
-						...result,
-						configFile
-					};
-				} else {
-					throw new Error(`invalid export in ${configFile}`);
-				}
-			} catch (e) {
-				log.error(`failed to import config ${configFile}`, e);
-				err = e;
+		try {
+			const result = await dynamicImportDefault(
+				pathToFileURL(configFile).href,
+				fs.statSync(configFile).mtimeMs
+			);
+			if (result != null) {
+				return {
+					...result,
+					configFile
+				};
+			} else {
+				throw new Error(`invalid export in ${configFile}`);
 			}
+		} catch (e) {
+			log.error(`failed to import config ${configFile}`, e);
+			throw e;
 		}
-		// cjs or error with dynamic import
-		if (!configFile.endsWith('.mjs')) {
-			try {
-				// identify which require function to use (esm and cjs mode)
-				const _require = import.meta.url
-					? (esmRequire ?? (esmRequire = createRequire(import.meta.url)))
-					: // eslint-disable-next-line no-undef
-						require;
-
-				// avoid loading cached version on reload
-				delete _require.cache[_require.resolve(configFile)];
-				const result = _require(configFile);
-				if (result != null) {
-					return {
-						...result,
-						configFile
-					};
-				} else {
-					throw new Error(`invalid export in ${configFile}`);
-				}
-			} catch (e) {
-				log.error(`failed to require config ${configFile}`, e);
-				if (!err) {
-					err = e;
-				}
-			}
-		}
-		// failed to load existing config file
-		throw err;
 	}
 }
 
