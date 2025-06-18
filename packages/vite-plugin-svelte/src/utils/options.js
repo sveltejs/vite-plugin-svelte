@@ -198,10 +198,9 @@ function mergeConfigs(...configs) {
  *
  * @param {import('../types/options.d.ts').PreResolvedOptions} preResolveOptions
  * @param {import('vite').ResolvedConfig} viteConfig
- * @param {import('./vite-plugin-svelte-cache.js').VitePluginSvelteCache} cache
  * @returns {import('../types/options.d.ts').ResolvedOptions}
  */
-export function resolveOptions(preResolveOptions, viteConfig, cache) {
+export function resolveOptions(preResolveOptions, viteConfig) {
 	const css = preResolveOptions.emitCss ? 'external' : 'injected';
 	/** @type {Partial<import('../public.d.ts').Options>} */
 	const defaultOptions = {
@@ -230,10 +229,7 @@ export function resolveOptions(preResolveOptions, viteConfig, cache) {
 	addExtraPreprocessors(merged, viteConfig);
 	enforceOptionsForHmr(merged, viteConfig);
 	enforceOptionsForProduction(merged);
-	// mergeConfigs would mangle functions on the stats class, so do this afterwards
-	if (log.debug.enabled && isDebugNamespaceEnabled('stats')) {
-		merged.stats = new VitePluginSvelteStats(cache);
-	}
+
 	return merged;
 }
 
