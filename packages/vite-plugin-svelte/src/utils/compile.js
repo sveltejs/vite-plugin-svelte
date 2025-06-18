@@ -181,6 +181,7 @@ export function createCompileSvelte() {
 		return {
 			filename,
 			normalizedFilename,
+			cssId,
 			lang,
 			compiled,
 			ssr,

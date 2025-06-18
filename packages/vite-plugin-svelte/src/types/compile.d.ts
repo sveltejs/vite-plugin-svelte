@@ -23,6 +23,7 @@ export interface Code {
 export interface CompileData {
 	filename: string;
 	normalizedFilename: string;
+	cssId: string;
 	lang: string;
 	compiled: CompileResult;
 	ssr: boolean | undefined;

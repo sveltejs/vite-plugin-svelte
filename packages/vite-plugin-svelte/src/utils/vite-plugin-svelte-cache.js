@@ -63,7 +63,7 @@ export class VitePluginSvelteCache {
 	 * @param {import('../types/compile.d.ts').CompileData} compileData
 	 */
 	#updateCSS(compileData) {
-		this.#css.set(compileData.normalizedFilename, compileData.compiled.css);
+		this.#css.set(compileData.cssId, compileData.compiled.css);
 	}
 
 	/**
@@ -132,12 +132,13 @@ export class VitePluginSvelteCache {
 	}
 
 	/**
-	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
+	 * @param {string} cssId
 	 * @returns {import('../types/compile.d.ts').Code | undefined | null}
 	 */
-	getCSS(svelteRequest) {
-		return this.#css.get(svelteRequest.normalizedFilename);
+	getCSS(cssId) {
+		return this.#css.get(cssId);
 	}
+
 
 	/**
 	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
