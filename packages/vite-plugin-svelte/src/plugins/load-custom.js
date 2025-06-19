@@ -2,31 +2,29 @@ import fs from 'node:fs';
 import { toRollupError } from '../utils/error.js';
 import { log } from '../utils/log.js';
 
-
 /**
  * @param {import('../types/plugin-api.d.ts').PluginAPI} api
  * @returns {import('vite').Plugin}
  */
-export function loadCustom({idFilter,idParser, options, compileSvelte}) {
-
+export function loadCustom(api) {
 	/** @type {import('vite').Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:load-custom',
 		configResolved() {
 			//@ts-expect-error load defined below but filter not in type
-			plugin.load.filter = idFilter;
+			plugin.load.filter = api.idFilter;
 		},
 
 		load: {
-			filter: {id:/^$/}, // set in configResolved
+			//filter: is set in configResolved
 			async handler(id) {
 				const config = this.environment.config;
 				const ssr = config.consumer === 'server';
-				const svelteRequest = idParser(id, ssr);
+				const svelteRequest = api.idParser(id, ssr);
 				if (svelteRequest) {
 					const { filename, raw } = svelteRequest;
 					if (raw) {
-						const code = await compileRaw(svelteRequest, compileSvelte, options);
+						const code = await compileRaw(svelteRequest, api.compileSvelte, api.options);
 						// prevent vite from injecting sourcemaps in the results.
 						return {
 							code,
@@ -43,7 +41,7 @@ export function loadCustom({idFilter,idParser, options, compileSvelte}) {
 					}
 				}
 			}
-		},
+		}
 	};
 	return plugin;
 }

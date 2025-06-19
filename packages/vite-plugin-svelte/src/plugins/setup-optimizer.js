@@ -8,7 +8,7 @@ import { safeBase64Hash } from '../utils/hash.js';
 import { normalize } from '../utils/id.js';
 import * as vite from 'vite';
 // @ts-expect-error not typed on vite
-const {rolldownVersion} = vite;
+const { rolldownVersion } = vite;
 
 /**
  * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
@@ -25,14 +25,14 @@ const optimizeSvelteModulePluginName = 'vite-plugin-svelte:optimize-module';
  * @param {import('../types/plugin-api.d.ts').PluginAPI} api
  * @returns {import('vite').Plugin}
  */
-export function setupOptimizer({options}) {
+export function setupOptimizer(api) {
 	/** @type {import('vite').ResolvedConfig} */
 	let viteConfig;
 
-	return  {
+	return {
 		name: 'vite-plugin-svelte:setup-optimizer',
 		apply: 'serve',
-		config(){
+		config() {
 			/** @type {import('vite').UserConfig['optimizeDeps']} */
 			const optimizeDeps = {};
 			// Add optimizer plugins to prebundle Svelte files.
@@ -54,7 +54,7 @@ export function setupOptimizer({options}) {
 					]
 				};
 			}
-			return {optimizeDeps};
+			return { optimizeDeps };
 		},
 		configResolved(c) {
 			viteConfig = c;
@@ -66,29 +66,29 @@ export function setupOptimizer({options}) {
 						[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
 					) ?? [];
 				for (const plugin of plugins) {
-					patchRolldownOptimizerPlugin(plugin, options);
+					patchRolldownOptimizerPlugin(plugin, api.options);
 				}
 			} else {
-				const plugins = optimizeDeps.esbuildOptions?.plugins?.filter((p) =>
-					[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
-				) ?? [];
+				const plugins =
+					optimizeDeps.esbuildOptions?.plugins?.filter((p) =>
+						[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
+					) ?? [];
 				for (const plugin of plugins) {
-					patchESBuildOptimizerPlugin(plugin, options);
+					patchESBuildOptimizerPlugin(plugin, api.options);
 				}
 			}
 		},
 		async buildStart() {
-			if (!options.prebundleSvelteLibraries) return;
-			const changed = await svelteMetadataChanged(viteConfig.cacheDir, options);
+			if (!api.options.prebundleSvelteLibraries) return;
+			const changed = await svelteMetadataChanged(viteConfig.cacheDir, api.options);
 			if (changed) {
 				// Force Vite to optimize again. Although we mutate the config here, it works because
 				// Vite's optimizer runs after `buildStart()`.
 				viteConfig.optimizeDeps.force = true;
 			}
-		},
+		}
 	};
 }
-
 
 /**
  * @param {EsbuildPlugin} plugin
@@ -231,9 +231,9 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 
 	const finalCompileOptions = dynamicCompileOptions
 		? {
-			...compileOptions,
-			...dynamicCompileOptions
-		}
+				...compileOptions,
+				...dynamicCompileOptions
+			}
 		: compileOptions;
 	const endStat = statsCollection?.start(filename);
 	const compiled = svelte.compile(finalCode, finalCompileOptions);
@@ -267,7 +267,6 @@ async function compileSvelteModule(options, { filename, code }, statsCollection)
 		moduleType: 'js'
 	};
 }
-
 
 // List of options that changes the prebundling result
 /** @type {(keyof import('../types/options.d.ts').ResolvedOptions)[]} */
@@ -314,14 +313,14 @@ async function svelteMetadataChanged(cacheDir, options) {
  * @param {string} name
  * @returns {import('vite').Rollup.Plugin}
  */
-function placeholderRolldownOptimizerPlugin(name){
+function placeholderRolldownOptimizerPlugin(name) {
 	return {
 		name,
 		options() {},
 		buildStart() {},
 		buildEnd() {},
 		transform: { filter: { id: /^$/ }, handler() {} }
-	}
+	};
 }
 
 /**
@@ -336,4 +335,3 @@ function generateSvelteMetadata(options) {
 	}
 	return metadata;
 }
-
