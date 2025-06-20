@@ -103,7 +103,7 @@ describe('kit-node', () => {
 			// this is known to fail, skip the test in our own CI but keep it in ecosystem-ci so that rolldown-vite-ecosystem-ci still gets this fail
 			// TODO remove skip once fixed
 			it.skipIf(rolldownVersion && !env.ECOSYSTEM_CI)(
-				'should not include dynamic import from onmount in ssr output',
+				'should not include dynamic import from onMount in ssr output',
 				async () => {
 					const ssrManifest = JSON.parse(
 						readFileContent('.svelte-kit/output/server/.vite/manifest.json')
