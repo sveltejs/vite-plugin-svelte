@@ -1,17 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { dirname } from 'node:path';
-import { findClosestPkgJsonPath } from 'vitefu';
-import { normalizePath } from 'vite';
-
-/**
- * @typedef {{
- * 	name: string;
- * 	version: string;
- * 	svelte?: string;
- * 	path: string;
- * }} PackageInfo
- */
-
 /**
  * @class
  */
@@ -26,8 +12,6 @@ export class VitePluginSvelteCache {
 	#dependants = new Map();
 	/** @type {Map<string, any>} */
 	#errors = new Map();
-	/** @type {PackageInfo[]} */
-	#packageInfos = [];
 
 	/**
 	 * @param {import('../types/compile.d.ts').CompileData} compileData
@@ -63,7 +47,7 @@ export class VitePluginSvelteCache {
 	 * @param {import('../types/compile.d.ts').CompileData} compileData
 	 */
 	#updateCSS(compileData) {
-		this.#css.set(compileData.cssId, compileData.compiled.css);
+		this.#css.set(compileData.normalizedFilename, compileData.compiled.css);
 	}
 
 	/**
@@ -132,13 +116,12 @@ export class VitePluginSvelteCache {
 	}
 
 	/**
-	 * @param {string} cssId
+	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
 	 * @returns {import('../types/compile.d.ts').Code | undefined | null}
 	 */
-	getCSS(cssId) {
-		return this.#css.get(cssId);
+	getCSS(svelteRequest) {
+		return this.#css.get(svelteRequest.normalizedFilename);
 	}
-
 
 	/**
 	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
@@ -150,6 +133,7 @@ export class VitePluginSvelteCache {
 			return this.#js.get(svelteRequest.normalizedFilename);
 		}
 	}
+
 	/**
 	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
 	 * @returns {any}
@@ -166,48 +150,4 @@ export class VitePluginSvelteCache {
 		const dependants = this.#dependants.get(path);
 		return dependants ? [...dependants] : [];
 	}
-
-	/**
-	 * @param {string} file
-	 * @returns {Promise<PackageInfo>}
-	 */
-	async getPackageInfo(file) {
-		let info = this.#packageInfos.find((pi) => file.startsWith(pi.path));
-		if (!info) {
-			info = await findPackageInfo(file);
-			this.#packageInfos.push(info);
-		}
-		return info;
-	}
-}
-
-/**
- * utility to get some info from the closest package.json with a "name" set
- *
- * @param {string} file to find info for
- * @returns {Promise<PackageInfo>}
- */
-async function findPackageInfo(file) {
-	/** @type {PackageInfo} */
-	const info = {
-		name: '$unknown',
-		version: '0.0.0-unknown',
-		path: '$unknown'
-	};
-	let path = await findClosestPkgJsonPath(file, (pkgPath) => {
-		const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
-		if (pkg.name != null) {
-			info.name = pkg.name;
-			if (pkg.version != null) {
-				info.version = pkg.version;
-			}
-			info.svelte = pkg.svelte;
-			return true;
-		}
-		return false;
-	});
-	// return normalized path with appended '/' so .startsWith works for future file checks
-	path = normalizePath(dirname(path ?? file)) + '/';
-	info.path = path;
-	return info;
 }

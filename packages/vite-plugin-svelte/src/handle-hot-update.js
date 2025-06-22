@@ -24,7 +24,7 @@ export async function handleHotUpdate(compileSvelte, ctx, svelteRequest, cache, 
 	const { read, server, modules } = ctx;
 
 	const cachedJS = cache.getJS(svelteRequest);
-	const cachedCss = cache.getCSS(svelteRequest.cssId);
+	const cachedCss = cache.getCSS(svelteRequest);
 
 	const content = await read();
 	/** @type {import('./types/compile.d.ts').CompileData} */

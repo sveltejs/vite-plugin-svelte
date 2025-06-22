@@ -206,6 +206,11 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 */
 		style?: boolean | InlineConfig | ResolvedConfig;
 	}
+	/**
+	 * returns a list of plugins to handle svelte files
+	 * plugins are named `vite-plugin-svelte:<task>`
+	 *
+	 * */
 	export function svelte(inlineOptions?: Partial<Options>): import("vite").Plugin[];
 	export function vitePreprocess(opts?: VitePreprocessOptions): import("svelte/compiler").PreprocessorGroup;
 	export function loadSvelteConfig(viteConfig?: import("vite").UserConfig, inlineOptions?: Partial<Options>): Promise<Partial<SvelteConfig> | undefined>;

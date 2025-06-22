@@ -9,7 +9,7 @@ const {
 	//@ts-expect-error rolldownVersion not in type
 	rolldownVersion
 } = vite;
-import { isDebugNamespaceEnabled, log } from './log.js';
+import { log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
 import {
 	DEFAULT_SVELTE_EXT,
@@ -37,7 +37,6 @@ import {
 } from 'vitefu';
 
 import { isCommonDepWithoutSvelteField } from './dependencies.js';
-import { VitePluginSvelteStats } from './vite-plugin-svelte-stats.js';
 
 const allowedPluginOptions = new Set([
 	'include',

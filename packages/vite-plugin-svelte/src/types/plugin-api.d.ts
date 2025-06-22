@@ -1,17 +1,17 @@
 import type { ResolvedOptions } from './options.d.ts';
-import { perEnvironmentState } from 'vite';
-import { VitePluginSvelteCache } from '../utils/vite-plugin-svelte-cache.js';
-import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
 import type { IdFilter, IdParser } from './id.d.ts';
-import {CompileSvelte} from './compile.d.ts';
+import type { CompileSvelte } from './compile.d.ts';
+import type { Environment } from 'vite';
+// eslint-disable-next-line n/no-missing-import
+import { VitePluginSvelteCache } from '../utils/vite-plugin-svelte-cache.js';
 
-interface EnvironmentState {
-	cache: VitePluginSvelteCache;
-	stats: VitePluginSvelteStats;
+interface EnvContext {
+	environment: Environment;
 }
+
 export interface PluginAPI {
 	options: ResolvedOptions;
-	getEnvironmentState: ReturnType<typeof perEnvironmentState<EnvironmentState>>;
+	getEnvironmentCache: (arg: EnvContext) => VitePluginSvelteCache;
 	idFilter: IdFilter;
 	idParser: IdParser;
 	compileSvelte: CompileSvelte;
