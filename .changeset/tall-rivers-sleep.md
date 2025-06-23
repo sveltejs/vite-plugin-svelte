@@ -2,7 +2,7 @@
 '@sveltejs/vite-plugin-svelte': minor
 ---
 
-add support for loading typescript svelte config files in runtimes that support it
+add support for loading TypeScript Svelte config files in runtimes that support it
 
 > [! NOTE]
 > This change only applies to vite-plugin-svelte.
