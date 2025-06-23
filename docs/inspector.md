@@ -72,7 +72,6 @@ SVELTE_INSPECTOR_OPTIONS=true
 - **Default:** `{ parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' }`
 
   Define keys to select elements with via keyboard. This improves accessibility and helps selecting elements that do not have a hoverable surface area due to tight wrapping.
-
   - `parent`: select closest parent
   - `child`: select first child (or grandchild)
   - `next`: next sibling (or parent if no next sibling exists)
@@ -105,7 +104,6 @@ SVELTE_INSPECTOR_OPTIONS=true
 - **Default:** `'active'`
 
   When to show the toggle button. The toggle button allows you to click on-screen to enable/disable the inspector, rather than using the `toggleKeyCombo`.
-
   - `'always'`: always show the toggle button
   - `'active'`: show the toggle button when the inspector is active
   - `'never'`: never show the toggle button

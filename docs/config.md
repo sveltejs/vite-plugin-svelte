@@ -192,7 +192,6 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 - **Default:** `false`
 
   `vite-plugin-svelte` automatically manages [pre-bundling for Svelte components](./faq.md#what-is-going-on-with-vite-and-pre-bundling-dependencies). To opt-out of this automatic behavior you can use:
-
   - `disableDependencyReinclusion: true` to disable all re-inclusions
   - `disableDependencyReinclusion: ['foo']` to disable re-inclusions only for dependencies of `foo`.
 

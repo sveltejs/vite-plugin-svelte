@@ -12,7 +12,6 @@ However, `svelte-preprocess` does provide extra functionalities not available wi
 - **Default:** `{ script: false, style: true }`
 
   A Svelte preprocessor that supports transforming TypeScript, PostCSS, SCSS, Less, Stylus, and SugarSS. These are transformed when the script or style tags have the respective `lang` attribute.
-
   - TypeScript: `<script lang="ts">`
   - SCSS: `<style lang="scss">`
   - Less: `<style lang="less">`
