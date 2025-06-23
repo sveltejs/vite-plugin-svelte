@@ -1,5 +1,27 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.0.0-next.1
+### Major Changes
+
+
+- remove support for loading commonjs svelte config files ([#1142](https://github.com/sveltejs/vite-plugin-svelte/pull/1142))
+
+
+### Minor Changes
+
+
+- add support for loading TypeScript Svelte config files in runtimes that support it ([#1142](https://github.com/sveltejs/vite-plugin-svelte/pull/1142))
+  
+  > [! NOTE]
+  > This change only applies to vite-plugin-svelte.
+  >
+  > To use `svelte.config.ts` in SvelteKit, with the Svelte VS Code extension or other tools reading the Svelte config file, you have to wait until support is implemented there.
+
+### Patch Changes
+
+
+- log known-issues link when using rolldown-vite ([#1144](https://github.com/sveltejs/vite-plugin-svelte/pull/1144))
+
 ## 6.0.0-next.0
 ### Major Changes
 
