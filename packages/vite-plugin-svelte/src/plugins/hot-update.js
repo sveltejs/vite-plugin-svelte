@@ -75,38 +75,49 @@ export function hotUpdate(api) {
 				transformResultCache.set(id, code);
 			}
 		},
-
-		async hotUpdate(ctx) {
-			const svelteRequest = idParser(ctx.file, false, ctx.timestamp);
-			if (svelteRequest) {
-				const { modules } = ctx;
-				const svelteModules = modules.filter((m) => transformResultCache.has(m.id));
-				if (svelteModules.length === 0) {
-					return; // nothing to do for us, unlikely to happen
-				}
-				const affectedModules = [];
-				const prevResults = svelteModules.map((m) => transformResultCache.get(m.id));
-				for (let i = 0; i < svelteModules.length; i++) {
-					const mod = svelteModules[i];
-					const prev = prevResults[i];
-					await this.environment.transformRequest(mod.url);
-					const next = transformResultCache.get(mod.id);
-					if (!hasCodeChanged(prev, next, mod.id)) {
-						log.debug(
-							`skipping hot update for ${mod.id} because result is unchanged`,
-							undefined,
-							'hmr'
-						);
-						continue;
+		hotUpdate: {
+			order: 'post',
+			async handler(ctx) {
+				const svelteRequest = idParser(ctx.file, false, ctx.timestamp);
+				if (svelteRequest) {
+					const { modules } = ctx;
+					const svelteModules = [];
+					const nonSvelteModules = [];
+					for (const mod of modules) {
+						if (transformResultCache.has(mod.id)) {
+							svelteModules.push(mod);
+						} else {
+							nonSvelteModules.push(mod);
+						}
 					}
-					affectedModules.push(mod);
+
+					if (svelteModules.length === 0) {
+						return; // nothing to do for us
+					}
+					const affectedModules = [];
+					const prevResults = svelteModules.map((m) => transformResultCache.get(m.id));
+					for (let i = 0; i < svelteModules.length; i++) {
+						const mod = svelteModules[i];
+						const prev = prevResults[i];
+						await this.environment.transformRequest(mod.url);
+						const next = transformResultCache.get(mod.id);
+						if (hasCodeChanged(prev, next, mod.id)) {
+							affectedModules.push(mod);
+						} else {
+							log.debug(
+								`skipping hot update for ${mod.id} because result is unchanged`,
+								undefined,
+								'hmr'
+							);
+						}
+					}
+					log.debug(
+						`hotUpdate for ${svelteRequest.id} result: [${affectedModules.map((m) => m.id).join(', ')}]`,
+						undefined,
+						'hmr'
+					);
+					return [...affectedModules, ...nonSvelteModules];
 				}
-				log.debug(
-					`hotUpdate for ${svelteRequest.id} result: [${affectedModules.map((m) => m.id).join(', ')}]`,
-					undefined,
-					'hmr'
-				);
-				return affectedModules;
 			}
 		}
 	};
@@ -123,13 +134,10 @@ export function hotUpdate(api) {
 function hasCodeChanged(prev, next, id) {
 	const isStrictEqual = nullSafeEqual(prev, next);
 	if (isStrictEqual) {
-		//console.log('strict equal ',{id,prev,next})
 		return false;
 	}
-	////console.log({normalizedNext,normalizedPrev})
 	const isLooseEqual = nullSafeEqual(normalize(prev), normalize(next));
 	if (!isStrictEqual && isLooseEqual) {
-		////console.log('loose equal ',{filename,prev,next})
 		log.debug(
 			`ignoring compiler output change for ${id} as it is equal to previous output after normalization`,
 			undefined,

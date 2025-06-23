@@ -27,10 +27,7 @@ export function compile(api) {
 		},
 		transform: {
 			async handler(code, id) {
-				// TODO: hack work around access restriction to meta in vite dev
-				const svelteMeta = Object.entries(this.getModuleInfo(id)?.meta ?? {}).find(
-					([key]) => key === 'svelte'
-				)?.[1];
+				const svelteMeta = this.getModuleInfo(id)?.meta?.svelte;
 				const cache = api.getEnvironmentCache(this);
 				const ssr = this.environment.config.consumer === 'server';
 				const svelteRequest = api.idParser(id, ssr);
