@@ -1,5 +1,27 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.0.0-next.1
+### Major Changes
+
+
+- remove support for loading commonjs svelte config files ([#1142](https://github.com/sveltejs/vite-plugin-svelte/pull/1142))
+
+
+### Minor Changes
+
+
+- add support for loading TypeScript Svelte config files in runtimes that support it ([#1142](https://github.com/sveltejs/vite-plugin-svelte/pull/1142))
+
+  > **NOTE**
+  > This change only applies to vite-plugin-svelte.
+  >
+  > To use `svelte.config.ts` in SvelteKit, with the Svelte VS Code extension or other tools reading the Svelte config file, you have to wait until support is implemented there.
+
+### Patch Changes
+
+
+- log known-issues link when using rolldown-vite ([#1144](https://github.com/sveltejs/vite-plugin-svelte/pull/1144))
+
 ## 6.0.0-next.0
 ### Major Changes
 
@@ -14,7 +36,7 @@
 
 
 - define filters using object hook syntax and optimize the filter for resolveId ([#1132](https://github.com/sveltejs/vite-plugin-svelte/pull/1132))
-  
+
   > [!NOTE]
   > include logic has changed to files matching `svelteConfig.include` **OR** `svelteConfig.extensions`. Previously only files matching both were loaded and transformed.
 
@@ -148,7 +170,7 @@
 
 
 - allow infix notation for svelte modules ([#901](https://github.com/sveltejs/vite-plugin-svelte/pull/901))
-  
+
   Previously, only suffix notation `.svelte.js` was allowed, now you can also use `.svelte.test.js` or `.svelte.stories.js`.
   This helps when writing testcases or other auxillary code where you may want to use runes too.
 
