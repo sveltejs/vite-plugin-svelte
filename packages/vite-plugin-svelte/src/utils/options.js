@@ -5,9 +5,7 @@ const {
 	defaultServerMainFields,
 	defaultClientConditions,
 	defaultServerConditions,
-	normalizePath,
-	//@ts-expect-error rolldownVersion not in type
-	rolldownVersion
+	normalizePath
 } = vite;
 import { log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
@@ -20,12 +18,6 @@ import {
 } from './constants.js';
 
 import path from 'node:path';
-import {
-	optimizeSvelteModulePluginName,
-	optimizeSveltePluginName,
-	patchESBuildOptimizerPlugin,
-	patchRolldownOptimizerPlugin
-} from './optimizer-plugins.js';
 import { addExtraPreprocessors } from './preprocess.js';
 import deepmerge from 'deepmerge';
 import {
@@ -379,46 +371,6 @@ export async function buildExtraViteConfig(options, config) {
 		]
 	};
 
-	// handle prebundling for svelte files
-	if (options.prebundleSvelteLibraries) {
-		extraViteConfig.optimizeDeps = {
-			...extraViteConfig.optimizeDeps,
-			// Experimental Vite API to allow these extensions to be scanned and prebundled
-			extensions: options.extensions ?? ['.svelte']
-		};
-		// Add optimizer plugins to prebundle Svelte files.
-		// Currently a placeholder as more information is needed after Vite config is resolved,
-		// the added plugins are patched in `patchResolvedViteConfig()`
-		if (rolldownVersion) {
-			/**
-			 *
-			 * @param {string} name
-			 * @returns {import('vite').Rollup.Plugin}
-			 */
-			const placeholderRolldownOptimizerPlugin = (name) => ({
-				name,
-				options() {},
-				buildStart() {},
-				buildEnd() {},
-				transform: { filter: { id: /^$/ }, handler() {} }
-			});
-			//@ts-expect-error rolldown types not finished
-			extraViteConfig.optimizeDeps.rollupOptions = {
-				plugins: [
-					placeholderRolldownOptimizerPlugin(optimizeSveltePluginName),
-					placeholderRolldownOptimizerPlugin(optimizeSvelteModulePluginName)
-				]
-			};
-		} else {
-			extraViteConfig.optimizeDeps.esbuildOptions = {
-				plugins: [
-					{ name: optimizeSveltePluginName, setup: () => {} },
-					{ name: optimizeSvelteModulePluginName, setup: () => {} }
-				]
-			};
-		}
-	}
-
 	// enable hmrPartialAccept if not explicitly disabled
 	if (config.experimental?.hmrPartialAccept !== false) {
 		log.debug('enabling "experimental.hmrPartialAccept" in vite config', undefined, 'config');
@@ -600,38 +552,6 @@ function buildExtraConfigForSvelte(config) {
 		noExternal.push('esm-env');
 	}
 	return { optimizeDeps: { include, exclude }, ssr: { noExternal, external } };
-}
-
-/**
- * @param {import('vite').ResolvedConfig} viteConfig
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- */
-export function patchResolvedViteConfig(viteConfig, options) {
-	if (options.preprocess) {
-		for (const preprocessor of arraify(options.preprocess)) {
-			if (preprocessor.style && '__resolvedConfig' in preprocessor.style) {
-				preprocessor.style.__resolvedConfig = viteConfig;
-			}
-		}
-	}
-	if (rolldownVersion) {
-		const plugins =
-			// @ts-expect-error not typed
-			viteConfig.optimizeDeps.rollupOptions?.plugins?.filter((p) =>
-				[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
-			) ?? [];
-		for (const plugin of plugins) {
-			patchRolldownOptimizerPlugin(plugin, options);
-		}
-	} else {
-		const plugins =
-			viteConfig.optimizeDeps.esbuildOptions?.plugins?.filter((p) =>
-				[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
-			) ?? [];
-		for (const plugin of plugins) {
-			patchESBuildOptimizerPlugin(plugin, options);
-		}
-	}
 }
 
 /**
