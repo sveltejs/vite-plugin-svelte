@@ -1,32 +1,5 @@
-import MagicString from 'magic-string';
 import { log } from './log.js';
-import path from 'node:path';
 import { normalizePath } from 'vite';
-
-/**
- * this appends a *{} rule to component styles to force the svelte compiler to add style classes to all nodes
- * That means adding/removing class rules from <style> node won't trigger js updates as the scope classes are not changed
- *
- * only used during dev with enabled css hmr
- *
- * @returns {import('svelte/compiler').PreprocessorGroup}
- */
-export function createInjectScopeEverythingRulePreprocessorGroup() {
-	return {
-		name: 'inject-scope-everything-rule',
-		style({ content, filename }) {
-			const s = new MagicString(content);
-			s.append(' *{}');
-			return {
-				code: s.toString(),
-				map: s.generateDecodedMap({
-					source: filename ? path.basename(filename) : undefined,
-					hires: true
-				})
-			};
-		}
-	};
-}
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
