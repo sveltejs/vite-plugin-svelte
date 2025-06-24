@@ -25,14 +25,15 @@ export function svelte(inlineOptions) {
 	// @ts-expect-error initialize empty to guard against early use
 	const api = {}; // initialized by configure plugin, used in others
 	return [
+		{ name: 'vite-plugin-svelte' }, // marker for detection logic in other plugins that expect this name
 		configure(api, inlineOptions),
 		setupOptimizer(api),
-		preprocess(api),
-		compile(api),
-		hotUpdate(api),
 		loadCompiledCss(api),
 		loadCustom(api),
+		preprocess(api),
+		compile(api),
 		compileModule(api),
+		hotUpdate(api),
 		svelteInspector()
 	];
 }

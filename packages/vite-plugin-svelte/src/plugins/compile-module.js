@@ -18,7 +18,7 @@ export function compileModule(api) {
 	let idParser;
 	/** @type {import('vite').Plugin} */
 	const plugin = {
-		name: 'vite-plugin-svelte-module',
+		name: 'vite-plugin-svelte:compile-module',
 		enforce: 'post',
 		async configResolved() {
 			options = api.options;

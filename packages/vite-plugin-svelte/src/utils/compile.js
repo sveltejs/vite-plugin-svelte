@@ -58,10 +58,6 @@ export function createCompileSvelte() {
 			generate: ssr ? 'server' : 'client'
 		};
 
-		if (compileOptions.hmr && options.emitCss) {
-			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-			compileOptions.cssHash = () => hash;
-		}
 		if (preprocessed) {
 			if (preprocessed.dependencies?.length) {
 				const checked = checkPreprocessDependencies(filename, preprocessed.dependencies);
@@ -82,7 +78,18 @@ export function createCompileSvelte() {
 				preprocessed: preprocessed ?? { code }
 			};
 		}
-		const finalCode = code;
+		let finalCode = code;
+		if (compileOptions.hmr && options.emitCss) {
+			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
+			compileOptions.cssHash = () => hash;
+			const closeStylePos = code.lastIndexOf('</style>');
+			if (closeStylePos > -1) {
+				// inject rule that forces compile to attach scope class to every node in the template
+				// this reduces the amount of js hot updates when editing css in .svelte files
+				finalCode = finalCode.slice(0, closeStylePos) + ' *{}' + finalCode.slice(closeStylePos);
+			}
+		}
+
 		const dynamicCompileOptions = await options?.dynamicCompileOptions?.({
 			filename,
 			code: finalCode,

@@ -1,7 +1,8 @@
 import { toRollupError } from '../utils/error.js';
 import { mapToRelative } from '../utils/sourcemaps.js';
-import { createInjectScopeEverythingRulePreprocessorGroup } from '../utils/preprocess.js';
 import * as svelte from 'svelte/compiler';
+import { log } from '../utils/log.js';
+import { arraify } from '../utils/options.js';
 
 /**
  * @param {import('../types/plugin-api.d.ts').PluginAPI} api
@@ -21,11 +22,20 @@ export function preprocess(api) {
 	const plugin = {
 		name: 'vite-plugin-svelte:preprocess',
 		enforce: 'pre',
-		configResolved() {
+		configResolved(c) {
 			//@ts-expect-error defined below but filter not in type
 			plugin.transform.filter = api.idFilter;
 			options = api.options;
-			preprocessSvelte = createPreprocessSvelte();
+			if (arraify(options.preprocess).length > 0) {
+				preprocessSvelte = createPreprocessSvelte(options, c);
+			} else {
+				log.debug(
+					`disabling ${plugin.name} because no preprocessor is configured`,
+					undefined,
+					'preprocess'
+				);
+				delete plugin.transform;
+			}
 		},
 
 		transform: {
@@ -33,7 +43,7 @@ export function preprocess(api) {
 				const cache = api.getEnvironmentCache(this);
 				const ssr = this.environment.config.consumer === 'server';
 				const svelteRequest = api.idParser(id, ssr);
-				if (!svelteRequest || svelteRequest.query.type === 'style' || svelteRequest.raw) {
+				if (!svelteRequest) {
 					return;
 				}
 				try {
@@ -46,13 +56,24 @@ export function preprocess(api) {
 		}
 	};
 	return plugin;
-} /**
+}
+/**
+ * @param {import("../types/options.js").ResolvedOptions} options
+ * @param {import("vite").ResolvedConfig} resolvedConfig
  * @returns {import('../types/compile.d.ts').PreprocessSvelte}
  */
-function createPreprocessSvelte() {
+function createPreprocessSvelte(options, resolvedConfig) {
 	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 	let stats;
-	const devStylePreprocessor = createInjectScopeEverythingRulePreprocessorGroup();
+	/** @type {Array<import('svelte/compiler').PreprocessorGroup>} */
+	const preprocessors = arraify(options.preprocess);
+
+	for (const preprocessor of preprocessors) {
+		if (preprocessor.style && '__resolvedConfig' in preprocessor.style) {
+			preprocessor.style.__resolvedConfig = resolvedConfig;
+		}
+	}
+
 	/** @type {import('../types/compile.d.ts').PreprocessSvelte} */
 	return async function preprocessSvelte(svelteRequest, code, options) {
 		const { filename, ssr } = svelteRequest;
@@ -69,7 +90,7 @@ function createPreprocessSvelte() {
 			} else {
 				// dev time ssr, it's a ssr request and there are no stats, assume new page load and start collecting
 				if (ssr && !stats) {
-					stats = options.stats.startCollection('ssr compile');
+					stats = options.stats.startCollection('ssr preprocess');
 				}
 				// stats are being collected but this isn't an ssr request, assume page loaded and stop collecting
 				if (!ssr && stats) {
@@ -83,18 +104,8 @@ function createPreprocessSvelte() {
 		}
 
 		let preprocessed;
-		let preprocessors = options.preprocess;
-		if (!options.isBuild && options.emitCss && options.compilerOptions?.hmr) {
-			// inject preprocessor that ensures css hmr works better
-			if (!Array.isArray(preprocessors)) {
-				preprocessors = preprocessors
-					? [preprocessors, devStylePreprocessor]
-					: [devStylePreprocessor];
-			} else {
-				preprocessors = preprocessors.concat(devStylePreprocessor);
-			}
-		}
-		if (preprocessors) {
+
+		if (preprocessors && preprocessors.length > 0) {
 			try {
 				const endStat = stats?.start(filename);
 				preprocessed = await svelte.preprocess(code, preprocessors, { filename }); // full filename here so postcss works
