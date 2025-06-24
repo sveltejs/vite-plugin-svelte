@@ -51,12 +51,31 @@ export function createCompileSvelte() {
 				// also they for hmr updates too
 			}
 		}
+
+		/*
+
+										compilerOptions: {
+									dev: false,
+									css: 'external',
+									hmr: false,
+									...svelteRequest.query.compilerOptions
+								},
+		*/
 		/** @type {import('svelte/compiler').CompileOptions} */
-		const compileOptions = {
-			...options.compilerOptions,
-			filename,
-			generate: ssr ? 'server' : 'client'
-		};
+		const compileOptions = svelteRequest.raw
+			? {
+					dev: false,
+					generate: 'client',
+					css: 'external',
+					hmr: false,
+					filename,
+					...svelteRequest.query.compilerOptions
+				}
+			: {
+					...options.compilerOptions,
+					filename,
+					generate: ssr ? 'server' : 'client'
+				};
 
 		if (preprocessed) {
 			if (preprocessed.dependencies?.length) {

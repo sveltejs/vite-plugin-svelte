@@ -36,29 +36,8 @@ export function compile(api) {
 				const cache = api.getEnvironmentCache(this);
 				let compileData;
 				try {
-					/**
-					 * @type {import("../types/options.js").ResolvedOptions}
-					 */
-					const finalOptions = svelteRequest.raw
-						? {
-								...options,
-								// don't use dynamic vite-plugin-svelte defaults here to ensure stable result between ssr,dev and build
-								compilerOptions: {
-									dev: false,
-									css: 'external',
-									hmr: false,
-									...svelteRequest.query.compilerOptions
-								},
-								emitCss: true
-							}
-						: options;
 					const svelteMeta = this.getModuleInfo(id)?.meta?.svelte;
-					compileData = await compileSvelte(
-						svelteRequest,
-						code,
-						finalOptions,
-						svelteMeta?.preprocessed
-					);
+					compileData = await compileSvelte(svelteRequest, code, options, svelteMeta?.preprocessed);
 				} catch (e) {
 					cache.setError(svelteRequest, e);
 					throw toRollupError(e, options);
