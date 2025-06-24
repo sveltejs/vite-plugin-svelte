@@ -34,7 +34,10 @@ export function setupOptimizer(api) {
 		apply: 'serve',
 		config() {
 			/** @type {import('vite').UserConfig['optimizeDeps']} */
-			const optimizeDeps = {};
+			const optimizeDeps = {
+				// Experimental Vite API to allow these extensions to be scanned and prebundled
+				extensions: ['.svelte']
+			};
 			// Add optimizer plugins to prebundle Svelte files.
 			// Currently, a placeholder as more information is needed after Vite config is resolved,
 			// the added plugins are patched in configResolved below
