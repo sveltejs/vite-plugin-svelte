@@ -14,7 +14,7 @@ function addListItemTransform(code, filename, value) {
 	return {
 		code: s.toString(),
 		// rolldown doesn't work with decoded map
-		map: (rolldownVersion ? s.generateMap : s.generateDecodedMap)({
+		map: s[rolldownVersion ? 'generateMap' : 'generateDecodedMap']({
 			hires: 'boundary',
 			file: filename,
 			includeContent: false
