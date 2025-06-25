@@ -1,6 +1,8 @@
 import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vite';
 import MagicString from 'magic-string';
+import * as vite from 'vite';
+const { rolldownVersion } = vite;
 
 function addListItemTransform(code, filename, value) {
 	const index = code.indexOf('</ol>');
@@ -11,7 +13,12 @@ function addListItemTransform(code, filename, value) {
 	s.prependLeft(index, `<li>${value}</li>\n`);
 	return {
 		code: s.toString(),
-		map: s.generateDecodedMap({ hires: 'boundary', file: filename, includeContent: false })
+		// rolldown doesn't work with decoded map
+		map: (rolldownVersion ? s.generateMap : s.generateDecodedMap)({
+			hires: 'boundary',
+			file: filename,
+			includeContent: false
+		})
 	};
 }
 
