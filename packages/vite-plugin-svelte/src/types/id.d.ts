@@ -1,16 +1,9 @@
-import type { CompileOptions } from 'svelte/compiler';
-
-export type SvelteQueryTypes = 'style' | 'script' | 'preprocessed' | 'all';
+export type SvelteQueryTypes = 'style';
 
 export interface RequestQuery {
 	// our own
 	svelte?: boolean;
 	type?: SvelteQueryTypes;
-	sourcemap?: boolean;
-	compilerOptions?: Pick<
-		CompileOptions,
-		'generate' | 'dev' | 'css' | 'customElement' | 'immutable'
-	>;
 	// vite specific
 	url?: boolean;
 	raw?: boolean;

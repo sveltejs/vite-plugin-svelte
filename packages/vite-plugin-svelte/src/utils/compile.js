@@ -52,30 +52,12 @@ export function createCompileSvelte() {
 			}
 		}
 
-		/*
-
-										compilerOptions: {
-									dev: false,
-									css: 'external',
-									hmr: false,
-									...svelteRequest.query.compilerOptions
-								},
-		*/
 		/** @type {import('svelte/compiler').CompileOptions} */
-		const compileOptions = svelteRequest.raw
-			? {
-					dev: false,
-					generate: 'client',
-					css: 'external',
-					hmr: false,
-					filename,
-					...svelteRequest.query.compilerOptions
-				}
-			: {
-					...options.compilerOptions,
-					filename,
-					generate: ssr ? 'server' : 'client'
-				};
+		const compileOptions = {
+			...options.compilerOptions,
+			filename,
+			generate: ssr ? 'server' : 'client'
+		};
 
 		if (preprocessed) {
 			if (preprocessed.dependencies?.length) {
@@ -91,12 +73,6 @@ export function createCompileSvelte() {
 			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 		}
 
-		if (raw && svelteRequest.query.type === 'preprocessed') {
-			// @ts-expect-error shortcut
-			return /** @type {import('../types/compile.d.ts').CompileData} */ {
-				preprocessed: preprocessed ?? { code }
-			};
-		}
 		let finalCode = code;
 		if (compileOptions.hmr && options.emitCss) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;

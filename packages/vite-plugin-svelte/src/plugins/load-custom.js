@@ -25,8 +25,8 @@ export function loadCustom(api) {
 				const ssr = config.consumer === 'server';
 				const svelteRequest = api.idParser(id, ssr);
 				if (svelteRequest) {
-					const { filename, raw, query } = svelteRequest;
-					if (!query.url && (raw || config.assetsInclude(filename))) {
+					const { filename, query } = svelteRequest;
+					if (!query.url && config.assetsInclude(filename)) {
 						log.debug(
 							`loading ${filename} to prevent vite asset handling to turn it into a url by default`,
 							undefined,
