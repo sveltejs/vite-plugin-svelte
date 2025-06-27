@@ -15,28 +15,13 @@ function buildExtraPreprocessors(options, config) {
 	/** @type {import('svelte/compiler').PreprocessorGroup[]} */
 	const appendPreprocessors = [];
 
-	// @ts-expect-error not typed
-	const pluginsWithPreprocessorsDeprecated = config.plugins.filter((p) => p?.sveltePreprocess);
+	const pluginsWithPreprocessorsDeprecated = config.plugins.filter((p) => p.api?.sveltePreprocess);
 	if (pluginsWithPreprocessorsDeprecated.length > 0) {
 		log.warn(
-			`The following plugins use the deprecated 'plugin.sveltePreprocess' field. Please contact their maintainers and ask them to move it to 'plugin.api.sveltePreprocess': ${pluginsWithPreprocessorsDeprecated
+			`The following plugins use the deprecated 'plugin.api.sveltePreprocess' field. Please contact their maintainers and ask them to use a vite plugin transform instead: ${pluginsWithPreprocessorsDeprecated
 				.map((p) => p.name)
 				.join(', ')}`
 		);
-		// patch plugin to avoid breaking
-		pluginsWithPreprocessorsDeprecated.forEach((p) => {
-			if (!p.api) {
-				p.api = {};
-			}
-			if (p.api.sveltePreprocess === undefined) {
-				// @ts-expect-error not typed
-				p.api.sveltePreprocess = p.sveltePreprocess;
-			} else {
-				log.error(
-					`ignoring plugin.sveltePreprocess of ${p.name} because it already defined plugin.api.sveltePreprocess.`
-				);
-			}
-		});
 	}
 	/** @type {import('vite').Plugin[]} */
 	const pluginsWithPreprocessors = config.plugins.filter((p) => p?.api?.sveltePreprocess);
