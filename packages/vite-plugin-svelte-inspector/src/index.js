@@ -34,7 +34,7 @@ export function svelteInspector(options) {
 		enforce: 'pre',
 
 		applyToEnvironment(env) {
-			return env.config.consumer === 'client';
+			return !disabled && env.config.consumer === 'client';
 		},
 
 		configResolved(config) {
@@ -77,14 +77,14 @@ export function svelteInspector(options) {
 			filter: {
 				id: /^virtual:svelte-inspector-/
 			},
-			async handler(importee, _, options) {
-				if (options?.ssr || disabled) {
+			async handler(id) {
+				if (disabled) {
 					return;
 				}
-				if (importee.startsWith('virtual:svelte-inspector-options')) {
-					return importee;
-				} else if (importee.startsWith('virtual:svelte-inspector-path:')) {
-					return importee.replace('virtual:svelte-inspector-path:', inspectorPath);
+				if (id === 'virtual:svelte-inspector-options') {
+					return id;
+				} else if (id.startsWith('virtual:svelte-inspector-path:')) {
+					return id.replace('virtual:svelte-inspector-path:', inspectorPath);
 				}
 			}
 		},
