@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 5.0.0-next.1
+### Patch Changes
+
+
+- remove vite7 beta releases from peerDependency range. ([#1151](https://github.com/sveltejs/vite-plugin-svelte/pull/1151))
+
+- Updated dependencies [[`921ba4e`](https://github.com/sveltejs/vite-plugin-svelte/commit/921ba4eded98091b8da2cbdf316e1f75af709e67)]:
+  - @sveltejs/vite-plugin-svelte@6.0.0-next.2
+
 ## 5.0.0-next.0
 ### Major Changes
 

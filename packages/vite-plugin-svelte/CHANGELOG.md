@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.0.0-next.2
+### Patch Changes
+
+
+- remove vite7 beta releases from peerDependency range. ([#1151](https://github.com/sveltejs/vite-plugin-svelte/pull/1151))
+
 ## 6.0.0-next.1
 ### Major Changes
 
