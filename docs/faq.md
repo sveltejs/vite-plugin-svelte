@@ -82,19 +82,7 @@ However, `cssHash` is respected in production builds as HMR is a dev-only featur
 
 ### How do I add a Svelte preprocessor from a Vite plugin?
 
-If you are building a Vite plugin that transforms CSS or JS, you can add a `api.sveltePreprocess: PreprocessorGroup` to your Vite plugin definition and it will be added to the list of Svelte preprocessors used at runtime.
-
-```js
-const vitePluginCoolCss = {
-  name: 'vite-plugin-coolcss',
-  api: {
-    sveltePreprocess: {
-      /* your PreprocessorGroup here */
-    }
-  }
-  /*... your cool css plugin implementation here .. */
-};
-```
+You don't have to anymore. See [advanced usage](advanced-usage.md) for examples how to put transform hooks before or after Svelte preprocess or compile
 
 ### What is going on with Vite and `Pre-bundling dependencies:`?
 

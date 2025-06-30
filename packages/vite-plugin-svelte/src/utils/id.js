@@ -5,7 +5,8 @@ import { log } from './log.js';
 import {
 	DEFAULT_SVELTE_EXT,
 	DEFAULT_SVELTE_MODULE_EXT,
-	DEFAULT_SVELTE_MODULE_INFIX
+	DEFAULT_SVELTE_MODULE_INFIX,
+	SVELTE_VIRTUAL_STYLE_ID_REGEX
 } from './constants.js';
 import { arraify } from './options.js';
 
@@ -179,13 +180,15 @@ export function buildIdFilter(options) {
 			.map(escapeRE)
 			.join('|')})(?:[?#]|$)`
 	);
-	const filter = {
+	return {
 		id: {
 			include: [extensionsRE, .../**@type {Array<string|RegExp>}*/ arraify(include)],
-			exclude: /**@type {Array<string|RegExp>}*/ arraify(exclude)
+			exclude: /**@type {Array<string|RegExp>}*/ [
+				SVELTE_VIRTUAL_STYLE_ID_REGEX, // exclude from regular pipeline, we load it in a separate plugin
+				...arraify(exclude)
+			]
 		}
 	};
-	return filter;
 }
 
 /**
