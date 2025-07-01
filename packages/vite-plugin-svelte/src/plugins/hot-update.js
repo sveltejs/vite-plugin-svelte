@@ -159,8 +159,8 @@ function nullSafeEqual(prev, next) {
 /**
  * remove code that only changes metadata and does not require a js update for the component to keep working
  *
- * 1) add_location() calls. These add location metadata to elements, only used by some dev tools
- * 2) vite query timestamps t=1235345.
+ * 1) location numbers argument from $.add_locations calls in svelte output eg [[1,2],[3,4]]
+ * 2) timestamp queries added to imports by vite eg ?t=0123456789123
  *
  * @param {string | null | undefined } code
  * @returns {string | null | undefined}
@@ -172,9 +172,10 @@ function normalize(code) {
 
 	return (
 		code
-			// svelte5 add_location line numbers argument
-			.replace(/(\$\.add_locations\(.*), \[(\[[.[\], \d]+])]/g, '$1, []')
-			// vite import analysis timestamp queries
-			.replace(/[?&]t=\d+/g, '')
+			// svelte5 $.add_locations line numbers argument  [[1,2],[3,4]]
+			// uses matching group replace to keep the template argument intact
+			.replace(/(\$\.add_locations\(.*), (\[\[[\d, [\]]+]])\)/g, '$1, []')
+			// vite import analysis timestamp queries, ?t=0123456789123&
+			.replace(/[?&]t=\d{13}\b/g, '')
 	);
 }
