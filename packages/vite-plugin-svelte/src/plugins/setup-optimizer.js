@@ -1,9 +1,14 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { readFileSync } from 'node:fs';
 import * as svelte from 'svelte/compiler';
-import { log } from './log.js';
-import { toESBuildError, toRollupError } from './error.js';
-import { safeBase64Hash } from './hash.js';
-import { normalize } from './id.js';
+import { log } from '../utils/log.js';
+import { toESBuildError, toRollupError } from '../utils/error.js';
+import { safeBase64Hash } from '../utils/hash.js';
+import { normalize } from '../utils/id.js';
+import * as vite from 'vite';
+// @ts-expect-error not typed on vite
+const { rolldownVersion } = vite;
 
 /**
  * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
@@ -13,14 +18,86 @@ import { normalize } from './id.js';
  * @typedef {NonNullable<import('vite').Rollup.Plugin>} RollupPlugin
  */
 
-export const optimizeSveltePluginName = 'vite-plugin-svelte:optimize';
-export const optimizeSvelteModulePluginName = 'vite-plugin-svelte-module:optimize';
+const optimizeSveltePluginName = 'vite-plugin-svelte:optimize';
+const optimizeSvelteModulePluginName = 'vite-plugin-svelte:optimize-module';
+
+/**
+ * @param {import('../types/plugin-api.d.ts').PluginAPI} api
+ * @returns {import('vite').Plugin}
+ */
+export function setupOptimizer(api) {
+	/** @type {import('vite').ResolvedConfig} */
+	let viteConfig;
+
+	return {
+		name: 'vite-plugin-svelte:setup-optimizer',
+		apply: 'serve',
+		config() {
+			/** @type {import('vite').UserConfig['optimizeDeps']} */
+			const optimizeDeps = {
+				// Experimental Vite API to allow these extensions to be scanned and prebundled
+				extensions: ['.svelte']
+			};
+			// Add optimizer plugins to prebundle Svelte files.
+			// Currently, a placeholder as more information is needed after Vite config is resolved,
+			// the added plugins are patched in configResolved below
+			if (rolldownVersion) {
+				//@ts-expect-error rolldown types not finished
+				optimizeDeps.rollupOptions = {
+					plugins: [
+						placeholderRolldownOptimizerPlugin(optimizeSveltePluginName),
+						placeholderRolldownOptimizerPlugin(optimizeSvelteModulePluginName)
+					]
+				};
+			} else {
+				optimizeDeps.esbuildOptions = {
+					plugins: [
+						{ name: optimizeSveltePluginName, setup: () => {} },
+						{ name: optimizeSvelteModulePluginName, setup: () => {} }
+					]
+				};
+			}
+			return { optimizeDeps };
+		},
+		configResolved(c) {
+			viteConfig = c;
+			const optimizeDeps = c.optimizeDeps;
+			if (rolldownVersion) {
+				const plugins =
+					// @ts-expect-error not typed
+					optimizeDeps.rollupOptions?.plugins?.filter((p) =>
+						[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
+					) ?? [];
+				for (const plugin of plugins) {
+					patchRolldownOptimizerPlugin(plugin, api.options);
+				}
+			} else {
+				const plugins =
+					optimizeDeps.esbuildOptions?.plugins?.filter((p) =>
+						[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
+					) ?? [];
+				for (const plugin of plugins) {
+					patchESBuildOptimizerPlugin(plugin, api.options);
+				}
+			}
+		},
+		async buildStart() {
+			if (!api.options.prebundleSvelteLibraries) return;
+			const changed = await svelteMetadataChanged(viteConfig.cacheDir, api.options);
+			if (changed) {
+				// Force Vite to optimize again. Although we mutate the config here, it works because
+				// Vite's optimizer runs after `buildStart()`.
+				viteConfig.optimizeDeps.force = true;
+			}
+		}
+	};
+}
 
 /**
  * @param {EsbuildPlugin} plugin
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  */
-export function patchESBuildOptimizerPlugin(plugin, options) {
+function patchESBuildOptimizerPlugin(plugin, options) {
 	const components = plugin.name === optimizeSveltePluginName;
 	const compileFn = components ? compileSvelte : compileSvelteModule;
 	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
@@ -57,7 +134,7 @@ export function patchESBuildOptimizerPlugin(plugin, options) {
  * @param {RollupPlugin} plugin
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  */
-export function patchRolldownOptimizerPlugin(plugin, options) {
+function patchRolldownOptimizerPlugin(plugin, options) {
 	const components = plugin.name === optimizeSveltePluginName;
 	const compileFn = components ? compileSvelte : compileSvelteModule;
 	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
@@ -192,4 +269,72 @@ async function compileSvelteModule(options, { filename, code }, statsCollection)
 		...compiled.js,
 		moduleType: 'js'
 	};
+}
+
+// List of options that changes the prebundling result
+/** @type {(keyof import('../types/options.d.ts').ResolvedOptions)[]} */
+const PREBUNDLE_SENSITIVE_OPTIONS = [
+	'compilerOptions',
+	'configFile',
+	'experimental',
+	'extensions',
+	'ignorePluginPreprocessors',
+	'preprocess'
+];
+
+/**
+ * stores svelte metadata in cache dir and compares if it has changed
+ *
+ * @param {string} cacheDir
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {Promise<boolean>} Whether the Svelte metadata has changed
+ */
+async function svelteMetadataChanged(cacheDir, options) {
+	const svelteMetadata = generateSvelteMetadata(options);
+	const svelteMetadataPath = path.resolve(cacheDir, '_svelte_metadata.json');
+
+	const currentSvelteMetadata = JSON.stringify(svelteMetadata, (_, value) => {
+		// Handle preprocessors
+		return typeof value === 'function' ? value.toString() : value;
+	});
+
+	/** @type {string | undefined} */
+	let existingSvelteMetadata;
+	try {
+		existingSvelteMetadata = await fs.readFile(svelteMetadataPath, 'utf8');
+	} catch {
+		// ignore
+	}
+
+	await fs.mkdir(cacheDir, { recursive: true });
+	await fs.writeFile(svelteMetadataPath, currentSvelteMetadata);
+	return currentSvelteMetadata !== existingSvelteMetadata;
+}
+
+/**
+ *
+ * @param {string} name
+ * @returns {import('vite').Rollup.Plugin}
+ */
+function placeholderRolldownOptimizerPlugin(name) {
+	return {
+		name,
+		options() {},
+		buildStart() {},
+		buildEnd() {},
+		transform: { filter: { id: /^$/ }, handler() {} }
+	};
+}
+
+/**
+ * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @returns {Partial<import('../types/options.d.ts').ResolvedOptions>}
+ */
+function generateSvelteMetadata(options) {
+	/** @type {Record<string, any>} */
+	const metadata = {};
+	for (const key of PREBUNDLE_SENSITIVE_OPTIONS) {
+		metadata[key] = options[key];
+	}
+	return metadata;
 }

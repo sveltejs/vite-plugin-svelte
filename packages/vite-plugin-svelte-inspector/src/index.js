@@ -33,6 +33,10 @@ export function svelteInspector(options) {
 		apply: 'serve',
 		enforce: 'pre',
 
+		applyToEnvironment(env) {
+			return !disabled && env.config.consumer === 'client';
+		},
+
 		configResolved(config) {
 			viteConfig = config;
 			const environmentOptions = parseEnvironmentOptions(config);
@@ -43,7 +47,7 @@ export function svelteInspector(options) {
 			}
 
 			// Handle config from svelte.config.js through vite-plugin-svelte
-			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
+			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte:config');
 			const configFileOptions = vps?.api?.options?.inspector;
 
 			// vite-plugin-svelte can only pass options through it's `api` instead of `options`.
@@ -69,42 +73,53 @@ export function svelteInspector(options) {
 				base: config.base?.replace(/\/$/, '') || ''
 			};
 		},
-
-		async resolveId(importee, _, options) {
-			if (options?.ssr || disabled) {
-				return;
-			}
-			if (importee.startsWith('virtual:svelte-inspector-options')) {
-				return importee;
-			} else if (importee.startsWith('virtual:svelte-inspector-path:')) {
-				return importee.replace('virtual:svelte-inspector-path:', inspectorPath);
-			}
-		},
-
-		async load(id, options) {
-			if (options?.ssr || disabled) {
-				return;
-			}
-			if (id === 'virtual:svelte-inspector-options') {
-				return `export default ${JSON.stringify(inspectorOptions ?? {})}`;
-			} else if (id.startsWith(inspectorPath)) {
-				// read file ourselves to avoid getting shut out by vites fs.allow check
-				const file = cleanUrl(id);
-				if (fs.existsSync(id)) {
-					return await fs.promises.readFile(file, 'utf-8');
-				} else {
-					viteConfig.logger.error(
-						`[vite-plugin-svelte-inspector] failed to find svelte-inspector: ${id}`
-					);
+		resolveId: {
+			filter: {
+				id: /^virtual:svelte-inspector-/
+			},
+			async handler(id) {
+				if (disabled) {
+					return;
+				}
+				if (id === 'virtual:svelte-inspector-options') {
+					return id;
+				} else if (id.startsWith('virtual:svelte-inspector-path:')) {
+					return id.replace('virtual:svelte-inspector-path:', inspectorPath);
 				}
 			}
 		},
-
-		transform(code, id, options) {
-			if (options?.ssr || disabled) {
-				return;
+		load: {
+			filter: {
+				id: {
+					include: [`${inspectorPath}/**`, /^virtual:svelte-inspector-options$/],
+					exclude: [/style&lang\.css$/]
+				}
+			},
+			async handler(id) {
+				if (disabled) {
+					return;
+				}
+				if (id === 'virtual:svelte-inspector-options') {
+					return `export default ${JSON.stringify(inspectorOptions ?? {})}`;
+				} else if (id.startsWith(inspectorPath)) {
+					// read file ourselves to avoid getting shut out by vites fs.allow check
+					const file = cleanUrl(id);
+					if (fs.existsSync(id)) {
+						return await fs.promises.readFile(file, 'utf-8');
+					} else {
+						viteConfig.logger.error(
+							`[vite-plugin-svelte-inspector] failed to find svelte-inspector: ${id}`
+						);
+					}
+				}
 			}
-			if (id.includes('vite/dist/client/client.mjs')) {
+		},
+		transform: {
+			filter: { id: /vite\/dist\/client\/client\.mjs(?:\?|$)/ },
+			handler(code) {
+				if (disabled) {
+					return;
+				}
 				return { code: `${code}\nimport('virtual:svelte-inspector-path:load-inspector.js')` };
 			}
 		}

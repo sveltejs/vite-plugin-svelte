@@ -2,10 +2,7 @@ import * as svelte from 'svelte/compiler';
 import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
 
-import {
-	checkPreprocessDependencies,
-	createInjectScopeEverythingRulePreprocessorGroup
-} from './preprocess.js';
+import { checkPreprocessDependencies } from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
 import { enhanceCompileError } from './error.js';
 
@@ -21,9 +18,8 @@ const scriptLangRE =
 export function createCompileSvelte() {
 	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 	let stats;
-	const devStylePreprocessor = createInjectScopeEverythingRulePreprocessorGroup();
 	/** @type {import('../types/compile.d.ts').CompileSvelte} */
-	return async function compileSvelte(svelteRequest, code, options) {
+	return async function compileSvelte(svelteRequest, code, options, preprocessed) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
 		/** @type {string[]} */
@@ -55,6 +51,7 @@ export function createCompileSvelte() {
 				// also they for hmr updates too
 			}
 		}
+
 		/** @type {import('svelte/compiler').CompileOptions} */
 		const compileOptions = {
 			...options.compilerOptions,
@@ -62,31 +59,7 @@ export function createCompileSvelte() {
 			generate: ssr ? 'server' : 'client'
 		};
 
-		if (compileOptions.hmr && options.emitCss) {
-			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-			compileOptions.cssHash = () => hash;
-		}
-
-		let preprocessed;
-		let preprocessors = options.preprocess;
-		if (!options.isBuild && options.emitCss && compileOptions.hmr) {
-			// inject preprocessor that ensures css hmr works better
-			if (!Array.isArray(preprocessors)) {
-				preprocessors = preprocessors
-					? [preprocessors, devStylePreprocessor]
-					: [devStylePreprocessor];
-			} else {
-				preprocessors = preprocessors.concat(devStylePreprocessor);
-			}
-		}
-		if (preprocessors) {
-			try {
-				preprocessed = await svelte.preprocess(code, preprocessors, { filename }); // full filename here so postcss works
-			} catch (e) {
-				e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
-				throw e;
-			}
-
+		if (preprocessed) {
 			if (preprocessed.dependencies?.length) {
 				const checked = checkPreprocessDependencies(filename, preprocessed.dependencies);
 				if (checked.warnings.length) {
@@ -99,16 +72,19 @@ export function createCompileSvelte() {
 
 			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
 		}
-		if (typeof preprocessed?.map === 'object') {
-			mapToRelative(preprocessed?.map, filename);
+
+		let finalCode = code;
+		if (compileOptions.hmr && options.emitCss) {
+			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
+			compileOptions.cssHash = () => hash;
+			const closeStylePos = code.lastIndexOf('</style>');
+			if (closeStylePos > -1) {
+				// inject rule that forces compile to attach scope class to every node in the template
+				// this reduces the amount of js hot updates when editing css in .svelte files
+				finalCode = finalCode.slice(0, closeStylePos) + ' *{}' + finalCode.slice(closeStylePos);
+			}
 		}
-		if (raw && svelteRequest.query.type === 'preprocessed') {
-			// @ts-expect-error shortcut
-			return /** @type {import('../types/compile.d.ts').CompileData} */ {
-				preprocessed: preprocessed ?? { code }
-			};
-		}
-		const finalCode = preprocessed ? preprocessed.code : code;
+
 		const dynamicCompileOptions = await options?.dynamicCompileOptions?.({
 			filename,
 			code: finalCode,
@@ -145,7 +121,7 @@ export function createCompileSvelte() {
 				);
 			}
 		} catch (e) {
-			enhanceCompileError(e, code, preprocessors);
+			enhanceCompileError(e, code, options.preprocess);
 			throw e;
 		}
 
@@ -181,6 +157,7 @@ export function createCompileSvelte() {
 		return {
 			filename,
 			normalizedFilename,
+			cssId,
 			lang,
 			compiled,
 			ssr,

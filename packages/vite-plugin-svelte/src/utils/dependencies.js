@@ -1,32 +1,3 @@
-import path from 'node:path';
-import fs from 'node:fs/promises';
-import { findDepPkgJsonPath } from 'vitefu';
-
-/**
- * @typedef {{
- *  dir: string;
- *	pkg: Record<string, any>;
- * }} DependencyData
- */
-
-/**
- * @param {string} dep
- * @param {string} parent
- * @returns {Promise<DependencyData | undefined>}
- */
-export async function resolveDependencyData(dep, parent) {
-	const depDataPath = await findDepPkgJsonPath(dep, parent);
-	if (!depDataPath) return undefined;
-	try {
-		return {
-			dir: path.dirname(depDataPath),
-			pkg: JSON.parse(await fs.readFile(depDataPath, 'utf-8'))
-		};
-	} catch {
-		return undefined;
-	}
-}
-
 const COMMON_DEPENDENCIES_WITHOUT_SVELTE_FIELD = [
 	'@lukeed/uuid',
 	'@playwright/test',

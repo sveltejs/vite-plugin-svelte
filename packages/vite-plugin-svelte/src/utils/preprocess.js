@@ -1,32 +1,5 @@
-import MagicString from 'magic-string';
 import { log } from './log.js';
-import path from 'node:path';
 import { normalizePath } from 'vite';
-
-/**
- * this appends a *{} rule to component styles to force the svelte compiler to add style classes to all nodes
- * That means adding/removing class rules from <style> node won't trigger js updates as the scope classes are not changed
- *
- * only used during dev with enabled css hmr
- *
- * @returns {import('svelte/compiler').PreprocessorGroup}
- */
-export function createInjectScopeEverythingRulePreprocessorGroup() {
-	return {
-		name: 'inject-scope-everything-rule',
-		style({ content, filename }) {
-			const s = new MagicString(content);
-			s.append(' *{}');
-			return {
-				code: s.toString(),
-				map: s.generateDecodedMap({
-					source: filename ? path.basename(filename) : undefined,
-					hires: true
-				})
-			};
-		}
-	};
-}
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
@@ -42,28 +15,13 @@ function buildExtraPreprocessors(options, config) {
 	/** @type {import('svelte/compiler').PreprocessorGroup[]} */
 	const appendPreprocessors = [];
 
-	// @ts-expect-error not typed
-	const pluginsWithPreprocessorsDeprecated = config.plugins.filter((p) => p?.sveltePreprocess);
+	const pluginsWithPreprocessorsDeprecated = config.plugins.filter((p) => p.api?.sveltePreprocess);
 	if (pluginsWithPreprocessorsDeprecated.length > 0) {
 		log.warn(
-			`The following plugins use the deprecated 'plugin.sveltePreprocess' field. Please contact their maintainers and ask them to move it to 'plugin.api.sveltePreprocess': ${pluginsWithPreprocessorsDeprecated
+			`The following plugins use the deprecated 'plugin.api.sveltePreprocess' field. Please contact their maintainers and ask them to use a vite plugin transform instead: ${pluginsWithPreprocessorsDeprecated
 				.map((p) => p.name)
 				.join(', ')}`
 		);
-		// patch plugin to avoid breaking
-		pluginsWithPreprocessorsDeprecated.forEach((p) => {
-			if (!p.api) {
-				p.api = {};
-			}
-			if (p.api.sveltePreprocess === undefined) {
-				// @ts-expect-error not typed
-				p.api.sveltePreprocess = p.sveltePreprocess;
-			} else {
-				log.error(
-					`ignoring plugin.sveltePreprocess of ${p.name} because it already defined plugin.api.sveltePreprocess.`
-				);
-			}
-		});
 	}
 	/** @type {import('vite').Plugin[]} */
 	const pluginsWithPreprocessors = config.plugins.filter((p) => p?.api?.sveltePreprocess);

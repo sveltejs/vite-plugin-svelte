@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Foo from './Foo.svelte';
 	import Bar from './Bar.svelte';
+	import Preprocess from './Preprocess.svelte';
 	export let hello: string;
 	const world: string = 'world'; // edit world and save to see hmr update
 	enum Baz {
@@ -14,6 +15,8 @@
 <Foo />
 <Bar />
 <p id="enum">{qoox}</p>
+
+<Preprocess />
 
 <style lang="scss">
 	@use 'sass:color';

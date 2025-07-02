@@ -6,10 +6,9 @@ import path from 'node:path';
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
  * @param {import('./vite-plugin-svelte-cache.js').VitePluginSvelteCache} cache
- * @param {import('../types/id.d.ts').IdParser} requestParser
  * @returns {void}
  */
-export function setupWatchers(options, cache, requestParser) {
+export function setupWatchers(options, cache) {
 	const { server, configFile: svelteConfigFile } = options;
 	if (!server) {
 		return;
@@ -30,16 +29,7 @@ export function setupWatchers(options, cache, requestParser) {
 			}
 		});
 	};
-	/** @type {(filename: string) => void} */
-	const removeUnlinkedFromCache = (filename) => {
-		const svelteRequest = requestParser(filename, false);
-		if (svelteRequest) {
-			const removedFromCache = cache.remove(svelteRequest);
-			if (removedFromCache) {
-				log.debug(`cleared VitePluginSvelteCache for deleted file ${filename}`, undefined, 'hmr');
-			}
-		}
-	};
+
 	/** @type {(filename: string) => void} */
 	const triggerViteRestart = (filename) => {
 		if (serverConfig.middlewareMode) {
@@ -63,7 +53,7 @@ export function setupWatchers(options, cache, requestParser) {
 	const listenerCollection = {
 		add: [],
 		change: [emitChangeEventOnDependants],
-		unlink: [removeUnlinkedFromCache, emitChangeEventOnDependants]
+		unlink: [emitChangeEventOnDependants]
 	};
 
 	if (svelteConfigFile !== false) {
