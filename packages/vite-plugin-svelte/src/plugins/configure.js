@@ -1,7 +1,6 @@
 import process from 'node:process';
 import { isDebugNamespaceEnabled, log } from '../utils/log.js';
 import * as vite from 'vite';
-import { VitePluginSvelteCache } from '../utils/vite-plugin-svelte-cache.js';
 import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
 import {
 	buildExtraViteConfig,
@@ -15,7 +14,7 @@ import { buildIdFilter, buildIdParser } from '../utils/id.js';
 import { createCompileSvelte } from '../utils/compile.js';
 
 // @ts-expect-error rolldownVersion
-const { version: viteVersion, rolldownVersion, perEnvironmentState } = vite;
+const { version: viteVersion, rolldownVersion } = vite;
 
 /**
  * @param {Partial<import('../public.d.ts').Options>} [inlineOptions]
@@ -71,8 +70,7 @@ export function configure(api, inlineOptions) {
 				if (isDebugNamespaceEnabled('stats')) {
 					api.options.stats = new VitePluginSvelteStats();
 				}
-				//@ts-expect-error perEnvironmentState uses a wider type for PluginContext
-				api.getEnvironmentCache = perEnvironmentState((_env) => new VitePluginSvelteCache());
+
 				api.idFilter = buildIdFilter(options);
 
 				api.idParser = buildIdParser(options);

@@ -2,7 +2,6 @@ import * as svelte from 'svelte/compiler';
 import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
 
-import { checkPreprocessDependencies } from './preprocess.js';
 import { mapToRelative } from './sourcemaps.js';
 import { enhanceCompileError } from './error.js';
 
@@ -19,11 +18,9 @@ export function createCompileSvelte() {
 	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 	let stats;
 	/** @type {import('../types/compile.d.ts').CompileSvelte} */
-	return async function compileSvelte(svelteRequest, code, options, preprocessed) {
+	return async function compileSvelte(svelteRequest, code, options, sourcemap) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
-		/** @type {string[]} */
-		const dependencies = [];
 		/** @type {import('svelte/compiler').Warning[]} */
 		const warnings = [];
 
@@ -59,20 +56,6 @@ export function createCompileSvelte() {
 			generate: ssr ? 'server' : 'client'
 		};
 
-		if (preprocessed) {
-			if (preprocessed.dependencies?.length) {
-				const checked = checkPreprocessDependencies(filename, preprocessed.dependencies);
-				if (checked.warnings.length) {
-					warnings.push(...checked.warnings);
-				}
-				if (checked.dependencies.length) {
-					dependencies.push(...checked.dependencies);
-				}
-			}
-
-			if (preprocessed.map) compileOptions.sourcemap = preprocessed.map;
-		}
-
 		let finalCode = code;
 		if (compileOptions.hmr && options.emitCss) {
 			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
@@ -103,6 +86,9 @@ export function createCompileSvelte() {
 					...dynamicCompileOptions
 				}
 			: compileOptions;
+		if (sourcemap) {
+			finalCompileOptions.sourcemap = sourcemap;
+		}
 		const endStat = stats?.start(filename);
 		/** @type {import('svelte/compiler').CompileResult} */
 		let compiled;
@@ -160,9 +146,7 @@ export function createCompileSvelte() {
 			cssId,
 			lang,
 			compiled,
-			ssr,
-			dependencies,
-			preprocessed: preprocessed ?? { code }
+			ssr
 		};
 	};
 }

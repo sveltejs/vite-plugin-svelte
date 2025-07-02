@@ -7,24 +7,14 @@ export type CompileSvelte = (
 	svelteRequest: SvelteRequest,
 	code: string,
 	options: Partial<ResolvedOptions>,
-	preprocessed?: Processed
+	sourcemap?: Rollup.SourceMap
 ) => Promise<CompileData>;
 
 export type PreprocessSvelte = (
 	svelteRequest: SvelteRequest,
 	code: string,
 	options: Partial<ResolvedOptions>
-) => Promise<PreprocessTransformOutput | undefined>;
-
-export interface PreprocessTransformOutput {
-	code: string;
-	map: Rollup.SourceMapInput;
-	meta: {
-		svelte: {
-			preprocessed: Processed;
-		};
-	};
-}
+) => Promise<Processed | undefined>;
 
 export interface Code {
 	code: string;
@@ -44,6 +34,4 @@ export interface CompileData {
 	lang: string;
 	compiled: CompileResult;
 	ssr: boolean | undefined;
-	dependencies: string[];
-	preprocessed: Processed;
 }

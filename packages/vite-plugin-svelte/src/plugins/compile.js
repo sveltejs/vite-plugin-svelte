@@ -1,6 +1,5 @@
 import { toRollupError } from '../utils/error.js';
 import { logCompilerWarnings } from '../utils/log.js';
-import { ensureWatchedFile } from '../utils/watch.js';
 
 /**
  * @param {import('../types/plugin-api.d.ts').PluginAPI} api
@@ -32,37 +31,30 @@ export function compile(api) {
 				if (!svelteRequest || svelteRequest.raw) {
 					return;
 				}
-				const cache = api.getEnvironmentCache(this);
 				let compileData;
 				try {
-					const svelteMeta = this.getModuleInfo(id)?.meta?.svelte;
-					compileData = await compileSvelte(svelteRequest, code, options, svelteMeta?.preprocessed);
+					compileData = await compileSvelte(
+						svelteRequest,
+						code,
+						options,
+						this.getCombinedSourcemap()
+					);
 				} catch (e) {
-					cache.setError(svelteRequest, e);
 					throw toRollupError(e, options);
 				}
 				if (compileData.compiled?.warnings) {
 					logCompilerWarnings(svelteRequest, compileData.compiled.warnings, options);
 				}
 
-				cache.update(compileData);
-				if (compileData.dependencies?.length) {
-					if (options.server) {
-						for (const dep of compileData.dependencies) {
-							ensureWatchedFile(options.server.watcher, dep, options.root);
-						}
-					} else if (options.isBuild && this.environment.config.build.watch) {
-						for (const dep of compileData.dependencies) {
-							this.addWatchFile(dep);
-						}
-					}
-				}
 				return {
 					...compileData.compiled.js,
 					moduleType: 'js',
 					meta: {
 						vite: {
 							lang: compileData.lang
+						},
+						svelte: {
+							css: compileData.compiled.css
 						}
 					}
 				};
