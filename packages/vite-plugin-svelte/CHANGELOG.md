@@ -1,5 +1,26 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.0.0-next.2
+### Major Changes
+
+
+- Remove experimental "advanced raw queries" feature. Basic `File.svelte?raw` is still supported. ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
+
+- split preprocess and compile into separate plugins ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
+
+### Patch Changes
+
+
+- use vite environment api internally ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
+
+- remove vite7 beta releases from peerDependency range. ([#1151](https://github.com/sveltejs/vite-plugin-svelte/pull/1151))
+
+
+- deprecate `plugin.api.sveltePreprocess` ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
 ## 6.0.0-next.1
 ### Major Changes
 
