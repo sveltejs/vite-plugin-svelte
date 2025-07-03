@@ -13,7 +13,7 @@ import {
 import { buildIdFilter, buildIdParser } from '../utils/id.js';
 import { createCompileSvelte } from '../utils/compile.js';
 
-// @ts-expect-error rolldownVersion
+// @ts-ignore rolldownVersion
 const { version: viteVersion, rolldownVersion } = vite;
 
 /**
