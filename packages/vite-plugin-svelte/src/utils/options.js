@@ -461,11 +461,12 @@ async function buildExtraConfigForDependencies(options, config) {
 		}
 	});
 	if (
+		!options.isBuild &&
 		!options.experimental?.disableSvelteResolveWarnings &&
 		packagesWithoutSvelteExportsCondition?.size > 0
 	) {
-		log.warn(
-			`WARNING: The following packages have a svelte field in their package.json but no exports condition for svelte.\n\n${[
+		log.info.once(
+			`The following packages have a svelte field in their package.json but no exports condition for svelte.\n\n${[
 				...packagesWithoutSvelteExportsCondition
 			].join('\n')}\n\nPlease see ${FAQ_LINK_MISSING_EXPORTS_CONDITION} for details.`
 		);

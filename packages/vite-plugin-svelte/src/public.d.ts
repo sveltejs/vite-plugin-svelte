@@ -173,6 +173,13 @@ interface ExperimentalOptions {
 	 */
 	disableSvelteResolveWarnings?: boolean;
 
+	/**
+	 * disable api.sveltePreprocess info
+	 *
+	 * @default false
+	 */
+	disableApiSveltePreprocessWarnings?: boolean;
+
 	compileModule?: CompileModuleOptions;
 }
 
