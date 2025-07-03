@@ -5,7 +5,8 @@ const {
 	defaultServerMainFields,
 	defaultClientConditions,
 	defaultServerConditions,
-	normalizePath
+	normalizePath,
+	searchForWorkspaceRoot
 } = vite;
 import { log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
@@ -429,6 +430,7 @@ async function buildExtraConfigForDependencies(options, config) {
 	const packagesWithoutSvelteExportsCondition = new Set();
 	const depsConfig = await crawlFrameworkPkgs({
 		root: options.root,
+		workspaceRoot: searchForWorkspaceRoot(options.root),
 		isBuild: options.isBuild,
 		viteUserConfig: config,
 		isFrameworkPkgByJson(pkgJson) {
