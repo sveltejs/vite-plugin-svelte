@@ -124,6 +124,9 @@ jobs:
         run: pnpm playwright install chromium
       - name: run tests
         run: pnpm test
+      - name: types
+        if: (${{ success() }} || ${{ failure() }})
+        run: pnpm check:types
       - name: archive tests temp directory
         if: failure()
         shell: bash

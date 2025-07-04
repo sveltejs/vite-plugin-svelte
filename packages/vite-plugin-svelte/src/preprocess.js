@@ -6,9 +6,9 @@ const {
 	preprocessCSS,
 	resolveConfig,
 	transformWithEsbuild,
-	//@ts-expect-error rolldown types don't exist
+	//@ts-ignore rolldown types don't exist
 	rolldownVersion,
-	//@ts-expect-error rolldown types don't exist
+	//@ts-ignore rolldown types don't exist
 	transformWithOxc
 } = vite;
 /**
@@ -72,8 +72,10 @@ function viteScript() {
 function viteScriptOxc() {
 	return {
 		async script({ attributes, content, filename = '' }) {
-			const lang = /** @type {string} */ (attributes.lang);
-			if (!supportedScriptLangs.includes(lang)) return;
+			if (typeof attributes.lang !== 'string' || !supportedScriptLangs.includes(attributes.lang)) {
+				return;
+			}
+			const lang = /** @type {'ts'} */ (attributes.lang);
 			const { code, map } = await transformWithOxc(content, filename, {
 				lang,
 				target: 'esnext'

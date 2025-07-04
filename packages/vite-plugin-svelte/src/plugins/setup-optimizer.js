@@ -7,7 +7,7 @@ import { toESBuildError, toRollupError } from '../utils/error.js';
 import { safeBase64Hash } from '../utils/hash.js';
 import { normalize } from '../utils/id.js';
 import * as vite from 'vite';
-// @ts-expect-error not typed on vite
+// @ts-ignore not typed on vite
 const { rolldownVersion } = vite;
 
 /**
@@ -42,7 +42,7 @@ export function setupOptimizer(api) {
 			// Currently, a placeholder as more information is needed after Vite config is resolved,
 			// the added plugins are patched in configResolved below
 			if (rolldownVersion) {
-				//@ts-expect-error rolldown types not finished
+				//@ts-ignore rolldown types not finished
 				optimizeDeps.rollupOptions = {
 					plugins: [
 						placeholderRolldownOptimizerPlugin(optimizeSveltePluginName),
