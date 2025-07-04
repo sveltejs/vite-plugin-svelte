@@ -3,6 +3,8 @@ import { mapToRelative } from '../utils/sourcemaps.js';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
 import { arraify } from '../utils/options.js';
+import fs from 'node:fs';
+import path from 'node:path';
 
 /**
  * @param {import('../types/plugin-api.d.ts').PluginAPI} api
@@ -15,9 +17,15 @@ export function preprocess(api) {
 	let options;
 
 	/**
+	 * @type {DependenciesCache}
+	 */
+	let dependenciesCache;
+
+	/**
 	 * @type {import("../types/compile.d.ts").PreprocessSvelte}
 	 */
 	let preprocessSvelte;
+
 	/** @type {import('vite').Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:preprocess',
@@ -37,19 +45,39 @@ export function preprocess(api) {
 				delete plugin.transform;
 			}
 		},
-
+		configureServer(server) {
+			dependenciesCache = new DependenciesCache(server);
+		},
+		buildStart() {
+			dependenciesCache?.clear();
+		},
 		transform: {
 			async handler(code, id) {
-				const cache = api.getEnvironmentCache(this);
 				const ssr = this.environment.config.consumer === 'server';
 				const svelteRequest = api.idParser(id, ssr);
 				if (!svelteRequest) {
 					return;
 				}
 				try {
-					return await preprocessSvelte(svelteRequest, code, options);
+					const preprocessed = await preprocessSvelte(svelteRequest, code, options);
+					dependenciesCache?.update(svelteRequest, preprocessed?.dependencies ?? []);
+					if (!preprocessed) {
+						return;
+					}
+					if (options.isBuild && this.environment.config.build.watch && preprocessed.dependencies) {
+						for (const dep of preprocessed.dependencies) {
+							this.addWatchFile(dep);
+						}
+					}
+
+					/** @type {import('vite').Rollup.SourceDescription}*/
+					const result = { code: preprocessed.code };
+					if (preprocessed.map) {
+						// @ts-expect-error type differs but should work
+						result.map = preprocessed.map;
+					}
+					return result;
 				} catch (e) {
-					cache.setError(svelteRequest, e);
 					throw toRollupError(e, options);
 				}
 			}
@@ -63,8 +91,6 @@ export function preprocess(api) {
  * @returns {import('../types/compile.d.ts').PreprocessSvelte}
  */
 function createPreprocessSvelte(options, resolvedConfig) {
-	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
-	let stats;
 	/** @type {Array<import('svelte/compiler').PreprocessorGroup>} */
 	const preprocessors = arraify(options.preprocess);
 
@@ -75,59 +101,105 @@ function createPreprocessSvelte(options, resolvedConfig) {
 	}
 
 	/** @type {import('../types/compile.d.ts').PreprocessSvelte} */
-	return async function preprocessSvelte(svelteRequest, code, options) {
-		const { filename, ssr } = svelteRequest;
-
-		if (options.stats) {
-			if (options.isBuild) {
-				if (!stats) {
-					// build is either completely ssr or csr, create stats collector on first compile
-					// it is then finished in the buildEnd hook.
-					stats = options.stats.startCollection(`${ssr ? 'ssr' : 'dom'} preprocess`, {
-						logInProgress: () => false
-					});
-				}
-			} else {
-				// dev time ssr, it's a ssr request and there are no stats, assume new page load and start collecting
-				if (ssr && !stats) {
-					stats = options.stats.startCollection('ssr preprocess');
-				}
-				// stats are being collected but this isn't an ssr request, assume page loaded and stop collecting
-				if (!ssr && stats) {
-					stats.finish();
-					stats = undefined;
-				}
-				// TODO find a way to trace dom compile during dev
-				// problem: we need to call finish at some point but have no way to tell if page load finished
-				// also they for hmr updates too
-			}
-		}
-
+	return async function preprocessSvelte(svelteRequest, code) {
+		const { filename } = svelteRequest;
 		let preprocessed;
-
 		if (preprocessors && preprocessors.length > 0) {
 			try {
-				const endStat = stats?.start(filename);
 				preprocessed = await svelte.preprocess(code, preprocessors, { filename }); // full filename here so postcss works
-				endStat?.();
 			} catch (e) {
 				e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
 				throw e;
 			}
-
 			if (typeof preprocessed?.map === 'object') {
 				mapToRelative(preprocessed?.map, filename);
 			}
-			return /** @type {import('../types/compile.d.ts').PreprocessTransformOutput} */ {
-				code: preprocessed.code,
-				// @ts-expect-error
-				map: preprocessed.map,
-				meta: {
-					svelte: {
-						preprocessed
-					}
-				}
-			};
+			return preprocessed;
 		}
 	};
+}
+
+/**
+ * @class
+ *
+ * caches dependencies of preprocessed files and emit change events on dependants
+ */
+class DependenciesCache {
+	/** @type {Map<string, string[]>} */
+	#dependencies = new Map();
+	/** @type {Map<string, Set<string>>} */
+	#dependants = new Map();
+
+	/** @type {import('vite').ViteDevServer} */
+	#server;
+	/**
+	 *
+	 * @param {import('vite').ViteDevServer} server
+	 */
+	constructor(server) {
+		this.#server = server;
+		/** @type {(filename: string) => void} */
+		const emitChangeEventOnDependants = (filename) => {
+			const dependants = this.#dependants.get(filename);
+			dependants?.forEach((dependant) => {
+				if (fs.existsSync(dependant)) {
+					log.debug(
+						`emitting virtual change event for "${dependant}" because dependency "${filename}" changed`,
+						undefined,
+						'hmr'
+					);
+					server.watcher.emit('change', dependant);
+				}
+			});
+		};
+		server.watcher.on('change', emitChangeEventOnDependants);
+		server.watcher.on('unlink', emitChangeEventOnDependants);
+	}
+
+	/**
+	 * @param {string} file
+	 */
+	#ensureWatchedFile(file) {
+		const root = this.#server.config.root;
+		if (
+			file &&
+			// only need to watch if out of root
+			!file.startsWith(root + '/') &&
+			// some rollup plugins use null bytes for private resolved Ids
+			!file.includes('\0') &&
+			fs.existsSync(file)
+		) {
+			// resolve file to normalized system path
+			this.#server.watcher.add(path.resolve(file));
+		}
+	}
+
+	clear() {
+		this.#dependencies.clear();
+		this.#dependants.clear();
+	}
+
+	/**
+	 *
+	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
+	 * @param {string[]} dependencies
+	 */
+	update(svelteRequest, dependencies) {
+		const id = svelteRequest.normalizedFilename;
+		const prevDependencies = this.#dependencies.get(id) || [];
+
+		this.#dependencies.set(id, dependencies);
+		const removed = prevDependencies.filter((d) => !dependencies.includes(d));
+		const added = dependencies.filter((d) => !prevDependencies.includes(d));
+		added.forEach((d) => {
+			this.#ensureWatchedFile(d);
+			if (!this.#dependants.has(d)) {
+				this.#dependants.set(d, new Set());
+			}
+			/** @type {Set<string>} */ (this.#dependants.get(d)).add(svelteRequest.filename);
+		});
+		removed.forEach((d) => {
+			/** @type {Set<string>} */ (this.#dependants.get(d)).delete(svelteRequest.filename);
+		});
+	}
 }

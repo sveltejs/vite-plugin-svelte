@@ -5,30 +5,15 @@ import path from 'node:path';
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @param {import('./vite-plugin-svelte-cache.js').VitePluginSvelteCache} cache
  * @returns {void}
  */
-export function setupWatchers(options, cache) {
+export function setupWatchers(options) {
 	const { server, configFile: svelteConfigFile } = options;
 	if (!server) {
 		return;
 	}
 	const { watcher, ws } = server;
 	const { root, server: serverConfig } = server.config;
-	/** @type {(filename: string) => void} */
-	const emitChangeEventOnDependants = (filename) => {
-		const dependants = cache.getDependants(filename);
-		dependants.forEach((dependant) => {
-			if (fs.existsSync(dependant)) {
-				log.debug(
-					`emitting virtual change event for "${dependant}" because dependency "${filename}" changed`,
-					undefined,
-					'hmr'
-				);
-				watcher.emit('change', dependant);
-			}
-		});
-	};
 
 	/** @type {(filename: string) => void} */
 	const triggerViteRestart = (filename) => {
@@ -52,8 +37,8 @@ export function setupWatchers(options, cache) {
 	/** @type {Record<string, Function[]>} */
 	const listenerCollection = {
 		add: [],
-		change: [emitChangeEventOnDependants],
-		unlink: [emitChangeEventOnDependants]
+		change: [],
+		unlink: []
 	};
 
 	if (svelteConfigFile !== false) {

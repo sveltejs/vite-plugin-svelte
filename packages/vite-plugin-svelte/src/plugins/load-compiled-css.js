@@ -26,16 +26,14 @@ export function loadCompiledCss(api) {
 				if (!svelteRequest) {
 					return;
 				}
-				const cache = api.getEnvironmentCache(this);
-				const cachedCss = cache.getCSS(svelteRequest);
+				const cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
 				if (cachedCss) {
 					const { hasGlobal, ...css } = cachedCss;
 					if (hasGlobal === false) {
 						// hasGlobal was added in svelte 5.26.0, so make sure it is boolean false
 						css.meta ??= {};
 						css.meta.vite ??= {};
-						// TODO is that slice the best way to get the filename without parsing the id?
-						css.meta.vite.cssScopeTo = [id.slice(0, id.lastIndexOf('?')), 'default'];
+						css.meta.vite.cssScopeTo = [svelteRequest.filename, 'default'];
 					}
 					css.moduleType = 'css';
 					return css;

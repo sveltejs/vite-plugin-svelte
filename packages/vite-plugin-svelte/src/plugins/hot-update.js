@@ -57,7 +57,7 @@ export function hotUpdate(api) {
 				(e) => e.config.consumer === 'client'
 			);
 			if (clientEnvironment) {
-				setupWatchers(options, api.getEnvironmentCache({ environment: clientEnvironment }));
+				setupWatchers(options);
 			} else {
 				log.warn(
 					'No client environment found, not adding watchers for svelte config and preprocessor dependencies'
