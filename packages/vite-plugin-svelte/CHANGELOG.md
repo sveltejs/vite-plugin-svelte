@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.0.0-next.3
+### Patch Changes
+
+
+- reduce deprecation logging to info and allow disabling it with a flag ([#1158](https://github.com/sveltejs/vite-plugin-svelte/pull/1158))
+
+
+- refactor internal caching to reduce code, memory use and avoid perEnvironmentCache ([#1154](https://github.com/sveltejs/vite-plugin-svelte/pull/1154))
+
+
+- fix: crawl local workspace private packages devDependencies for generating vite config ssr.noExternal ([#1155](https://github.com/sveltejs/vite-plugin-svelte/pull/1155))
+
 ## 6.0.0-next.2
 ### Major Changes
 
