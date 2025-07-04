@@ -182,14 +182,14 @@ importers:
   packages/e2e-tests/_test_dependencies/svelte-nested-workspace-devdep:
     devDependencies:
       e2e-test-dep-cjs-and-esm:
-        specifier: workspace:*
-        version: link:../cjs-and-esm
+        specifier: file:../cjs-and-esm
+        version: file:packages/e2e-tests/_test_dependencies/cjs-and-esm
       e2e-test-dep-scss-only:
-        specifier: workspace:*
-        version: link:../scss-only
+        specifier: file:../scss-only
+        version: file:packages/e2e-tests/_test_dependencies/scss-only
       e2e-test-dep-svelte-simple:
-        specifier: workspace:*
-        version: link:../svelte-simple
+        specifier: file:../svelte-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-simple
 
   packages/e2e-tests/_test_dependencies/svelte-simple:
     dependencies:
@@ -430,7 +430,7 @@ importers:
         specifier: file:../_test_dependencies/svelte-api-only
         version: file:packages/e2e-tests/_test_dependencies/svelte-api-only
       e2e-test-dep-svelte-nested-workspace-devdep:
-        specifier: workspace:*
+        specifier: ../_test_dependencies/svelte-nested-workspace-devdep
         version: link:../_test_dependencies/svelte-nested-workspace-devdep
       e2e-test-dep-vite-plugins:
         specifier: file:../_test_dependencies/vite-plugins
