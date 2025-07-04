@@ -125,7 +125,7 @@ jobs:
       - name: run tests
         run: pnpm test
       - name: check-types with rolldown-vite
-        if: (matrix.vite == 'rolldown-vite' && (${{ success() }} || ${{ failure() }}))
+        if: matrix.vite == 'rolldown-vite'
         run: pnpm check:types
       - name: archive tests temp directory
         if: failure()
