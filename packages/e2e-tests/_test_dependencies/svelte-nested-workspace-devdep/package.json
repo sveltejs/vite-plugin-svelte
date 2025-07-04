@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "private": true,
+  "name": "e2e-test-dep-svelte-nested-workspace-devdep",
+  "svelte": "src/index.js",
+  "main": "src/index.js",
+  "type": "module",
+  "files": [
+    "src"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "svelte": "./src/index.js"
+      }
+    }
+  },
+  "devDependencies": {
+    "e2e-test-dep-svelte-simple": "file:../svelte-simple",
+    "e2e-test-dep-cjs-and-esm": "file:../cjs-and-esm",
+    "e2e-test-dep-scss-only": "file:../scss-only"
+  }
+}

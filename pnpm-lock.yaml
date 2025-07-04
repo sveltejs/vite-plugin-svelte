@@ -179,6 +179,18 @@ importers:
         specifier: file:../svelte-simple
         version: file:packages/e2e-tests/_test_dependencies/svelte-simple
 
+  packages/e2e-tests/_test_dependencies/svelte-nested-workspace-devdep:
+    devDependencies:
+      e2e-test-dep-cjs-and-esm:
+        specifier: file:../cjs-and-esm
+        version: file:packages/e2e-tests/_test_dependencies/cjs-and-esm
+      e2e-test-dep-scss-only:
+        specifier: file:../scss-only
+        version: file:packages/e2e-tests/_test_dependencies/scss-only
+      e2e-test-dep-svelte-simple:
+        specifier: file:../svelte-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-simple
+
   packages/e2e-tests/_test_dependencies/svelte-simple:
     dependencies:
       e2e-test-dep-cjs-only:
@@ -417,6 +429,9 @@ importers:
       e2e-test-dep-svelte-api-only:
         specifier: file:../_test_dependencies/svelte-api-only
         version: file:packages/e2e-tests/_test_dependencies/svelte-api-only
+      e2e-test-dep-svelte-nested-workspace-devdep:
+        specifier: ../_test_dependencies/svelte-nested-workspace-devdep
+        version: link:../_test_dependencies/svelte-nested-workspace-devdep
       e2e-test-dep-vite-plugins:
         specifier: file:../_test_dependencies/vite-plugins
         version: file:packages/e2e-tests/_test_dependencies/vite-plugins
@@ -643,8 +658,8 @@ importers:
         specifier: ^0.30.17
         version: 0.30.17
       vitefu:
-        specifier: ^1.0.7
-        version: 1.0.7(vite@7.0.0(@types/node@22.15.34)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
+        specifier: ^1.1.1
+        version: 1.1.1(vite@7.0.0(@types/node@22.15.34)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
     devDependencies:
       '@types/debug':
         specifier: ^4.1.12
@@ -3396,6 +3411,14 @@ packages:
 
   vitefu@1.0.7:
     resolution: {integrity: sha512-eRWXLBbJjW3X5z5P5IHcSm2yYbYRPb2kQuc+oqsbAl99WB5kVsPbiiox+cymo8twTzifA6itvhr2CmjnaZZp0Q==}
+    peerDependencies:
+      vite: ^7.0.0
+    peerDependenciesMeta:
+      vite:
+        optional: true
+
+  vitefu@1.1.1:
+    resolution: {integrity: sha512-B/Fegf3i8zh0yFbpzZ21amWzHmuNlLlmJT6n7bu5e+pCHUKQIfXSYokrqOBGEMMe9UG2sostKQF9mml/vYaWJQ==}
     peerDependencies:
       vite: ^7.0.0
     peerDependenciesMeta:
@@ -6252,6 +6275,10 @@ snapshots:
       yaml: 2.8.0
 
   vitefu@1.0.7(vite@7.0.0(@types/node@22.15.34)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)):
+    optionalDependencies:
+      vite: 7.0.0(@types/node@22.15.34)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)
+
+  vitefu@1.1.1(vite@7.0.0(@types/node@22.15.34)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)):
     optionalDependencies:
       vite: 7.0.0(@types/node@22.15.34)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)
 

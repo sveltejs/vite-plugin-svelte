@@ -292,7 +292,10 @@ describe('kit-node', () => {
 								'cli-color',
 								'tiny-glob',
 								'cookie',
-								'set-cookie-parser'
+								'set-cookie-parser',
+								'e2e-test-dep-cjs-and-esm',
+								'e2e-test-dep-cjs-only',
+								'e2e-test-dep-scss-only'
 							]
 						: [],
 					`ssr.external in ${filename}`
@@ -307,13 +310,22 @@ describe('kit-node', () => {
 						'esm-env', // first added by svelte-kit
 						'esm-env', // second added by vite-plugin-svelte
 						'@sveltejs/kit',
-						'@sveltejs/adapter-node'
+						'@sveltejs/adapter-node',
+						'e2e-test-dep-svelte-nested-workspace-devdep',
+						'e2e-test-dep-svelte-simple'
 					],
 					`ssr.noExternal in ${filename}`
 				);
+				const expectedExcludes = ['@sveltejs/kit', '$app', '$env'];
+				if (!isServe) {
+					expectedExcludes.push(
+						'e2e-test-dep-svelte-nested-workspace-devdep',
+						'e2e-test-dep-svelte-simple'
+					);
+				}
 				expectArrayEqual(
 					config.optimizeDeps.exclude,
-					['@sveltejs/kit', '$app', '$env'],
+					expectedExcludes,
 					`optimizeDeps.exclude in ${filename}`
 				);
 				let expectedIncludes = [
@@ -344,6 +356,12 @@ describe('kit-node', () => {
 				expectedIncludes = expectedIncludes.filter(
 					(item) => !(isServe && item.startsWith('svelte-i18n >'))
 				);
+
+				if (!isServe) {
+					expectedIncludes.push(
+						'e2e-test-dep-svelte-nested-workspace-devdep > e2e-test-dep-svelte-simple > e2e-test-dep-cjs-only'
+					);
+				}
 
 				expectArrayEqual(
 					config.optimizeDeps.include,
