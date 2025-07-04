@@ -1,4 +1,5 @@
 import { log } from './log.js';
+import { LINK_TRANSFORM_WITH_PLUGIN } from './constants.js';
 
 /**
  * @param {import('../types/options.d.ts').ResolvedOptions} options
@@ -14,16 +15,23 @@ function buildExtraPreprocessors(options, config) {
 	/** @type {import('svelte/compiler').PreprocessorGroup[]} */
 	const appendPreprocessors = [];
 
-	const pluginsWithPreprocessorsDeprecated = config.plugins.filter((p) => p.api?.sveltePreprocess);
-	if (pluginsWithPreprocessorsDeprecated.length > 0) {
-		log.warn(
-			`The following plugins use the deprecated 'plugin.api.sveltePreprocess' field. Please contact their maintainers and ask them to use a vite plugin transform instead: ${pluginsWithPreprocessorsDeprecated
-				.map((p) => p.name)
-				.join(', ')}`
-		);
-	}
 	/** @type {import('vite').Plugin[]} */
 	const pluginsWithPreprocessors = config.plugins.filter((p) => p?.api?.sveltePreprocess);
+
+	if (
+		!options.isBuild &&
+		!options.experimental?.disableApiSveltePreprocessWarnings &&
+		pluginsWithPreprocessors.length > 0
+	) {
+		log.info.once(
+			`The following plugins use the deprecated 'plugin.api.sveltePreprocess' field: ${pluginsWithPreprocessors
+				.map((p) => p.name)
+				.join(', ')}
+				Please contact their maintainers and ask them to use a vite plugin transform instead.
+				See ${LINK_TRANSFORM_WITH_PLUGIN} for more information.
+				`.replace(/\t+/g, '\t')
+		);
+	}
 	/** @type {import('vite').Plugin[]} */
 	const ignored = [];
 	/** @type {import('vite').Plugin[]} */
