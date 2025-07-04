@@ -174,7 +174,7 @@ interface ExperimentalOptions {
 	disableSvelteResolveWarnings?: boolean;
 
 	/**
-	 * disable api.sveltePreprocess info
+	 * disable api.sveltePreprocess deprecation warnings
 	 *
 	 * @default false
 	 */
