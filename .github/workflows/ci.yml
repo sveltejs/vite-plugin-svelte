@@ -124,8 +124,8 @@ jobs:
         run: pnpm playwright install chromium
       - name: run tests
         run: pnpm test
-      - name: types
-        if: (${{ success() }} || ${{ failure() }})
+      - name: check-types with rolldown-vite
+        if: (matrix.vite == 'rolldown-vite' && (${{ success() }} || ${{ failure() }}))
         run: pnpm check:types
       - name: archive tests temp directory
         if: failure()
