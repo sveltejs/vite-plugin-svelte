@@ -20,11 +20,19 @@
 
 
 - define filters using object hook syntax and optimize the filter for resolveId ([#1132](https://github.com/sveltejs/vite-plugin-svelte/pull/1132))
-  
-  > [!NOTE]
+
+  > **NOTE**
   > include logic has changed to files matching `svelteConfig.include` **OR** `svelteConfig.extensions`. Previously only files matching both were loaded and transformed.
 
 - split preprocess and compile into separate plugins ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
+  It allows vite plugins to transform code between preprocess and compile, see [docs](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins) and is the recommended way to replace `plugin.api.sveltePreprocess` usage in other vite plugins.
+  You can also use [vite-plugin-inspect](https://github.com/antfu-collective/vite-plugin-inspect) now to inspect the result of svelte.preprocess by checking the transform of `vite-plugin-svelte:preprocess`
+
+  > **NOTE**
+  > This can be a breaking change in case you have other plugins besides vite-plugin-svelte transforming your svelte code
+	> To fix this, read the [docs](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins) on how to order plugins in relation to preprocess and compile
+
 
 
 ### Minor Changes
@@ -37,7 +45,7 @@
 
 
 - add support for loading TypeScript Svelte config files in runtimes that support it ([#1142](https://github.com/sveltejs/vite-plugin-svelte/pull/1142))
-  
+
   > **NOTE**
   > This change only applies to vite-plugin-svelte.
   >
@@ -66,8 +74,6 @@
 
 - deprecate `plugin.api.sveltePreprocess` ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
 
-- Updated dependencies [[`63d1fc6`](https://github.com/sveltejs/vite-plugin-svelte/commit/63d1fc6809c5f9e1e5ed3116d417c82d8781079d), [`74e701f`](https://github.com/sveltejs/vite-plugin-svelte/commit/74e701f2ee306b70196641ea0cb6fc23c58b6296), [`921ba4e`](https://github.com/sveltejs/vite-plugin-svelte/commit/921ba4eded98091b8da2cbdf316e1f75af709e67), [`59e082e`](https://github.com/sveltejs/vite-plugin-svelte/commit/59e082e50277aeb71a7ce8373128d73f4ceeb5fd)]:
-  - @sveltejs/vite-plugin-svelte-inspector@5.0.0
 
 ## 6.0.0-next.3
 ### Patch Changes
