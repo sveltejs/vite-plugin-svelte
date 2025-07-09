@@ -132,6 +132,9 @@ export function enhanceCompileError(err, originalCode, preprocessors) {
 
 		let m;
 		while ((m = styleRe.exec(originalCode))) {
+			if (m[0]?.startsWith('<!--')) {
+				continue;
+			}
 			// Warn missing lang attribute
 			if (!m[1]?.includes('lang=')) {
 				additionalMessages.push('Did you forget to add a lang attribute to your style tag?');
