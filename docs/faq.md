@@ -4,9 +4,9 @@
 
 `vite` and `vite-plugin-svelte` can be made more verbose by using the debug mode:
 
-- `export DEBUG=vite-plugin-svelte:config ; vite`: log `vite-plugin-svelte` debug info related to the config
-- `export DEBUG=vite-plugin-svelte:* ; vite`: log all `vite-plugin-svelte` debug info
-- `export DEBUG=* ; vite`: log all debug info
+- `DEBUG=vite-plugin-svelte:config vite dev`: log `vite-plugin-svelte` debug info related to the config
+- `DEBUG=vite-plugin-svelte:* vite dev`: log all `vite-plugin-svelte` debug info
+- `DEBUG=* vite dev`: log all debug info
 
 ### Why is component state reset on HMR update?
 
