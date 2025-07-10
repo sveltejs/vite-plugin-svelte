@@ -309,8 +309,7 @@ describe('kit-node', () => {
 						'svelte-i18n',
 						'esm-env', // first added by svelte-kit
 						'esm-env', // second added by vite-plugin-svelte
-						'@sveltejs/kit',
-						'@sveltejs/adapter-node',
+						'@sveltejs/kit/src/runtime',
 						'e2e-test-dep-svelte-nested-workspace-devdep',
 						'e2e-test-dep-svelte-simple'
 					],
