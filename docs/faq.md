@@ -1,5 +1,13 @@
 # Frequently Asked Questions
 
+### Something is wrong with my config, how can I find where the problem comes from?
+
+`vite` and `vite-plugin-svelte` can be made more verbose by using the debug mode (powered by and following the conventions of the [`debug`](https://github.com/debug-js/debug) library):
+
+- `DEBUG=vite-plugin-svelte:config vite dev`: log `vite-plugin-svelte` debug info related to the config
+- `DEBUG=vite-plugin-svelte:* vite dev`: log all `vite-plugin-svelte` debug info
+- `DEBUG=* vite dev`: log all debug info
+
 ### Why is component state reset on HMR update?
 
 Preservation of local component state after JS updates is disabled to avoid unpredictable and error-prone behavior.
