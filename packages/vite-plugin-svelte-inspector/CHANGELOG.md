@@ -1,5 +1,26 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 5.0.0
+### Major Changes
+
+
+- drop support for node18 and update exports map to use default export. cjs is supported via require esm in node 20.19+ ([#1129](https://github.com/sveltejs/vite-plugin-svelte/pull/1129))
+
+
+- bump vite peer dependency to ^6.3.0 || ^7.0.0 ([#1130](https://github.com/sveltejs/vite-plugin-svelte/pull/1130))
+
+
+### Patch Changes
+
+
+- use vite environment api internally ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
+
+- remove vite7 beta releases from peerDependency range. ([#1151](https://github.com/sveltejs/vite-plugin-svelte/pull/1151))
+
+- Updated dependencies [[`63d1fc6`](https://github.com/sveltejs/vite-plugin-svelte/commit/63d1fc6809c5f9e1e5ed3116d417c82d8781079d), [`47e8a9f`](https://github.com/sveltejs/vite-plugin-svelte/commit/47e8a9f6b4141a877b92d86f64061de8076c807b), [`a494b03`](https://github.com/sveltejs/vite-plugin-svelte/commit/a494b0351763245642f870cf65b5b364956912d1), [`74e701f`](https://github.com/sveltejs/vite-plugin-svelte/commit/74e701f2ee306b70196641ea0cb6fc23c58b6296), [`7cd6064`](https://github.com/sveltejs/vite-plugin-svelte/commit/7cd606497336b08882eb8538dca178071eb88847), [`7cd6064`](https://github.com/sveltejs/vite-plugin-svelte/commit/7cd606497336b08882eb8538dca178071eb88847), [`7cd6064`](https://github.com/sveltejs/vite-plugin-svelte/commit/7cd606497336b08882eb8538dca178071eb88847), [`b875b0c`](https://github.com/sveltejs/vite-plugin-svelte/commit/b875b0c57e131ec360f32b2257b0978de3616da0), [`fac52a4`](https://github.com/sveltejs/vite-plugin-svelte/commit/fac52a477ef621f31eb875ce4045357057a2206b), [`bac3e1c`](https://github.com/sveltejs/vite-plugin-svelte/commit/bac3e1c9a8451885500606fe00d5134b3ad43f8c), [`74e701f`](https://github.com/sveltejs/vite-plugin-svelte/commit/74e701f2ee306b70196641ea0cb6fc23c58b6296), [`921ba4e`](https://github.com/sveltejs/vite-plugin-svelte/commit/921ba4eded98091b8da2cbdf316e1f75af709e67), [`59e082e`](https://github.com/sveltejs/vite-plugin-svelte/commit/59e082e50277aeb71a7ce8373128d73f4ceeb5fd), [`b875b0c`](https://github.com/sveltejs/vite-plugin-svelte/commit/b875b0c57e131ec360f32b2257b0978de3616da0), [`7af3cd2`](https://github.com/sveltejs/vite-plugin-svelte/commit/7af3cd281a3d6e22de2f5f7e60822455b0d56c29), [`74e701f`](https://github.com/sveltejs/vite-plugin-svelte/commit/74e701f2ee306b70196641ea0cb6fc23c58b6296), [`74e701f`](https://github.com/sveltejs/vite-plugin-svelte/commit/74e701f2ee306b70196641ea0cb6fc23c58b6296)]:
+  - @sveltejs/vite-plugin-svelte@6.0.0
+
 ## 5.0.0-next.1
 ### Patch Changes
 

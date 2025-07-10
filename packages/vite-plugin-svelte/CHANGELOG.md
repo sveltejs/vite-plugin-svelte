@@ -1,5 +1,80 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.0.0
+### Major Changes
+
+
+- drop support for node18 and update exports map to use default export. cjs is supported via require esm in node 20.19+ ([#1129](https://github.com/sveltejs/vite-plugin-svelte/pull/1129))
+
+
+- Remove experimental "advanced raw queries" feature. Basic `File.svelte?raw` is still supported. ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
+
+- Using the typescript preprocessor now requires a tsconfig.json with verbatimModuleSyntax enabled, eg @tsconfig/svelte ([#1135](https://github.com/sveltejs/vite-plugin-svelte/pull/1135))
+
+
+- remove support for loading commonjs svelte config files ([#1142](https://github.com/sveltejs/vite-plugin-svelte/pull/1142))
+
+
+- bump vite peer dependency to ^6.3.0 || ^7.0.0 ([#1130](https://github.com/sveltejs/vite-plugin-svelte/pull/1130))
+
+
+- define filters using object hook syntax and optimize the filter for resolveId ([#1132](https://github.com/sveltejs/vite-plugin-svelte/pull/1132))
+
+  > **NOTE**
+  > include logic has changed to files matching `svelteConfig.include` **OR** `svelteConfig.extensions`. Previously only files matching both were loaded and transformed.
+
+- split preprocess and compile into separate plugins ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
+  It allows vite plugins to transform code between preprocess and compile, see [docs](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins) and is the recommended way to replace `plugin.api.sveltePreprocess` usage in other vite plugins.
+  You can also use [vite-plugin-inspect](https://github.com/antfu-collective/vite-plugin-inspect) now to inspect the result of svelte.preprocess by checking the transform of `vite-plugin-svelte:preprocess`
+
+  > **NOTE**
+  > This can be a breaking change in case you have other plugins besides vite-plugin-svelte transforming your svelte code
+	> To fix this, read the [docs](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins) on how to order plugins in relation to preprocess and compile
+
+
+
+### Minor Changes
+
+
+- Add experimental support for rolldown-vite ([#1135](https://github.com/sveltejs/vite-plugin-svelte/pull/1135))
+
+
+- replace esbuild optimizer with rolldown optimizer if rolldown-vite is used ([#1135](https://github.com/sveltejs/vite-plugin-svelte/pull/1135))
+
+
+- add support for loading TypeScript Svelte config files in runtimes that support it ([#1142](https://github.com/sveltejs/vite-plugin-svelte/pull/1142))
+
+  > **NOTE**
+  > This change only applies to vite-plugin-svelte.
+  >
+  > To use `svelte.config.ts` in SvelteKit, with the Svelte VS Code extension or other tools reading the Svelte config file, you have to wait until support is implemented there.
+
+### Patch Changes
+
+
+- reduce deprecation logging to info and allow disabling it with a flag ([#1158](https://github.com/sveltejs/vite-plugin-svelte/pull/1158))
+
+
+- refactor internal caching to reduce code, memory use and avoid perEnvironmentCache ([#1154](https://github.com/sveltejs/vite-plugin-svelte/pull/1154))
+
+
+- fix: crawl local workspace private packages devDependencies for generating vite config ssr.noExternal ([#1155](https://github.com/sveltejs/vite-plugin-svelte/pull/1155))
+
+
+- log known-issues link when using rolldown-vite ([#1144](https://github.com/sveltejs/vite-plugin-svelte/pull/1144))
+
+
+- use vite environment api internally ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
+
+- remove vite7 beta releases from peerDependency range. ([#1151](https://github.com/sveltejs/vite-plugin-svelte/pull/1151))
+
+
+- deprecate `plugin.api.sveltePreprocess` ([#1145](https://github.com/sveltejs/vite-plugin-svelte/pull/1145))
+
+
 ## 6.0.0-next.3
 ### Patch Changes
 
