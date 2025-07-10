@@ -2,7 +2,7 @@
 
 ### Something is wrong with my config, how can I find where the problem comes from?
 
-`vite` and `vite-plugin-svelte` can be made more verbose by using the debug mode:
+`vite` and `vite-plugin-svelte` can be made more verbose by using the debug mode (powered by and following the conventions of the [`debug`](https://github.com/debug-js/debug) library):
 
 - `DEBUG=vite-plugin-svelte:config vite dev`: log `vite-plugin-svelte` debug info related to the config
 - `DEBUG=vite-plugin-svelte:* vite dev`: log all `vite-plugin-svelte` debug info
