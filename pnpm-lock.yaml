@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@sveltejs/kit': ^2.22.2
+  '@sveltejs/kit': ^2.22.5
   '@sveltejs/kit>@sveltejs/vite-plugin-svelte': workspace:^
   '@sveltejs/vite-plugin-svelte': workspace:^
   '@sveltejs/vite-plugin-svelte-inspector': workspace:^
@@ -35,8 +35,8 @@ importers:
         specifier: ^8.2.0
         version: 8.2.0(@stylistic/eslint-plugin-js@4.4.1(eslint@9.30.1))(eslint-config-prettier@10.1.5(eslint@9.30.1))(eslint-plugin-n@17.21.0(eslint@9.30.1)(typescript@5.8.3))(eslint-plugin-svelte@3.10.1(eslint@9.30.1)(svelte@5.35.2))(eslint@9.30.1)(typescript-eslint@8.35.1(eslint@9.30.1)(typescript@5.8.3))(typescript@5.8.3)
       '@sveltejs/kit':
-        specifier: ^2.22.2
-        version: 2.22.2(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
+        specifier: ^2.22.5
+        version: 2.22.5(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
       '@svitejs/changesets-changelog-github-compact':
         specifier: ^1.2.0
         version: 1.2.0
@@ -388,8 +388,8 @@ importers:
   packages/e2e-tests/inspector-kit:
     devDependencies:
       '@sveltejs/kit':
-        specifier: ^2.22.2
-        version: 2.22.2(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
+        specifier: ^2.22.5
+        version: 2.22.5(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
       '@sveltejs/vite-plugin-svelte':
         specifier: workspace:^
         version: link:../../vite-plugin-svelte
@@ -416,10 +416,10 @@ importers:
     devDependencies:
       '@sveltejs/adapter-node':
         specifier: ^5.2.12
-        version: 5.2.12(@sveltejs/kit@2.22.2(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)))
+        version: 5.2.12(@sveltejs/kit@2.22.5(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)))
       '@sveltejs/kit':
-        specifier: ^2.22.2
-        version: 2.22.2(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
+        specifier: ^2.22.5
+        version: 2.22.5(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
       '@sveltejs/package':
         specifier: ^2.3.12
         version: 2.3.12(svelte@5.35.2)(typescript@5.8.3)
@@ -1446,7 +1446,7 @@ packages:
   '@sveltejs/adapter-node@5.2.12':
     resolution: {integrity: sha512-0bp4Yb3jKIEcZWVcJC/L1xXp9zzJS4hDwfb4VITAkfT4OVdkspSHsx7YhqJDbb2hgLl6R9Vs7VQR+fqIVOxPUQ==}
     peerDependencies:
-      '@sveltejs/kit': ^2.22.2
+      '@sveltejs/kit': ^2.22.5
 
   '@sveltejs/eslint-config@8.2.0':
     resolution: {integrity: sha512-5ab8AXjLoY+H0dsYTGB+9L8AnOvOzd9NZkECj40VAk6Uh9u7+5d8jVk+YYW6NGsEQ+HwHBUi19yij+q+5Pm+aQ==}
@@ -1459,8 +1459,8 @@ packages:
       typescript: '>= 5'
       typescript-eslint: '>= 8'
 
-  '@sveltejs/kit@2.22.2':
-    resolution: {integrity: sha512-2MvEpSYabUrsJAoq5qCOBGAlkICjfjunrnLcx3YAk2XV7TvAIhomlKsAgR4H/4uns5rAfYmj7Wet5KRtc8dPIg==}
+  '@sveltejs/kit@2.22.5':
+    resolution: {integrity: sha512-l5i+LcDaoymD2mg5ziptnHmzzF79+c9twJiDoLWAPKq7afMEe4mvGesJ+LVtm33A92mLzd2KUHgtGSqTrvfkvg==}
     engines: {node: '>=18.13'}
     hasBin: true
     peerDependencies:
@@ -3368,14 +3368,6 @@ packages:
       yaml:
         optional: true
 
-  vitefu@1.0.7:
-    resolution: {integrity: sha512-eRWXLBbJjW3X5z5P5IHcSm2yYbYRPb2kQuc+oqsbAl99WB5kVsPbiiox+cymo8twTzifA6itvhr2CmjnaZZp0Q==}
-    peerDependencies:
-      vite: ^7.0.2
-    peerDependenciesMeta:
-      vite:
-        optional: true
-
   vitefu@1.1.1:
     resolution: {integrity: sha512-B/Fegf3i8zh0yFbpzZ21amWzHmuNlLlmJT6n7bu5e+pCHUKQIfXSYokrqOBGEMMe9UG2sostKQF9mml/vYaWJQ==}
     peerDependencies:
@@ -4164,12 +4156,12 @@ snapshots:
     dependencies:
       acorn: 8.15.0
 
-  '@sveltejs/adapter-node@5.2.12(@sveltejs/kit@2.22.2(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)))':
+  '@sveltejs/adapter-node@5.2.12(@sveltejs/kit@2.22.5(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)))':
     dependencies:
       '@rollup/plugin-commonjs': 28.0.3(rollup@4.41.1)
       '@rollup/plugin-json': 6.1.0(rollup@4.41.1)
       '@rollup/plugin-node-resolve': 16.0.1(rollup@4.41.1)
-      '@sveltejs/kit': 2.22.2(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
+      '@sveltejs/kit': 2.22.5(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
       rollup: 4.41.1
 
   '@sveltejs/eslint-config@8.2.0(@stylistic/eslint-plugin-js@4.4.1(eslint@9.30.1))(eslint-config-prettier@10.1.5(eslint@9.30.1))(eslint-plugin-n@17.21.0(eslint@9.30.1)(typescript@5.8.3))(eslint-plugin-svelte@3.10.1(eslint@9.30.1)(svelte@5.35.2))(eslint@9.30.1)(typescript-eslint@8.35.1(eslint@9.30.1)(typescript@5.8.3))(typescript@5.8.3)':
@@ -4183,7 +4175,7 @@ snapshots:
       typescript: 5.8.3
       typescript-eslint: 8.35.1(eslint@9.30.1)(typescript@5.8.3)
 
-  '@sveltejs/kit@2.22.2(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))':
+  '@sveltejs/kit@2.22.5(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.35.2)(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))':
     dependencies:
       '@sveltejs/acorn-typescript': 1.0.5(acorn@8.15.0)
       '@sveltejs/vite-plugin-svelte': link:packages/vite-plugin-svelte
@@ -4200,7 +4192,6 @@ snapshots:
       sirv: 3.0.1
       svelte: 5.35.2
       vite: 7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)
-      vitefu: 1.0.7(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0))
 
   '@sveltejs/package@2.3.12(svelte@5.35.2)(typescript@5.8.3)':
     dependencies:
@@ -6176,10 +6167,6 @@ snapshots:
       sass: 1.89.2
       stylus: 0.64.0
       yaml: 2.8.0
-
-  vitefu@1.0.7(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)):
-    optionalDependencies:
-      vite: 7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)
 
   vitefu@1.1.1(vite@7.0.2(@types/node@22.16.0)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)):
     optionalDependencies:
