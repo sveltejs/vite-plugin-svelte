@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.0.1
+### Patch Changes
+
+
+- skip comment blocks when reporting compiler errors that might be caused by a preprocessor issue ([#1166](https://github.com/sveltejs/vite-plugin-svelte/pull/1166))
+
 ## 6.0.0
 ### Major Changes
 
