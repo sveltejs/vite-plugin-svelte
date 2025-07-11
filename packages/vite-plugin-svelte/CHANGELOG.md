@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 5.1.1
+### Patch Changes
+
+
+- fix: prevent accidental pollution of `svelteconfig.extensions` ([#1171](https://github.com/sveltejs/vite-plugin-svelte/pull/1171))
+
 ## 5.1.0
 ### Minor Changes
 
