@@ -23,7 +23,8 @@ Besides inline options in Vite config, `vite-plugin-svelte` will also automatica
 
 - `svelte.config.js`
 - `svelte.config.mjs`
-- `svelte.config.cjs`
+- `svelte.config.ts`
+- `svelte.config.mts`
 
 To set a specific config file, use the `configFile` inline option. The path can be absolute or relative to the [Vite root](https://vitejs.dev/config/#root). For example:
 
@@ -59,10 +60,10 @@ export default {
 
 ### Config file extension
 
-Depending on Node's mode, make sure you're using the correct extension and syntax so it can be resolved safely.
+The content of svelte config should always be in esm syntax. Depending on Node's mode, make sure you're using the correct extension.
 
-- If `type: "module"` is defined in `package.json`, using `.js` only allows ESM code. Use `.cjs` to allow CJS code.
-- If `type: "module"` is not defined, using `.js` only allows CJS code. Use `.mjs` to allows ESM code.
+- If `type: "module"` is defined in `package.json`, prefer `.js` or `.ts`
+- If `type: "module"` is not defined, use `.mjs` or `.mts`
 
 > Try to stick with the `.js` extension whenever possible.
 
