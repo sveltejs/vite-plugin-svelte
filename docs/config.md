@@ -23,7 +23,8 @@ Besides inline options in Vite config, `vite-plugin-svelte` will also automatica
 
 - `svelte.config.js`
 - `svelte.config.mjs`
-- `svelte.config.cjs`
+- `svelte.config.ts`
+- `svelte.config.mts`
 
 To set a specific config file, use the `configFile` inline option. The path can be absolute or relative to the [Vite root](https://vitejs.dev/config/#root). For example:
 
@@ -43,7 +44,7 @@ A basic Svelte config looks like this:
 ```js
 // svelte.config.js
 export default {
-  // svelte options
+  // Svelte options
   extensions: ['.svelte'],
   compilerOptions: {},
   preprocess: [],
@@ -59,10 +60,10 @@ export default {
 
 ### Config file extension
 
-Depending on Node's mode, make sure you're using the correct extension and syntax so it can be resolved safely.
+The Svelte config should always be written in ESM syntax. Depending on Node's mode, make sure you're using the correct extension.
 
-- If `type: "module"` is defined in `package.json`, using `.js` only allows ESM code. Use `.cjs` to allow CJS code.
-- If `type: "module"` is not defined, using `.js` only allows CJS code. Use `.mjs` to allows ESM code.
+- If `type: "module"` is defined in `package.json`, prefer `.js` or `.ts`
+- If `type: "module"` is not defined, use `.mjs` or `.mts`
 
 > Try to stick with the `.js` extension whenever possible.
 
@@ -76,7 +77,7 @@ export default defineConfig({
   plugins: [
     svelte({
       configFile: false
-      // your svelte config here
+      // your Svelte config here
     })
   ]
 });
@@ -157,12 +158,14 @@ These options are specific to the Vite plugin itself.
 ### include
 
 - **Type:** `string | string[]`
+- **Default:** unset
 
-A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files the plugin should operate on. By default, all svelte files are included.
+A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files the plugin should operate on **in addition** to the files ending with one of the configured extensions.
 
 ### exclude
 
 - **Type:** `string | string[]`
+- **Default:** unset
 
 A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patterns, which specifies the files to be ignored by the plugin. By default, no files are ignored.
 
@@ -215,7 +218,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 - **Type:** `InspectorOptions | boolean`
 - **Default:** `unset` for dev, always `false` for build
 
-  Set to `true` or options object to enable svelte inspector during development. See the [inspector docs](./inspector.md) for the full configuration options.
+  Set to `true` or options object to enable Svelte inspector during development. See the [inspector docs](./inspector.md) for the full configuration options.
 
   Inspector mode shows you the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.
 
@@ -308,7 +311,7 @@ export default {
     normalizedFilename: string;
     timestamp: number;
     warnings: Warning[]; // allWarnings filtered by warnings where onwarn did not call the default handler
-    allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite plugin svelte warnings
+    allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite-plugin-svelte warnings
     rawWarnings: Warning[]; // raw compiler output
   };
   ```
@@ -318,4 +321,18 @@ export default {
 - **Type** `boolean`
 - **Default:** `false`
 
-  disable svelte resolve warnings. Note: this is highly discouraged and you should instead fix these packages which will break in the future.
+  disable Svelte resolve warnings. Note: this is highly discouraged and you should instead fix these packages which will break in the future.
+
+### disableApiSveltePreprocessWarnings
+
+- **Type** `boolean`
+- **Default:** `false`
+
+  disable api.sveltePreprocess deprecation warnings
+
+### compileModule
+
+- **Type** `CompileModuleOptions`
+- **Default:** `undefined`
+
+  set custom compile options for compilation of Svelte modules (`.svelte.js` files).
