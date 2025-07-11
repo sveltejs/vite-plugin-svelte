@@ -57,6 +57,11 @@ export function writeResolvedConfig() {
 				if (value instanceof RegExp) return value.toString();
 				else return value;
 			}
+
+			// Handle config from svelte.config.js through vite-plugin-svelte
+			const vps = config.plugins.find((p) => p.name === 'vite-plugin-svelte');
+			const configFileOptions = vps?.api?.options;
+
 			const serializableConfig = {
 				...config,
 				plugins: config.plugins.map((p) => p.name)
@@ -66,7 +71,31 @@ export function writeResolvedConfig() {
 				fs.mkdirSync(dir);
 			}
 			const filename = path.join(dir, `vite.config.${cmd}${config.build.ssr ? '.ssr' : ''}.json`);
+			const optionsFilename = path.join(
+				dir,
+				`svelte.options.${cmd}${config.build.ssr ? '.ssr' : ''}.json`
+			);
 			fs.writeFileSync(filename, JSON.stringify(serializableConfig, replacer, '\t'), 'utf-8');
+			fs.writeFileSync(optionsFilename, JSON.stringify(configFileOptions, replacer, '\t'), 'utf-8');
+		}
+	};
+}
+
+/**
+ * write resolved config
+ * @returns {import('vite').Plugin}
+ */
+export function pushToOptimizeDepsExtensions() {
+	return {
+		name: 'push-to-optimize-deps-extensions',
+		config(config) {
+			if (!config.optimizeDeps) {
+				config.optimizeDeps = {};
+			}
+			if (!config.optimizeDeps.extensions) {
+				config.optimizeDeps.extensions = [];
+			}
+			config.optimizeDeps.extensions.push('.pushed');
 		}
 	};
 }

@@ -1,5 +1,9 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { transformValidation, writeResolvedConfig } from 'e2e-test-dep-vite-plugins';
+import {
+	transformValidation,
+	writeResolvedConfig,
+	pushToOptimizeDepsExtensions
+} from 'e2e-test-dep-vite-plugins';
 
 /** @type {import('vite').UserConfig} */
 export default {
@@ -16,6 +20,7 @@ export default {
 		sourcemap: true // must be true for hermetic build test!
 	},
 	plugins: [
+		pushToOptimizeDepsExtensions(),
 		transformValidation(),
 		sveltekit(),
 		writeResolvedConfig(),
