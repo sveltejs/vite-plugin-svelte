@@ -335,4 +335,4 @@ export default {
 - **Type** `CompileModuleOptions`
 - **Default:** `undefined`
 
-  set custom compile options for compilation Svelte modules (`.svelte.js` files).
+  set custom compile options for compilation of Svelte modules (`.svelte.js` files).
