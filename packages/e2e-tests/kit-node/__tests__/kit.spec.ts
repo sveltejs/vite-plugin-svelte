@@ -373,6 +373,30 @@ describe('kit-node', () => {
 		});
 	});
 
+	describe('resolved options', () => {
+		it('should not be polluted by other plugins pushing to extensions', async () => {
+			const configs = [];
+			if (isBuild) {
+				configs.push('serve', 'build', 'build.ssr');
+			} else {
+				configs.push('serve');
+			}
+			const expectArrayEqual = (a: string[], b: string[], message: string) => {
+				const aSorted = a.slice().sort();
+				const bSorted = b.slice().sort();
+				expect(aSorted, message).toEqual(bSorted);
+			};
+			for (const pattern of configs) {
+				const filename = `svelte.options.${pattern}.json`;
+				const config = JSON.parse(
+					await readFileContent(path.join('logs', 'resolved-configs', filename))
+				);
+				const isServe = pattern === 'serve';
+				expectArrayEqual(['.svelte'], config.extensions, `extensions in ${filename}`);
+			}
+		});
+	});
+
 	describe.runIf(isBuild)('output', () => {
 		it('should produce hermetic build', async () => {
 			const outputFiles = await glob('./build/**/*', { cwd: testDir, filesOnly: true });
