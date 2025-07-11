@@ -60,7 +60,7 @@ export default {
 
 ### Config file extension
 
-The content of Svelte config should always be in esm syntax. Depending on Node's mode, make sure you're using the correct extension.
+The Svelte config should always be written in ESM syntax. Depending on Node's mode, make sure you're using the correct extension.
 
 - If `type: "module"` is defined in `package.json`, prefer `.js` or `.ts`
 - If `type: "module"` is not defined, use `.mjs` or `.mts`
