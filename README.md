@@ -51,6 +51,12 @@ All scripts work from monorepo-root.
 The plugins are unbundled esm, a build step is not required while developing locally, but restarting local dev-servers can be needed to apply changes.
 
 - `pnpm i` to install dependencies
+- `pnpm playwright install chromium` to install required playwright browser binaries via local playwright-core
+
+  > **NOTE**
+  > This repo uses `playwright-core` with a bin alias to `playwright` via package.json script
+  > Calling `pnpm dlx playwright install chromium` will not work.
+
 - `pnpm check` and `pnpm:test` to validate changes
 - `pnpm format` to format source code
 - `pnpm test:unit`, `pnpm test:serve` or `pnpm test:build` to run a subset of tests
