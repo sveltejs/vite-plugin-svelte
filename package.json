@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "run-s -c test:unit test:build test:serve",
+    "test": "run-s -c test:unit \"test:build {@}\" \"test:serve {@}\" --",
     "test:unit": "vitest run",
     "test:serve": "vitest run -c vitest.config.e2e.ts",
     "test:build": "cross-env TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
