@@ -67,7 +67,7 @@ export function compileModule(api) {
 						}
 					: compileOptions;
 				// @ts-expect-error experimental not typed yet
-				if (dynamicCompileOptions.experimental) {
+				if (dynamicCompileOptions?.experimental) {
 					// @ts-expect-error experimental not typed yet
 					finalCompileOptions.experimental = {
 						// @ts-expect-error experimental not typed yet
