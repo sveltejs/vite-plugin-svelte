@@ -47,11 +47,22 @@ Join the [Svelte Discord server](https://svelte.dev/chat)!
 
 ## Development
 
-- Run `pnpm i` to install dependencies
-- Run `pnpm dev` in `packages/vite-plugin-svelte` to autobuild plugin
-- Run `pnpm dev` in `packages/playground/xxx` to start a Vite app
+All scripts work from monorepo-root.
+The plugins are unbundled esm, a build step is not required while developing locally, but restarting local dev-servers can be needed to apply changes.
 
-Note that changes in the plugin needs restart of the Vite dev server.
+- `pnpm i` to install dependencies
+- `pnpm playwright install chromium` to install required playwright browser binaries via local playwright-core
+
+  > **NOTE**
+  > This repo uses `playwright-core` with a bin alias to `playwright` via package.json script
+  > Calling `pnpm dlx playwright install chromium` will not work.
+
+- `pnpm check` and `pnpm:test` to validate changes
+- `pnpm format` to format source code
+- `pnpm test:unit`, `pnpm test:serve` or `pnpm test:build` to run a subset of tests
+- `pnpm test <e2e-directory-name>` to focus a specific testsuite
+- `pnpm changeset` to generate a changeset
+- `pnpm generate:types` to generate public types from jsdoc (this is required when changing types and validated in ci)
 
 ## Credits
 
