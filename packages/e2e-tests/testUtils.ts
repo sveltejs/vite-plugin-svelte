@@ -18,6 +18,10 @@ import {
 	waitForViteConnect
 } from './vitestSetup.js';
 
+import { VERSION } from 'svelte/compiler';
+
+export const IS_SVELTE_BASELINE = VERSION === '5.0.0';
+
 export * from './vitestSetup.js';
 
 export const hmrUpdateTimeout = 10000;

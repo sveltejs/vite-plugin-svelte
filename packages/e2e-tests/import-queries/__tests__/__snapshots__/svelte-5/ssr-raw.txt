@@ -1,10 +1,14 @@
 <script lang="ts">
-	export let name: string;
-	let clicks = 0;
+	interface Props {
+		name: string;
+	}
+
+	let { name }: Props = $props();
+	let clicks = $state(0);
 </script>
 
 <button
-	on:click={() => {
+	onclick={() => {
 		clicks++;
 	}}>{name} clicks: {clicks}</button
 >

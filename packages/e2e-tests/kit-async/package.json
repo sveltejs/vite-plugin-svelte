@@ -1,0 +1,24 @@
+{
+  "name": "e2e-tests-kit-async",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "sync": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^5.2.12",
+    "@sveltejs/kit": "^2.23.0",
+    "@sveltejs/vite-plugin-svelte": "workspace:^",
+    "svelte": "^5.36.1",
+    "svelte-check": "^4.0.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.2"
+  }
+}

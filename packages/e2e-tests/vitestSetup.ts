@@ -112,7 +112,8 @@ beforeAll(
 					'dist',
 					'build',
 					'.svelte',
-					'.svelte-kit'
+					'.svelte-kit',
+					'logs'
 				];
 				testDir = tempDir;
 				const isIgnored = (file) => {
