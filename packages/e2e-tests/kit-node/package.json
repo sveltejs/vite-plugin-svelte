@@ -6,6 +6,8 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "sync": "svelte-kit sync || echo ''",
     "check": "svelte-check --tsconfig ./jsconfig.json",
     "check:watch": "svelte-check --tsconfig ./jsconfig.json --watch",
     "package": "svelte-package && echo just here for testing, don't remove svelte-package!"

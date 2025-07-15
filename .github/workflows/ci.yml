@@ -49,6 +49,8 @@ jobs:
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+      - name: sync
+        run: pnpm -r sync # required to ensure sveltekit test project have tsconfig.json which may be required by the checks below
       - name: format
         run: pnpm check:format
       - name: lint
