@@ -11,7 +11,8 @@ import {
 	browserLogs,
 	fetchPageText,
 	reloadPage,
-	readFileContent
+	readFileContent,
+	IS_SVELTE_BASELINE
 } from '~utils';
 
 import glob from 'tiny-glob';
@@ -331,27 +332,31 @@ describe('kit-node', () => {
 					'svelte-i18n',
 					'e2e-test-dep-svelte-api-only',
 					'svelte/animate',
-					'svelte/attachments',
 					'svelte/easing',
 					'svelte/events',
 					'svelte/internal',
 					'svelte/internal/client',
 					'svelte/motion',
 					'svelte/reactivity',
-					'svelte/reactivity/window',
 					'svelte/store',
 					'svelte/transition',
 					'svelte',
-					'svelte > clsx',
 					'svelte/internal/disclose-version',
-					'svelte/internal/flags/async',
-					'svelte/internal/flags/legacy',
-					'svelte/internal/flags/tracing',
 					'svelte/legacy',
 					'svelte-i18n > deepmerge',
 					'svelte-i18n > cli-color',
 					'svelte-i18n > tiny-glob'
 				];
+				if (!IS_SVELTE_BASELINE) {
+					expectedIncludes.push(
+						'svelte/reactivity/window',
+						'svelte > clsx',
+						'svelte/attachments',
+						'svelte/internal/flags/async',
+						'svelte/internal/flags/legacy',
+						'svelte/internal/flags/tracing'
+					);
+				}
 
 				expectedIncludes = expectedIncludes.filter(
 					(item) => !(isServe && item.startsWith('svelte-i18n >'))
@@ -370,25 +375,29 @@ describe('kit-node', () => {
 				);
 				const expectedDedupe = [
 					'svelte/animate',
-					'svelte/attachments',
 					'svelte/easing',
 					'svelte/events',
 					'svelte/internal',
 					'svelte/internal/client',
 					'svelte/motion',
 					'svelte/reactivity',
-					'svelte/reactivity/window',
 					'svelte/store',
 					'svelte/transition',
 					'svelte',
 					'svelte/internal/disclose-version',
-					'svelte/internal/flags/async',
-					'svelte/internal/flags/legacy',
-					'svelte/internal/flags/tracing',
 					'svelte/internal/server',
 					'svelte/server',
 					'svelte/legacy'
 				];
+				if (!IS_SVELTE_BASELINE) {
+					expectedDedupe.push(
+						'svelte/attachments',
+						'svelte/internal/flags/async',
+						'svelte/internal/flags/legacy',
+						'svelte/internal/flags/tracing',
+						'svelte/reactivity/window'
+					);
+				}
 
 				expectArrayEqual(config.resolve.dedupe, expectedDedupe, `resolve.dedupe in ${filename}`);
 				expectArrayEqual(
