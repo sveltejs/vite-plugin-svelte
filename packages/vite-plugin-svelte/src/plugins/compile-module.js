@@ -2,6 +2,7 @@ import { buildModuleIdFilter, buildModuleIdParser } from '../utils/id.js';
 import * as svelteCompiler from 'svelte/compiler';
 import { log, logCompilerWarnings } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
+import { isSvelteWithAsync } from '../utils/svelte-version.js';
 
 /**
  * @param {import('../types/plugin-api.d.ts').PluginAPI} api
@@ -66,13 +67,9 @@ export function compileModule(api) {
 							...dynamicCompileOptions
 						}
 					: compileOptions;
-				// @ts-expect-error experimental not typed yet
 				if (dynamicCompileOptions?.experimental) {
-					// @ts-expect-error experimental not typed yet
 					finalCompileOptions.experimental = {
-						// @ts-expect-error experimental not typed yet
 						...compileOptions.experimental,
-						// @ts-expect-error experimental not typed yet
 						...dynamicCompileOptions.experimental
 					};
 				}
@@ -104,25 +101,17 @@ export function compileModule(api) {
  */
 function filterNonModuleCompilerOptions(compilerOptions) {
 	/** @type {Array<keyof import('svelte/compiler').ModuleCompileOptions>} */
-	const knownModuleCompileOptionNames = [
-		'dev',
-		'generate',
-		'filename',
-		'rootDir',
-		'warningFilter',
-		// @ts-expect-error will only be defined after svelte aysnc is released
-		'experimental'
-	];
-	// TODO type /** @type {Array<keyof import('svelte/compiler').ModuleCompileOptions['experimental']>} */
+	const knownModuleCompileOptionNames = ['dev', 'generate', 'filename', 'rootDir', 'warningFilter'];
+	if (isSvelteWithAsync) {
+		knownModuleCompileOptionNames.push('experimental');
+	}
+	// not typed but this is temporary until svelte itself ignores CompileOptions passed to compileModule
 	const experimentalModuleCompilerOptionNames = ['async'];
 
 	/** @type {import('svelte/compiler').ModuleCompileOptions} */
 	const filtered = filterByPropNames(compilerOptions, knownModuleCompileOptionNames);
-	// @ts-expect-error experimental not typed yet
 	if (filtered.experimental) {
-		// @ts-expect-error experimental not typed yet
 		filtered.experimental = filterByPropNames(
-			// @ts-expect-error experimental not typed yet
 			filtered.experimental,
 			experimentalModuleCompilerOptionNames
 		);

@@ -77,21 +77,26 @@ jobs:
         node: [22]
         os: [ubuntu-latest, macos-latest, windows-latest]
         vite: ['current']
+        svelte: ['current']
         include:
           - node: 20
             os: ubuntu-latest
             vite: 'current'
+            svelte: 'current'
           - node: 24
             os: ubuntu-latest
             vite: 'current'
-          # baseline test lowest vite and node version
+            svelte: 'current'
+          # baseline test lowest svelte, vite and node version
           - node: 20.19
             os: ubuntu-latest
             vite: 'baseline'
+            svelte: 'baseline'
           # future test with rolldown-vite
           - node: 24
             os: ubuntu-latest
-            vite: 'rolldown-vite'
+            vite: 'rolldown-vite',
+            svelte: 'current'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -115,6 +120,11 @@ jobs:
         run: |
           pnpm update -r --no-save vite@6.3.0
           pnpm ls vite
+      - name: downgrade svelte to baseline
+        if: matrix.svelte == 'baseline'
+        run: |
+          pnpm update -r --no-save svelte@5.0.0
+          pnpm ls svelte
       - name: update vite to rolldown-vite
         if: matrix.vite == 'rolldown-vite'
         run: |
@@ -134,7 +144,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node }}-${{ matrix.vite }}
+          name: test-failure-${{github.run_id}}-os_${{ matrix.os }}-node_${{ matrix.node }}-vite_${{ matrix.vite }}-svelte_${{matrix.svelte}}
           path: |
             test-temp.tar
             pnpm-debug.log

@@ -4,6 +4,7 @@
 	import Counter from '$lib/Counter.svelte';
 	import Child from '$lib/Child.svelte';
 	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
+	import { asyncUtil } from '$lib/async-util.svelte.js';
 	export let data = {};
 	$: load_status = data?.load_status ?? 'NOT_LOADED';
 	const jsTransform = '__JS_TRANSFORM_1__';
