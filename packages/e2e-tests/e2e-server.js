@@ -4,6 +4,7 @@ import treeKill from 'tree-kill';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { rootDir } from 'vitest/node';
 const isWin = process.platform === 'win32';
 
 async function startedOnPort(serverProcess, port, timeout) {
@@ -76,6 +77,16 @@ export async function serve(root, isBuild, port) {
 			console.error(`failed to write ${name} logs in ${logDir}`, e1);
 		}
 	};
+
+	const pkg = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf-8'));
+	if (pkg.scripts?.sync) {
+		try {
+			await execa('pnpm', ['sync']);
+		} catch (e) {
+			console.error(`Failed to run sync script in ${rootDir}`);
+			throw e;
+		}
+	}
 
 	if (isBuild) {
 		let buildResult;
