@@ -1,5 +1,20 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.1.0
+### Minor Changes
+
+
+- feat: add support for the new experimental.async option and apply dynamicCompileOptions when compiling Svelte modules ([#1176](https://github.com/sveltejs/vite-plugin-svelte/pull/1176))
+
+
+### Patch Changes
+
+
+- skip comment blocks when reporting compiler errors that might be caused by a preprocessor issue ([#1166](https://github.com/sveltejs/vite-plugin-svelte/pull/1166))
+
+
+- increase logLevel to info for "no Svelte config found" message ([#1179](https://github.com/sveltejs/vite-plugin-svelte/pull/1179))
+
 ## 6.0.0
 ### Major Changes
 
