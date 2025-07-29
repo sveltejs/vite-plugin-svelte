@@ -32,8 +32,9 @@ export function setupOptimizer(api) {
 	return {
 		name: 'vite-plugin-svelte:setup-optimizer',
 		apply: 'serve',
-		configEnvironment(_name, config) {
-			const consumer = config.consumer ?? 'client';
+		configEnvironment(name, config) {
+			// fall back to vite behavior when consumer isn't set
+			const consumer = (config.consumer ?? name === 'client') ? 'client' : 'server';
 			/** @type {import('vite').UserConfig['optimizeDeps']} */
 			const optimizeDeps = {
 				// Experimental Vite API to allow these extensions to be scanned and prebundled
