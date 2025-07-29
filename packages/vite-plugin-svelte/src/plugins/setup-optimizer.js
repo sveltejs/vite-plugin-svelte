@@ -54,8 +54,8 @@ export function setupOptimizer(api) {
 			} else {
 				optimizeDeps.esbuildOptions = {
 					plugins: [
-						eSBuildOptimizerPlugin(api, consumer, true),
-						eSBuildOptimizerPlugin(api, consumer, false)
+						esbuildOptimizerPlugin(api, consumer, true),
+						esbuildOptimizerPlugin(api, consumer, false)
 					]
 				};
 			}
