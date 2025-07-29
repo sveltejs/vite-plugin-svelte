@@ -82,7 +82,7 @@ export function setupOptimizer(api) {
  * @param {boolean} components
  * @return {EsbuildPlugin}
  */
-function eSBuildOptimizerPlugin(api, consumer, components) {
+function esbuildOptimizerPlugin(api, consumer, components) {
 	const name = components ? optimizeSveltePluginName : optimizeSvelteModulePluginName;
 	const compileFn = components ? compileSvelte : compileSvelteModule;
 	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
