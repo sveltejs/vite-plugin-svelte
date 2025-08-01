@@ -39,6 +39,11 @@ export function configure(api, inlineOptions) {
 	 */
 	let preOptions;
 
+	/**
+	 * @type {import('vite').DepOptimizationConfig | undefined}
+	 */
+	let optimizeDeps = undefined;
+
 	/** @type {import('vite').Plugin} */
 	return {
 		name: 'vite-plugin-svelte:config',
@@ -59,9 +64,11 @@ export function configure(api, inlineOptions) {
 				// extra vite config
 				const extraViteConfig = await buildExtraViteConfig(preOptions, config);
 				log.debug('additional vite config', extraViteConfig, 'config');
+				optimizeDeps = extraViteConfig.optimizeDeps;
 				return extraViteConfig;
 			}
 		},
+
 		configResolved: {
 			order: 'pre',
 			handler(config) {
@@ -87,6 +94,12 @@ export function configure(api, inlineOptions) {
 			ensureConfigEnvironmentConditions(name, config, opts);
 			// @ts-expect-error the function above should make `resolve.conditions` non-nullable
 			config.resolve.conditions.push('svelte');
+			if (config.consumer === 'server' && optimizeDeps !== undefined) {
+				// optimizeDeps is not inherited by server environments so return it here
+				return {
+					optimizeDeps
+				};
+			}
 		},
 
 		configureServer(server) {
