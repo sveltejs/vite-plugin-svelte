@@ -42,7 +42,7 @@ export function transformValidation() {
 			enforce: 'post',
 			transform(code, id) {
 				if (id.endsWith('.svelte')) {
-					replaceWithSourceMap(code, '__JS_TRANSFORM_3__', 'Hello world');
+					return replaceWithSourceMap(code, '__JS_TRANSFORM_3__', 'Hello world');
 				}
 				// can't handle css here as in build, it would be `export default {}`
 			}
