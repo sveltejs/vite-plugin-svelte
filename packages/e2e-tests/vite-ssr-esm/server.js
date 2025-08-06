@@ -17,12 +17,6 @@ if (portArgPos > 0) {
 async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV === 'production') {
 	const resolve = (p) => path.resolve(root, p);
 
-	const indexProd = isProd ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8') : '';
-
-	const manifest = isProd
-		? JSON.parse(fs.readFileSync(resolve('dist/client/.vite/ssr-manifest.json'), 'utf-8'))
-		: {};
-
 	const app = polka();
 
 	/**
@@ -69,10 +63,10 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 				template = await vite.transformIndexHtml(url, template);
 				render = (await vite.ssrLoadModule('/src/entry-server.js')).render;
 			} else {
-				template = indexProd;
+				template = fs.readFileSync(resolve('dist/client/index.html'), 'utf-8');
 				render = (await import(pathToFileURL(resolve('dist/server/entry-server.js')).href)).render;
 			}
-			const rendered = await render(req.originalUrl, manifest);
+			const rendered = await render(req.originalUrl);
 			const appHtml = rendered.html;
 			const headElements = rendered.head || '';
 			// TODO what do we do with rendered.css here. find out if emitCss was used and vite took care of it

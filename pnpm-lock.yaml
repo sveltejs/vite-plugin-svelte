@@ -199,7 +199,11 @@ importers:
 
   packages/e2e-tests/_test_dependencies/types-only: {}
 
-  packages/e2e-tests/_test_dependencies/vite-plugins: {}
+  packages/e2e-tests/_test_dependencies/vite-plugins:
+    dependencies:
+      magic-string:
+        specifier: ^0.30.17
+        version: 0.30.17
 
   packages/e2e-tests/autoprefixer-browerslist:
     dependencies:
@@ -225,6 +229,28 @@ importers:
       svelte-preprocess:
         specifier: ^6.0.3
         version: 6.0.3(postcss-load-config@6.0.1(postcss@8.5.6)(yaml@2.8.0))(postcss@8.5.6)(sass@1.89.2)(stylus@0.64.0)(svelte@5.36.13)(typescript@5.8.3)
+      vite:
+        specifier: ^7.0.5
+        version: 7.0.5(@types/node@22.16.5)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)
+
+  packages/e2e-tests/build-watch:
+    dependencies:
+      e2e-test-dep-svelte-simple:
+        specifier: file:../_test_dependencies/svelte-simple
+        version: file:packages/e2e-tests/_test_dependencies/svelte-simple
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: workspace:^
+        version: link:../../vite-plugin-svelte
+      e2e-test-dep-vite-plugins:
+        specifier: file:../_test_dependencies/vite-plugins
+        version: file:packages/e2e-tests/_test_dependencies/vite-plugins
+      node-fetch:
+        specifier: ^3.3.2
+        version: 3.3.2
+      svelte:
+        specifier: ^5.36.13
+        version: 5.36.13
       vite:
         specifier: ^7.0.5
         version: 7.0.5(@types/node@22.16.5)(sass@1.89.2)(stylus@0.64.0)(yaml@2.8.0)
@@ -4701,7 +4727,9 @@ snapshots:
     dependencies:
       e2e-test-dep-cjs-only: file:packages/e2e-tests/_test_dependencies/cjs-only
 
-  e2e-test-dep-vite-plugins@file:packages/e2e-tests/_test_dependencies/vite-plugins: {}
+  e2e-test-dep-vite-plugins@file:packages/e2e-tests/_test_dependencies/vite-plugins:
+    dependencies:
+      magic-string: 0.30.17
 
   eastasianwidth@0.2.0: {}
 
