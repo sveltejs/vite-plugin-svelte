@@ -10,7 +10,10 @@ import {
 	browserLogs,
 	e2eServer
 } from '~utils';
-import { describe, test, expect } from 'vitest';
+
+import * as vite from 'vite';
+// @ts-ignore
+const isRolldownVite = !!vite.rolldownVersion;
 
 describe.runIf(isBuildWatch)('build-watch', () => {
 	test('should render App', async () => {
@@ -60,6 +63,17 @@ describe.runIf(isBuildWatch)('build-watch', () => {
 		const updateApp = editFileAndWaitForBuildWatchComplete.bind(null, 'src/App.svelte');
 		const updateStore = editFileAndWaitForBuildWatchComplete.bind(null, 'src/stores/hmr-stores.js');
 
+		const getWatchErrors = () =>
+			isRolldownVite
+				? e2eServer.logs.watch.err.filter(
+						(m) =>
+							![
+								'Support for rolldown-vite in vite-plugin-svelte is experimental',
+								'See https://github.com/sveltejs/vite-plugin-svelte/issues/1143'
+							].some((s) => m.includes(s))
+					)
+				: e2eServer.logs.watch.err;
+
 		test('should have expected initial state', async () => {
 			// initial state, both counters 0, both labels red
 			expect(await getText('#hmr-test-1 .counter')).toBe('0');
@@ -87,7 +101,7 @@ describe.runIf(isBuildWatch)('build-watch', () => {
 			// color should have changed
 			expect(await getColor('#hmr-test-1 .label')).toBe('green');
 			expect(await getColor('#hmr-test-2 .label')).toBe('green');
-			expect(e2eServer.logs.watch.err, 'error log of `build --watch` is not empty').toEqual([]);
+			expect(getWatchErrors(), 'error log of `build --watch` is not empty').toEqual([]);
 		});
 
 		test('should apply js change in HmrTest.svelte ', async () => {
@@ -97,7 +111,7 @@ describe.runIf(isBuildWatch)('build-watch', () => {
 			);
 			expect(await getText('#hmr-test-1 .label')).toBe('hmr-test-updated');
 			expect(await getText('#hmr-test-2 .label')).toBe('hmr-test-updated');
-			expect(e2eServer.logs.watch.err, 'error log of `build --watch` is not empty').toEqual([]);
+			expect(getWatchErrors(), 'error log of `build --watch` is not empty').toEqual([]);
 		});
 
 		test('should reset state of external store used by HmrTest.svelte when editing App.svelte', async () => {
@@ -113,7 +127,7 @@ describe.runIf(isBuildWatch)('build-watch', () => {
 			expect(await getText('#hmr-test-2 .counter')).toBe('0');
 			// a third instance has been added
 			expect(await getText('#hmr-test-3 .counter')).toBe('0');
-			expect(e2eServer.logs.watch.err, 'error log of `build --watch` is not empty').toEqual([]);
+			expect(getWatchErrors(), 'error log of `build --watch` is not empty').toEqual([]);
 		});
 
 		test('should reset state of store when editing hmr-stores.js', async () => {
@@ -124,7 +138,7 @@ describe.runIf(isBuildWatch)('build-watch', () => {
 			await updateStore((content) => `${content}\n/*trigger change*/\n`);
 			// counter state is reset
 			expect(await getText('#hmr-test-2 .counter')).toBe('0');
-			expect(e2eServer.logs.watch.err, 'error log of `build --watch` is not empty').toEqual([]);
+			expect(getWatchErrors(), 'error log of `build --watch` is not empty').toEqual([]);
 		});
 
 		test('should work when editing script context="module"', async () => {
@@ -137,7 +151,7 @@ describe.runIf(isBuildWatch)('build-watch', () => {
 			expect(await getText('#hmr-without-context')).toContain('x=0 y=2 slot=');
 			expect(hmrCount('UsingNamed.svelte'), 'updates for UsingNamed.svelte').toBe(0);
 			expect(hmrCount('UsingDefault.svelte'), 'updates for UsingDefault.svelte').toBe(0);
-			expect(e2eServer.logs.watch.err, 'error log of `build --watch` is not empty').toEqual([]);
+			expect(getWatchErrors(), 'error log of `build --watch` is not empty').toEqual([]);
 		});
 	});
 });
