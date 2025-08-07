@@ -15,7 +15,8 @@ export default [
 			'packages/*/types/index.d.ts',
 			'packages/*/types/index.d.ts.map',
 			'packages/*/CHANGELOG.md',
-			'packages/e2e-tests/**/logs/**'
+			'packages/e2e-tests/**/logs/**',
+			'**/.vite-inspect/**'
 		]
 	},
 	...svelteOrgEslintConfig, // contains setup for svelte and typescript

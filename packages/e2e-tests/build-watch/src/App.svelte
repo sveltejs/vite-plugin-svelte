@@ -10,7 +10,7 @@
 	}
 </script>
 
-<h1 id="app-header">Test-App 2</h1>
+<h1 id="app-header">Test-App</h1>
 <!-- to be transformed into "Hello world!" text -->
 <p id="js-transform">{jsTransform}</p>
 <!-- to be transformed into "hello-world" class -->

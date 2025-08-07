@@ -25,7 +25,8 @@ export default {
 				'**/vite.config.js.timestamp-*.mjs',
 				'packages/e2e-tests/dynamic-compile-options/src/components/A.svelte',
 				'packages/playground/big/src/pages/**', // lots of generated files
-				'packages/e2e-tests/scan-deps/src/Svelte*.svelte' // various syntax tests that require no format
+				'packages/e2e-tests/scan-deps/src/Svelte*.svelte', // various syntax tests that require no format
+				'**/.vite-inspect/**'
 			],
 			options: {
 				rangeEnd: 0

@@ -1,10 +1,27 @@
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vite';
 import { transformValidation } from 'e2e-test-dep-vite-plugins';
+// import inspect from 'vite-plugin-inspect';
 
 export default defineConfig(({ command, mode }) => {
 	return {
-		plugins: [transformValidation(), svelte()],
+		plugins: [
+			transformValidation(),
+			svelte()
+			/*
+			inspect({ build: true, outputDir: '.vite-inspect' }),
+			{
+				name: 'vite-plugin-no-ssr-fallback-env',
+				enforce: 'post',
+				config: {
+					order: 'post',
+					handler(c) {
+						delete c.ssr; // workaround to avoid vite-plugin-inspect never finishing due to unused ssr build
+					}
+				}
+			}
+			 */
+		],
 		build: {
 			minify: false,
 			target: 'esnext',
