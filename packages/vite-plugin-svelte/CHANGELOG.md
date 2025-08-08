@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.1.1
+### Patch Changes
+
+
+- fix: ensure compiled svelte css is loaded correctly when rebuilding in `build --watch` ([#1189](https://github.com/sveltejs/vite-plugin-svelte/pull/1189))
+
 ## 6.1.0
 ### Minor Changes
 
