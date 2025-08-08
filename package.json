@@ -3,10 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "run-s -c test:unit \"test:build {@}\" \"test:serve {@}\" --",
+    "test": "run-s -c test:unit \"test:build {@}\" \"test:serve {@}\" \"test:build:watch {@}\" --",
     "test:unit": "vitest run",
     "test:serve": "vitest run -c vitest.config.e2e.ts",
     "test:build": "cross-env TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
+    "test:build:watch": "cross-env TEST_BUILD_WATCH=1 vitest run -c vitest.config.e2e.ts",
     "check": "run-p -c check:*",
     "check:audit": "pnpm audit --prod",
     "check:publint": "pnpm --filter \"./packages/*\" --parallel check:publint",
@@ -78,7 +79,8 @@
       "vite": "$vite",
       "@types/node@<=20.12.0": "20.19.9",
       "send@<0.19.0": "^0.19.1",
-      "@sveltejs/kit>cookie@<0.7.0": "^0.7.2"
+      "@sveltejs/kit>cookie@<0.7.0": "^0.7.2",
+      "vite-plugin-inspect": "/home/dominikg/develop/vite-plugin-inspect"
     },
     "onlyBuiltDependencies": [
       "esbuild"

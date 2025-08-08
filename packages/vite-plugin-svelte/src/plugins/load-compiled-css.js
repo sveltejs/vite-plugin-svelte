@@ -8,8 +8,15 @@ const filter = { id: SVELTE_VIRTUAL_STYLE_ID_REGEX };
  * @returns {import('vite').Plugin}
  */
 export function loadCompiledCss(api) {
+	let isBuildWatch = false;
+	/** @type{Map<string,any>} */
+	const buildWatchCssCache = new Map();
 	return {
 		name: 'vite-plugin-svelte:load-compiled-css',
+
+		configResolved(c) {
+			isBuildWatch = !!c.build?.watch;
+		},
 
 		resolveId: {
 			filter, // same filter in load to ensure minimal work
@@ -26,7 +33,17 @@ export function loadCompiledCss(api) {
 				if (!svelteRequest) {
 					return;
 				}
-				const cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
+				let cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
+				// in build --watch getModuleInfo only returns changed module data.
+				// To ensure virtual css is loaded unchanged, we cache it here separately
+				if (isBuildWatch) {
+					if (cachedCss) {
+						buildWatchCssCache.set(svelteRequest.filename, cachedCss);
+					} else {
+						cachedCss = buildWatchCssCache.get(svelteRequest.filename);
+					}
+				}
+
 				if (cachedCss) {
 					const { hasGlobal, ...css } = cachedCss;
 					if (hasGlobal === false) {
@@ -37,6 +54,8 @@ export function loadCompiledCss(api) {
 					}
 					css.moduleType = 'css';
 					return css;
+				} else {
+					log.warn(`failed to load virtual css module ${id}`, undefined, 'load');
 				}
 			}
 		}

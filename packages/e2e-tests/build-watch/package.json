@@ -1,0 +1,23 @@
+{
+  "name": "e2e-tests-build-watch",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "e2e-test-dep-svelte-simple": "file:../_test_dependencies/svelte-simple"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "workspace:^",
+    "e2e-test-dep-vite-plugins": "file:../_test_dependencies/vite-plugins",
+    "node-fetch": "^3.3.2",
+    "svelte": "^5.36.13",
+    "vite": "^7.0.5",
+    "vite-plugin-inspect": "^11.3.2"
+  },
+  "type": "module"
+}
