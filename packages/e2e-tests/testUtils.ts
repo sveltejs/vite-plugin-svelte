@@ -378,7 +378,7 @@ function filterMessages(arr) {
 		);
 	}
 	if (excludes.length > 0) {
-		return arr.filter((m) => excludes.some((e) => m.includes(e)));
+		return arr.filter((m) => !excludes.some((e) => m.includes(e)));
 	} else {
 		return arr;
 	}
