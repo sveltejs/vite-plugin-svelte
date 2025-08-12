@@ -98,7 +98,7 @@ describe('kit-node', () => {
 
 		it('should load dynamic import with css', async () => {
 			expect(await getText('#dynamic-imported')).toBe("i'm blue");
-			expect(await getColor('#css-transform')).toBe('blue');
+			expect(await getColor('#dynamic-imported')).toBe('blue');
 		});
 
 		it('should respect transforms', async () => {
@@ -198,14 +198,14 @@ describe('kit-node', () => {
 			it('should serve changes even after page reload', async () => {
 				expect(await getColor('h1')).toBe('green');
 				expect(await getText('#hmr-test2')).toBe('bar');
+				expect(await getText('#dynamic-imported')).toBe("i'm blue");
+				expect(await getColor('#dynamic-imported')).toBe('blue');
 				await reloadPage();
 				expect(await getColor('h1')).toBe('green');
 				expect(await getText('#hmr-test2')).toBe('bar');
-			});
-
-			it('should not have errors on reload', async () => {
-				expect(getServerErrors(), 'error log of `vite dev` is not empty before reload').toEqual([]);
-				await reloadPage();
+				await page.waitForSelector('#dynamic-imported', { strict: true });
+				expect(await getText('#dynamic-imported')).toBe("i'm blue");
+				expect(await getColor('#dynamic-imported')).toBe('blue');
 				expect(getServerErrors(), 'error log of `vite dev` is not empty after reload').toEqual([]);
 			});
 

@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
+    "dev": "svelte-kit sync && vite dev",
+    "build": "svelte-kit sync && vite build",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "sync": "svelte-kit sync || echo ''",
