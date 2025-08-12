@@ -12,7 +12,8 @@ import {
 	fetchPageText,
 	reloadPage,
 	readFileContent,
-	IS_SVELTE_BASELINE
+	IS_SVELTE_BASELINE,
+	getServerErrors
 } from '~utils';
 
 import glob from 'tiny-glob';
@@ -93,6 +94,11 @@ describe('kit-node', () => {
 		it('should load dynamic import in onMount', async () => {
 			// expect log to contain message with dynamic import value from onMount
 			expect(browserLogs.some((x) => x === 'onMount dynamic imported isSSR: false')).toBe(true);
+		});
+
+		it('should load dynamic import with css', async () => {
+			expect(await getText('#dynamic-imported')).toBe("i'm blue");
+			expect(await getColor('#dynamic-imported')).toBe('blue');
 		});
 
 		it('should respect transforms', async () => {
@@ -192,9 +198,15 @@ describe('kit-node', () => {
 			it('should serve changes even after page reload', async () => {
 				expect(await getColor('h1')).toBe('green');
 				expect(await getText('#hmr-test2')).toBe('bar');
+				expect(await getText('#dynamic-imported')).toBe("i'm blue");
+				expect(await getColor('#dynamic-imported')).toBe('blue');
 				await reloadPage();
 				expect(await getColor('h1')).toBe('green');
 				expect(await getText('#hmr-test2')).toBe('bar');
+				await page.waitForSelector('#dynamic-imported', { strict: true });
+				expect(await getText('#dynamic-imported')).toBe("i'm blue");
+				expect(await getColor('#dynamic-imported')).toBe('blue');
+				expect(getServerErrors(), 'error log of `vite dev` is not empty after reload').toEqual([]);
 			});
 
 			describe('child component update', () => {

@@ -8,7 +8,8 @@ import {
 	sleep,
 	getColor,
 	browserLogs,
-	e2eServer
+	e2eServer,
+	getWatchErrors
 } from '~utils';
 
 import * as vite from 'vite';
@@ -62,17 +63,6 @@ describe.runIf(isBuildWatch)('build-watch', () => {
 		);
 		const updateApp = editFileAndWaitForBuildWatchComplete.bind(null, 'src/App.svelte');
 		const updateStore = editFileAndWaitForBuildWatchComplete.bind(null, 'src/stores/hmr-stores.js');
-
-		const getWatchErrors = () =>
-			isRolldownVite
-				? e2eServer.logs.watch.err.filter(
-						(m) =>
-							![
-								'Support for rolldown-vite in vite-plugin-svelte is experimental',
-								'See https://github.com/sveltejs/vite-plugin-svelte/issues/1143'
-							].some((s) => m.includes(s))
-					)
-				: e2eServer.logs.watch.err;
 
 		test('should have expected initial state', async () => {
 			// initial state, both counters 0, both labels red

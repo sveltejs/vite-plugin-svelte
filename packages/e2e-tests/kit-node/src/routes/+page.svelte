@@ -4,6 +4,8 @@
 	import Counter from '$lib/Counter.svelte';
 	import Child from '$lib/Child.svelte';
 	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
+	import { browser } from '$app/environment';
+
 	export let data = {};
 	$: load_status = data?.load_status ?? 'NOT_LOADED';
 	const jsTransform = '__JS_TRANSFORM_1__';
@@ -38,6 +40,13 @@
 	<p id="js-transform">{jsTransform}</p>
 	<!-- to be transformed into "hello-world" class -->
 	<p id="css-transform">Hello world</p>
+	{#if browser}
+		{#await import('./DynamicImported.svelte').then((m) => m.default)}
+			loading...
+		{:then DynamicImported}
+			<DynamicImported />
+		{/await}
+	{/if}
 </main>
 
 <!-- HMR-TEMPLATE-INJECT -->

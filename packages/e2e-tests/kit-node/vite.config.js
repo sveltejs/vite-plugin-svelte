@@ -19,5 +19,10 @@ export default {
 	optimizeDeps: {
 		// eagerly include these, otherwise vite optimizer might interfere with restarting while the test is running
 		include: ['svelte-i18n', 'e2e-test-dep-svelte-api-only']
+	},
+	css: {
+		postcss: {
+			plugins: [{ postcssPlugin: 'noop' }]
+		}
 	}
 };

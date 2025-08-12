@@ -257,7 +257,7 @@ importers:
         version: 7.1.1(@types/node@22.17.0)(sass@1.90.0)(stylus@0.64.0)(yaml@2.8.0)
       vite-plugin-inspect:
         specifier: /home/dominikg/develop/vite-plugin-inspect
-        version: link:../../../../../../../../../home/dominikg/develop/vite-plugin-inspect
+        version: link:../../../../../vite-plugin-inspect
 
   packages/e2e-tests/configfile-custom:
     dependencies:
@@ -489,6 +489,9 @@ importers:
       e2e-test-dep-vite-plugins:
         specifier: file:../_test_dependencies/vite-plugins
         version: file:packages/e2e-tests/_test_dependencies/vite-plugins
+      sass:
+        specifier: ^1.90.0
+        version: 1.90.0
       svelte:
         specifier: ^5.38.0
         version: 5.38.0
@@ -4579,14 +4582,6 @@ snapshots:
       chai: 5.2.0
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.2.4(vite@7.1.1(@types/node@20.19.9)(sass@1.90.0)(stylus@0.64.0)(yaml@2.8.0))':
-    dependencies:
-      '@vitest/spy': 3.2.4
-      estree-walker: 3.0.3
-      magic-string: 0.30.17
-    optionalDependencies:
-      vite: 7.1.1(@types/node@20.19.9)(sass@1.90.0)(stylus@0.64.0)(yaml@2.8.0)
-
   '@vitest/mocker@3.2.4(vite@7.1.1(@types/node@22.17.0)(sass@1.90.0)(stylus@0.64.0)(yaml@2.8.0))':
     dependencies:
       '@vitest/spy': 3.2.4
@@ -6410,7 +6405,7 @@ snapshots:
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(vite@7.1.1(@types/node@20.19.9)(sass@1.90.0)(stylus@0.64.0)(yaml@2.8.0))
+      '@vitest/mocker': 3.2.4(vite@7.1.1(@types/node@22.17.0)(sass@1.90.0)(stylus@0.64.0)(yaml@2.8.0))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.2.4
       '@vitest/snapshot': 3.2.4
