@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.1.2
+### Patch Changes
+
+
+- fix: ensure compiled css is returned when reloading during dev with ssr (e.g. SvelteKit) ([#1194](https://github.com/sveltejs/vite-plugin-svelte/pull/1194))
+
 ## 6.1.1
 ### Patch Changes
 
