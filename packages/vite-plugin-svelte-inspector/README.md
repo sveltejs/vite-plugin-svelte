@@ -17,7 +17,7 @@ export default {
 };
 ```
 
-Now simply press `alt-x` on a page served by the vite devserver to activate inspect mode and click to open the file in your editor.
+Now simply press `alt-x` (`option-x` on MacOS) on a page served by the Vite dev server to activate inspect mode. Click on a highlighted element to jump to its source code in your editor.
 
 Also check out the [docs](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/inspector.md) for customization options.
 
