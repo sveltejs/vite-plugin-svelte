@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 5.0.1
+### Patch Changes
+
+
+- docs: update usage instructions in readme and link to docs ([#1197](https://github.com/sveltejs/vite-plugin-svelte/pull/1197))
+
 ## 5.0.0
 ### Major Changes
 
