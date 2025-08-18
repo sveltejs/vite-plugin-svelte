@@ -142,7 +142,7 @@ export default [
 	},
 	{
 		name: 'local/markdown-codefences/allow-require',
-		files: ['documentation/docs/10-plugin/30-faq.md/*.js'],
+		files: ['**/docs/faq.md/*.js', 'documentation/docs/10-plugin/30-faq.md/*.js'],
 		rules: {
 			'@typescript-eslint/no-require-imports': 'off'
 		}

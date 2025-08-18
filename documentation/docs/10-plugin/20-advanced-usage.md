@@ -1,5 +1,5 @@
 ---
-Title: Advanced Usage
+title: Advanced Usage
 ---
 
 > **HERE BE DRAGONS**

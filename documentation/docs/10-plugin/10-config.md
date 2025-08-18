@@ -1,5 +1,5 @@
 ---
-Title: Configuration
+title: Configuration
 ---
 
 `vite-plugin-svelte` accepts inline options that can be used to change its behaviour. An object can be passed to the first argument of the `svelte` plugin:

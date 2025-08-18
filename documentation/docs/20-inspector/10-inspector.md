@@ -1,5 +1,5 @@
 ---
-Title: Inspector
+title: Inspector
 ---
 
 `@sveltejs/vite-plugin-svelte-inspector` is a Vite plugin that adds a Svelte inspector in the browser. It shows the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.

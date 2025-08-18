@@ -1,5 +1,5 @@
 ---
-Title: Frequently Asked Questions
+title: Frequently Asked Questions
 ---
 
 ## Something is wrong with my config, how can I find where the problem comes from?

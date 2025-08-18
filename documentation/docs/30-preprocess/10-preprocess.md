@@ -1,5 +1,5 @@
 ---
-Title: Preprocess
+title: Preprocess
 ---
 
 `vite-plugin-svelte` also exports Vite preprocessors to preprocess Svelte components using Vite's built-in transformers.
