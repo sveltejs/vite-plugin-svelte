@@ -32,7 +32,7 @@ export function preprocess(api) {
 		enforce: 'pre',
 		configResolved(c) {
 			//@ts-expect-error defined below but filter not in type
-			plugin.transform.filter = api.idFilter;
+			plugin.transform.filter = api.filter;
 			options = api.options;
 			if (arraify(options.preprocess).length > 0) {
 				preprocessSvelte = createPreprocessSvelte(options, c);

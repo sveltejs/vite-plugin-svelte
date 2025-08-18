@@ -15,7 +15,7 @@ export function loadCustom(api) {
 		enforce: 'pre', // must come before vites own asset handling or custom extensions like .svg won't work
 		configResolved() {
 			//@ts-expect-error load defined below but filter not in type
-			plugin.load.filter = api.idFilter;
+			plugin.load.filter = api.filter;
 		},
 
 		load: {

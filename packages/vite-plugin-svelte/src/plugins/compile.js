@@ -20,7 +20,7 @@ export function compile(api) {
 		name: 'vite-plugin-svelte:compile',
 		configResolved() {
 			//@ts-expect-error defined below but filter not in type
-			plugin.transform.filter = api.idFilter;
+			plugin.transform.filter = api.filter;
 			options = api.options;
 			compileSvelte = api.compileSvelte;
 		},
