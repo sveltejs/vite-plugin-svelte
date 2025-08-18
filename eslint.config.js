@@ -22,11 +22,11 @@ export default [
 	...svelteOrgEslintConfig, // contains setup for svelte and typescript
 	{
 		name: 'local/typescript-parser-options',
-		files: ['docs/*.md/*.svelte'],
+		files: ['docs/*.md/*.svelte', 'documentation/docs/*/*.md/*.svelte'],
 		languageOptions: {
 			parserOptions: {
 				projectService: {
-					allowDefaultProject: ['docs/*.md/*.svelte']
+					allowDefaultProject: ['docs/*.md/*.svelte', 'documentation/docs/*/*.md/*.svelte']
 				}
 			}
 		}
@@ -142,7 +142,7 @@ export default [
 	},
 	{
 		name: 'local/markdown-codefences/allow-require',
-		files: ['**/docs/faq.md/*.js'],
+		files: ['documentation/docs/10-plugin/30-faq.md/*.js'],
 		rules: {
 			'@typescript-eslint/no-require-imports': 'off'
 		}

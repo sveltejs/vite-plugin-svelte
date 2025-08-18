@@ -33,7 +33,12 @@ export default {
 			}
 		},
 		{
-			files: ['**/package.json', '**/README.md', 'docs/**/*.md', '.changeset/pre.json'],
+			files: [
+				'**/package.json',
+				'**/README.md',
+				'documentation/docs/**/*.md',
+				'.changeset/pre.json'
+			],
 			options: {
 				useTabs: false,
 				tabWidth: 2
