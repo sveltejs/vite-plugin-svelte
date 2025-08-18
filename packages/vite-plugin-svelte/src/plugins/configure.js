@@ -71,8 +71,8 @@ export function configure(api, inlineOptions) {
 					api.options.stats = new VitePluginSvelteStats();
 				}
 
-				api.idFilter = buildIdFilter(options);
-
+				api.filter = buildIdFilter(options);
+				api.idFilter = api.filter;
 				api.idParser = buildIdParser(options);
 				api.compileSvelte = createCompileSvelte();
 				log.debug('resolved options', api.options, 'config');

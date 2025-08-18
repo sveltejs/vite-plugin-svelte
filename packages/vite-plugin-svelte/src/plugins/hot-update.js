@@ -34,12 +34,12 @@ export function hotUpdate(api) {
 			plugin.transform.filter = {
 				id: {
 					// reinclude virtual styles to get their output
-					include: [...api.idFilter.id.include, SVELTE_VIRTUAL_STYLE_ID_REGEX],
+					include: [...api.filter.id.include, SVELTE_VIRTUAL_STYLE_ID_REGEX],
 					exclude: [
 						// ignore files in node_modules, we don't hot update them
 						/\/node_modules\//,
 						// remove style exclusion
-						...api.idFilter.id.exclude.filter((filter) => filter !== SVELTE_VIRTUAL_STYLE_ID_REGEX)
+						...api.filter.id.exclude.filter((filter) => filter !== SVELTE_VIRTUAL_STYLE_ID_REGEX)
 					]
 				}
 			};
