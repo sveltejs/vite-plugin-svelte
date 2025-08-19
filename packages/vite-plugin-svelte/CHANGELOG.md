@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.1.3
+### Patch Changes
+
+
+- fix(api): add `api.filter` and deprecate `api.idFilter` to avoid confusing `filter.id = idFilter.id` assignments when used as hybrid filter in other plugins ([#1199](https://github.com/sveltejs/vite-plugin-svelte/pull/1199))
+
 ## 6.1.2
 ### Patch Changes
 
