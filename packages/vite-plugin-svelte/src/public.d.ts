@@ -121,7 +121,7 @@ export interface SvelteConfig {
 	/**
 	 * An array of preprocessors to transform the Svelte source code before compilation
 	 *
-	 * @see https://svelte.dev/docs#svelte_preprocess
+	 * @see https://svelte.dev/docs/svelte/svelte-compiler#PreprocessorGroup
 	 */
 	preprocess?: Arrayable<PreprocessorGroup>;
 	/**
@@ -129,7 +129,7 @@ export interface SvelteConfig {
 	 * including `dev` and `css`. However, some options are non-configurable, like
 	 * `filename`, `format`, `generate`, and `cssHash` (in dev).
 	 *
-	 * @see https://svelte.dev/docs#svelte_compile
+	 * @see https://svelte.dev/docs/svelte/svelte-compiler#CompileOptions
 	 */
 	compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
 
