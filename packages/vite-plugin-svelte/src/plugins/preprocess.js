@@ -45,7 +45,7 @@ export function preprocess(api) {
 				// @ts-expect-error force set undefined to clear memory
 				preprocessSvelte = undefined;
 				// @ts-expect-error defined below but filter not in type
-				plugin.transform.filter = /$./; // never match
+				plugin.transform.filter = { id: /$./ }; // never match
 			}
 		},
 		configureServer(server) {
