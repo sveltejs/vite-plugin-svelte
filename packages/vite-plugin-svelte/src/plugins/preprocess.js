@@ -22,7 +22,7 @@ export function preprocess(api) {
 	let dependenciesCache;
 
 	/**
-	 * @type {import("../types/compile.d.ts").PreprocessSvelte}
+	 * @type {import("../types/compile.d.ts").PreprocessSvelte | undefined}
 	 */
 	let preprocessSvelte;
 
@@ -42,7 +42,7 @@ export function preprocess(api) {
 					undefined,
 					'preprocess'
 				);
-				delete plugin.transform;
+				preprocessSvelte = undefined;
 			}
 		},
 		configureServer(server) {
@@ -53,6 +53,9 @@ export function preprocess(api) {
 		},
 		transform: {
 			async handler(code, id) {
+				if (!preprocessSvelte) {
+					return;
+				}
 				const ssr = this.environment.config.consumer === 'server';
 				const svelteRequest = api.idParser(id, ssr);
 				if (!svelteRequest) {
