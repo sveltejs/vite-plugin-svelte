@@ -22,7 +22,7 @@ export function preprocess(api) {
 	let dependenciesCache;
 
 	/**
-	 * @type {import("../types/compile.d.ts").PreprocessSvelte | undefined}
+	 * @type {import("../types/compile.d.ts").PreprocessSvelte}
 	 */
 	let preprocessSvelte;
 
@@ -31,18 +31,21 @@ export function preprocess(api) {
 		name: 'vite-plugin-svelte:preprocess',
 		enforce: 'pre',
 		configResolved(c) {
-			//@ts-expect-error defined below but filter not in type
-			plugin.transform.filter = api.filter;
 			options = api.options;
 			if (arraify(options.preprocess).length > 0) {
 				preprocessSvelte = createPreprocessSvelte(options, c);
+				// @ts-expect-error defined below but filter not in type
+				plugin.transform.filter = api.filter;
 			} else {
 				log.debug(
 					`disabling ${plugin.name} because no preprocessor is configured`,
 					undefined,
 					'preprocess'
 				);
+				// @ts-expect-error force set undefined to clear memory
 				preprocessSvelte = undefined;
+				// @ts-expect-error defined below but filter not in type
+				plugin.transform.filter = /$./; // never match
 			}
 		},
 		configureServer(server) {
@@ -53,9 +56,6 @@ export function preprocess(api) {
 		},
 		transform: {
 			async handler(code, id) {
-				if (!preprocessSvelte) {
-					return;
-				}
 				const ssr = this.environment.config.consumer === 'server';
 				const svelteRequest = api.idParser(id, ssr);
 				if (!svelteRequest) {
