@@ -26,6 +26,8 @@ export function preprocess(api) {
 	 */
 	let preprocessSvelte;
 
+	const transformHookCacheKey = Symbol('transform-hook');
+
 	/** @type {import('vite').Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:preprocess',
@@ -34,18 +36,26 @@ export function preprocess(api) {
 			options = api.options;
 			if (arraify(options.preprocess).length > 0) {
 				preprocessSvelte = createPreprocessSvelte(options, c);
+				if (!plugin.transform && Object.hasOwn(plugin, transformHookCacheKey)) {
+					// @ts-expect-error custom cache prop
+					plugin.transform = plugin[transformHookCacheKey];
+				}
 				// @ts-expect-error defined below but filter not in type
 				plugin.transform.filter = api.filter;
 			} else {
-				log.debug(
-					`disabling ${plugin.name} because no preprocessor is configured`,
-					undefined,
-					'preprocess'
-				);
+				if (plugin.transform) {
+					log.debug(
+						`disabling ${plugin.name} because no preprocessor is configured`,
+						undefined,
+						'preprocess'
+					);
+					if (!Object.hasOwn(plugin, transformHookCacheKey)) {
+						Object.defineProperty(plugin, transformHookCacheKey, { value: plugin.transform });
+					}
+					delete plugin.transform;
+				}
 				// @ts-expect-error force set undefined to clear memory
 				preprocessSvelte = undefined;
-				// @ts-expect-error defined below but filter not in type
-				plugin.transform.filter = { id: /$./ }; // never match
 			}
 		},
 		configureServer(server) {
