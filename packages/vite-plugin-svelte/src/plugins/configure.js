@@ -58,7 +58,38 @@ export function configure(api, inlineOptions) {
 				preOptions = await preResolveOptions(inlineOptions, config, configEnv);
 				// extra vite config
 				const extraViteConfig = await buildExtraViteConfig(preOptions, config);
+
+				if (rolldownVersion && configEnv.command === 'build') {
+					const [major, minor, patch, tag] = rolldownVersion
+						.replace(/[^\d.]/g, '')
+						.split('.')
+						.map(Number);
+					if (major > 1 || (major === 1 && (minor > 0 || patch > 0 || tag > 34))) {
+						extraViteConfig.build ??= {};
+						// rename rollupOptions to rolldownOptions
+						//@ts-ignore rolldownOptions only exists in rolldown-vite
+						extraViteConfig.build.rolldownOptions = extraViteConfig.build.rollupOptions || {};
+						delete extraViteConfig.build.rollupOptions;
+
+						// set inlineConst
+						// TODO is `inlineConst: "safe"` safe to use with esm-env (we have to ensure it is always inlined)
+						if (
+							//@ts-ignore optimization only exists in rolldown-vite
+							config.build?.rollupOptions?.optimization?.inlineConst == null &&
+							//@ts-ignore rolldownOptions only exists in rolldown-vite
+							config.build?.rolldownOptions?.optimization?.inlineConst == null
+						) {
+							// set inlineConst build optimization for esm-env
+							//@ts-ignore rolldownOptions only exists in rolldown-vite
+							extraViteConfig.build.rolldownOptions.optimization ??= {};
+							//@ts-ignore rolldownOptions only exists in rolldown-vite
+							extraViteConfig.build.rolldownOptions.optimization.inlineConst = true;
+						}
+					}
+				}
+
 				log.debug('additional vite config', extraViteConfig, 'config');
+
 				return extraViteConfig;
 			}
 		},
