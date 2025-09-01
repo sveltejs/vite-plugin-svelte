@@ -721,7 +721,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5
       magic-string:
-        specifier: ^0.30.18
+        specifier: ^0.30.17
         version: 0.30.18
       vitefu:
         specifier: ^1.1.1
@@ -1251,9 +1251,6 @@ packages:
 
   '@jridgewell/source-map@0.3.6':
     resolution: {integrity: sha512-1ZJTZebgqllO79ue2bm3rIGud/bOe0pP5BjSRCRxxYkEZS8STV7zN84UBbiYu7jy+eCKSnVIUgoWWE/tt+shMQ==}
-
-  '@jridgewell/sourcemap-codec@1.5.0':
-    resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
@@ -2252,14 +2249,6 @@ packages:
   fastq@1.19.1:
     resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
 
-  fdir@6.4.6:
-    resolution: {integrity: sha512-hiFoqpyZcfNm1yc4u8oWCf9A2c4D3QjCrks3zmoVKVxpQRzmPNar1hUJcBG2RQHvEVGDN+Jm81ZheVLAQMK6+w==}
-    peerDependencies:
-      picomatch: ^3 || ^4
-    peerDependenciesMeta:
-      picomatch:
-        optional: true
-
   fdir@6.5.0:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
     engines: {node: '>=12.0.0'}
@@ -2616,9 +2605,6 @@ packages:
 
   lru-queue@0.1.0:
     resolution: {integrity: sha512-BpdYkt9EvGl8OfWHDQPISVpcl5xZthb+XPsbELj5AQXxIC8IriDZIQYjBJPEm5rS420sjZ0TLEzRcq5KdBhYrQ==}
-
-  magic-string@0.30.17:
-    resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
 
   magic-string@0.30.18:
     resolution: {integrity: sha512-yi8swmWbO17qHhwIBNeeZxTceJMeBvWJaId6dyvTSOwTipqeHhMhOrz6513r1sOKnpvQ7zkhlG8tPrpilwTxHQ==}
@@ -3999,7 +3985,7 @@ snapshots:
   '@jridgewell/gen-mapping@0.3.8':
     dependencies:
       '@jridgewell/set-array': 1.2.1
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       '@jridgewell/trace-mapping': 0.3.25
 
   '@jridgewell/remapping@2.3.5':
@@ -4016,14 +4002,12 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@jridgewell/sourcemap-codec@1.5.0': {}
-
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
   '@jridgewell/trace-mapping@0.3.25':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   '@manypkg/find-root@1.1.0':
     dependencies:
@@ -4128,7 +4112,7 @@ snapshots:
       '@rollup/pluginutils': 5.1.4(rollup@4.46.2)
       commondir: 1.0.1
       estree-walker: 2.0.2
-      fdir: 6.4.6(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.3)
       is-reference: 1.2.1
       magic-string: 0.30.18
       picomatch: 4.0.3
@@ -4725,7 +4709,7 @@ snapshots:
   dts-buddy@0.6.2(typescript@5.9.2):
     dependencies:
       '@jridgewell/source-map': 0.3.6
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       kleur: 4.1.5
       locate-character: 3.0.0
       magic-string: 0.30.18
@@ -4934,7 +4918,7 @@ snapshots:
   eslint-plugin-svelte@3.11.0(eslint@9.34.0)(svelte@5.38.6):
     dependencies:
       '@eslint-community/eslint-utils': 4.7.0(eslint@9.34.0)
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       eslint: 9.34.0
       esutils: 2.0.3
       globals: 16.3.0
@@ -5021,7 +5005,7 @@ snapshots:
 
   esrap@2.1.0:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   esrecurse@4.3.0:
     dependencies:
@@ -5083,10 +5067,6 @@ snapshots:
   fastq@1.19.1:
     dependencies:
       reusify: 1.1.0
-
-  fdir@6.4.6(picomatch@4.0.3):
-    optionalDependencies:
-      picomatch: 4.0.3
 
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
@@ -5456,10 +5436,6 @@ snapshots:
   lru-queue@0.1.0:
     dependencies:
       es5-ext: 0.10.64
-
-  magic-string@0.30.17:
-    dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
 
   magic-string@0.30.18:
     dependencies:
@@ -5959,7 +5935,7 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       chokidar: 4.0.3
-      fdir: 6.4.6(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.3)
       picocolors: 1.1.1
       sade: 1.8.1
       svelte: 5.38.6
@@ -6009,7 +5985,7 @@ snapshots:
   svelte@5.38.6:
     dependencies:
       '@jridgewell/remapping': 2.3.5
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       '@sveltejs/acorn-typescript': 1.0.5(acorn@8.15.0)
       '@types/estree': 1.0.8
       acorn: 8.15.0
@@ -6050,7 +6026,7 @@ snapshots:
 
   tinyglobby@0.2.14:
     dependencies:
-      fdir: 6.4.6(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
 
   tinypool@1.1.1: {}
@@ -6238,7 +6214,7 @@ snapshots:
       chai: 5.2.0
       debug: 4.4.1
       expect-type: 1.2.1
-      magic-string: 0.30.17
+      magic-string: 0.30.18
       pathe: 2.0.3
       picomatch: 4.0.3
       std-env: 3.9.0
@@ -6281,7 +6257,7 @@ snapshots:
       chai: 5.2.0
       debug: 4.4.1
       expect-type: 1.2.1
-      magic-string: 0.30.17
+      magic-string: 0.30.18
       pathe: 2.0.3
       picomatch: 4.0.3
       std-env: 3.9.0
