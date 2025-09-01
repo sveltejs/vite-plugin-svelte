@@ -1,5 +1,10 @@
 /* eslint-disable no-console */
-import { cyan, red, yellow } from 'kleur/colors';
+
+import { styleText } from 'node:util';
+const cyan = (/** @type {string} */ txt) => styleText('cyan', txt);
+const yellow = (/** @type {string} */ txt) => styleText('yellow', txt);
+const red = (/** @type {string} */ txt) => styleText('red', txt);
+
 import debug from 'debug';
 
 /** @type {import('../types/log.d.ts').LogLevel[]} */
