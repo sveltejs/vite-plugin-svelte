@@ -234,6 +234,18 @@ importers:
         specifier: ^7.1.2
         version: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(stylus@0.64.0)(yaml@2.8.1)
 
+  packages/e2e-tests/build-multiple:
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: workspace:^
+        version: link:../../vite-plugin-svelte
+      svelte:
+        specifier: ^5.38.2
+        version: 5.38.2
+      vite:
+        specifier: ^7.1.2
+        version: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(stylus@0.64.0)(yaml@2.8.1)
+
   packages/e2e-tests/build-watch:
     dependencies:
       e2e-test-dep-svelte-simple:
@@ -257,7 +269,7 @@ importers:
         version: 7.1.2(@types/node@22.17.2)(sass@1.90.0)(stylus@0.64.0)(yaml@2.8.1)
       vite-plugin-inspect:
         specifier: /home/dominikg/develop/vite-plugin-inspect
-        version: link:../../../../../../../../../home/dominikg/develop/vite-plugin-inspect
+        version: link:../../../../../../../../home/dominikg/develop/vite-plugin-inspect
 
   packages/e2e-tests/configfile-custom:
     dependencies:
@@ -2836,10 +2848,6 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
-  picomatch@4.0.2:
-    resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
-    engines: {node: '>=12'}
-
   picomatch@4.0.3:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
@@ -5062,10 +5070,6 @@ snapshots:
     dependencies:
       reusify: 1.1.0
 
-  fdir@6.4.6(picomatch@4.0.2):
-    optionalDependencies:
-      picomatch: 4.0.2
-
   fdir@6.4.6(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
@@ -5545,7 +5549,7 @@ snapshots:
       ansi-styles: 6.2.1
       cross-spawn: 7.0.6
       memorystream: 0.3.1
-      picomatch: 4.0.2
+      picomatch: 4.0.3
       pidtree: 0.6.0
       read-package-json-fast: 4.0.0
       shell-quote: 1.8.2
@@ -5656,8 +5660,6 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
-
-  picomatch@4.0.2: {}
 
   picomatch@4.0.3: {}
 
@@ -6026,8 +6028,8 @@ snapshots:
 
   tinyglobby@0.2.14:
     dependencies:
-      fdir: 6.4.6(picomatch@4.0.2)
-      picomatch: 4.0.2
+      fdir: 6.4.6(picomatch@4.0.3)
+      picomatch: 4.0.3
 
   tinypool@1.1.1: {}
 
@@ -6216,7 +6218,7 @@ snapshots:
       expect-type: 1.2.1
       magic-string: 0.30.17
       pathe: 2.0.3
-      picomatch: 4.0.2
+      picomatch: 4.0.3
       std-env: 3.9.0
       tinybench: 2.9.0
       tinyexec: 0.3.2
@@ -6259,7 +6261,7 @@ snapshots:
       expect-type: 1.2.1
       magic-string: 0.30.17
       pathe: 2.0.3
-      picomatch: 4.0.2
+      picomatch: 4.0.3
       std-env: 3.9.0
       tinybench: 2.9.0
       tinyexec: 0.3.2

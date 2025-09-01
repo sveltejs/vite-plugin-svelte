@@ -31,18 +31,21 @@ export function preprocess(api) {
 		name: 'vite-plugin-svelte:preprocess',
 		enforce: 'pre',
 		configResolved(c) {
-			//@ts-expect-error defined below but filter not in type
-			plugin.transform.filter = api.filter;
 			options = api.options;
 			if (arraify(options.preprocess).length > 0) {
 				preprocessSvelte = createPreprocessSvelte(options, c);
+				// @ts-expect-error defined below but filter not in type
+				plugin.transform.filter = api.filter;
 			} else {
 				log.debug(
 					`disabling ${plugin.name} because no preprocessor is configured`,
 					undefined,
 					'preprocess'
 				);
-				delete plugin.transform;
+				// @ts-expect-error force set undefined to clear memory
+				preprocessSvelte = undefined;
+				// @ts-expect-error defined below but filter not in type
+				plugin.transform.filter = { id: /$./ }; // never match
 			}
 		},
 		configureServer(server) {
