@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.1.4
+### Patch Changes
+
+
+- fix: allow preprocess plugin to run twice ([#1206](https://github.com/sveltejs/vite-plugin-svelte/pull/1206))
+
+
+- fix(types): update urls to PreprocessorGroup and CompileOptions in type documention ([#1203](https://github.com/sveltejs/vite-plugin-svelte/pull/1203))
+
+
+- replace kleur dependency with builtin node:utils styleText ([#1210](https://github.com/sveltejs/vite-plugin-svelte/pull/1210))
+
 ## 6.1.3
 ### Patch Changes
 
