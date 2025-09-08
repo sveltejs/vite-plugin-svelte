@@ -36,6 +36,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: false # pnpm is not installed yet
       - name: install pnpm
         shell: bash
         run: |
@@ -45,8 +46,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
-          cache: 'pnpm'
-          cache-dependency-path: '**/pnpm-lock.yaml'
+          package-manager-cache: true # caches pnpm via packageManager field in package.json
       - name: install
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: sync
