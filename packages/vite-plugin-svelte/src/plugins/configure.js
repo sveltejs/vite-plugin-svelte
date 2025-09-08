@@ -70,20 +70,23 @@ export function configure(api, inlineOptions) {
 						//@ts-ignore rolldownOptions only exists in rolldown-vite
 						extraViteConfig.build.rolldownOptions = extraViteConfig.build.rollupOptions || {};
 						delete extraViteConfig.build.rollupOptions;
-
-						// set inlineConst
-						// TODO is `inlineConst: "safe"` safe to use with esm-env (we have to ensure it is always inlined)
-						if (
+						// read user config inlineConst value
+						const inlineConst =
 							//@ts-ignore optimization only exists in rolldown-vite
-							config.build?.rollupOptions?.optimization?.inlineConst == null &&
-							//@ts-ignore rolldownOptions only exists in rolldown-vite
-							config.build?.rolldownOptions?.optimization?.inlineConst == null
-						) {
+							config.build?.rolldownOptions?.optimization?.inlineConst ??
+							//@ts-ignore optimization only exists in rolldown-vite
+							config.build?.rollupOptions?.optimization?.inlineConst;
+
+						if (inlineConst == null) {
 							// set inlineConst build optimization for esm-env
 							//@ts-ignore rolldownOptions only exists in rolldown-vite
 							extraViteConfig.build.rolldownOptions.optimization ??= {};
 							//@ts-ignore rolldownOptions only exists in rolldown-vite
 							extraViteConfig.build.rolldownOptions.optimization.inlineConst = true;
+						} else if (inlineConst === false) {
+							log.warn(
+								'Your rolldown config contains `optimization.inlineConst: false`. This can lead to increased bundle size and leaked server code in client build.'
+							);
 						}
 					}
 				}
