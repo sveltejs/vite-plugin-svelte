@@ -8,6 +8,7 @@
 	],
 	"labels": ["dependencies"],
 	"rangeStrategy": "update-lockfile",
+	"postUpdateOptions": ["pnpmDedupe"],
 	"packageRules": [
 		{
 			"matchDepTypes": ["peerDependencies","engines"],
