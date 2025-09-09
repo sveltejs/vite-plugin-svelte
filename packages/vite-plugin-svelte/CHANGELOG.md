@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.2.0
+### Minor Changes
+
+
+- feat(rolldown-vite): enable `optimization.inlineConst` by default to ensure treeshaking works with esm-env in svelte ([#1207](https://github.com/sveltejs/vite-plugin-svelte/pull/1207))
+
 ## 6.1.4
 ### Patch Changes
 
