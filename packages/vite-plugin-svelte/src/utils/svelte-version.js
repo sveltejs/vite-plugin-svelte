@@ -11,10 +11,17 @@ export const isSvelteWithAsync = gte(VERSION, '5.36.0');
  * @return {number[]} [major,minor,patch,tag]
  */
 function splitToNumbers(semver) {
-	return semver
+	const num = semver
 		.replace(/[^\d.-]/g, '')
 		.split(/[.-]+/, 4)
 		.map(Number);
+	while (num.length < 3) {
+		num.push(0);
+	}
+	if (num.length < 4) {
+		num.push(Infinity);
+	}
+	return num;
 }
 
 /**
