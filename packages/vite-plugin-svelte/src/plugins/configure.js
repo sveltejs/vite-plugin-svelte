@@ -12,6 +12,7 @@ import {
 } from '../utils/options.js';
 import { buildIdFilter, buildIdParser } from '../utils/id.js';
 import { createCompileSvelte } from '../utils/compile.js';
+import { gte } from '../utils/svelte-version.js';
 
 // @ts-ignore rolldownVersion
 const { version: viteVersion, rolldownVersion } = vite;
@@ -58,7 +59,39 @@ export function configure(api, inlineOptions) {
 				preOptions = await preResolveOptions(inlineOptions, config, configEnv);
 				// extra vite config
 				const extraViteConfig = await buildExtraViteConfig(preOptions, config);
+
+				if (
+					rolldownVersion &&
+					configEnv.command === 'build' &&
+					gte(rolldownVersion, '1.0.0-beta.35') // inlineConst received a critical bugfix in 1.0.0-beta.35
+				) {
+					extraViteConfig.build ??= {};
+					// rename rollupOptions to rolldownOptions
+					//@ts-ignore rolldownOptions only exists in rolldown-vite
+					extraViteConfig.build.rolldownOptions = extraViteConfig.build.rollupOptions || {};
+					delete extraViteConfig.build.rollupOptions;
+					// read user config inlineConst value
+					const inlineConst =
+						//@ts-ignore optimization only exists in rolldown-vite
+						config.build?.rolldownOptions?.optimization?.inlineConst ??
+						//@ts-ignore optimization only exists in rolldown-vite
+						config.build?.rollupOptions?.optimization?.inlineConst;
+
+					if (inlineConst == null) {
+						// set inlineConst build optimization for esm-env
+						//@ts-ignore rolldownOptions only exists in rolldown-vite
+						extraViteConfig.build.rolldownOptions.optimization ??= {};
+						//@ts-ignore rolldownOptions only exists in rolldown-vite
+						extraViteConfig.build.rolldownOptions.optimization.inlineConst = true;
+					} else if (inlineConst === false) {
+						log.warn(
+							'Your rolldown config contains `optimization.inlineConst: false`. This can lead to increased bundle size and leaked server code in client build.'
+						);
+					}
+				}
+
 				log.debug('additional vite config', extraViteConfig, 'config');
+
 				return extraViteConfig;
 			}
 		},
