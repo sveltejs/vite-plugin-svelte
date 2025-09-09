@@ -6,15 +6,27 @@ import { VERSION } from 'svelte/compiler';
 export const isSvelteWithAsync = gte(VERSION, '5.36.0');
 
 /**
- * compare semver versions, does not include comparing tags (-next.xy is ignored)
+ * split semver string and convert to number, ignores non digits in tag
+ * @param {string} semver
+ * @return {number[]} [major,minor,patch,tag]
+ */
+function splitToNumbers(semver) {
+	return semver
+		.replace(/[^\d.-]/g, '')
+		.split(/[.-]+/, 4)
+		.map(Number);
+}
+
+/**
+ * compare semver versions, tags are compared by their numeric part only
  *
  * @param {string} a semver version
  * @param {string} b semver version
  * @return {boolean} true if a is greater or equal to b
  */
 export function gte(a, b) {
-	const aNum = a.split(/[.-]/, 3).map(Number);
-	const bNum = b.split(/[.-]/, 3).map(Number);
+	const aNum = splitToNumbers(a);
+	const bNum = splitToNumbers(b);
 	for (let i = 0; i < aNum.length; i++) {
 		if (aNum[i] < bNum[i]) {
 			return false;
