@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         # pseudo-matrix for convenience, NEVER use more than a single combination
-        node: [22]
+        node: [24]
         os: [ubuntu-latest]
     steps:
       - name: checkout
@@ -47,13 +47,7 @@ jobs:
         run: pnpm generate:types && [ "`git status --porcelain=v1`" == "" ]
       - name: publint
         run: pnpm check:publint
-      - name: Creating .npmrc
-        run: |
-          cat << EOF > "$HOME/.npmrc"
-            //registry.npmjs.org/:_authToken=$NPM_TOKEN
-          EOF
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         # pinned for security, always review third party action code before updating
@@ -63,10 +57,4 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-      - name: Remove .npmrc
-        if: always()
-        run: |
-          echo "#deleted" > "$HOME/.npmrc"
-          rm -f "$HOME/.npmrc"
