@@ -2,3 +2,12 @@ packages:
   - 'packages/*'
   - 'packages/e2e-tests/*'
   - 'packages/e2e-tests/_test_dependencies/*'
+
+# settings
+
+#cli output
+aggregateOutput: true
+reporter: append-only
+
+# needed for _test_dependencies
+dedupeInjectedDeps: false
