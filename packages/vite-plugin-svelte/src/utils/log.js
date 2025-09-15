@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 
+// eslint-disable-next-line n/no-unsupported-features/node-builtins
 import { styleText } from 'node:util';
 const cyan = (/** @type {string} */ txt) => styleText('cyan', txt);
 const yellow = (/** @type {string} */ txt) => styleText('yellow', txt);
