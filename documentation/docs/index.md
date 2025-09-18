@@ -1,0 +1,3 @@
+---
+title: vite-plugin-svelte
+---
