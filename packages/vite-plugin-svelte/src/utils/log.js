@@ -146,9 +146,7 @@ export function logCompilerWarnings(svelteRequest, warnings, options) {
 	let warn = isBuild ? warnBuild : warnDev;
 	/** @type {import('svelte/compiler').Warning[]} */
 	const handledByDefaultWarn = [];
-	const notIgnored = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
-	const extra = buildExtraWarnings(warnings, isBuild);
-	const allWarnings = [...notIgnored, ...extra];
+	const allWarnings = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
 	if (sendViaWS) {
 		const _warn = warn;
 		/** @type {(w: import('svelte/compiler').Warning) => void} */
@@ -201,31 +199,6 @@ function ignoreCompilerWarning(warning, isBuild, emitCss) {
 function isNoScopableElementWarning(warning) {
 	// see https://github.com/sveltejs/vite-plugin-svelte/issues/153
 	return warning.code === 'css_unused_selector' && warning.message.includes('"*"');
-}
-
-/**
- *
- * @param {import('svelte/compiler').Warning[]} warnings
- * @param {boolean} isBuild
- * @returns {import('svelte/compiler').Warning[]}
- */
-function buildExtraWarnings(warnings, isBuild) {
-	const extraWarnings = [];
-	if (!isBuild) {
-		const noScopableElementWarnings = warnings.filter((w) => isNoScopableElementWarning(w));
-		if (noScopableElementWarnings.length > 0) {
-			// in case there are multiple, use last one as that is the one caused by our *{} rule
-			const noScopableElementWarning =
-				noScopableElementWarnings[noScopableElementWarnings.length - 1];
-			extraWarnings.push({
-				...noScopableElementWarning,
-				code: 'vite-plugin-svelte-css-no-scopable-elements',
-				message:
-					"No scopable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles."
-			});
-		}
-	}
-	return extraWarnings;
 }
 
 /**
