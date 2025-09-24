@@ -102,5 +102,12 @@ jobs:
           else
             TAG=latest
           fi
+
+          if [[ "$GIT_STATUS" != "" ]]; then
+            echo "dirty git state, aborting publish"
+            echo "$GIT_STATUS";
+            exit 1
+          fi
+
           # publish
           pnpm -r --no-bail $PUBLISH_PACKAGES_FILTER publish --no-git-checks --tag $TAG --access public
