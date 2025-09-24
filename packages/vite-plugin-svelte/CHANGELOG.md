@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.2.1
+### Patch Changes
+
+
+- fix: remove unscopable global styles warning ([#1223](https://github.com/sveltejs/vite-plugin-svelte/pull/1223))
+
+
+- Remove automatic configuration for rolldownOptions.optimization.inlineConst because latest version of rolldown-vite has it enabled by default. ([#1225](https://github.com/sveltejs/vite-plugin-svelte/pull/1225))
+
 ## 6.2.0
 ### Minor Changes
 
