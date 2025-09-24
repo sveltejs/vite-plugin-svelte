@@ -6,7 +6,9 @@ const {
 	defaultClientConditions,
 	defaultServerConditions,
 	normalizePath,
-	searchForWorkspaceRoot
+	searchForWorkspaceRoot,
+	// @ts-ignore
+	rolldownVersion
 } = vite;
 import { log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
@@ -415,6 +417,20 @@ function validateViteConfig(extraViteConfig, config, options) {
 				'optimizeDeps.disabled',
 				viteOptimizeDepsDisabled,
 				'Disable optimizeDeps or prebundleSvelteLibraries for build if you experience errors.'
+			);
+		}
+	}
+	if (rolldownVersion && isBuild) {
+		// read user config inlineConst value
+		const inlineConst =
+			//@ts-ignore optimization only exists in rolldown-vite
+			config.build?.rolldownOptions?.optimization?.inlineConst ??
+			//@ts-ignore optimization only exists in rolldown-vite
+			config.build?.rollupOptions?.optimization?.inlineConst;
+
+		if (inlineConst === false) {
+			log.warn(
+				'Your rolldown config contains `optimization.inlineConst: false`. This can lead to increased bundle size and leaked server code in client build.'
 			);
 		}
 	}
