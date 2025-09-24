@@ -4,57 +4,102 @@ on:
   push:
     branches:
       - main
+
 permissions: {}
 
 jobs:
-  release:
+  checks:
     permissions:
-      contents: write # to create release (changesets/action)
-      id-token: write # OpenID Connect token needed for provenance
-      pull-requests: write # to create pull request (changesets/action)
-    # prevents this action from running on forks
+      contents: read
     if: github.repository == 'sveltejs/vite-plugin-svelte'
-    name: Release
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # pseudo-matrix for convenience, NEVER use more than a single combination
-        node: [24]
-        os: [ubuntu-latest]
+    name: Checks
+    runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v5
+      - name: Harden the runner
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
         with:
-          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
-          fetch-depth: 0
-      - uses: actions/setup-node@v5
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            release-assets.githubusercontent.com:443
+            registry.npmjs.org:443
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
-          node-version: ${{ matrix.node }}
-          package-manager-cache: false # pnpm is not installed yet
-      - name: install pnpm
-        shell: bash
-        run: |
-          PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
-          echo installing pnpm version $PNPM_VER
-          npm i -g pnpm@$PNPM_VER
-      - uses: actions/setup-node@v5
-        with:
-          node-version: ${{ matrix.node }}
-          package-manager-cache: true # caches pnpm via packageManager field in package.json
-      - name: install
-        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
+          persist-credentials: 'false'
+      - uses: ./.github/actions/setup-node
       - name: generated types are up to date
         run: pnpm generate:types && [ "`git status --porcelain=v1`" == "" ]
       - name: publint
         run: pnpm check:publint
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        # pinned for security, always review third party action code before updating
-        uses: changesets/action@e0145edc7d9d8679003495b11f87bd8ef63c0cba # v1.5.3
+  changesets:
+    needs: checks
+    permissions:
+      contents: write # to create releases (changesets/action)
+      pull-requests: write # to create version pull requests (changesets/action)
+    name: Changesets
+    runs-on: ubuntu-latest
+    outputs:
+      published: ${{steps.changesets.outputs.published}}
+      publishedPackages: ${{steps.changesets.outputs.publishedPackages}}
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
         with:
-          # This expects you to have a script called release which does a build for your packages and calls changeset publish
-          publish: pnpm release
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            release-assets.githubusercontent.com:443
+            registry.npmjs.org:443
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: 'false'
+      - uses: ./.github/actions/setup-node
+      - uses: changesets/action@e0145edc7d9d8679003495b11f87bd8ef63c0cba # v1.5.3
+        id: changesets
+        with:
+          publish: pnpm exec changeset tag #only create git tag, publish to registry happens later
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # needed for some github api calls changesets makes
+  publish:
+    needs: changesets
+    if: needs.changesets.outputs.published == 'true'
+    permissions:
+      contents: read
+      id-token: write
+    environment: release
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            release-assets.githubusercontent.com:443
+            registry.npmjs.org:443
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: 'false'
+      - uses: ./.github/actions/setup-node
+        with:
+          install-deps: 'false'
+      - name: publish
+        shell: bash
+        run: |
+          echo 'publishing ${{needs.changesets.outputs.publishedPackages}}'
+
+          # generate "--filter package1 --filter package2"
+          PUBLISH_PACKAGES_FILTER=$(echo '${{needs.changesets.outputs.publishedPackages}}' | jq -r '.[] | " --filter " + "\"" + .name+ "\""' | xargs)
+
+          if [[ -f .changeset/pre.json ]]; then
+            TAG=$(jq -r '.tag' .changeset/pre.json)
+          else
+            TAG=latest
+          fi
+          # publish
+          pnpm -r --no-bail $PUBLISH_PACKAGES_FILTER publish --no-git-checks --tag $TAG --access public
