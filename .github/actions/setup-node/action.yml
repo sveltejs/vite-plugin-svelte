@@ -1,0 +1,33 @@
+name: 'setup'
+description: 'composite for shared job setup'
+inputs:
+  node-version:
+    description: 'node version'
+    default: '24'
+  install-deps:
+    description: 'install deps'
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    # the following 2 steps are a replacement for pnpms own setup action that contains a lot of code
+    - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+      with:
+        node-version: ${{inputs.node-version}}
+        package-manager-cache: false
+    - name: install pnpm
+      shell: bash
+      run: |
+        PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
+        echo installing pnpm version $PNPM_VER
+        npm i --ignore-scripts -g pnpm@$PNPM_VER
+    - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+      if: ${{inputs.install-deps == 'true'}}
+      with:
+        node-version: ${{inputs.node-version}}
+        package-manager-cache: true
+    - name: install dependencies
+      if: ${{inputs.install-deps == 'true'}}
+      shell: bash
+      run: pnpm install --frozen-lockfile --ignore-scripts
