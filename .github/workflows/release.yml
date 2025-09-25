@@ -63,6 +63,7 @@ jobs:
           publish: pnpm exec changeset tag #only create git tag, publish to registry happens later
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # needed for some github api calls changesets makes
+
   publish:
     needs: changesets
     if: needs.changesets.outputs.published == 'true'
@@ -103,6 +104,7 @@ jobs:
             TAG=latest
           fi
 
+          GIT_STATUS=$(git status --porcelain=v1)
           if [[ "$GIT_STATUS" != "" ]]; then
             echo "dirty git state, aborting publish"
             echo "$GIT_STATUS";
