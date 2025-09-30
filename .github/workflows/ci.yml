@@ -29,26 +29,24 @@ jobs:
     strategy:
       matrix:
         # pseudo-matrix for convenience, NEVER use more than a single combination
-        node: [22]
+        node: [24]
         os: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - name: Harden the runner
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            release-assets.githubusercontent.com:443
+            registry.npmjs.org:443
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: 'false'
+      - uses: ./.github/actions/setup-node
         with:
           node-version: ${{ matrix.node }}
-          package-manager-cache: false # pnpm is not installed yet
-      - name: install pnpm
-        shell: bash
-        run: |
-          PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
-          echo installing pnpm version $PNPM_VER
-          npm i -g pnpm@$PNPM_VER
-      - uses: actions/setup-node@v5
-        with:
-          node-version: ${{ matrix.node }}
-          package-manager-cache: true # caches pnpm via packageManager field in package.json
-      - name: install
-        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: sync
         run: pnpm -r sync # required to ensure sveltekit test project have tsconfig.json which may be required by the checks below
       - name: format
@@ -100,24 +98,22 @@ jobs:
             vite: 'rolldown-vite'
             svelte: 'current'
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - name: Harden the runner
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            release-assets.githubusercontent.com:443
+            registry.npmjs.org:443
+            cdn.playwright.dev:443
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: 'false'
+      - uses: ./.github/actions/setup-node
         with:
           node-version: ${{ matrix.node }}
-          package-manager-cache: false # pnpm is not installed yet
-      - name: install pnpm
-        shell: bash
-        run: |
-          PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
-          echo installing pnpm version $PNPM_VER
-          npm i -g pnpm@$PNPM_VER
-      - uses: actions/setup-node@v5
-        with:
-          node-version: ${{ matrix.node }}
-          package-manager-cache: true # caches pnpm via packageManager field in package.json
-      - name: install
-        run: pnpm install --frozen-lockfile --ignore-scripts
       - name: downgrade vite to baseline
         if: matrix.vite == 'baseline'
         run: |
@@ -131,6 +127,8 @@ jobs:
       - name: update vite to rolldown-vite
         if: matrix.vite == 'rolldown-vite'
         run: |
+          # disable minimumReleaseAge as rolldown-vite often uses deps with age less than 3 days
+          sed -i 's/minimumReleaseAge:/#minimumReleaseAge:/g' pnpm-workspace.yaml
           pnpm update -r --no-save vite@npm:rolldown-vite@latest
           pnpm ls rolldown-vite
       - name: install playwright chromium
@@ -144,7 +142,7 @@ jobs:
         if: failure()
         shell: bash
         run: tar -cvf test-temp.tar  --exclude="node_modules"  temp/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: failure()
         with:
           name: test-failure-${{github.run_id}}-os_${{ matrix.os }}-node_${{ matrix.node }}-vite_${{ matrix.vite }}-svelte_${{matrix.svelte}}
