@@ -47,8 +47,6 @@ jobs:
       - uses: ./.github/actions/setup-node
         with:
           node-version: ${{ matrix.node }}
-      - name: install
-        run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: sync
         run: pnpm -r sync # required to ensure sveltekit test project have tsconfig.json which may be required by the checks below
       - name: format
