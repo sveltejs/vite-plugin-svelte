@@ -127,6 +127,8 @@ jobs:
       - name: update vite to rolldown-vite
         if: matrix.vite == 'rolldown-vite'
         run: |
+          # disable minimumReleaseAge as rolldown-vite often uses deps with age less than 3 days
+          sed -i 's/minimumReleaseAge:/#minimumReleaseAge:/g' pnpm-workspace.yaml
           pnpm update -r --no-save vite@npm:rolldown-vite@latest
           pnpm ls rolldown-vite
       - name: install playwright chromium
