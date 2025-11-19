@@ -6,7 +6,7 @@ const cyan = (/** @type {string} */ txt) => styleText('cyan', txt);
 const yellow = (/** @type {string} */ txt) => styleText('yellow', txt);
 const red = (/** @type {string} */ txt) => styleText('red', txt);
 
-import debug from 'debug';
+import { createDebug, enabled } from 'obug';
 
 /** @type {import('../types/log.d.ts').LogLevel[]} */
 const levels = ['debug', 'info', 'warn', 'error', 'silent'];
@@ -14,7 +14,7 @@ const prefix = 'vite-plugin-svelte';
 /** @type {Record<import('../types/log.d.ts').LogLevel, any>} */
 const loggers = {
 	debug: {
-		log: debug(`${prefix}`),
+		log: createDebug(`${prefix}`),
 		enabled: false,
 		isDebug: true
 	},
@@ -252,5 +252,5 @@ export function buildExtendedLogMessage(w) {
  * @returns {boolean}
  */
 export function isDebugNamespaceEnabled(namespace) {
-	return debug.enabled(`${prefix}:${namespace}`);
+	return enabled(`${prefix}:${namespace}`);
 }

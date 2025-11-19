@@ -1,3 +1,3 @@
-import _debug from 'debug';
+import { createDebug } from 'obug';
 
-export const debug = _debug('vite-plugin-svelte-inspector');
+export const debug = createDebug('vite-plugin-svelte-inspector');
