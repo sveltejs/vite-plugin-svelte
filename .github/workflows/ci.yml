@@ -94,10 +94,10 @@ jobs:
             os: ubuntu-latest
             vite: 'baseline'
             svelte: 'baseline'
-          # future test with rolldown-vite
+          # future test with vite-8-beta
           - node: 24
             os: ubuntu-latest
-            vite: 'rolldown-vite'
+            vite: '8-beta'
             svelte: 'current'
     steps:
       - uses: actions/checkout@v5
@@ -128,17 +128,17 @@ jobs:
         run: |
           pnpm update -r --no-save svelte@5.0.0
           pnpm ls svelte
-      - name: update vite to rolldown-vite
-        if: matrix.vite == 'rolldown-vite'
+      - name: update vite to vite-8-beta
+        if: matrix.vite == '8-beta'
         run: |
-          pnpm update -r --no-save vite@npm:rolldown-vite@latest
-          pnpm ls rolldown-vite
+          pnpm update -r --no-save vite@^8.0.0-beta.0
+          pnpm ls vite
       - name: install playwright chromium
         run: pnpm playwright install chromium
       - name: run tests
         run: pnpm test
-      - name: check-types with rolldown-vite
-        if: matrix.vite == 'rolldown-vite'
+      - name: check-types with vite-8-beta
+        if: matrix.vite == '8-beta'
         run: pnpm check:types
       - name: archive tests temp directory
         if: failure()
