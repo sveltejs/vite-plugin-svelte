@@ -24,7 +24,7 @@ const { version: viteVersion, rolldownVersion } = vite;
 export function configure(api, inlineOptions) {
 	if (rolldownVersion) {
 		log.warn.once(
-			`!!! Support for rolldown-vite in vite-plugin-svelte is experimental (rolldown: ${rolldownVersion}, vite: ${viteVersion}) !!!
+			`!!! Support for vite 8 beta in vite-plugin-svelte is experimental (rolldown: ${rolldownVersion}, vite: ${viteVersion}) !!!
 			See https://github.com/sveltejs/vite-plugin-svelte/issues/1143 for a list of known issues and to report feedback.`.replace(
 				/\t+/g,
 				'\t'
