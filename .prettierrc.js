@@ -26,7 +26,8 @@ export default {
 				'packages/e2e-tests/dynamic-compile-options/src/components/A.svelte',
 				'packages/playground/big/src/pages/**', // lots of generated files
 				'packages/e2e-tests/scan-deps/src/Svelte*.svelte', // various syntax tests that require no format
-				'**/.vite-inspect/**'
+				'**/.vite-inspect/**',
+				'packages/e2e-tests/_test_dependencies/**/*.svelte' // TODO remove after sourcemap bug is fixed
 			],
 			options: {
 				rangeEnd: 0
