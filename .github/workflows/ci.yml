@@ -131,7 +131,7 @@ jobs:
       - name: update vite to vite-8-beta
         if: matrix.vite == '8-beta'
         run: |
-          pnpm update -r --no-save vite@^8.0.0-beta.0
+          pnpm update -r --no-save vite@beta
           pnpm ls vite
       - name: install playwright chromium
         run: pnpm playwright install chromium
