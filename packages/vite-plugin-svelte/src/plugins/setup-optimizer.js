@@ -43,7 +43,7 @@ export function setupOptimizer(api) {
 			// the added plugins are patched in configResolved below
 			if (rolldownVersion) {
 				//@ts-ignore rolldown types not finished
-				optimizeDeps.rollupOptions = {
+				optimizeDeps.rolldownOptions = {
 					plugins: [
 						placeholderRolldownOptimizerPlugin(optimizeSveltePluginName),
 						placeholderRolldownOptimizerPlugin(optimizeSvelteModulePluginName)
@@ -65,7 +65,7 @@ export function setupOptimizer(api) {
 			if (rolldownVersion) {
 				const plugins =
 					// @ts-expect-error not typed
-					optimizeDeps.rollupOptions?.plugins?.filter((p) =>
+					optimizeDeps.rolldownOptions?.plugins?.filter((p) =>
 						[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
 					) ?? [];
 				for (const plugin of plugins) {

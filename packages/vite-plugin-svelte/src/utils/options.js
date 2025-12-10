@@ -423,9 +423,9 @@ function validateViteConfig(extraViteConfig, config, options) {
 	if (rolldownVersion && isBuild) {
 		// read user config inlineConst value
 		const inlineConst =
-			//@ts-ignore optimization only exists in rolldown-vite
+			//@ts-ignore optimization only exists in vite-8 beta
 			config.build?.rolldownOptions?.optimization?.inlineConst ??
-			//@ts-ignore optimization only exists in rolldown-vite
+			//@ts-ignore optimization only exists in vite-8 beta
 			config.build?.rollupOptions?.optimization?.inlineConst;
 
 		if (inlineConst === false) {

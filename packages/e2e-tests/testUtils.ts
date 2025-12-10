@@ -373,8 +373,9 @@ function filterMessages(arr) {
 	const excludes = [];
 	if (isRolldownVite) {
 		excludes.push(
-			'Support for rolldown-vite in vite-plugin-svelte is experimental',
-			'See https://github.com/sveltejs/vite-plugin-svelte/issues/1143'
+			'Support for vite 8 beta in vite-plugin-svelte is experimental',
+			'See https://github.com/sveltejs/vite-plugin-svelte/issues/1143',
+			'`optimizeDeps.esbuildOptions`' //TODO: remove after sveltekit is updated
 		);
 	}
 	if (excludes.length > 0) {
