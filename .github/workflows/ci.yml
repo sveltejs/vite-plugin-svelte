@@ -144,7 +144,7 @@ jobs:
         if: failure()
         shell: bash
         run: tar -cvf test-temp.tar  --exclude="node_modules"  temp/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: test-failure-${{github.run_id}}-os_${{ matrix.os }}-node_${{ matrix.node }}-vite_${{ matrix.vite }}-svelte_${{matrix.svelte}}
