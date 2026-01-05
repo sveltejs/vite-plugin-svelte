@@ -12,7 +12,7 @@ runs:
   using: composite
   steps:
     # the following 2 steps are a replacement for pnpms own setup action that contains a lot of code
-    - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+    - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
       with:
         node-version: ${{inputs.node-version}}
         package-manager-cache: false
@@ -22,7 +22,7 @@ runs:
         PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
         echo installing pnpm version $PNPM_VER
         npm i --ignore-scripts -g pnpm@$PNPM_VER
-    - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+    - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
       if: ${{inputs.install-deps == 'true'}}
       with:
         node-version: ${{inputs.node-version}}
