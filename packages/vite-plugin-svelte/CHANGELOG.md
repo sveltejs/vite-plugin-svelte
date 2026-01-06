@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.2.2
+### Patch Changes
+
+
+- Update experimental support for rolldown-vite to vite 8 beta ([#1246](https://github.com/sveltejs/vite-plugin-svelte/pull/1246))
+
+
+- perf: switch from debug to obug (smaller, esm-only) ([#1241](https://github.com/sveltejs/vite-plugin-svelte/pull/1241))
+
 ## 6.2.1
 ### Patch Changes
 

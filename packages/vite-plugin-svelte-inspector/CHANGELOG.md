@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte-inspector
 
+## 5.0.2
+### Patch Changes
+
+
+- perf: switch from debug to obug (smaller, esm-only) ([#1241](https://github.com/sveltejs/vite-plugin-svelte/pull/1241))
+
+- Updated dependencies [[`c4f8535`](https://github.com/sveltejs/vite-plugin-svelte/commit/c4f8535d182f59579c5d6b12595f4430e3a9170a), [`cba6ae8`](https://github.com/sveltejs/vite-plugin-svelte/commit/cba6ae83d76e37553bf582467214aac9ff615f19)]:
+  - @sveltejs/vite-plugin-svelte@6.2.2
+
 ## 5.0.1
 ### Patch Changes
 
