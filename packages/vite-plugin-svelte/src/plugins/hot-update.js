@@ -81,15 +81,28 @@ export function hotUpdate(api) {
 				const svelteRequest = idParser(ctx.file, false, ctx.timestamp);
 				if (svelteRequest) {
 					const { modules } = ctx;
-					const svelteModules = [];
+					const svelteJsModules = [];
+					const svelteCssModules = [];
 					const nonSvelteModules = [];
 					for (const mod of modules) {
 						if (transformResultCache.has(mod.id)) {
-							svelteModules.push(mod);
+							if (mod.id && SVELTE_VIRTUAL_STYLE_ID_REGEX.test(mod.id)) {
+								svelteCssModules.push(mod);
+							} else {
+								svelteJsModules.push(mod);
+							}
 						} else {
 							nonSvelteModules.push(mod);
 						}
 					}
+
+					// Always process Svelte components first, then styles. This
+					// ensures that when we call
+					// `this.environment.transformRequest(mod.url)` later for
+					// style modules in this function, the Svelte components
+					// have already been processed and the cached styles are up
+					// to date.
+					const svelteModules = [...svelteJsModules, ...svelteCssModules];
 
 					if (svelteModules.length === 0) {
 						return; // nothing to do for us
