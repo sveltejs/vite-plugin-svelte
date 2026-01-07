@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { svelte } from '../src/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const fixtureDir = path.resolve(__dirname, 'fixtures', 'hmr');
+const fixtureDir = path.join(__dirname, 'fixtures', 'temp', 'hmr');
 
 /**
  * @param {import('vite').ViteDevServer} server
@@ -111,11 +111,12 @@ describe('hmr', () => {
 	const styleAbsolutePath = path.resolve(fixtureDir, styleRelativePath);
 
 	beforeEach(async () => {
+		fs.mkdirSync(fixtureDir, { recursive: true });
 		fs.writeFileSync(svelteAbsolutePath, initialCode);
 	});
 
 	afterEach(async () => {
-		fs.writeFileSync(svelteAbsolutePath, initialCode);
+		fs.rmSync(svelteAbsolutePath);
 	});
 
 	it('can trigger hmr when the JS and CSS code changes', async () => {
