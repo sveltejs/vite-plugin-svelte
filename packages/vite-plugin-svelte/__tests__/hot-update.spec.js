@@ -90,7 +90,7 @@ async function createModuleRunnerTester({ handleInput, handleOutput } = {}) {
 	return { server, runner, environment, tearDown };
 }
 
-const initialCode = `<scrip>let js_variable = "JS_VARIABLE_1";</scrip>
+const initialCode = `<script>let js_variable = "JS_VARIABLE_1";</script>
 
 <span class="apple">{js_variable}</span>
 
