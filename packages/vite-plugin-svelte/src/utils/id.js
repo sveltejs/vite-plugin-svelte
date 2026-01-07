@@ -184,6 +184,7 @@ export function buildIdFilter(options) {
 		id: {
 			include: [extensionsRE, .../**@type {Array<string|RegExp>}*/ arraify(include)],
 			exclude: /**@type {Array<string|RegExp>}*/ [
+				'\0',
 				SVELTE_VIRTUAL_STYLE_ID_REGEX, // exclude from regular pipeline, we load it in a separate plugin
 				...arraify(exclude)
 			]
@@ -225,7 +226,7 @@ export function buildModuleIdFilter(options) {
 	return {
 		id: {
 			include: [infixWithExtRE, .../**@type {Array<string|RegExp>}*/ arraify(include)],
-			exclude: /**@type {Array<string|RegExp>}*/ arraify(exclude)
+			exclude: ['\0', .../**@type {Array<string|RegExp>}*/ arraify(exclude)]
 		}
 	};
 }
