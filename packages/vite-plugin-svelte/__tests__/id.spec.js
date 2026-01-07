@@ -2,8 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { buildIdFilter, buildModuleIdFilter } from '../src/utils/id.js';
 
 function passes(filter, id) {
-	const included = filter.id.include.some((includeRE) => includeRE.test(id));
-	return included && !filter.id.exclude.some((excludeRE) => excludeRE.test(id));
+	const matcher = (f) => (typeof f === 'string' ? id.includes(f) : f.test(id));
+	const included = filter.id.include.some(matcher);
+	return included && !filter.id.exclude.some(matcher);
 }
 
 describe('buildIdFilter', () => {
@@ -11,6 +12,12 @@ describe('buildIdFilter', () => {
 		const filter = buildIdFilter({});
 		expect(passes(filter, '/src/Foo.svelte')).toBe(true);
 		expect(passes(filter, '/src/Foo.svelte?something')).toBe(true);
+	});
+
+	it('default filter does not match \\0 tagged .svelte files', () => {
+		const filter = buildIdFilter({});
+		expect(passes(filter, '\0/src/Foo.svelte')).toBe(false);
+		expect(passes(filter, '\0/src/Foo.svelte?something')).toBe(false);
 	});
 
 	it('default filter does not match .js files', () => {
@@ -33,6 +40,14 @@ describe('buildModuleIdFilter', () => {
 		expect(passes(filter, '/src/foo.svelte.ts')).toBe(true);
 		expect(passes(filter, '/src/foo.svelte.test.js')).toBe(true);
 		expect(passes(filter, '/src/foo.svelte.test.ts')).toBe(true);
+	});
+
+	it('default filter does not match \\0 tagged .svelte.*.js/ts files', () => {
+		const filter = buildModuleIdFilter({});
+		expect(passes(filter, '\0/src/foo.svelte.js')).toBe(false);
+		expect(passes(filter, '\0/src/foo.svelte.ts')).toBe(false);
+		expect(passes(filter, '\0/src/foo.svelte.test.js')).toBe(false);
+		expect(passes(filter, '\0/src/foo.svelte.test.ts')).toBe(false);
 	});
 
 	it('default filter does not match files without .svelte.', () => {
