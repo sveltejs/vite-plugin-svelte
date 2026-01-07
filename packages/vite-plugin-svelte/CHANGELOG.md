@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.2.3
+### Patch Changes
+
+
+- fix(filter): ignore zero-tagged ids per rollup convention ([#1255](https://github.com/sveltejs/vite-plugin-svelte/pull/1255))
+
 ## 6.2.2
 ### Patch Changes
 
