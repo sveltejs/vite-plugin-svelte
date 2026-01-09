@@ -96,25 +96,10 @@ export function hotUpdate(api) {
 					}
 					const affectedModules = [];
 					const prevResults = svelteModules.map((m) => transformResultCache.get(m.id));
-
-					/** @type {Set<string>} */
-					const seen = new Set();
-					/** @param {string} url */
-					const transformRequest = async (url) => {
-						if (!seen.has(url)) {
-							seen.add(url);
-							await this.environment.transformRequest(url);
-						}
-					};
-
-					// Transform the Svelte component itself first, so that the
-					// CSS cache always gets updated.
-					await transformRequest(svelteRequest.filename);
-
 					for (let i = 0; i < svelteModules.length; i++) {
 						const mod = svelteModules[i];
 						const prev = prevResults[i];
-						await transformRequest(mod.url);
+						await this.environment.transformRequest(mod.url);
 						const next = transformResultCache.get(mod.id);
 						if (hasCodeChanged(prev, next, mod.id)) {
 							affectedModules.push(mod);
