@@ -78,6 +78,19 @@ export async function getBg(el: string | ElementHandle) {
 	return el == null ? null : el.evaluate((el) => getComputedStyle(el as Element).backgroundImage);
 }
 
+export async function getPseudoContent(
+	el: string | ElementHandle,
+	pseudoElement: 'before' | 'after'
+) {
+	el = await toEl(el);
+	return el == null
+		? null
+		: el.evaluate(
+				(el, pseudoEl) => getComputedStyle(el as Element, pseudoEl).content,
+				pseudoElement
+			);
+}
+
 export function readFileContent(filename: string) {
 	filename = path.resolve(testDir, filename);
 	return fs.readFileSync(filename, 'utf-8');

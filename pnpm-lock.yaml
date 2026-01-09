@@ -408,6 +408,18 @@ importers:
         specifier: ^7.2.6
         version: 7.3.0(@types/node@22.19.3)(sass@1.97.1)(stylus@0.64.0)(yaml@2.8.2)
 
+  packages/e2e-tests/hmr-css-first:
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: workspace:^
+        version: link:../../vite-plugin-svelte
+      svelte:
+        specifier: ^5.45.4
+        version: 5.46.1
+      vite:
+        specifier: ^7.2.6
+        version: 7.3.0(@types/node@22.19.3)(sass@1.97.1)(stylus@0.64.0)(yaml@2.8.2)
+
   packages/e2e-tests/import-queries:
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
