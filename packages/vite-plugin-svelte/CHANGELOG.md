@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 6.2.4
+### Patch Changes
+
+
+- fix(hmr): ensure that svelte files are recompiled and updated css modules returned correctly when reported out of order ([#1258](https://github.com/sveltejs/vite-plugin-svelte/pull/1258))
+
 ## 6.2.3
 ### Patch Changes
 
