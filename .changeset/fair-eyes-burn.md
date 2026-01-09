@@ -2,4 +2,4 @@
 '@sveltejs/vite-plugin-svelte': patch
 ---
 
-Ensure that the corresponding Svelte component is compiled prior to transforming the CSS within it.
+fix(hmr): ensure that svelte files are recompiled and updated css modules returned correctly when reported out of order
