@@ -8,7 +8,7 @@ permissions: {}
 
 jobs:
   release:
-    environment: 'release' # contains branch policies for publish access
+    environment: 'release' # setup in repo settings. contains branch policies for publish access
     permissions:
       contents: write # to create release (changesets/action)
       id-token: write # OpenID Connect token needed for provenance
