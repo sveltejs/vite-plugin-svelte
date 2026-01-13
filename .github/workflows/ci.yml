@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - v6
   pull_request:
     branches:
-      - main
+      - v6
 env:
   # we call `pnpm playwright install` instead
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'

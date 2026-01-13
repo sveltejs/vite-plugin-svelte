@@ -17,7 +17,7 @@
     "lint": "pnpm check:lint --fix",
     "format": "pnpm check:format --write",
     "fixup": "run-s lint format",
-    "release": "pnpm changeset publish",
+    "release": "pnpm changeset publish --tag version-6",
     "prepare": "husky",
     "playwright": "playwright-core",
     "generate:types": "pnpm --filter \"./packages/*\" --parallel generate:types",
