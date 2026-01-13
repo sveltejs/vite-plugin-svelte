@@ -1,6 +1,5 @@
 import process from 'node:process';
 import { isDebugNamespaceEnabled, log } from '../utils/log.js';
-import * as vite from 'vite';
 import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
 import {
 	buildExtraViteConfig,
@@ -13,25 +12,12 @@ import {
 import { buildIdFilter, buildIdParser } from '../utils/id.js';
 import { createCompileSvelte } from '../utils/compile.js';
 
-// @ts-ignore rolldownVersion
-const { version: viteVersion, rolldownVersion } = vite;
-
 /**
  * @param {Partial<import('../public.d.ts').Options>} [inlineOptions]
  * @param {import('../types/plugin-api.d.ts').PluginAPI} api
  * @returns {import('vite').Plugin}
  */
 export function configure(api, inlineOptions) {
-	if (rolldownVersion) {
-		log.warn.once(
-			`!!! Support for vite 8 beta in vite-plugin-svelte is experimental (rolldown: ${rolldownVersion}, vite: ${viteVersion}) !!!
-			See https://github.com/sveltejs/vite-plugin-svelte/issues/1143 for a list of known issues and to report feedback.`.replace(
-				/\t+/g,
-				'\t'
-			)
-		);
-	}
-
 	validateInlineOptions(inlineOptions);
 
 	/**
