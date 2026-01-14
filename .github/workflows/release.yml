@@ -41,6 +41,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: true # caches pnpm via packageManager field in package.json
+          cache: 'pnpm'
       - name: install
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: generated types are up to date
