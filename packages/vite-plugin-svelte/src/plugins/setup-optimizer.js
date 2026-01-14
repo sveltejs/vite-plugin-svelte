@@ -3,8 +3,6 @@ import path from 'node:path';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
-import { safeBase64Hash } from '../utils/hash.js';
-import { normalize } from '../utils/id.js';
 
 /**
  * @typedef {NonNullable<import('vite').Rollup.Plugin>} RollupPlugin
@@ -135,11 +133,6 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 		filename,
 		generate: 'client'
 	};
-
-	if (compileOptions.hmr && options.emitCss) {
-		const hash = `s-${safeBase64Hash(normalize(filename, options.root))}`;
-		compileOptions.cssHash = () => hash;
-	}
 
 	let preprocessed;
 

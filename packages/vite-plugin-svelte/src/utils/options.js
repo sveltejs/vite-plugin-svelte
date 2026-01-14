@@ -270,9 +270,6 @@ function enforceOptionsForProduction(options) {
  */
 function removeIgnoredOptions(options) {
 	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
-	if (options.compilerOptions.hmr && options.emitCss) {
-		ignoredCompilerOptions.push('cssHash');
-	}
 	const passedCompilerOptions = Object.keys(options.compilerOptions || {});
 	const passedIgnored = passedCompilerOptions.filter((o) => ignoredCompilerOptions.includes(o));
 	if (passedIgnored.length) {

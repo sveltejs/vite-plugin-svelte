@@ -126,7 +126,7 @@ jobs:
       - name: downgrade svelte to baseline
         if: matrix.svelte == 'baseline'
         run: |
-          pnpm update -r --no-save svelte@5.0.0
+          pnpm update -r --no-save svelte@5.46.3
           pnpm ls svelte
       - name: install playwright chromium
         run: pnpm playwright install chromium --only-shell
