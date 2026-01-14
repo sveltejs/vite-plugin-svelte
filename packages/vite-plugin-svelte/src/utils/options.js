@@ -420,7 +420,10 @@ function validateViteConfig(extraViteConfig, config, options) {
 	}
 	if (isBuild) {
 		// read user config inlineConst value
-		const inlineConst = config.build?.rolldownOptions?.optimization?.inlineConst;
+		const inlineConst =
+			config.build?.rolldownOptions?.optimization?.inlineConst ??
+			config.build?.rollupOptions?.optimization?.inlineConst;
+
 		if (inlineConst === false) {
 			log.warn(
 				'Your rolldown config contains `optimization.inlineConst: false`. This can lead to increased bundle size and leaked server code in client build.'
