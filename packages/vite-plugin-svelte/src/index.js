@@ -6,7 +6,7 @@ import { compile } from './plugins/compile.js';
 import { loadCompiledCss } from './plugins/load-compiled-css.js';
 import { setupOptimizer } from './plugins/setup-optimizer.js';
 import { compileModule } from './plugins/compile-module.js';
-import { svelteInspector } from '@sveltejs/vite-plugin-svelte-inspector';
+import { svelteInspector } from './plugins/inspector/index.js';
 import { loadCustom } from './plugins/load-custom.js';
 import { hotUpdate } from './plugins/hot-update.js';
 
@@ -34,7 +34,7 @@ export function svelte(inlineOptions) {
 		compile(api),
 		compileModule(api),
 		hotUpdate(api),
-		svelteInspector()
+		svelteInspector(api)
 	];
 }
 
