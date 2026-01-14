@@ -18,10 +18,6 @@ import {
 	waitForViteConnect
 } from './vitestSetup.js';
 
-import * as vite from 'vite';
-//@ts-ignore
-const isRolldownVite = !!vite.rolldownVersion;
-
 import { VERSION } from 'svelte/compiler';
 
 export const IS_SVELTE_BASELINE = VERSION === '5.0.0';
@@ -384,13 +380,9 @@ function filterMessages(arr) {
 		return arr;
 	}
 	const excludes = [];
-	if (isRolldownVite) {
-		excludes.push(
-			'Support for vite 8 beta in vite-plugin-svelte is experimental',
-			'See https://github.com/sveltejs/vite-plugin-svelte/issues/1143',
-			'`optimizeDeps.esbuildOptions`' //TODO: remove after sveltekit is updated
-		);
-	}
+	excludes.push(
+		'`optimizeDeps.esbuildOptions`' //TODO: remove after sveltekit is updated
+	);
 	if (excludes.length > 0) {
 		return arr.filter((m) => !excludes.some((e) => m.includes(e)));
 	} else {

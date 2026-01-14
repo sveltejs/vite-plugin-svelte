@@ -6,9 +6,7 @@ const {
 	defaultClientConditions,
 	defaultServerConditions,
 	normalizePath,
-	searchForWorkspaceRoot,
-	// @ts-ignore
-	rolldownVersion
+	searchForWorkspaceRoot
 } = vite;
 import { log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
@@ -420,12 +418,10 @@ function validateViteConfig(extraViteConfig, config, options) {
 			);
 		}
 	}
-	if (rolldownVersion && isBuild) {
+	if (isBuild) {
 		// read user config inlineConst value
 		const inlineConst =
-			//@ts-ignore optimization only exists in vite-8 beta
 			config.build?.rolldownOptions?.optimization?.inlineConst ??
-			//@ts-ignore optimization only exists in vite-8 beta
 			config.build?.rollupOptions?.optimization?.inlineConst;
 
 		if (inlineConst === false) {

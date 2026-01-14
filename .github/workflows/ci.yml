@@ -96,11 +96,6 @@ jobs:
             os: ubuntu-latest
             vite: 'baseline'
             svelte: 'baseline'
-          # future test with vite-8-beta
-          - node: 24
-            os: ubuntu-latest
-            vite: '8-beta'
-            svelte: 'current'
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
@@ -124,25 +119,17 @@ jobs:
       - name: downgrade vite to baseline
         if: matrix.vite == 'baseline'
         run: |
-          pnpm update -r --no-save vite@6.3.0
+          pnpm update -r --no-save vite@8.0.0-beta.7
           pnpm ls vite
       - name: downgrade svelte to baseline
         if: matrix.svelte == 'baseline'
         run: |
           pnpm update -r --no-save svelte@5.0.0
           pnpm ls svelte
-      - name: update vite to vite-8-beta
-        if: matrix.vite == '8-beta'
-        run: |
-          pnpm update -r --no-save vite@beta
-          pnpm ls vite
       - name: install playwright chromium
         run: pnpm playwright install chromium --only-shell
       - name: run tests
         run: pnpm test
-      - name: check-types with vite-8-beta
-        if: matrix.vite == '8-beta'
-        run: pnpm check:types
       - name: archive tests temp directory
         if: failure()
         shell: bash

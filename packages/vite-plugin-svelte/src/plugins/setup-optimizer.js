@@ -1,19 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { readFileSync } from 'node:fs';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
-import { toESBuildError, toRollupError } from '../utils/error.js';
+import { toRollupError } from '../utils/error.js';
 import { safeBase64Hash } from '../utils/hash.js';
 import { normalize } from '../utils/id.js';
-import * as vite from 'vite';
-// @ts-ignore not typed on vite
-const { rolldownVersion } = vite;
 
-/**
- * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
- * @typedef {NonNullable<EsbuildOptions['plugins']>[number]} EsbuildPlugin
- */
 /**
  * @typedef {NonNullable<import('vite').Rollup.Plugin>} RollupPlugin
  */
@@ -41,44 +33,26 @@ export function setupOptimizer(api) {
 			// Add optimizer plugins to prebundle Svelte files.
 			// Currently, a placeholder as more information is needed after Vite config is resolved,
 			// the added plugins are patched in configResolved below
-			if (rolldownVersion) {
-				//@ts-ignore rolldown types not finished
-				optimizeDeps.rolldownOptions = {
-					plugins: [
-						placeholderRolldownOptimizerPlugin(optimizeSveltePluginName),
-						placeholderRolldownOptimizerPlugin(optimizeSvelteModulePluginName)
-					]
-				};
-			} else {
-				optimizeDeps.esbuildOptions = {
-					plugins: [
-						{ name: optimizeSveltePluginName, setup: () => {} },
-						{ name: optimizeSvelteModulePluginName, setup: () => {} }
-					]
-				};
-			}
+
+			optimizeDeps.rolldownOptions = {
+				plugins: [
+					placeholderRolldownOptimizerPlugin(optimizeSveltePluginName),
+					placeholderRolldownOptimizerPlugin(optimizeSvelteModulePluginName)
+				]
+			};
+
 			return { optimizeDeps };
 		},
 		configResolved(c) {
 			viteConfig = c;
 			const optimizeDeps = c.optimizeDeps;
-			if (rolldownVersion) {
-				const plugins =
-					// @ts-expect-error not typed
-					optimizeDeps.rolldownOptions?.plugins?.filter((p) =>
-						[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
-					) ?? [];
-				for (const plugin of plugins) {
-					patchRolldownOptimizerPlugin(plugin, api.options);
-				}
-			} else {
-				const plugins =
-					optimizeDeps.esbuildOptions?.plugins?.filter((p) =>
-						[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
-					) ?? [];
-				for (const plugin of plugins) {
-					patchESBuildOptimizerPlugin(plugin, api.options);
-				}
+			const plugins =
+				// @ts-expect-error not typed
+				optimizeDeps.rolldownOptions?.plugins?.filter((p) =>
+					[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
+				) ?? [];
+			for (const plugin of plugins) {
+				patchRolldownOptimizerPlugin(plugin, api.options);
 			}
 		},
 		async buildStart() {
@@ -90,43 +64,6 @@ export function setupOptimizer(api) {
 				viteConfig.optimizeDeps.force = true;
 			}
 		}
-	};
-}
-
-/**
- * @param {EsbuildPlugin} plugin
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- */
-function patchESBuildOptimizerPlugin(plugin, options) {
-	const components = plugin.name === optimizeSveltePluginName;
-	const compileFn = components ? compileSvelte : compileSvelteModule;
-	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
-	const filter = components ? /\.svelte(?:\?.*)?$/ : /\.svelte\.[jt]s(?:\?.*)?$/;
-	plugin.setup = (build) => {
-		if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
-
-		/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
-		let statsCollection;
-		build.onStart(() => {
-			statsCollection = options.stats?.startCollection(statsName, {
-				logResult: (c) => c.stats.length > 1
-			});
-		});
-		build.onLoad({ filter }, async ({ path: filename }) => {
-			const code = readFileSync(filename, 'utf8');
-			try {
-				const result = await compileFn(options, { filename, code }, statsCollection);
-				const contents = result.map
-					? result.code + '//# sourceMappingURL=' + result.map.toUrl()
-					: result.code;
-				return { contents };
-			} catch (e) {
-				return { errors: [toESBuildError(e, options)] };
-			}
-		});
-		build.onEnd(() => {
-			statsCollection?.finish();
-		});
 	};
 }
 
