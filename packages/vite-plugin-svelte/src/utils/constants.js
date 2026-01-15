@@ -23,9 +23,9 @@ export const SVELTE_IMPORTS = Object.entries(sveltePkg.exports)
 
 export const SVELTE_EXPORT_CONDITIONS = ['svelte'];
 
-const FAQ_URL = 'https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md'
+const FAQ_URL = 'https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md';
 export const FAQ_LINK_MISSING_EXPORTS_CONDITION = `${FAQ_URL}#missing-exports-condition`;
-export const FAQ_LINK_CSSHASH = `${FAQ_URL}#transform-svelte-files-with-vite-plugins`
+export const FAQ_LINK_CSSHASH = `${FAQ_URL}#why-should-csshash-be-calculated-from-filename-during-dev`;
 
 export const LINK_TRANSFORM_WITH_PLUGIN =
 	'https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins';
