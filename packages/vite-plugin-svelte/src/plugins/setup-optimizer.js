@@ -208,7 +208,6 @@ const PREBUNDLE_SENSITIVE_OPTIONS = [
 	'configFile',
 	'experimental',
 	'extensions',
-	'ignorePluginPreprocessors',
 	'preprocess'
 ];
 
