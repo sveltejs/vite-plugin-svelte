@@ -1,5 +1,5 @@
 ---
-'@sveltejs/vite-plugin-svelte': patch
+'@sveltejs/vite-plugin-svelte': major
 ---
 
-refactor(css-hmr): remove custom cssHash function for dev as svelte now produces a stable css hash by itself
+breaking(dev): no longer overrides compilerOptions.cssHash because Svelte now produces a stable css hash by itself
