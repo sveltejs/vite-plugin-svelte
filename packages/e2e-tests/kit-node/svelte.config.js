@@ -6,6 +6,11 @@ const config = {
 	preprocess: vitePreprocess(),
 	kit: {
 		adapter: node()
+	},
+	compilerOptions: {
+		cssHash({ css, hash }) {
+			return `s-${hash(css)}`;
+		}
 	}
 };
 export default config;

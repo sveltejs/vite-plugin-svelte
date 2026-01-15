@@ -11,7 +11,7 @@ const {
 import { log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
 import {
-	DEFAULT_SVELTE_EXT,
+	DEFAULT_SVELTE_EXT, FAQ_LINK_CSSHASH,
 	FAQ_LINK_MISSING_EXPORTS_CONDITION,
 	SVELTE_EXPORT_CONDITIONS,
 	SVELTE_IMPORTS,
@@ -242,6 +242,29 @@ function enforceOptionsForHmr(options, viteConfig) {
 			'vite config server.hmr is false but compilerOptions.hmr is true. Forcing compilerOptions.hmr to false as it would not work.'
 		);
 		options.compilerOptions.hmr = false;
+	}
+
+	if(options.isServe && options.compilerOptions.hmr && options.emitCss && options.compilerOptions.cssHash) {
+		let usesFilename = false;
+		let usesCss = false;
+		options.compilerOptions.cssHash({
+			get filename() {
+				usesFilename = true;
+				return 'Foo.svelte'
+			},
+			get css() {
+				usesCss = true;
+				return '.foo{}'
+			},
+			name: 'Foo',
+			hash: /** @type{(x: string) => string} */ x => x
+		});
+		if(!usesFilename) {
+			log.warn(`compilerOptions.cssHash in your svelte config does not use \`filename\`. See ${FAQ_LINK_CSSHASH} for more information.`,options.compilerOptions.cssHash.toString())
+		}
+		if(usesCss) {
+			log.warn(`compilerOptions.cssHash in your svelte config uses \`css\`. See ${FAQ_LINK_CSSHASH} for more information.`,options.compilerOptions.cssHash.toString())
+		}
 	}
 }
 
