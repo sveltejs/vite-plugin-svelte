@@ -1,5 +1,4 @@
 import * as svelte from 'svelte/compiler';
-import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
 
 import { mapToRelative } from './sourcemaps.js';
@@ -58,8 +57,6 @@ export function createCompileSvelte() {
 
 		let finalCode = code;
 		if (compileOptions.hmr && options.emitCss) {
-			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-			compileOptions.cssHash = () => hash;
 			const closeStylePos = code.lastIndexOf('</style>');
 			if (closeStylePos > -1) {
 				// inject rule that forces compile to attach scope class to every node in the template

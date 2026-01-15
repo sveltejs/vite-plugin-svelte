@@ -12,6 +12,7 @@ import { log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
 import {
 	DEFAULT_SVELTE_EXT,
+	FAQ_LINK_CSSHASH,
 	FAQ_LINK_MISSING_EXPORTS_CONDITION,
 	SVELTE_EXPORT_CONDITIONS,
 	SVELTE_IMPORTS,
@@ -243,6 +244,33 @@ function enforceOptionsForHmr(options, viteConfig) {
 		);
 		options.compilerOptions.hmr = false;
 	}
+
+	if (
+		options.isServe &&
+		options.compilerOptions.hmr &&
+		options.emitCss &&
+		options.compilerOptions.cssHash
+	) {
+		let usesFilename = false;
+		let usesCss = false;
+		options.compilerOptions.cssHash({
+			get filename() {
+				usesFilename = true;
+				return 'Foo.svelte';
+			},
+			get css() {
+				usesCss = true;
+				return '.foo{}';
+			},
+			name: 'Foo',
+			hash: /** @type{(x: string) => string} */ (x) => x
+		});
+		if (!usesFilename || usesCss) {
+			log.warn(
+				`The custom compilerOptions.cssHash in your svelte config can degrade your DX. See ${FAQ_LINK_CSSHASH} for more information.`
+			);
+		}
+	}
 }
 
 /**
@@ -270,9 +298,6 @@ function enforceOptionsForProduction(options) {
  */
 function removeIgnoredOptions(options) {
 	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
-	if (options.compilerOptions.hmr && options.emitCss) {
-		ignoredCompilerOptions.push('cssHash');
-	}
 	const passedCompilerOptions = Object.keys(options.compilerOptions || {});
 	const passedIgnored = passedCompilerOptions.filter((o) => ignoredCompilerOptions.includes(o));
 	if (passedIgnored.length) {

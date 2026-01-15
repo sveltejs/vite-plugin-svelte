@@ -54,11 +54,24 @@ Bad:
 <script type="text/typescript"></script>
 ```
 
-### Why can't `cssHash` be set in development mode?
+### Why should `cssHash` be calculated from filename during dev
 
-`cssHash` is fixed in development for CSS HMR in Svelte components, ensuring that the hash value is stable based on the file name so that styles are only updated when changed.
+The output of this function is part of the js module for the component. If the hash changes when css changes, every css update also triggers a js update.
+These js updates can lead to application state resetting in your browser, which is a worse developer experience than only css updating.
+It must also be different between different components to ensure that styles are scoped and updates applied correctly.
 
-However, `cssHash` is respected in production builds as HMR is a dev-only feature.
+So it is recommended to keep the pattern defined by Svelte itself. If you want to customize the prefix, use this:
+
+```js
+// svelte.config.js
+export default {
+  compilerOptions: {
+    cssHash: ({ hash, filename, css }) => `my-custom-prefix-${hash(filename ?? css)}`
+  }
+};
+```
+
+If you don't want the hash to depend on filename, either accept the worse dx or customize cssHash only during build.
 
 ### How do I add a Svelte preprocessor from a Vite plugin?
 
