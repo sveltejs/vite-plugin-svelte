@@ -93,8 +93,8 @@ export default [
 	{
 		name: 'local/inspector-extras',
 		files: [
-			'packages/vite-plugin-svelte-inspector/src/runtime/load-inspector.js',
-			'packages/vite-plugin-svelte-inspector/src/runtime/Inspector.svelte'
+			'packages/vite-plugin-svelte/src/plugins/inspector/runtime/load-inspector.js',
+			'packages/vite-plugin-svelte/src/plugins/inspector/runtime/Inspector.svelte'
 		],
 
 		languageOptions: {

@@ -1,3 +1,7 @@
+# NOTICE
+
+svelte-inspector has been integrated into vite-plugin-svelte 7, see it's [changelog](../vite-plugin-svelte/CHANGELOG.md) for further updates.
+
 # @sveltejs/vite-plugin-svelte-inspector
 
 ## 5.0.2
