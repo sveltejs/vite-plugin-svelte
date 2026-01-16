@@ -8,7 +8,6 @@ overrides:
   '@sveltejs/kit': ^2.49.5
   '@sveltejs/kit>@sveltejs/vite-plugin-svelte': workspace:^
   '@sveltejs/vite-plugin-svelte': workspace:^
-  '@sveltejs/vite-plugin-svelte-inspector': workspace:^
   svelte: ^5.46.4
   vite: ^8.0.0-beta.7
   '@types/node@<=20.12.0': 20.19.14
@@ -738,25 +737,6 @@ importers:
       sass:
         specifier: ^1.94.2
         version: 1.97.2
-      svelte:
-        specifier: ^5.46.4
-        version: 5.46.4
-      vite:
-        specifier: ^8.0.0-beta.7
-        version: 8.0.0-beta.7(@types/node@22.19.5)(sass@1.97.2)(stylus@0.64.0)(yaml@2.8.2)
-
-  packages/vite-plugin-svelte-inspector:
-    dependencies:
-      '@sveltejs/vite-plugin-svelte':
-        specifier: workspace:^
-        version: link:../vite-plugin-svelte
-      obug:
-        specifier: ^2.1.0
-        version: 2.1.1
-    devDependencies:
-      '@types/debug':
-        specifier: ^4.1.12
-        version: 4.1.12
       svelte:
         specifier: ^5.46.4
         version: 5.46.4
