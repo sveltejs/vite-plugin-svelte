@@ -7,8 +7,11 @@
 - breaking(deps): require vite 8 ([#1266](https://github.com/sveltejs/vite-plugin-svelte/pull/1266))
 
 
+- breaking(deps): require svelte 5.46.4 or later ([#1271](https://github.com/sveltejs/vite-plugin-svelte/pull/1271))
+
+
 - breaking(options): remove deprecated options ([#1274](https://github.com/sveltejs/vite-plugin-svelte/pull/1274))
-  
+
   - `vitePlugin.hot` in `svelte.config.js`
     use `compilerOptions.hmr` instead
   - `vitePlugin.ignorePluginPreprocessors` in `svelte.config.js`
@@ -23,9 +26,6 @@
 
 
 - breaking(inspector): integrate vite-plugin-svelte-inspector into vite-plugin-svelte to avoid circular dependency ([#1270](https://github.com/sveltejs/vite-plugin-svelte/pull/1270))
-
-
-- breaking(deps): require svelte 5.46.4 or later ([#1271](https://github.com/sveltejs/vite-plugin-svelte/pull/1271))
 
 ## 6.2.4
 ### Patch Changes
