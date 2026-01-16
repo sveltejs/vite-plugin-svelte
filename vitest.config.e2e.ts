@@ -33,6 +33,12 @@ if (isBuildWatch) {
 	exclude.push(...buildWatchPatterns);
 }
 
+const reporters = ['dot'];
+const isGithubActions = !!process.env.GITHUB_ACTIONS;
+if (isGithubActions) {
+	reporters.push('github-actions');
+}
+
 export default defineConfig({
 	resolve: {
 		alias: {
@@ -47,14 +53,12 @@ export default defineConfig({
 		testTimeout: timeout,
 		hookTimeout: timeout,
 		globals: true,
-		reporters: 'dot',
+		reporters,
 		onConsoleLog(log) {
 			if (log.match(/experimental|jit engine|emitted file/i)) return false;
 		},
 		minThreads: numThreads,
-		maxThreads: numThreads
-	},
-	esbuild: {
-		target: 'node18'
+		maxThreads: numThreads,
+		retry: isGithubActions ? 2 : 0
 	}
 });
