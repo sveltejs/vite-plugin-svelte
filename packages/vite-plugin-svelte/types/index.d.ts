@@ -156,13 +156,6 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 */
 		disableSvelteResolveWarnings?: boolean;
 
-		/**
-		 * disable api.sveltePreprocess deprecation warnings
-		 *
-		 * @default false
-		 */
-		disableApiSveltePreprocessWarnings?: boolean;
-
 		compileModule?: CompileModuleOptions;
 	}
 
