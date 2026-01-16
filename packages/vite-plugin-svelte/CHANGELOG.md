@@ -1,5 +1,32 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.0.0-next.0
+### Major Changes
+
+
+- breaking(deps): require vite 8 ([#1266](https://github.com/sveltejs/vite-plugin-svelte/pull/1266))
+
+
+- breaking(deps): require svelte 5.46.4 or later ([#1271](https://github.com/sveltejs/vite-plugin-svelte/pull/1271))
+
+
+- breaking(options): remove deprecated options ([#1274](https://github.com/sveltejs/vite-plugin-svelte/pull/1274))
+
+  - `vitePlugin.hot` in `svelte.config.js`
+    use `compilerOptions.hmr` instead
+  - `vitePlugin.ignorePluginPreprocessors` in `svelte.config.js`
+    no longer needed
+  - `api.idFilter` of `vite-plugin-svelte:api`
+    use `api.filter` instead
+  - `plugin.api.sveltePreprocess` of other vite plugins
+    Update affected plugins to a newer version or remove them.
+    See [docs](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins) for more information.
+
+- breaking(dev): no longer overrides compilerOptions.cssHash because Svelte now produces a stable css hash by itself ([#1271](https://github.com/sveltejs/vite-plugin-svelte/pull/1271))
+
+
+- breaking(inspector): integrate vite-plugin-svelte-inspector into vite-plugin-svelte to avoid circular dependency ([#1270](https://github.com/sveltejs/vite-plugin-svelte/pull/1270))
+
 ## 6.2.4
 ### Patch Changes
 
