@@ -71,29 +71,11 @@ function afterCompile() {
 	};
 }
 
-function apiPreprocessor() {
-	return {
-		name: 'api-preprocess',
-		enforce: 'pre',
-		api: {
-			sveltePreprocess: {
-				markup: ({ content, filename }) =>
-					addListItemTransform(
-						content,
-						filename,
-						'vite-plugin-svelte:preprocess: preprocessor from vitePlugin.api.sveltePreproess'
-					)
-			}
-		}
-	};
-}
-
 export default defineConfig(({ command, mode }) => {
 	const isProduction = mode === 'production';
 	return {
 		plugins: [
 			beforePreprocess(),
-			apiPreprocessor(),
 			svelte({
 				preprocess: [
 					vitePreprocess({ script: true }),

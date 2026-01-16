@@ -35,23 +35,7 @@ export interface PluginOptions {
 	 * @default true
 	 */
 	emitCss?: boolean;
-	/**
-	 * Enable or disable Hot Module Replacement.
-	 * Deprecated, use compilerOptions.hmr instead!
-	 *
-	 * @deprecated
-	 * @default true for development, always false for production
-	 */
-	hot?: boolean;
 
-	/**
-	 * Some Vite plugins can contribute additional preprocessors by defining `api.sveltePreprocess`.
-	 * If you don't want to use them, set this to true to ignore them all or use an array of strings
-	 * with plugin names to specify which.
-	 *
-	 * @default false
-	 */
-	ignorePluginPreprocessors?: boolean | string[];
 	/**
 	 * vite-plugin-svelte automatically handles excluding svelte libraries and reinclusion of their dependencies
 	 * in vite.optimizeDeps.
@@ -171,13 +155,6 @@ interface ExperimentalOptions {
 	 * @default false
 	 */
 	disableSvelteResolveWarnings?: boolean;
-
-	/**
-	 * disable api.sveltePreprocess deprecation warnings
-	 *
-	 * @default false
-	 */
-	disableApiSveltePreprocessWarnings?: boolean;
 
 	compileModule?: CompileModuleOptions;
 }
