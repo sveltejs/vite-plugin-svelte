@@ -9,7 +9,7 @@ breaking(options): remove deprecated options
 - `vitePlugin.ignorePluginPreprocessors` in `svelte.config.js`
   no longer needed
 - `api.idFilter` of `vite-plugin-svelte:api`
-  use `api.idFilter` instead
+  use `api.filter` instead
 - `plugin.api.sveltePreprocess` of other vite plugins
   Update affected plugins to a newer version or remove them.
   See [docs](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins) for more information.
