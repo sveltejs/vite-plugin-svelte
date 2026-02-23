@@ -20,10 +20,6 @@ export let testPath: string;
  * Path to the test folder
  */
 export let testDir: string;
-/**
- * Test folder name
- */
-export let testName: string;
 
 export const serverLogs: string[] = [];
 export const browserLogs: string[] = [];
