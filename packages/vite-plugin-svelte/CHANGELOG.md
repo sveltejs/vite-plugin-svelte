@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.0.0-next.1
+### Patch Changes
+
+
+- chore: upgrade vitefu to compatible peer dependency range ([#1286](https://github.com/sveltejs/vite-plugin-svelte/pull/1286))
+
+
+- remove author field from package.json ([#1281](https://github.com/sveltejs/vite-plugin-svelte/pull/1281))
+
 ## 7.0.0-next.0
 ### Major Changes
 
