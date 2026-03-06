@@ -33,7 +33,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.19.1",
     "cross-env": "^10.1.0",
-    "dts-buddy": "^0.6.2",
+    "dts-buddy": "^0.7.0",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-markdown": "^5.1.0",
@@ -63,7 +63,7 @@
     "*": "prettier --cache --ignore-path .gitignore --ignore-unknown --write",
     "packages/*/src/**/*": "pnpm generate:types-staged"
   },
-  "packageManager": "pnpm@10.30.1",
+  "packageManager": "pnpm@10.30.3",
   "engines": {
     "pnpm": "^10.2.0",
     "node": "^20.19 || ^22.12 || >=24"
