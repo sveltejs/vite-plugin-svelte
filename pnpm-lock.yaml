@@ -28,8 +28,8 @@ importers:
         specifier: ^4.4.1
         version: 4.4.1(eslint@10.0.3)
       '@sveltejs/eslint-config':
-        specifier: ~8.3.4
-        version: 8.3.5(@stylistic/eslint-plugin-js@4.4.1(eslint@10.0.3))(eslint-config-prettier@10.1.8(eslint@10.0.3))(eslint-plugin-n@17.24.0(eslint@10.0.3)(typescript@5.9.3))(eslint-plugin-svelte@3.15.1(eslint@10.0.3)(svelte@5.53.8))(eslint@10.0.3)(typescript-eslint@8.57.0(eslint@10.0.3)(typescript@5.9.3))(typescript@5.9.3)
+        specifier: ~9.0.0
+        version: 9.0.0(@eslint/js@10.0.1(eslint@10.0.3))(@stylistic/eslint-plugin-js@4.4.1(eslint@10.0.3))(eslint-config-prettier@10.1.8(eslint@10.0.3))(eslint-plugin-n@17.24.0(eslint@10.0.3)(typescript@5.9.3))(eslint-plugin-svelte@3.15.1(eslint@10.0.3)(svelte@5.53.8))(eslint@10.0.3)(typescript-eslint@8.57.0(eslint@10.0.3)(typescript@5.9.3))(typescript@5.9.3)
       '@sveltejs/kit':
         specifier: ^2.49.5
         version: 2.53.4(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.53.8)(typescript@5.9.3)(vite@8.0.0-beta.18(@types/node@22.19.15)(sass@1.97.3)(stylus@0.64.0)(yaml@2.8.2))
@@ -1513,11 +1513,12 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.49.5
 
-  '@sveltejs/eslint-config@8.3.5':
-    resolution: {integrity: sha512-f8g5v1GNQePIJq6Rh3mf0riXx+7+IsRaTS7nn8w7r2RZFPPkuBAHGcHST9BTJOQb5UCSnPmst7BJHEDIlVtP3A==}
+  '@sveltejs/eslint-config@9.0.0':
+    resolution: {integrity: sha512-3u9VUYlU0Mc/8Bhc7eRAPgJuUBMaKHzoE8r50WrnVujoxBLW4zfPckR/BFGGNeVUh0F7QGAtxGkV/5pL6CE1Ng==}
     peerDependencies:
+      '@eslint/js': '>= 10'
       '@stylistic/eslint-plugin-js': '>= 1'
-      eslint: '>= 9'
+      eslint: '>= 10'
       eslint-config-prettier: '>= 9'
       eslint-plugin-n: '>= 17'
       eslint-plugin-svelte: '>= 3'
@@ -4243,8 +4244,9 @@ snapshots:
       '@sveltejs/kit': 2.53.4(@sveltejs/vite-plugin-svelte@packages+vite-plugin-svelte)(svelte@5.53.8)(typescript@5.9.3)(vite@8.0.0-beta.18(@types/node@22.19.15)(sass@1.97.3)(stylus@0.64.0)(yaml@2.8.2))
       rollup: 4.59.0
 
-  '@sveltejs/eslint-config@8.3.5(@stylistic/eslint-plugin-js@4.4.1(eslint@10.0.3))(eslint-config-prettier@10.1.8(eslint@10.0.3))(eslint-plugin-n@17.24.0(eslint@10.0.3)(typescript@5.9.3))(eslint-plugin-svelte@3.15.1(eslint@10.0.3)(svelte@5.53.8))(eslint@10.0.3)(typescript-eslint@8.57.0(eslint@10.0.3)(typescript@5.9.3))(typescript@5.9.3)':
+  '@sveltejs/eslint-config@9.0.0(@eslint/js@10.0.1(eslint@10.0.3))(@stylistic/eslint-plugin-js@4.4.1(eslint@10.0.3))(eslint-config-prettier@10.1.8(eslint@10.0.3))(eslint-plugin-n@17.24.0(eslint@10.0.3)(typescript@5.9.3))(eslint-plugin-svelte@3.15.1(eslint@10.0.3)(svelte@5.53.8))(eslint@10.0.3)(typescript-eslint@8.57.0(eslint@10.0.3)(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
+      '@eslint/js': 10.0.1(eslint@10.0.3)
       '@stylistic/eslint-plugin-js': 4.4.1(eslint@10.0.3)
       eslint: 10.0.3
       eslint-config-prettier: 10.1.8(eslint@10.0.3)
