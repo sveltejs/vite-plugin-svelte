@@ -3,6 +3,7 @@ import path from 'node:path';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
+import { DEFAULT_SVELTE_MODULE_EXT } from '../utils/constants.js';
 
 /**
  * @typedef {NonNullable<import('vite').Rollup.Plugin>} RollupPlugin
@@ -73,7 +74,11 @@ function patchRolldownOptimizerPlugin(plugin, options) {
 	const components = plugin.name === optimizeSveltePluginName;
 	const compileFn = components ? compileSvelte : compileSvelteModule;
 	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
-	const includeRe = components ? /^[^?#]+\.svelte(?:[?#]|$)/ : /^[^?#]+\.svelte\.[jt]s(?:[?#]|$)/;
+	const includeRe = components
+		? /^[^?#]+\.svelte(?:[?#]|$)/
+		: buildSvelteModuleRegex(
+				options.experimental?.compileModule?.extensions || DEFAULT_SVELTE_MODULE_EXT
+			);
 	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
 	let statsCollection;
 
@@ -111,6 +116,17 @@ function patchRolldownOptimizerPlugin(plugin, options) {
 			};
 		}
 	};
+}
+
+/**
+ * @param {string[]} extensions
+ */
+function buildSvelteModuleRegex(extensions) {
+	const escaped = extensions
+		.map((e) => (e.startsWith('.') ? e.slice(1) : e))
+		.map((e) => e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+		.join('|');
+	return new RegExp(`^[^?#]+\\.svelte\\.(?:${escaped})(?:[?#]|$)`);
 }
 
 /**

@@ -32,6 +32,6 @@ export const LINK_TRANSFORM_WITH_PLUGIN =
 
 export const DEFAULT_SVELTE_EXT = ['.svelte'];
 export const DEFAULT_SVELTE_MODULE_INFIX = ['.svelte.'];
-export const DEFAULT_SVELTE_MODULE_EXT = ['.js', '.ts'];
+export const DEFAULT_SVELTE_MODULE_EXT = ['.js', '.ts', '.mjs'];
 
 export const SVELTE_VIRTUAL_STYLE_ID_REGEX = /[?&]svelte&type=style&lang.css$/;
