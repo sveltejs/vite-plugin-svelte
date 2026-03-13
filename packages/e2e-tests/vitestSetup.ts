@@ -155,7 +155,7 @@ beforeAll(
 					const pkgFile = path.join(tempDir, 'package.json');
 					const pkgContent = fs.readFileSync(pkgFile, 'utf-8');
 					const newContent = pkgContent.replaceAll(
-						'cross-env NODE_OPTIONS=\\"--experimental-strip-types\\" ',
+						'NODE_OPTIONS=\\"--experimental-strip-types\\" ',
 						''
 					);
 					fs.writeFileSync(pkgFile, newContent, 'utf-8');

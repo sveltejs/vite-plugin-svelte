@@ -6,13 +6,12 @@
   "scripts": {
     "dev": "node server",
     "build": "vite build --app",
-    "preview": "cross-env NODE_ENV=production node server",
+    "preview": "NODE_ENV=production node server",
     "debug": "node --inspect-brk server"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "workspace:^",
     "compression": "^1.8.1",
-    "cross-env": "^10.1.0",
     "decamelize": "^6.0.1",
     "e2e-test-dep-esm-only": "workspace:^",
     "npm-run-all2": "^8.0.4",
