@@ -36,12 +36,18 @@ export default defineConfig([
 	n.configs['flat/recommended-module'],
 	{
 		name: 'local/markdown',
-		language: 'markdown/commonmark',
-		files: ['**/*.m'],
+		files: ['**/*.md'],
 		plugins: {
 			markdown: /** @type {any} */ (markdown)
 		},
-		extends: ['markdown/recommended']
+		extends: ['markdown/recommended', 'markdown/processor']
+	},
+	{
+		name: 'local/markdown-rules',
+		files: ['**/*.md'],
+		rules: {
+			'no-undef': 'off'
+		}
 	},
 	{
 		name: 'local/language-options',
