@@ -45,6 +45,13 @@ export default [
 		rules: {
 			'n/no-unsupported-features/es-builtins': 'error',
 			'n/no-unsupported-features/es-syntax': 'error',
+			'n/no-unsupported-features/node-builtins': [
+				'error',
+				{
+					version: '>=20.19.0'
+				}
+			],
+
 			'no-console': 'off',
 			'no-debugger': 'error',
 
