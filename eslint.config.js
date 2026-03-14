@@ -1,8 +1,10 @@
-import markdown from 'eslint-plugin-markdown';
-import globals from 'globals';
-import n from 'eslint-plugin-n';
+import markdown from '@eslint/markdown';
+import { defineConfig } from 'eslint/config';
 import svelteOrgEslintConfig from '@sveltejs/eslint-config';
-export default [
+import n from 'eslint-plugin-n';
+import globals from 'globals';
+
+export default defineConfig([
 	{
 		name: 'local/ignores',
 		ignores: [
@@ -32,7 +34,21 @@ export default [
 		}
 	},
 	n.configs['flat/recommended-module'],
-	...markdown.configs.recommended,
+	{
+		name: 'local/markdown',
+		files: ['**/*.md'],
+		plugins: {
+			markdown: /** @type {any} */ (markdown)
+		},
+		extends: ['markdown/recommended', 'markdown/processor']
+	},
+	{
+		name: 'local/markdown-rules',
+		files: ['**/*.md'],
+		rules: {
+			'no-undef': 'off'
+		}
+	},
 	{
 		name: 'local/language-options',
 		languageOptions: {
@@ -45,6 +61,7 @@ export default [
 		rules: {
 			'n/no-unsupported-features/es-builtins': 'error',
 			'n/no-unsupported-features/es-syntax': 'error',
+
 			'no-console': 'off',
 			'no-debugger': 'error',
 
@@ -170,4 +187,4 @@ export default [
 			'@typescript-eslint/no-unused-vars': 'off'
 		}
 	}
-];
+]);
