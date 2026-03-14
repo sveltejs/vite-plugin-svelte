@@ -6,8 +6,8 @@
     "test": "run-s -c test:unit \"test:build {@}\" \"test:serve {@}\" \"test:build:watch {@}\" --",
     "test:unit": "vitest run",
     "test:serve": "vitest run -c vitest.config.e2e.ts",
-    "test:build": "cross-env TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
-    "test:build:watch": "cross-env TEST_BUILD_WATCH=1 vitest run -c vitest.config.e2e.ts",
+    "test:build": "TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
+    "test:build:watch": "TEST_BUILD_WATCH=1 vitest run -c vitest.config.e2e.ts",
     "check": "run-p -c check:*",
     "check:audit": "pnpm audit --prod",
     "check:publint": "pnpm --filter \"./packages/*\" --parallel check:publint",
@@ -33,7 +33,6 @@
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.19.1",
-    "cross-env": "^10.1.0",
     "dts-buddy": "^0.7.0",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
@@ -63,7 +62,7 @@
     "*": "prettier --cache --ignore-path .gitignore --ignore-unknown --write",
     "packages/*/src/**/*": "pnpm generate:types-staged"
   },
-  "packageManager": "pnpm@10.31.0",
+  "packageManager": "pnpm@10.32.1",
   "engines": {
     "pnpm": "^10.2.0",
     "node": "^20.19 || ^22.12 || >=24"

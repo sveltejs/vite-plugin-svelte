@@ -3,8 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=\"--experimental-strip-types\" vite",
-    "build": "cross-env NODE_OPTIONS=\"--experimental-strip-types\" vite build",
+    "dev": "NODE_OPTIONS=\"--experimental-strip-types\" vite",
+    "build": "NODE_OPTIONS=\"--experimental-strip-types\" vite build",
     "preview": "vite preview"
   },
   "dependencies": {

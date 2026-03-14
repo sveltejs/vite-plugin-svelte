@@ -54,9 +54,12 @@ overrides:
   'send@<0.19.0': '^0.19.1'
   '@sveltejs/kit>cookie@<0.7.0': '^0.7.2'
 
-#cli output
+# cli output
 aggregateOutput: true
 reporter: append-only
 
 # needed for _test_dependencies
 dedupeInjectedDeps: false
+
+# enables cross-platform scripting so we don't need cross-env
+shellEmulator: true
