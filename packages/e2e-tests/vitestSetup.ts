@@ -80,7 +80,7 @@ const getUniqueTestPort = async (testRoot, testName, testMode) => {
 const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
 
 beforeAll(
-	// eslint-disable-next-line no-empty-pattern -- The 1st argument inside a fixture must use object destructuring pattern, e.g. ({ task } => {}). so we cannot use _ even if it's unused
+	// eslint-disable-next-line no-empty-pattern -- The 1st argument inside a fixture must use object destructuring pattern, e.g. ({ task } => {}). so we cannot use _ to signal that it's unused
 	async ({}, s) => {
 		const suite = s as RunnerTestFile;
 		if (!suite.filepath.includes('e2e-tests')) {
