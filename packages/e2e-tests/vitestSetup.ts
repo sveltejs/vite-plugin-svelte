@@ -19,7 +19,7 @@ export let testPath: string;
 /**
  * Path to the test folder
  */
-export let testDir: string | undefined;
+export let testDir: string;
 
 export const serverLogs: string[] = [];
 export const browserLogs: string[] = [];
