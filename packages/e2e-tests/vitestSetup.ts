@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import path from 'node:path';
 import process from 'node:process';
 import { chromium, type Browser, type Page } from 'playwright-core';
-import { beforeAll, type File } from 'vitest';
+import { beforeAll, type RunnerTestFile } from 'vitest';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 
@@ -80,11 +80,19 @@ const getUniqueTestPort = async (testRoot, testName, testMode) => {
 const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
 
 beforeAll(
-	async (s) => {
-		const suite = s as File;
+	// eslint-disable-next-line no-empty-pattern -- The 1st argument inside a fixture must use object destructuring pattern, e.g. ({ task } => {}). so we cannot use _ to signal that it's unused
+	async ({}, s) => {
+		const suite = s as RunnerTestFile;
 		if (!suite.filepath.includes('e2e-tests')) {
 			return;
 		}
+
+		const testPath = suite.filepath;
+		const segments = testPath.split('/');
+		const testName = segments.includes('e2e-tests')
+			? segments[segments.indexOf('e2e-tests') + 1]
+			: null;
+
 		try {
 			const wsEndpoint = fs.readFileSync(path.join(DIR, 'wsEndpoint'), 'utf-8');
 			if (!wsEndpoint) {
@@ -93,12 +101,6 @@ beforeAll(
 
 			browser = await chromium.connect(wsEndpoint);
 			page = await browser.newPage();
-
-			const testPath = suite.filepath;
-			const segments = testPath.split('/');
-			const testName = segments.includes('e2e-tests')
-				? segments[segments.indexOf('e2e-tests') + 1]
-				: null;
 
 			// if this is a test placed under e2e-tests/xxx/__tests__
 			// start a vite server in that directory.

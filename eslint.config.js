@@ -43,13 +43,6 @@ export default defineConfig([
 		extends: ['markdown/recommended', 'markdown/processor']
 	},
 	{
-		name: 'local/markdown-rules',
-		files: ['**/*.md'],
-		rules: {
-			'no-undef': 'off'
-		}
-	},
-	{
 		name: 'local/language-options',
 		languageOptions: {
 			ecmaVersion: 2022,
@@ -160,7 +153,8 @@ export default defineConfig([
 		files: ['**/*.md/*.js', '**/*.md/*.ts', '**/*.md/*.svelte'],
 		rules: {
 			'n/no-missing-import': 'off',
-			'@typescript-eslint/no-unused-vars': 'off'
+			'@typescript-eslint/no-unused-vars': 'off',
+			'no-undef': 'off'
 		}
 	},
 	{
