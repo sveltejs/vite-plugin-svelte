@@ -38,6 +38,7 @@ auditConfig:
   ignoreGhsas:
     - 'GHSA-67mh-4wv8-2f99'
     - 'GHSA-v6h2-p8h4-qcjw'
+    - 'GHSA-wf6x-7x77-mvgw' # we aren't using mergeDeep from immutable with user inputs
 
 updateConfig:
   ignoreDependencies:
@@ -53,10 +54,6 @@ overrides:
   '@types/node@<=20.12.0': '20.19.14'
   'send@<0.19.0': '^0.19.1'
   '@sveltejs/kit>cookie@<0.7.0': '^0.7.2'
-
-#cli output
-aggregateOutput: true
-reporter: append-only
 
 # needed for _test_dependencies
 dedupeInjectedDeps: false
