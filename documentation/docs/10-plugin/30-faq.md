@@ -94,6 +94,25 @@ However, `cssHash` is respected in production builds as HMR is a dev-only featur
 
 You don't have to anymore. See [advanced usage](advanced-usage.md) for examples how to put transform hooks before or after Svelte preprocess or compile
 
+## Why should `cssHash` be calculated from filename during dev
+
+The output of this function is part of the js module for the component. If the hash changes when css changes, every css update also triggers a js update.
+These js updates can lead to application state resetting in your browser, which is a worse developer experience than only css updating.
+It must also be different between different components to ensure that styles are scoped and updates applied correctly.
+
+So it is recommended to keep the pattern defined by Svelte itself. If you want to customize the prefix, use this:
+
+```js
+// svelte.config.js
+export default {
+  compilerOptions: {
+    cssHash: ({ hash, filename, css }) => `my-custom-prefix-${hash(filename ?? css)}`
+  }
+};
+```
+
+If you don't want the hash to depend on filename, either accept the worse dx or customize cssHash only during build.
+
 ## What is going on with Vite and `Pre-bundling dependencies:`?
 
 Prebundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html).

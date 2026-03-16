@@ -1,7 +1,6 @@
 declare module '@sveltejs/vite-plugin-svelte' {
 	import type { InlineConfig, ResolvedConfig } from 'vite';
 	import type { CompileOptions, Warning, PreprocessorGroup } from 'svelte/compiler';
-	import type { Options as InspectorOptions } from '@sveltejs/vite-plugin-svelte-inspector';
 	export type Options = Omit<SvelteConfig, 'vitePlugin'> & PluginOptionsInline;
 
 	interface PluginOptionsInline extends PluginOptions {
@@ -36,23 +35,7 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * @default true
 		 */
 		emitCss?: boolean;
-		/**
-		 * Enable or disable Hot Module Replacement.
-		 * Deprecated, use compilerOptions.hmr instead!
-		 *
-		 * @deprecated
-		 * @default true for development, always false for production
-		 */
-		hot?: boolean;
 
-		/**
-		 * Some Vite plugins can contribute additional preprocessors by defining `api.sveltePreprocess`.
-		 * If you don't want to use them, set this to true to ignore them all or use an array of strings
-		 * with plugin names to specify which.
-		 *
-		 * @default false
-		 */
-		ignorePluginPreprocessors?: boolean | string[];
 		/**
 		 * vite-plugin-svelte automatically handles excluding svelte libraries and reinclusion of their dependencies
 		 * in vite.optimizeDeps.
@@ -121,7 +104,7 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		/**
 		 * An array of preprocessors to transform the Svelte source code before compilation
 		 *
-		 * @see https://svelte.dev/docs#svelte_preprocess
+		 * @see https://svelte.dev/docs/svelte/svelte-compiler#PreprocessorGroup
 		 */
 		preprocess?: Arrayable<PreprocessorGroup>;
 		/**
@@ -129,7 +112,7 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * including `dev` and `css`. However, some options are non-configurable, like
 		 * `filename`, `format`, `generate`, and `cssHash` (in dev).
 		 *
-		 * @see https://svelte.dev/docs#svelte_compile
+		 * @see https://svelte.dev/docs/svelte/svelte-compiler#CompileOptions
 		 */
 		compilerOptions?: Omit<CompileOptions, 'filename' | 'format' | 'generate'>;
 
@@ -173,13 +156,6 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 */
 		disableSvelteResolveWarnings?: boolean;
 
-		/**
-		 * disable api.sveltePreprocess deprecation warnings
-		 *
-		 * @default false
-		 */
-		disableApiSveltePreprocessWarnings?: boolean;
-
 		compileModule?: CompileModuleOptions;
 	}
 
@@ -212,6 +188,82 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		 * preprocess style blocks with vite pipeline
 		 */
 		style?: boolean | InlineConfig | ResolvedConfig;
+	}
+
+	export interface InspectorOptions {
+		/**
+		 * define a key combo to toggle inspector,
+		 * @default 'alt-x'
+		 *
+		 * any number of modifiers `control` `shift` `alt` `meta` followed by zero or one regular key, separated by -
+		 * examples: control-shift, control-o, control-alt-s  meta-x control-meta
+		 * Some keys have native behavior (e.g. alt-s opens history menu on firefox).
+		 * To avoid conflicts or accidentally typing into inputs, modifier only combinations are recommended.
+		 */
+		toggleKeyCombo?: string;
+
+		/**
+		 * define keys to select elements with via keyboard
+		 * @default {parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' }
+		 *
+		 * improves accessibility and also helps when you want to select elements that do not have a hoverable surface area
+		 * due to tight wrapping
+		 *
+		 * A note for users of screen-readers:
+		 * If you are using arrow keys to navigate the page itself, change the navKeys to avoid conflicts.
+		 * e.g. navKeys: {parent: 'w', prev: 'a', child: 's', next: 'd'}
+		 *
+		 *
+		 * parent: select closest parent
+		 * child: select first child (or grandchild)
+		 * next: next sibling (or parent if no next sibling exists)
+		 * prev: previous sibling (or parent if no prev sibling exists)
+		 */
+		navKeys?: { parent: string; child: string; next: string; prev: string };
+
+		/**
+		 * define key to open the editor for the currently selected dom node
+		 *
+		 * @default 'Enter'
+		 */
+		openKey?: string;
+
+		/**
+		 * define keys to close the inspector
+		 * @default ['Backspace', 'Escape']
+		 */
+		escapeKeys?: string[];
+
+		/**
+		 * inspector is automatically disabled when releasing toggleKeyCombo after holding it for a longpress
+		 * @default true
+		 */
+		holdMode?: boolean;
+
+		/**
+		 * when to show the toggle button
+		 * @default 'active'
+		 */
+		showToggleButton?: 'always' | 'active' | 'never';
+
+		/**
+		 * where to display the toggle button
+		 * @default 'top-right'
+		 */
+		toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+
+		/**
+		 * inject custom styles when inspector is active
+		 */
+		customStyles?: boolean;
+
+		/**
+		 * internal options that are automatically set, not to be set or used by users
+		 * */
+		__internal?: {
+			// vite base url
+			base: string;
+		};
 	}
 	/**
 	 * returns a list of plugins to handle svelte files

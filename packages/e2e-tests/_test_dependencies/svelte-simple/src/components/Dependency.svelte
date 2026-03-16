@@ -1,6 +1,6 @@
 <script>
-	const label = 'dependency-import';
 	import * as cjsOnly from 'e2e-test-dep-cjs-only';
+	const label = 'dependency-import';
 	const { cjs } = cjsOnly;
 </script>
 

@@ -8,13 +8,8 @@ import {
 	sleep,
 	getColor,
 	browserLogs,
-	e2eServer,
 	getWatchErrors
 } from '~utils';
-
-import * as vite from 'vite';
-// @ts-ignore
-const isRolldownVite = !!vite.rolldownVersion;
 
 describe.runIf(isBuildWatch)('build-watch', () => {
 	test('should render App', async () => {

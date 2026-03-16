@@ -1,5 +1,131 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.0.0
+### Major Changes
+
+
+- breaking(deps): require vite 8 ([#1266](https://github.com/sveltejs/vite-plugin-svelte/pull/1266))
+
+
+- breaking(options): remove deprecated options ([#1274](https://github.com/sveltejs/vite-plugin-svelte/pull/1274))
+  
+  - `vitePlugin.hot` in `svelte.config.js`
+    use `compilerOptions.hmr` instead
+  - `vitePlugin.ignorePluginPreprocessors` in `svelte.config.js`
+    no longer needed
+  - `api.idFilter` of `vite-plugin-svelte:api`
+    use `api.filter` instead
+  - `plugin.api.sveltePreprocess` of other vite plugins
+    Update affected plugins to a newer version or remove them.
+    See [docs](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins) for more information.
+
+- breaking(dev): no longer overrides compilerOptions.cssHash because Svelte now produces a stable css hash by itself ([#1271](https://github.com/sveltejs/vite-plugin-svelte/pull/1271))
+
+
+- breaking(inspector): integrate vite-plugin-svelte-inspector into vite-plugin-svelte to avoid circular dependency ([#1270](https://github.com/sveltejs/vite-plugin-svelte/pull/1270))
+
+
+- breaking(deps): require svelte 5.46.4 or later ([#1271](https://github.com/sveltejs/vite-plugin-svelte/pull/1271))
+
+
+### Patch Changes
+
+
+- chore: upgrade vitefu to compatible peer dependency range ([#1286](https://github.com/sveltejs/vite-plugin-svelte/pull/1286))
+
+
+- remove author field from package.json ([#1281](https://github.com/sveltejs/vite-plugin-svelte/pull/1281))
+
+## 7.0.0-next.1
+### Patch Changes
+
+
+- chore: upgrade vitefu to compatible peer dependency range ([#1286](https://github.com/sveltejs/vite-plugin-svelte/pull/1286))
+
+
+- remove author field from package.json ([#1281](https://github.com/sveltejs/vite-plugin-svelte/pull/1281))
+
+## 7.0.0-next.0
+### Major Changes
+
+
+- breaking(deps): require vite 8 ([#1266](https://github.com/sveltejs/vite-plugin-svelte/pull/1266))
+
+
+- breaking(deps): require svelte 5.46.4 or later ([#1271](https://github.com/sveltejs/vite-plugin-svelte/pull/1271))
+
+
+- breaking(options): remove deprecated options ([#1274](https://github.com/sveltejs/vite-plugin-svelte/pull/1274))
+
+  - `vitePlugin.hot` in `svelte.config.js`
+    use `compilerOptions.hmr` instead
+  - `vitePlugin.ignorePluginPreprocessors` in `svelte.config.js`
+    no longer needed
+  - `api.idFilter` of `vite-plugin-svelte:api`
+    use `api.filter` instead
+  - `plugin.api.sveltePreprocess` of other vite plugins
+    Update affected plugins to a newer version or remove them.
+    See [docs](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins) for more information.
+
+- breaking(dev): no longer overrides compilerOptions.cssHash because Svelte now produces a stable css hash by itself ([#1271](https://github.com/sveltejs/vite-plugin-svelte/pull/1271))
+
+
+- breaking(inspector): integrate vite-plugin-svelte-inspector into vite-plugin-svelte to avoid circular dependency ([#1270](https://github.com/sveltejs/vite-plugin-svelte/pull/1270))
+
+## 6.2.4
+### Patch Changes
+
+
+- fix(hmr): ensure that svelte files are recompiled and updated css modules returned correctly when reported out of order ([#1258](https://github.com/sveltejs/vite-plugin-svelte/pull/1258))
+
+## 6.2.3
+### Patch Changes
+
+
+- fix(filter): ignore zero-tagged ids per rollup convention ([#1255](https://github.com/sveltejs/vite-plugin-svelte/pull/1255))
+
+## 6.2.2
+### Patch Changes
+
+
+- Update experimental support for rolldown-vite to vite 8 beta ([#1246](https://github.com/sveltejs/vite-plugin-svelte/pull/1246))
+
+
+- perf: switch from debug to obug (smaller, esm-only) ([#1241](https://github.com/sveltejs/vite-plugin-svelte/pull/1241))
+
+## 6.2.1
+### Patch Changes
+
+
+- fix: remove unscopable global styles warning ([#1223](https://github.com/sveltejs/vite-plugin-svelte/pull/1223))
+
+
+- Remove automatic configuration for rolldownOptions.optimization.inlineConst because latest version of rolldown-vite has it enabled by default. ([#1225](https://github.com/sveltejs/vite-plugin-svelte/pull/1225))
+
+## 6.2.0
+### Minor Changes
+
+
+- feat(rolldown-vite): enable `optimization.inlineConst` by default to ensure treeshaking works with esm-env in svelte ([#1207](https://github.com/sveltejs/vite-plugin-svelte/pull/1207))
+
+## 6.1.4
+### Patch Changes
+
+
+- fix: allow preprocess plugin to run twice ([#1206](https://github.com/sveltejs/vite-plugin-svelte/pull/1206))
+
+
+- fix(types): update urls to PreprocessorGroup and CompileOptions in type documention ([#1203](https://github.com/sveltejs/vite-plugin-svelte/pull/1203))
+
+
+- replace kleur dependency with builtin node:utils styleText ([#1210](https://github.com/sveltejs/vite-plugin-svelte/pull/1210))
+
+## 6.1.3
+### Patch Changes
+
+
+- fix(api): add `api.filter` and deprecate `api.idFilter` to avoid confusing `filter.id = idFilter.id` assignments when used as hybrid filter in other plugins ([#1199](https://github.com/sveltejs/vite-plugin-svelte/pull/1199))
+
 ## 6.1.2
 ### Patch Changes
 

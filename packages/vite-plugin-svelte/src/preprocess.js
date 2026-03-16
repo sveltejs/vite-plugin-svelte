@@ -5,9 +5,6 @@ const {
 	isCSSRequest,
 	preprocessCSS,
 	resolveConfig,
-	transformWithEsbuild,
-	//@ts-ignore rolldown types don't exist
-	rolldownVersion,
 	//@ts-ignore rolldown types don't exist
 	transformWithOxc
 } = vite;
@@ -27,7 +24,7 @@ export function vitePreprocess(opts) {
 	/** @type {import('svelte/compiler').PreprocessorGroup} */
 	const preprocessor = { name: 'vite-preprocess' };
 	if (opts?.script === true) {
-		preprocessor.script = rolldownVersion ? viteScriptOxc().script : viteScript().script;
+		preprocessor.script = viteScript().script;
 	}
 	if (opts?.style !== false) {
 		const styleOpts = typeof opts?.style == 'object' ? opts?.style : undefined;
@@ -40,36 +37,6 @@ export function vitePreprocess(opts) {
  * @returns {{ script: import('svelte/compiler').Preprocessor }}
  */
 function viteScript() {
-	return {
-		async script({ attributes, content, filename = '' }) {
-			const lang = /** @type {string} */ (attributes.lang);
-			if (!supportedScriptLangs.includes(lang)) return;
-			const { code, map } = await transformWithEsbuild(content, filename, {
-				loader: /** @type {import('vite').ESBuildOptions['loader']} */ (lang),
-				target: 'esnext',
-				tsconfigRaw: {
-					compilerOptions: {
-						// svelte typescript needs this flag to work with type imports
-						importsNotUsedAsValues: 'preserve',
-						preserveValueImports: true
-					}
-				}
-			});
-
-			mapToRelative(map, filename);
-
-			return {
-				code,
-				map
-			};
-		}
-	};
-}
-
-/**
- * @returns {{ script: import('svelte/compiler').Preprocessor }}
- */
-function viteScriptOxc() {
 	return {
 		async script({ attributes, content, filename = '' }) {
 			if (typeof attributes.lang !== 'string' || !supportedScriptLangs.includes(attributes.lang)) {

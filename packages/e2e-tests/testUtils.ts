@@ -18,10 +18,6 @@ import {
 	waitForViteConnect
 } from './vitestSetup.js';
 
-import * as vite from 'vite';
-//@ts-ignore
-const isRolldownVite = !!vite.rolldownVersion;
-
 import { VERSION } from 'svelte/compiler';
 
 export const IS_SVELTE_BASELINE = VERSION === '5.0.0';
@@ -76,6 +72,19 @@ export async function getColor(el: string | ElementHandle) {
 export async function getBg(el: string | ElementHandle) {
 	el = await toEl(el);
 	return el == null ? null : el.evaluate((el) => getComputedStyle(el as Element).backgroundImage);
+}
+
+export async function getPseudoContent(
+	el: string | ElementHandle,
+	pseudoElement: 'before' | 'after'
+) {
+	el = await toEl(el);
+	return el == null
+		? null
+		: el.evaluate(
+				(el, pseudoEl) => getComputedStyle(el as Element, pseudoEl).content,
+				pseudoElement
+			);
 }
 
 export function readFileContent(filename: string) {
@@ -371,12 +380,9 @@ function filterMessages(arr) {
 		return arr;
 	}
 	const excludes = [];
-	if (isRolldownVite) {
-		excludes.push(
-			'Support for rolldown-vite in vite-plugin-svelte is experimental',
-			'See https://github.com/sveltejs/vite-plugin-svelte/issues/1143'
-		);
-	}
+	excludes.push(
+		'`optimizeDeps.esbuildOptions`' //TODO: remove after sveltekit is updated
+	);
 	if (excludes.length > 0) {
 		return arr.filter((m) => !excludes.some((e) => m.includes(e)));
 	} else {

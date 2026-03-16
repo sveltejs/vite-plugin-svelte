@@ -12,14 +12,15 @@ import { log } from './log.js';
 import { loadSvelteConfig } from './load-svelte-config.js';
 import {
 	DEFAULT_SVELTE_EXT,
+	FAQ_LINK_CSSHASH,
 	FAQ_LINK_MISSING_EXPORTS_CONDITION,
+	LINK_TRANSFORM_WITH_PLUGIN,
 	SVELTE_EXPORT_CONDITIONS,
 	SVELTE_IMPORTS,
 	SVELTE_RUNTIME_DEPENDENCIES
 } from './constants.js';
 
 import path from 'node:path';
-import { addExtraPreprocessors } from './preprocess.js';
 import deepmerge from 'deepmerge';
 import {
 	crawlFrameworkPkgs,
@@ -35,8 +36,6 @@ const allowedPluginOptions = new Set([
 	'include',
 	'exclude',
 	'emitCss',
-	'hot',
-	'ignorePluginPreprocessors',
 	'disableDependencyReinclusion',
 	'prebundleSvelteLibraries',
 	'inspector',
@@ -218,7 +217,7 @@ export function resolveOptions(preResolveOptions, viteConfig) {
 
 	removeIgnoredOptions(merged);
 	handleDeprecatedOptions(merged);
-	addExtraPreprocessors(merged, viteConfig);
+	logRemovedPluginAPI(viteConfig);
 	enforceOptionsForHmr(merged, viteConfig);
 	enforceOptionsForProduction(merged);
 
@@ -230,18 +229,38 @@ export function resolveOptions(preResolveOptions, viteConfig) {
  * @param {import('vite').ResolvedConfig} viteConfig
  */
 function enforceOptionsForHmr(options, viteConfig) {
-	if (options.hot) {
-		log.warn(
-			'svelte 5 has hmr integrated in core. Please remove the vitePlugin.hot option and use compilerOptions.hmr instead'
-		);
-		delete options.hot;
-		options.compilerOptions.hmr = true;
-	}
 	if (options.compilerOptions.hmr && viteConfig.server?.hmr === false) {
 		log.warn(
 			'vite config server.hmr is false but compilerOptions.hmr is true. Forcing compilerOptions.hmr to false as it would not work.'
 		);
 		options.compilerOptions.hmr = false;
+	}
+
+	if (
+		options.isServe &&
+		options.compilerOptions.hmr &&
+		options.emitCss &&
+		options.compilerOptions.cssHash
+	) {
+		let usesFilename = false;
+		let usesCss = false;
+		options.compilerOptions.cssHash({
+			get filename() {
+				usesFilename = true;
+				return 'Foo.svelte';
+			},
+			get css() {
+				usesCss = true;
+				return '.foo{}';
+			},
+			name: 'Foo',
+			hash: /** @type{(x: string) => string} */ (x) => x
+		});
+		if (!usesFilename || usesCss) {
+			log.warn(
+				`The custom compilerOptions.cssHash in your svelte config can degrade your DX. See ${FAQ_LINK_CSSHASH} for more information.`
+			);
+		}
 	}
 }
 
@@ -270,9 +289,6 @@ function enforceOptionsForProduction(options) {
  */
 function removeIgnoredOptions(options) {
 	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
-	if (options.compilerOptions.hmr && options.emitCss) {
-		ignoredCompilerOptions.push('cssHash');
-	}
 	const passedCompilerOptions = Object.keys(options.compilerOptions || {});
 	const passedIgnored = passedCompilerOptions.filter((o) => ignoredCompilerOptions.includes(o));
 	if (passedIgnored.length) {
@@ -304,9 +320,25 @@ function handleDeprecatedOptions(options) {
 				);
 			}
 		}
-		if (experimental.generateMissingPreprocessorSourcemaps) {
-			log.warn('experimental.generateMissingPreprocessorSourcemaps has been removed.');
-		}
+	}
+}
+
+/**
+ * @param {import('vite').ResolvedConfig} config
+ */
+function logRemovedPluginAPI(config) {
+	/** @type {import('vite').Plugin[]} */
+	const pluginsWithPreprocessors = config.plugins.filter((p) => p?.api?.sveltePreprocess);
+
+	if (pluginsWithPreprocessors.length > 0) {
+		log.error.once(
+			`The following vite plugins use the removed 'plugin.api.sveltePreprocess' api: ${pluginsWithPreprocessors
+				.map((p) => p.name)
+				.join(', ')}
+				These preprocessors are no longer added to your svelte config and if your application depends on them it breaks.
+				Update the plugins or contact their maintainers. See ${LINK_TRANSFORM_WITH_PLUGIN} for more information.
+				`.replace(/\t+/g, '\t')
+		);
 	}
 }
 
@@ -415,6 +447,18 @@ function validateViteConfig(extraViteConfig, config, options) {
 				'optimizeDeps.disabled',
 				viteOptimizeDepsDisabled,
 				'Disable optimizeDeps or prebundleSvelteLibraries for build if you experience errors.'
+			);
+		}
+	}
+	if (isBuild) {
+		// read user config inlineConst value
+		const inlineConst =
+			config.build?.rolldownOptions?.optimization?.inlineConst ??
+			config.build?.rollupOptions?.optimization?.inlineConst;
+
+		if (inlineConst === false) {
+			log.warn(
+				'Your rolldown config contains `optimization.inlineConst: false`. This can lead to increased bundle size and leaked server code in client build.'
 			);
 		}
 	}

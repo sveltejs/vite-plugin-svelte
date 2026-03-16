@@ -2,7 +2,6 @@ import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vite';
 import MagicString from 'magic-string';
 import * as vite from 'vite';
-const { rolldownVersion } = vite;
 
 function addListItemTransform(code, filename, value) {
 	const index = code.indexOf('</ol>');
@@ -14,7 +13,7 @@ function addListItemTransform(code, filename, value) {
 	return {
 		code: s.toString(),
 		// rolldown doesn't work with decoded map
-		map: s[rolldownVersion ? 'generateMap' : 'generateDecodedMap']({
+		map: s.generateMap({
 			hires: 'boundary',
 			file: filename,
 			includeContent: false
@@ -72,29 +71,11 @@ function afterCompile() {
 	};
 }
 
-function apiPreprocessor() {
-	return {
-		name: 'api-preprocess',
-		enforce: 'pre',
-		api: {
-			sveltePreprocess: {
-				markup: ({ content, filename }) =>
-					addListItemTransform(
-						content,
-						filename,
-						'vite-plugin-svelte:preprocess: preprocessor from vitePlugin.api.sveltePreproess'
-					)
-			}
-		}
-	};
-}
-
 export default defineConfig(({ command, mode }) => {
 	const isProduction = mode === 'production';
 	return {
 		plugins: [
 			beforePreprocess(),
-			apiPreprocessor(),
 			svelte({
 				preprocess: [
 					vitePreprocess({ script: true }),

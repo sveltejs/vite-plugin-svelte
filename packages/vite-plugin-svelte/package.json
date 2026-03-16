@@ -1,8 +1,7 @@
 {
   "name": "@sveltejs/vite-plugin-svelte",
-  "version": "6.1.2",
+  "version": "7.0.0",
   "license": "MIT",
-  "author": "dominikg",
   "files": [
     "src",
     "types"
@@ -39,21 +38,19 @@
   },
   "homepage": "https://github.com/sveltejs/vite-plugin-svelte#readme",
   "dependencies": {
-    "@sveltejs/vite-plugin-svelte-inspector": "^5.0.0",
-    "debug": "^4.4.1",
     "deepmerge": "^4.3.1",
-    "kleur": "^4.1.5",
-    "magic-string": "^0.30.17",
-    "vitefu": "^1.1.1"
+    "magic-string": "^0.30.21",
+    "obug": "^2.1.0",
+    "vitefu": "^1.1.2"
   },
   "peerDependencies": {
-    "svelte": "^5.0.0",
-    "vite": "^6.3.0 || ^7.0.0"
+    "svelte": "^5.46.4",
+    "vite": "^8.0.0-beta.7 || ^8.0.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
-    "sass": "^1.90.0",
-    "svelte": "^5.38.2",
-    "vite": "^7.1.2"
+    "sass": "^1.94.2",
+    "svelte": "^5.45.4",
+    "vite": "^8.0.0-beta.7"
   }
 }

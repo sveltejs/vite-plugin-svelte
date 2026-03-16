@@ -1,6 +1,12 @@
 /* eslint-disable no-console */
-import { cyan, red, yellow } from 'kleur/colors';
-import debug from 'debug';
+
+// eslint-disable-next-line n/no-unsupported-features/node-builtins
+import { styleText } from 'node:util';
+const cyan = (/** @type {string} */ txt) => styleText('cyan', txt);
+const yellow = (/** @type {string} */ txt) => styleText('yellow', txt);
+const red = (/** @type {string} */ txt) => styleText('red', txt);
+
+import { createDebug, enabled } from 'obug';
 
 /** @type {import('../types/log.d.ts').LogLevel[]} */
 const levels = ['debug', 'info', 'warn', 'error', 'silent'];
@@ -8,7 +14,7 @@ const prefix = 'vite-plugin-svelte';
 /** @type {Record<import('../types/log.d.ts').LogLevel, any>} */
 const loggers = {
 	debug: {
-		log: debug(`${prefix}`),
+		log: createDebug(`${prefix}`),
 		enabled: false,
 		isDebug: true
 	},
@@ -140,9 +146,7 @@ export function logCompilerWarnings(svelteRequest, warnings, options) {
 	let warn = isBuild ? warnBuild : warnDev;
 	/** @type {import('svelte/compiler').Warning[]} */
 	const handledByDefaultWarn = [];
-	const notIgnored = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
-	const extra = buildExtraWarnings(warnings, isBuild);
-	const allWarnings = [...notIgnored, ...extra];
+	const allWarnings = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
 	if (sendViaWS) {
 		const _warn = warn;
 		/** @type {(w: import('svelte/compiler').Warning) => void} */
@@ -198,31 +202,6 @@ function isNoScopableElementWarning(warning) {
 }
 
 /**
- *
- * @param {import('svelte/compiler').Warning[]} warnings
- * @param {boolean} isBuild
- * @returns {import('svelte/compiler').Warning[]}
- */
-function buildExtraWarnings(warnings, isBuild) {
-	const extraWarnings = [];
-	if (!isBuild) {
-		const noScopableElementWarnings = warnings.filter((w) => isNoScopableElementWarning(w));
-		if (noScopableElementWarnings.length > 0) {
-			// in case there are multiple, use last one as that is the one caused by our *{} rule
-			const noScopableElementWarning =
-				noScopableElementWarnings[noScopableElementWarnings.length - 1];
-			extraWarnings.push({
-				...noScopableElementWarning,
-				code: 'vite-plugin-svelte-css-no-scopable-elements',
-				message:
-					"No scopable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles."
-			});
-		}
-	}
-	return extraWarnings;
-}
-
-/**
  * @param {import('svelte/compiler').Warning} w
  */
 function warnDev(w) {
@@ -273,5 +252,5 @@ export function buildExtendedLogMessage(w) {
  * @returns {boolean}
  */
 export function isDebugNamespaceEnabled(namespace) {
-	return debug.enabled(`${prefix}:${namespace}`);
+	return enabled(`${prefix}:${namespace}`);
 }

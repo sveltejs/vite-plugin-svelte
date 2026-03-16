@@ -2,3 +2,58 @@ packages:
   - 'packages/*'
   - 'packages/e2e-tests/*'
   - 'packages/e2e-tests/_test_dependencies/*'
+
+# package resolution settings
+minimumReleaseAge: 4320 #3 days
+
+minimumReleaseAgeExclude:
+  - 'vite'
+  - 'create-vite'
+  - '@vitejs/*'
+  - 'vitest'
+  - '@vitest/*'
+  - 'svelte'
+  - '@sveltejs/*'
+  - 'rolldown-vite'
+  - 'rolldown'
+  - '@rolldown/*'
+  - '@oxc-project/*'
+  - 'devalue'
+  - 'esm-env'
+  - 'esrap'
+  - 'is-reference'
+  - 'locate-character'
+  - 'vitefu'
+  - 'zimmerframe'
+
+onlyBuiltDependencies:
+  - esbuild
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - 'carbon-components-svelte'
+  - 'es5-ext'
+  - 'svelte-preprocess'
+
+auditConfig:
+  ignoreGhsas:
+    - 'GHSA-67mh-4wv8-2f99'
+    - 'GHSA-v6h2-p8h4-qcjw'
+    - 'GHSA-wf6x-7x77-mvgw' # we aren't using mergeDeep from immutable with public inputs
+
+updateConfig:
+  ignoreDependencies:
+    - 'execa' # v9 is larger than v8 and doesn't work the same, we only use it in testing
+
+overrides:
+  # $ prefixed package names take their version from root package.json - this is like catalogs but without them
+  '@sveltejs/kit': '$@sveltejs/kit'
+  '@sveltejs/kit>@sveltejs/vite-plugin-svelte': 'workspace:^'
+  '@sveltejs/vite-plugin-svelte': 'workspace:^'
+  'svelte': '$svelte'
+  'vite': '$vite'
+  '@types/node@<=20.12.0': '20.19.14'
+  'send@<0.19.0': '^0.19.1'
+  '@sveltejs/kit>cookie@<0.7.0': '^0.7.2'
+
+# needed for _test_dependencies
+dedupeInjectedDeps: false

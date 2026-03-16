@@ -24,10 +24,7 @@ test('should apply transforms from preprocessors in the right order', async () =
 		'before svelte preprocessors: vite-plugin (enforce: pre) transform (order: pre)'
 	);
 	expect(texts[1]).toBe('vite-plugin-svelte:preprocess: preprocessor from config');
-	expect(texts[2]).toBe(
-		'vite-plugin-svelte:preprocess: preprocessor from vitePlugin.api.sveltePreproess'
-	);
-	expect(texts[3]).toBe('after svelte preprocessors: vite-plugin (default) transform (default)');
-	expect(texts[4]).toBe('after svelte compile: vite-plugin (default) transform (order: post)');
-	expect(texts.length).toBe(5);
+	expect(texts[2]).toBe('after svelte preprocessors: vite-plugin (default) transform (default)');
+	expect(texts[3]).toBe('after svelte compile: vite-plugin (default) transform (order: post)');
+	expect(texts.length).toBe(4);
 });
