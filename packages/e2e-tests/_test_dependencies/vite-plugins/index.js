@@ -1,5 +1,15 @@
 import path from 'node:path';
 import fs from 'node:fs';
+import MagicString from 'magic-string';
+
+function replaceWithSourceMap(code, value, replacement) {
+	const s = new MagicString(code);
+	s.replaceAll(value, replacement);
+	return {
+		code: s.toString(),
+		map: s.generateMap({ hires: 'boundary' })
+	};
+}
 /**
  * Ensure transform flow is not interrupted
  * @returns {import('vite').Plugin[]}
@@ -11,9 +21,9 @@ export function transformValidation() {
 			enforce: 'pre',
 			transform(code, id) {
 				if (id.endsWith('.svelte')) {
-					return code.replaceAll('__JS_TRANSFORM_1__', '__JS_TRANSFORM_2__');
+					return replaceWithSourceMap(code, '__JS_TRANSFORM_1__', '__JS_TRANSFORM_2__');
 				} else if (id.endsWith('.css')) {
-					return code.replaceAll('__CSS_TRANSFORM_1__', '__CSS_TRANSFORM_2__');
+					return replaceWithSourceMap(code, '__CSS_TRANSFORM_1__', '__CSS_TRANSFORM_2__');
 				}
 			}
 		},
@@ -21,9 +31,9 @@ export function transformValidation() {
 			name: 'transform-validation:2',
 			transform(code, id) {
 				if (id.endsWith('.svelte')) {
-					return code.replaceAll('__JS_TRANSFORM_2__', '__JS_TRANSFORM_3__');
+					return replaceWithSourceMap(code, '__JS_TRANSFORM_2__', '__JS_TRANSFORM_3__');
 				} else if (id.endsWith('.css')) {
-					return code.replaceAll('__CSS_TRANSFORM_2__', 'red');
+					return replaceWithSourceMap(code, '__CSS_TRANSFORM_2__', 'red');
 				}
 			}
 		},
@@ -32,7 +42,7 @@ export function transformValidation() {
 			enforce: 'post',
 			transform(code, id) {
 				if (id.endsWith('.svelte')) {
-					return code.replaceAll('__JS_TRANSFORM_3__', 'Hello world');
+					return replaceWithSourceMap(code, '__JS_TRANSFORM_3__', 'Hello world');
 				}
 				// can't handle css here as in build, it would be `export default {}`
 			}

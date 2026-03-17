@@ -32,21 +32,24 @@ jobs:
         node: [22]
         os: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: 'false'
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: false # pnpm is not installed yet
       - name: install pnpm
         shell: bash
         run: |
           PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
           echo installing pnpm version $PNPM_VER
           npm i -g pnpm@$PNPM_VER
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: true # caches pnpm via packageManager field in package.json
           cache: 'pnpm'
-          cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
         run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       - name: sync
@@ -94,56 +97,46 @@ jobs:
             os: ubuntu-latest
             vite: 'baseline'
             svelte: 'baseline'
-          # future test with rolldown-vite
-          - node: 24
-            os: ubuntu-latest
-            vite: 'rolldown-vite'
-            svelte: 'current'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: 'false'
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: false # pnpm is not installed yet
       - name: install pnpm
         shell: bash
         run: |
           PNPM_VER=$(jq -r '.packageManager | if .[0:5] == "pnpm@" then .[5:] else "packageManager in package.json does not start with pnpm@\n" | halt_error(1)  end' package.json)
           echo installing pnpm version $PNPM_VER
           npm i -g pnpm@$PNPM_VER
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: true # caches pnpm via packageManager field in package.json
           cache: 'pnpm'
-          cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install
         run: pnpm install --frozen-lockfile --ignore-scripts
       - name: downgrade vite to baseline
         if: matrix.vite == 'baseline'
         run: |
-          pnpm update -r --no-save vite@6.3.0
+          pnpm update -r --no-save vite@8.0.0-beta.7
           pnpm ls vite
       - name: downgrade svelte to baseline
         if: matrix.svelte == 'baseline'
         run: |
-          pnpm update -r --no-save svelte@5.0.0
+          pnpm update -r --no-save svelte@5.46.4
           pnpm ls svelte
-      - name: update vite to rolldown-vite
-        if: matrix.vite == 'rolldown-vite'
-        run: |
-          pnpm update -r --no-save vite@npm:rolldown-vite@latest
-          pnpm ls rolldown-vite
       - name: install playwright chromium
-        run: pnpm playwright install chromium
+        run: pnpm playwright install chromium --only-shell
       - name: run tests
         run: pnpm test
-      - name: check-types with rolldown-vite
-        if: matrix.vite == 'rolldown-vite'
-        run: pnpm check:types
       - name: archive tests temp directory
         if: failure()
         shell: bash
         run: tar -cvf test-temp.tar  --exclude="node_modules"  temp/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: failure()
         with:
           name: test-failure-${{github.run_id}}-os_${{ matrix.os }}-node_${{ matrix.node }}-vite_${{ matrix.vite }}-svelte_${{matrix.svelte}}

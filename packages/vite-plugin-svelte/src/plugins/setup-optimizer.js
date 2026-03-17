@@ -1,32 +1,29 @@
+/** @import { Code } from '../types/compile.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { StatCollection } from '../types/vite-plugin-svelte-stats.js' */
+/** @import { CompileOptions } from 'svelte/compiler' */
+/** @import { Plugin, ResolvedConfig, Rollup, UserConfig } from 'vite' */
+
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { readFileSync } from 'node:fs';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
-import { toESBuildError, toRollupError } from '../utils/error.js';
-import { safeBase64Hash } from '../utils/hash.js';
-import { normalize } from '../utils/id.js';
-import * as vite from 'vite';
-// @ts-ignore not typed on vite
-const { rolldownVersion } = vite;
+import { toRollupError } from '../utils/error.js';
 
 /**
- * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
- * @typedef {NonNullable<EsbuildOptions['plugins']>[number]} EsbuildPlugin
- */
-/**
- * @typedef {NonNullable<import('vite').Rollup.Plugin>} RollupPlugin
+ * @typedef {NonNullable<Rollup.Plugin>} RollupPlugin
  */
 
 const optimizeSveltePluginName = 'vite-plugin-svelte:optimize';
 const optimizeSvelteModulePluginName = 'vite-plugin-svelte:optimize-module';
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function setupOptimizer(api) {
-	/** @type {import('vite').ResolvedConfig} */
+	/** @type {ResolvedConfig} */
 	let viteConfig;
 
 	return {
@@ -35,7 +32,7 @@ export function setupOptimizer(api) {
 		configEnvironment(name, config) {
 			// fall back to vite behavior when consumer isn't set
 			const consumer = (config.consumer ?? name === 'client') ? 'client' : 'server';
-			/** @type {import('vite').UserConfig['optimizeDeps']} */
+			/** @type {UserConfig['optimizeDeps']} */
 			const optimizeDeps = {
 				// Experimental Vite API to allow these extensions to be scanned and prebundled
 				extensions: ['.svelte']
@@ -95,7 +92,7 @@ function esbuildOptimizerPlugin(api, consumer, components) {
 		setup(build) {
 			if (build.initialOptions.plugins?.some((v) => v.name === 'vite:dep-scan')) return;
 
-			/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+			/** @type {StatCollection | undefined} */
 			let statsCollection;
 			build.onStart(() => {
 				statsCollection = api.options.stats?.startCollection(statsName, {
@@ -138,7 +135,7 @@ function rolldownOptimizerPlugin(api, consumer, components) {
 	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
 	const includeRe = components ? /^[^?#]+\.svelte(?:[?#]|$)/ : /^[^?#]+\.svelte\.[jt]s(?:[?#]|$)/;
 	const generate = consumer === 'server' ? 'server' : 'client';
-	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+	/** @type {StatCollection | undefined} */
 	let statsCollection;
 	/**@type {import('vite').Rollup.Plugin}*/
 	const plugin = {
@@ -182,11 +179,11 @@ function rolldownOptimizerPlugin(api, consumer, components) {
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  * @param {{ filename: string, code: string }} input
  * @param {'client'|'server'}  generate
- * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
- * @returns {Promise<import('../types/compile.d.ts').Code>}
+ * @param {StatCollection} [statsCollection]
+ * @returns {Promise<Code>}
  */
 async function compileSvelte(options, { filename, code }, generate, statsCollection) {
 	let css = options.compilerOptions.css;
@@ -194,7 +191,7 @@ async function compileSvelte(options, { filename, code }, generate, statsCollect
 		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
 		css = 'injected';
 	}
-	/** @type {import('svelte/compiler').CompileOptions} */
+	/** @type {CompileOptions} */
 	const compileOptions = {
 		dev: true, // default to dev: true because prebundling is only used in dev
 		...options.compilerOptions,
@@ -202,11 +199,6 @@ async function compileSvelte(options, { filename, code }, generate, statsCollect
 		filename,
 		generate
 	};
-
-	if (compileOptions.hmr && options.emitCss) {
-		const hash = `s-${safeBase64Hash(normalize(filename, options.root))}`;
-		compileOptions.cssHash = () => hash;
-	}
 
 	let preprocessed;
 
@@ -254,11 +246,11 @@ async function compileSvelte(options, { filename, code }, generate, statsCollect
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  * @param {{ filename: string; code: string }} input
  * @param {'client'|'server'} generate
- * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
- * @returns {Promise<import('../types/compile.d.ts').Code>}
+ * @param {StatCollection} [statsCollection]
+ * @returns {Promise<Code>}
  */
 async function compileSvelteModule(options, { filename, code }, generate, statsCollection) {
 	const endStat = statsCollection?.start(filename);
@@ -277,13 +269,12 @@ async function compileSvelteModule(options, { filename, code }, generate, statsC
 }
 
 // List of options that changes the prebundling result
-/** @type {(keyof import('../types/options.d.ts').ResolvedOptions)[]} */
+/** @type {(keyof ResolvedOptions)[]} */
 const PREBUNDLE_SENSITIVE_OPTIONS = [
 	'compilerOptions',
 	'configFile',
 	'experimental',
 	'extensions',
-	'ignorePluginPreprocessors',
 	'preprocess'
 ];
 
@@ -291,7 +282,7 @@ const PREBUNDLE_SENSITIVE_OPTIONS = [
  * stores svelte metadata in cache dir and compares if it has changed
  *
  * @param {string} cacheDir
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  * @returns {Promise<boolean>} Whether the Svelte metadata has changed
  */
 async function svelteMetadataChanged(cacheDir, options) {

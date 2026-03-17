@@ -1,15 +1,28 @@
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import { log } from '../utils/log.js';
 import { SVELTE_VIRTUAL_STYLE_ID_REGEX } from '../utils/constants.js';
 
 const filter = { id: SVELTE_VIRTUAL_STYLE_ID_REGEX };
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function loadCompiledCss(api) {
+	let useLocalCache = false;
+
+	/** @type{Map<string,any>} */
+	const buildWatchCssCache = new Map();
 	return {
 		name: 'vite-plugin-svelte:load-compiled-css',
+
+		configResolved(c) {
+			const isDev = c.command === 'serve';
+			const isBuildWatch = !!c.build?.watch;
+			useLocalCache = isDev || isBuildWatch;
+		},
 
 		resolveId: {
 			filter, // same filter in load to ensure minimal work
@@ -26,7 +39,17 @@ export function loadCompiledCss(api) {
 				if (!svelteRequest) {
 					return;
 				}
-				const cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
+				let cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
+				// in `build --watch` or dev ssr reloads getModuleInfo only returns changed module data.
+				// To ensure virtual css is loaded unchanged, we cache it here separately
+				if (useLocalCache) {
+					if (cachedCss) {
+						buildWatchCssCache.set(svelteRequest.filename, cachedCss);
+					} else {
+						cachedCss = buildWatchCssCache.get(svelteRequest.filename);
+					}
+				}
+
 				if (cachedCss) {
 					const { hasGlobal, ...css } = cachedCss;
 					if (hasGlobal === false) {
@@ -37,6 +60,8 @@ export function loadCompiledCss(api) {
 					}
 					css.moduleType = 'css';
 					return css;
+				} else {
+					log.warn(`failed to load virtual css module ${id}`, undefined, 'load');
 				}
 			}
 		}

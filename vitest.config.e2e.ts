@@ -21,6 +21,23 @@ const exclude = [
 	'**/cypress/**',
 	'**/.{idea,git,cache,output,temp}/**'
 ];
+const include = ['./packages/e2e-tests/**/*.spec.[tj]s'];
+
+const isBuildWatch = !!process.env.TEST_BUILD_WATCH;
+const buildWatchPatterns = ['./packages/e2e-tests/build-watch/**/*.spec.[tj]s'];
+
+if (isBuildWatch) {
+	include.length = 0;
+	include.push(...buildWatchPatterns);
+} else {
+	exclude.push(...buildWatchPatterns);
+}
+
+const reporters = ['dot'];
+const isGithubActions = !!process.env.GITHUB_ACTIONS;
+if (isGithubActions) {
+	reporters.push('github-actions');
+}
 
 export default defineConfig({
 	resolve: {
@@ -29,21 +46,19 @@ export default defineConfig({
 		}
 	},
 	test: {
-		include: ['./packages/e2e-tests/**/*.spec.[tj]s'],
+		include,
 		exclude,
 		setupFiles: ['./packages/e2e-tests/vitestSetup.ts'],
 		globalSetup: ['./packages/e2e-tests/vitestGlobalSetup.ts'],
 		testTimeout: timeout,
 		hookTimeout: timeout,
 		globals: true,
-		reporters: 'dot',
+		reporters,
 		onConsoleLog(log) {
 			if (log.match(/experimental|jit engine|emitted file/i)) return false;
 		},
 		minThreads: numThreads,
-		maxThreads: numThreads
-	},
-	esbuild: {
-		target: 'node18'
+		maxThreads: numThreads,
+		retry: isGithubActions ? 2 : 0
 	}
 });

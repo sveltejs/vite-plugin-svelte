@@ -1,3 +1,9 @@
+/** @import { ModuleIdParser } from '../types/id.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { CompileOptions, ModuleCompileOptions } from 'svelte/compiler' */
+/** @import { Plugin } from 'vite' */
+
 import { buildModuleIdFilter, buildModuleIdParser } from '../utils/id.js';
 import * as svelteCompiler from 'svelte/compiler';
 import { log, logCompilerWarnings } from '../utils/log.js';
@@ -5,25 +11,25 @@ import { toRollupError } from '../utils/error.js';
 import { isSvelteWithAsync } from '../utils/svelte-version.js';
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function compileModule(api) {
 	/**
-	 * @type {import("../types/options.js").ResolvedOptions}
+	 * @type {ResolvedOptions}
 	 */
 	let options;
 	/**
-	 * @type {import("../types/id.js").ModuleIdParser}
+	 * @type {ModuleIdParser}
 	 */
 	let idParser;
 
 	/**
-	 * @type {import('svelte/compiler').ModuleCompileOptions}
+	 * @type {ModuleCompileOptions}
 	 */
 	let staticModuleCompileOptions;
 
-	/** @type {import('vite').Plugin} */
+	/** @type {Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:compile-module',
 		enforce: 'post',
@@ -42,7 +48,7 @@ export function compileModule(api) {
 					return;
 				}
 				const filename = moduleRequest.filename;
-				/** @type {import('svelte/compiler').CompileOptions} */
+				/** @type {CompileOptions} */
 				const compileOptions = {
 					...staticModuleCompileOptions,
 					dev: !this.environment.config.isProduction,
@@ -96,11 +102,11 @@ export function compileModule(api) {
 
 /**
  *
- * @param {import('svelte/compiler').CompileOptions} compilerOptions
- * @return {import('svelte/compiler').ModuleCompileOptions}
+ * @param {CompileOptions} compilerOptions
+ * @return {ModuleCompileOptions}
  */
 function filterNonModuleCompilerOptions(compilerOptions) {
-	/** @type {Array<keyof import('svelte/compiler').ModuleCompileOptions>} */
+	/** @type {Array<keyof ModuleCompileOptions>} */
 	const knownModuleCompileOptionNames = ['dev', 'generate', 'filename', 'rootDir', 'warningFilter'];
 	if (isSvelteWithAsync) {
 		knownModuleCompileOptionNames.push('experimental');
@@ -108,7 +114,7 @@ function filterNonModuleCompilerOptions(compilerOptions) {
 	// not typed but this is temporary until svelte itself ignores CompileOptions passed to compileModule
 	const experimentalModuleCompilerOptionNames = ['async'];
 
-	/** @type {import('svelte/compiler').ModuleCompileOptions} */
+	/** @type {ModuleCompileOptions} */
 	const filtered = filterByPropNames(compilerOptions, knownModuleCompileOptionNames);
 	if (filtered.experimental) {
 		filtered.experimental = filterByPropNames(

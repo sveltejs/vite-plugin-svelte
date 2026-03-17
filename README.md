@@ -36,10 +36,9 @@ export default defineConfig({
 
 ## Packages
 
-| Package                                                                         | Changelog                                                       |
-| ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| [@sveltejs/vite-plugin-svelte](packages/vite-plugin-svelte)                     | [Changelog](packages/vite-plugin-svelte/CHANGELOG.md)           |
-| [@sveltejs/vite-plugin-svelte-inspector](packages/vite-plugin-svelte-inspector) | [Changelog](packages/vite-plugin-svelte-inspector/CHANGELOG.md) |
+| Package                                                     | Changelog                                             |
+| ----------------------------------------------------------- | ----------------------------------------------------- |
+| [@sveltejs/vite-plugin-svelte](packages/vite-plugin-svelte) | [Changelog](packages/vite-plugin-svelte/CHANGELOG.md) |
 
 ## Got a question? / Need help?
 

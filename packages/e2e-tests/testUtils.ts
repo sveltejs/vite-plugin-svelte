@@ -6,9 +6,8 @@ import path from 'node:path';
 import process from 'node:process';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
-import fetch from 'node-fetch';
 import {
-	isBuild,
+	testMode,
 	isWin,
 	isCI,
 	page,
@@ -74,13 +73,26 @@ export async function getBg(el: string | ElementHandle) {
 	return el == null ? null : el.evaluate((el) => getComputedStyle(el as Element).backgroundImage);
 }
 
+export async function getPseudoContent(
+	el: string | ElementHandle,
+	pseudoElement: 'before' | 'after'
+) {
+	el = await toEl(el);
+	return el == null
+		? null
+		: el.evaluate(
+				(el, pseudoEl) => getComputedStyle(el as Element, pseudoEl).content,
+				pseudoElement
+			);
+}
+
 export function readFileContent(filename: string) {
 	filename = path.resolve(testDir, filename);
 	return fs.readFileSync(filename, 'utf-8');
 }
 
 export function editFile(filename: string, replacer: (str: string) => string) {
-	if (isBuild) return;
+	if (testMode === 'build') return;
 	filename = path.resolve(testDir, filename);
 	const content = fs.readFileSync(filename, 'utf-8');
 	const modified = replacer(content);
@@ -113,7 +125,7 @@ export async function untilMatches(
 	matches: string,
 	msg: string
 ) {
-	if (isBuild) return;
+	if (testMode === 'build') return;
 
 	const maxTries = process.env.CI ? 100 : 20;
 	for (let tries = 0; tries < maxTries; tries++) {
@@ -204,6 +216,29 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 	}
 }
 
+export async function editFileAndWaitForBuildWatchComplete(file, replacer) {
+	const newContent = editFile(file, replacer);
+
+	try {
+		await waitForBuildWatchAndPageReload(hmrUpdateTimeout);
+	} catch (e) {
+		const maxTries = isCI && isWin ? 3 : 1;
+		let lastErr;
+		for (let i = 1; i <= maxTries; i++) {
+			try {
+				console.log(`retry #${i} of build:watch update for ${file}`);
+				editFile(file, () => newContent + '\n'.repeat(i));
+				await waitForBuildWatchAndPageReload(hmrUpdateTimeout);
+				return;
+			} catch (e) {
+				lastErr = e;
+			}
+		}
+		await saveScreenshot(`failed_update_${file}`);
+		throw lastErr;
+	}
+}
+
 export function hmrCount(file) {
 	return browserLogs.filter((line) => line.includes('hot updated') && line.includes(file)).length;
 }
@@ -231,9 +266,33 @@ export async function saveScreenshot(name: string) {
 
 export async function editViteConfig(replacer: (str: string) => string) {
 	editFile('vite.config.js', replacer);
-	if (!isBuild) {
+	if (testMode === 'serve') {
 		await waitForServerRestartAndPageReload();
 	}
+}
+
+export async function waitForBuildWatchAndPageReload(timeout = 10000) {
+	const logs = e2eServer.logs.watch.out;
+	const startIdx = logs.length;
+	let timeleft = timeout;
+	const pollInterval = 50;
+	let completed = false;
+	while (timeleft > 0) {
+		await sleep(pollInterval);
+		if (logs.some((text, i) => i > startIdx && text.match(/\d+ modules transformed\./))) {
+			completed = true;
+			break;
+		}
+		timeleft -= pollInterval;
+	}
+	if (!completed) {
+		console.log('logs', logs.slice(startIdx));
+		throw new Error(`watch rebuild did not finish after ${timeout}ms`);
+	}
+
+	// wait for page to completely load
+	await sleep(100);
+	await page.reload();
 }
 
 export async function waitForServerRestartAndPageReload(timeout = 10000) {
@@ -279,6 +338,7 @@ export async function waitForNavigation(opts: Parameters<typeof page.waitForNavi
 
 export async function fetchPageText() {
 	const url = page.url();
+	// eslint-disable-next-line n/no-unsupported-features/node-builtins
 	const res = await fetch(url);
 	if (res.ok) {
 		return res.text();
@@ -289,6 +349,7 @@ export async function fetchPageText() {
 
 export async function fetchFromPage(url, init?) {
 	const fullUrl = page.url() + (url.startsWith('/') ? url.slice(1) : url);
+	// eslint-disable-next-line n/no-unsupported-features/node-builtins
 	return fetch(fullUrl, init);
 }
 export function readVitePrebundleMetadata() {
@@ -306,4 +367,26 @@ export function readVitePrebundleMetadata() {
 		}
 	}
 	throw new Error('Unable to find vite prebundle metadata');
+}
+
+export function getServerErrors() {
+	return filterMessages(e2eServer.logs.server.err);
+}
+
+export function getWatchErrors() {
+	return filterMessages(e2eServer.logs.watch.err);
+}
+function filterMessages(arr) {
+	if (arr.length === 0) {
+		return arr;
+	}
+	const excludes = [];
+	excludes.push(
+		'`optimizeDeps.esbuildOptions`' //TODO: remove after sveltekit is updated
+	);
+	if (excludes.length > 0) {
+		return arr.filter((m) => !excludes.some((e) => m.includes(e)));
+	} else {
+		return arr;
+	}
 }

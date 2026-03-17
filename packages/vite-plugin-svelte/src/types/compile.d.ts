@@ -21,7 +21,7 @@ export interface Code {
 	map?: any;
 	dependencies?: any[];
 	hasGlobal?: boolean;
-	moduleType?: string; //rolldown-vite
+	moduleType?: string; //vite-8 beta
 	meta?: {
 		vite?: CustomPluginOptionsVite;
 	};

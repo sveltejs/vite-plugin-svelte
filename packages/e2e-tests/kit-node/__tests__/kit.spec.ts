@@ -12,19 +12,14 @@ import {
 	fetchPageText,
 	reloadPage,
 	readFileContent,
-	IS_SVELTE_BASELINE
+	IS_SVELTE_BASELINE,
+	getServerErrors
 } from '~utils';
 
 import glob from 'tiny-glob';
 import path from 'node:path';
-import { env } from 'node:process';
 import * as vite from 'vite';
-const {
-	defaultClientConditions,
-	defaultClientMainFields,
-	//@ts-expect-error not typed in vite
-	rolldownVersion
-} = vite;
+const { defaultClientConditions, defaultClientMainFields } = vite;
 import { describe, expect, it } from 'vitest';
 
 describe('kit-node', () => {
@@ -95,29 +90,29 @@ describe('kit-node', () => {
 			expect(browserLogs.some((x) => x === 'onMount dynamic imported isSSR: false')).toBe(true);
 		});
 
+		it('should load dynamic import with css', async () => {
+			expect(await getText('#dynamic-imported')).toBe("i'm blue");
+			expect(await getColor('#dynamic-imported')).toBe('blue');
+		});
+
 		it('should respect transforms', async () => {
 			expect(await getText('#js-transform')).toBe('Hello world');
 			expect(await getColor('#css-transform')).toBe('red');
 		});
 
 		if (isBuild) {
-			// this is known to fail, skip the test in our own CI but keep it in ecosystem-ci so that rolldown-vite-ecosystem-ci still gets this fail
-			// TODO remove skip once fixed
-			it.skipIf(rolldownVersion && !env.ECOSYSTEM_CI)(
-				'should not include dynamic import from onMount in ssr output',
-				async () => {
-					const ssrManifest = JSON.parse(
-						readFileContent('.svelte-kit/output/server/.vite/manifest.json')
-					);
-					const serverFilesSrc = Object.values(ssrManifest)
-						.filter((e) => !!e.src)
-						.map((e) => e.src);
-					const includesClientOnlyModule = serverFilesSrc.some((file: string) =>
-						file.includes('client-only-module')
-					);
-					expect(includesClientOnlyModule).toBe(false);
-				}
-			);
+			it('should not include dynamic import from onMount in ssr output', async () => {
+				const ssrManifest = JSON.parse(
+					readFileContent('.svelte-kit/output/server/.vite/manifest.json')
+				);
+				const serverFilesSrc = Object.values(ssrManifest)
+					.filter((e) => !!e.src)
+					.map((e) => e.src);
+				const includesClientOnlyModule = serverFilesSrc.some((file: string) =>
+					file.includes('client-only-module')
+				);
+				expect(includesClientOnlyModule).toBe(false);
+			});
 			it('should include dynamic import from onmount in client output', async () => {
 				const clientManifest = JSON.parse(
 					readFileContent('.svelte-kit/output/client/.vite/manifest.json')
@@ -192,9 +187,15 @@ describe('kit-node', () => {
 			it('should serve changes even after page reload', async () => {
 				expect(await getColor('h1')).toBe('green');
 				expect(await getText('#hmr-test2')).toBe('bar');
+				expect(await getText('#dynamic-imported')).toBe("i'm blue");
+				expect(await getColor('#dynamic-imported')).toBe('blue');
 				await reloadPage();
 				expect(await getColor('h1')).toBe('green');
 				expect(await getText('#hmr-test2')).toBe('bar');
+				await page.waitForSelector('#dynamic-imported', { strict: true });
+				expect(await getText('#dynamic-imported')).toBe("i'm blue");
+				expect(await getColor('#dynamic-imported')).toBe('blue');
+				expect(getServerErrors(), 'error log of `vite dev` is not empty after reload').toEqual([]);
 			});
 
 			describe('child component update', () => {

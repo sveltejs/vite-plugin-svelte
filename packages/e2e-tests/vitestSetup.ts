@@ -2,14 +2,16 @@ import fs from 'fs-extra';
 import path from 'node:path';
 import process from 'node:process';
 import { chromium, type Browser, type Page } from 'playwright-core';
-import { beforeAll, type File } from 'vitest';
+import { beforeAll, type RunnerTestFile } from 'vitest';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 
-export const isBuild = !!process.env.TEST_BUILD;
 export const isWin = process.platform === 'win32';
 export const isCI = !!process.env.CI;
 
+export const isBuildWatch = !!process.env.TEST_BUILD_WATCH;
+export const isBuild = isBuildWatch || !!process.env.TEST_BUILD;
+export const testMode = isBuildWatch ? 'build:watch' : process.env.TEST_BUILD ? 'build' : 'serve';
 /**
  * Path to the current test file
  */
@@ -18,10 +20,6 @@ export let testPath: string;
  * Path to the test folder
  */
 export let testDir: string;
-/**
- * Test folder name
- */
-export let testName: string;
 
 export const serverLogs: string[] = [];
 export const browserLogs: string[] = [];
@@ -38,7 +36,11 @@ export function setViteUrl(url: string) {
 
 export interface E2EServer {
 	port: number;
-	logs: { server?: { out: string[]; err: string[] }; build?: { out: string[]; err: string[] } };
+	logs: {
+		server?: { out: string[]; err: string[] };
+		build?: { out: string[]; err: string[] };
+		watch?: { out: string[]; err: string[] };
+	};
 	close: () => Promise<void>;
 }
 
@@ -60,9 +62,9 @@ const onConsole = (msg) => {
  *
  * @param testRoot
  * @param testName
- * @param isBuild
+ * @param testMode
  */
-const getUniqueTestPort = async (testRoot, testName, isBuild) => {
+const getUniqueTestPort = async (testRoot, testName, testMode) => {
 	const testDirs = await fs.readdir(testRoot, { withFileTypes: true });
 	const idx = testDirs
 		.filter((f) => f.isDirectory())
@@ -71,17 +73,26 @@ const getUniqueTestPort = async (testRoot, testName, isBuild) => {
 	if (idx < 0) {
 		throw new Error(`failed to find ${testName} in ${testRoot}`);
 	}
-	return (isBuild ? 5500 : 3500) + idx;
+	const basePort = testMode === 'build:watch' ? 7500 : testMode === 'build' ? 5500 : 3500;
+	return basePort + idx;
 };
 
 const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
 
 beforeAll(
-	async (s) => {
-		const suite = s as File;
+	// eslint-disable-next-line no-empty-pattern -- The 1st argument inside a fixture must use object destructuring pattern, e.g. ({ task } => {}). so we cannot use _ to signal that it's unused
+	async ({}, s) => {
+		const suite = s as RunnerTestFile;
 		if (!suite.filepath.includes('e2e-tests')) {
 			return;
 		}
+
+		const testPath = suite.filepath;
+		const segments = testPath.split('/');
+		const testName = segments.includes('e2e-tests')
+			? segments[segments.indexOf('e2e-tests') + 1]
+			: null;
+
 		try {
 			const wsEndpoint = fs.readFileSync(path.join(DIR, 'wsEndpoint'), 'utf-8');
 			if (!wsEndpoint) {
@@ -91,12 +102,6 @@ beforeAll(
 			browser = await chromium.connect(wsEndpoint);
 			page = await browser.newPage();
 
-			const testPath = suite.filepath;
-			const segments = testPath.split('/');
-			const testName = segments.includes('e2e-tests')
-				? segments[segments.indexOf('e2e-tests') + 1]
-				: null;
-
 			// if this is a test placed under e2e-tests/xxx/__tests__
 			// start a vite server in that directory.
 			if (testName) {
@@ -105,7 +110,7 @@ beforeAll(
 
 				const srcDir = path.resolve(e2eTestsRoot, testName);
 
-				tempDir = path.resolve(e2eTestsRoot, '../../temp', isBuild ? 'build' : 'serve', testName);
+				tempDir = path.resolve(e2eTestsRoot, '../../temp', testMode.replaceAll(':', '_'), testName);
 				const directoriesToIgnore = [
 					'node_modules',
 					'__tests__',
@@ -152,7 +157,7 @@ beforeAll(
 					const pkgFile = path.join(tempDir, 'package.json');
 					const pkgContent = fs.readFileSync(pkgFile, 'utf-8');
 					const newContent = pkgContent.replaceAll(
-						'cross-env NODE_OPTIONS=\\"--experimental-strip-types\\" ',
+						'NODE_OPTIONS=\\"--experimental-strip-types\\" ',
 						''
 					);
 					fs.writeFileSync(pkgFile, newContent, 'utf-8');
@@ -163,11 +168,11 @@ beforeAll(
 				const hasCustomServer = fs.existsSync(customServerScript);
 				const serverScript = hasCustomServer ? customServerScript : defaultServerScript;
 				const { serve } = await import(serverScript);
-				const port = await getUniqueTestPort(e2eTestsRoot, testName, isBuild);
-				server = await serve(tempDir, isBuild, port);
+				const port = await getUniqueTestPort(e2eTestsRoot, testName, testMode);
+				server = await serve(tempDir, testMode, port);
 				e2eServer = server;
 				const url = (viteTestUrl = `http://localhost:${port}`);
-				await (isBuild ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
+				await (testMode !== 'serve' ? page.goto(url) : goToUrlAndWaitForViteWSConnect(page, url));
 			}
 		} catch (e) {
 			console.error(`beforeAll failed for ${testName}.`, e);
@@ -236,7 +241,7 @@ async function goToUrlAndWaitForViteWSConnect(page: Page, url: string) {
 }
 
 export async function waitForViteConnect(page: Page, timeoutMS = 10000) {
-	if (isBuild) {
+	if (testMode !== 'serve') {
 		return Promise.resolve(); // no vite websocket on build
 	}
 	let timerId;

@@ -1,18 +1,23 @@
+/** @import { IdParser } from '../types/id.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import { log } from '../utils/log.js';
 import { setupWatchers } from '../utils/watch.js';
 import { SVELTE_VIRTUAL_STYLE_ID_REGEX } from '../utils/constants.js';
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function hotUpdate(api) {
 	/**
-	 * @type {import("../types/options.js").ResolvedOptions}
+	 * @type {ResolvedOptions}
 	 */
 	let options;
 	/**
-	 * @type {import('../types/id.d.ts').IdParser}
+	 * @type {IdParser}
 	 */
 	let idParser;
 
@@ -22,7 +27,7 @@ export function hotUpdate(api) {
 	 */
 	const transformResultCache = new Map();
 
-	/** @type {import('vite').Plugin} */
+	/** @type {Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:hot-update',
 		enforce: 'post',
@@ -34,12 +39,12 @@ export function hotUpdate(api) {
 			plugin.transform.filter = {
 				id: {
 					// reinclude virtual styles to get their output
-					include: [...api.idFilter.id.include, SVELTE_VIRTUAL_STYLE_ID_REGEX],
+					include: [...api.filter.id.include, SVELTE_VIRTUAL_STYLE_ID_REGEX],
 					exclude: [
 						// ignore files in node_modules, we don't hot update them
 						/\/node_modules\//,
 						// remove style exclusion
-						...api.idFilter.id.exclude.filter((filter) => filter !== SVELTE_VIRTUAL_STYLE_ID_REGEX)
+						...api.filter.id.exclude.filter((filter) => filter !== SVELTE_VIRTUAL_STYLE_ID_REGEX)
 					]
 				}
 			};
@@ -96,10 +101,25 @@ export function hotUpdate(api) {
 					}
 					const affectedModules = [];
 					const prevResults = svelteModules.map((m) => transformResultCache.get(m.id));
+
+					/** @type {Set<string>} */
+					const seen = new Set();
+					/** @param {string} url */
+					const transformRequest = async (url) => {
+						if (!seen.has(url)) {
+							seen.add(url);
+							await this.environment.transformRequest(url);
+						}
+					};
+
+					// Transform the Svelte component itself first, so that the
+					// CSS cache always gets updated.
+					await transformRequest(svelteRequest.filename);
+
 					for (let i = 0; i < svelteModules.length; i++) {
 						const mod = svelteModules[i];
 						const prev = prevResults[i];
-						await this.environment.transformRequest(mod.url);
+						await transformRequest(mod.url);
 						const next = transformResultCache.get(mod.id);
 						if (hasCodeChanged(prev, next, mod.id)) {
 							affectedModules.push(mod);

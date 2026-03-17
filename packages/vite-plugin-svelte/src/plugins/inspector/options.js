@@ -1,8 +1,11 @@
+/** @import { InspectorOptions } from '../../public.js' */
+/** @import { ResolvedConfig } from 'vite' */
+
 import process from 'node:process';
 import { loadEnv } from 'vite';
-import { debug } from './debug.js';
+import { log } from '../../utils/log.js';
 
-/** @type {import('./public.d.ts').Options} */
+/** @type {InspectorOptions} */
 export const defaultInspectorOptions = {
 	toggleKeyCombo: 'alt-x',
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
@@ -15,8 +18,8 @@ export const defaultInspectorOptions = {
 };
 
 /**
- * @param {import('vite').ResolvedConfig} config
- * @returns {Partial<import('./public.d.ts').Options> | boolean | void}
+ * @param {ResolvedConfig} config
+ * @returns {Partial<InspectorOptions> | boolean | void}
  */
 export function parseEnvironmentOptions(config) {
 	const env = loadEnv(config.mode, config.envDir ?? process.cwd(), 'SVELTE_INSPECTOR');
@@ -36,16 +39,18 @@ export function parseEnvironmentOptions(config) {
 				const defaultKeys = Object.keys(defaultInspectorOptions);
 				const unknownKeys = parsedKeys.filter((k) => !defaultKeys.includes(k));
 				if (unknownKeys.length) {
-					config.logger.warn(
+					log.warn(
 						`[vite-plugin-svelte-inspector] ignoring unknown options in environment SVELTE_INSPECTOR_OPTIONS: ${unknownKeys.join(
 							', '
-						)}`
+						)}`,
+						null,
+						'inspector'
 					);
 					for (const key of unknownKeys) {
 						delete parsed[key];
 					}
 				}
-				debug('loaded environment config', parsed);
+				log.debug('loaded environment config', parsed, 'inspector');
 				return parsed;
 			}
 		} catch (e) {
@@ -57,7 +62,7 @@ export function parseEnvironmentOptions(config) {
 		const keyConfig = {
 			toggleKeyCombo: toggle
 		};
-		debug('loaded environment config', keyConfig);
+		log.debug('loaded environment config', keyConfig, 'inspector');
 		return keyConfig;
 	}
 }

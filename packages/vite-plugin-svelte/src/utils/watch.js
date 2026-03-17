@@ -1,10 +1,13 @@
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { FSWatcher } from 'vite' */
+
 import fs from 'node:fs';
 import { log } from './log.js';
 import { knownSvelteConfigNames } from './load-svelte-config.js';
 import path from 'node:path';
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  * @returns {void}
  */
 export function setupWatchers(options) {
@@ -75,7 +78,7 @@ export function setupWatchers(options) {
 
 /**
  * taken from vite utils
- * @param {import('vite').FSWatcher} watcher
+ * @param {FSWatcher} watcher
  * @param {string | null} file
  * @param {string} root
  * @returns {void}

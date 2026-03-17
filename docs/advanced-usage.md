@@ -19,7 +19,7 @@ function mySvelteTransform() {
     configResolved(c) {
       // optional, use the exact same id filter as vite-plugin-svelte itself
       const svelteIdFilter = c.plugins.find((p) => p.name === 'vite-plugin-svelte:config').api
-        .idFilter;
+        .filter.id;
       plugin.transform.filter.id = svelteIdFilter;
     },
     transform: {

@@ -2,6 +2,8 @@
 	"include": ["."],
 	"exclude": ["**/dist/**", "**/build/**", "**/node_modules/**"],
 	"compilerOptions": {
+		// TODO: we should enable strict type checking at some point
+		// "strict": true,
 		"target": "ESNext",
 		"module": "ESNext",
 		"outDir": "dist",

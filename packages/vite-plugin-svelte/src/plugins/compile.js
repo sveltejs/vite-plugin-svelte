@@ -1,26 +1,31 @@
+/** @import { CompileSvelte } from '../types/compile.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import { toRollupError } from '../utils/error.js';
 import { logCompilerWarnings } from '../utils/log.js';
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function compile(api) {
 	/**
-	 * @type {import("../types/options.js").ResolvedOptions}
+	 * @type {ResolvedOptions}
 	 */
 	let options;
 
 	/**
-	 * @type {import("../types/compile.d.ts").CompileSvelte}
+	 * @type {CompileSvelte}
 	 */
 	let compileSvelte;
-	/** @type {import('vite').Plugin} */
+	/** @type {Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:compile',
 		configResolved() {
 			//@ts-expect-error defined below but filter not in type
-			plugin.transform.filter = api.idFilter;
+			plugin.transform.filter = api.filter;
 			options = api.options;
 			compileSvelte = api.compileSvelte;
 		},

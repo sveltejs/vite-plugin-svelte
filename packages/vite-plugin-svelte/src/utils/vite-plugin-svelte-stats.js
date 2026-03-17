@@ -1,3 +1,5 @@
+/** @import { CollectionOptions, PackageStats, Stat, StatCollection } from '../types/vite-plugin-svelte-stats.js' */
+
 import { log } from './log.js';
 import { performance } from 'node:perf_hooks';
 import { normalizePath } from 'vite';
@@ -5,7 +7,7 @@ import { findClosestPkgJsonPath } from 'vitefu';
 import { readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 
-/** @type {import('../types/vite-plugin-svelte-stats.d.ts').CollectionOptions} */
+/** @type {CollectionOptions} */
 const defaultCollectionOptions = {
 	// log after 500ms and more than one file processed
 	logInProgress: (c, now) => now - c.collectionStart > 500 && c.stats.length > 1,
@@ -23,7 +25,7 @@ function humanDuration(n) {
 }
 
 /**
- * @param {import('../types/vite-plugin-svelte-stats.d.ts').PackageStats[]} pkgStats
+ * @param {PackageStats[]} pkgStats
  * @returns {string}
  */
 function formatPackageStats(pkgStats) {
@@ -69,26 +71,26 @@ export class VitePluginSvelteStats {
 	/** @type {PackageInfo[]} */
 	#packageInfos = [];
 
-	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection[]} */
+	/** @type {StatCollection[]} */
 	#collections = [];
 
 	/**
 	 * @param {string} name
-	 * @param {Partial<import('../types/vite-plugin-svelte-stats.d.ts').CollectionOptions>} [opts]
-	 * @returns {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection}
+	 * @param {Partial<CollectionOptions>} [opts]
+	 * @returns {StatCollection}
 	 */
 	startCollection(name, opts) {
 		const options = {
 			...defaultCollectionOptions,
 			...opts
 		};
-		/** @type {import('../types/vite-plugin-svelte-stats.d.ts').Stat[]} */
+		/** @type {Stat[]} */
 		const stats = [];
 		const collectionStart = performance.now();
 
 		const _this = this;
 		let hasLoggedProgress = false;
-		/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} */
+		/** @type {StatCollection} */
 		const collection = {
 			name,
 			options,
@@ -101,7 +103,7 @@ export class VitePluginSvelteStats {
 				}
 				file = normalizePath(file);
 				const start = performance.now();
-				/** @type {import('../types/vite-plugin-svelte-stats.d.ts').Stat} */
+				/** @type {Stat} */
 				const stat = { file, start, end: start };
 				return () => {
 					const now = performance.now();
@@ -126,7 +128,7 @@ export class VitePluginSvelteStats {
 	}
 
 	/**
-	 * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} collection
+	 * @param {StatCollection} collection
 	 */
 	async #finish(collection) {
 		try {
@@ -138,9 +140,7 @@ export class VitePluginSvelteStats {
 				await this.#aggregateStatsResult(collection);
 				log.debug(
 					`${collection.name} done.\n${formatPackageStats(
-						/** @type {import('../types/vite-plugin-svelte-stats.d.ts').PackageStats[]}*/ (
-							collection.packageStats
-						)
+						/** @type {PackageStats[]}*/ (collection.packageStats)
 					)}`,
 					undefined,
 					'stats'
@@ -164,7 +164,7 @@ export class VitePluginSvelteStats {
 	}
 
 	/**
-	 * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} collection
+	 * @param {StatCollection} collection
 	 */
 	async #aggregateStatsResult(collection) {
 		const stats = collection.stats;
@@ -173,7 +173,7 @@ export class VitePluginSvelteStats {
 		}
 
 		// group stats
-		/** @type {Record<string, import('../types/vite-plugin-svelte-stats.d.ts').PackageStats>} */
+		/** @type {Record<string, PackageStats>} */
 		const grouped = {};
 		stats.forEach((stat) => {
 			const pkg = /** @type {string} */ (stat.pkg);

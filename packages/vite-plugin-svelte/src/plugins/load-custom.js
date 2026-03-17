@@ -1,3 +1,6 @@
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import fs from 'node:fs';
 import { log } from '../utils/log.js';
 
@@ -5,17 +8,17 @@ import { log } from '../utils/log.js';
  * if svelte config includes files that vite treats as assets (e.g. .svg)
  * we have to manually load them to avoid getting urls
  *
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function loadCustom(api) {
-	/** @type {import('vite').Plugin} */
+	/** @type {Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:load-custom',
 		enforce: 'pre', // must come before vites own asset handling or custom extensions like .svg won't work
 		configResolved() {
 			//@ts-expect-error load defined below but filter not in type
-			plugin.load.filter = api.idFilter;
+			plugin.load.filter = api.filter;
 		},
 
 		load: {

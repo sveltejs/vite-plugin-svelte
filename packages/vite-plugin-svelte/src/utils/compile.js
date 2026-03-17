@@ -1,5 +1,8 @@
+/** @import { CompileSvelte } from '../types/compile.js' */
+/** @import { StatCollection } from '../types/vite-plugin-svelte-stats.js' */
+/** @import { CompileOptions, CompileResult, Warning } from 'svelte/compiler' */
+
 import * as svelte from 'svelte/compiler';
-import { safeBase64Hash } from './hash.js';
 import { log } from './log.js';
 
 import { mapToRelative } from './sourcemaps.js';
@@ -12,16 +15,16 @@ const scriptLangRE =
 	/<!--[^]*?-->|<script\s+(?:[^>]*|(?:[^=>'"/]+=(?:"[^"]*"|'[^']*'|[^>\s]+)\s+)*)lang=(["'])?([^"' >]+)\1[^>]*>/g;
 
 /**
- * @returns {import('../types/compile.d.ts').CompileSvelte}
+ * @returns {CompileSvelte}
  */
 export function createCompileSvelte() {
-	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+	/** @type {StatCollection | undefined} */
 	let stats;
-	/** @type {import('../types/compile.d.ts').CompileSvelte} */
+	/** @type {CompileSvelte} */
 	return async function compileSvelte(svelteRequest, code, options, sourcemap) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
-		/** @type {import('svelte/compiler').Warning[]} */
+		/** @type {Warning[]} */
 		const warnings = [];
 
 		if (options.stats) {
@@ -49,7 +52,7 @@ export function createCompileSvelte() {
 			}
 		}
 
-		/** @type {import('svelte/compiler').CompileOptions} */
+		/** @type {CompileOptions} */
 		const compileOptions = {
 			...options.compilerOptions,
 			filename,
@@ -58,8 +61,6 @@ export function createCompileSvelte() {
 
 		let finalCode = code;
 		if (compileOptions.hmr && options.emitCss) {
-			const hash = `s-${safeBase64Hash(normalizedFilename)}`;
-			compileOptions.cssHash = () => hash;
 			const closeStylePos = code.lastIndexOf('</style>');
 			if (closeStylePos > -1) {
 				// inject rule that forces compile to attach scope class to every node in the template
@@ -90,7 +91,7 @@ export function createCompileSvelte() {
 			finalCompileOptions.sourcemap = sourcemap;
 		}
 		const endStat = stats?.start(filename);
-		/** @type {import('svelte/compiler').CompileResult} */
+		/** @type {CompileResult} */
 		let compiled;
 		try {
 			compiled = svelte.compile(finalCode, { ...finalCompileOptions, filename });

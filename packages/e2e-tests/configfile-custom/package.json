@@ -3,8 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=\"--experimental-strip-types\" vite",
-    "build": "cross-env NODE_OPTIONS=\"--experimental-strip-types\" vite build",
+    "dev": "NODE_OPTIONS=\"--experimental-strip-types\" vite",
+    "build": "NODE_OPTIONS=\"--experimental-strip-types\" vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -12,8 +12,8 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "workspace:^",
-    "svelte": "^5.36.13",
-    "vite": "^7.0.5"
+    "svelte": "^5.45.4",
+    "vite": "^8.0.0-beta.7"
   },
   "type": "module"
 }

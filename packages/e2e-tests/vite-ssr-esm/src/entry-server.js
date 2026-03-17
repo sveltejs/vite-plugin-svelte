@@ -5,6 +5,6 @@ import { render as ssr } from 'svelte/server';
 console.log(esm());
 console.log(decamelize('helloWorld'));
 
-export async function render(url, manifest) {
+export async function render(url) {
 	return ssr(App, { props: { name: 'world' } });
 }

@@ -1,6 +1,10 @@
+/** @import { Options } from '../public.js' */
+/** @import { PreResolvedOptions } from '../types/options.js' */
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { DepOptimizationConfig, Plugin } from 'vite' */
+
 import process from 'node:process';
 import { isDebugNamespaceEnabled, log } from '../utils/log.js';
-import * as vite from 'vite';
 import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
 import {
 	buildExtraViteConfig,
@@ -13,38 +17,25 @@ import {
 import { buildIdFilter, buildIdParser } from '../utils/id.js';
 import { createCompileSvelte } from '../utils/compile.js';
 
-// @ts-ignore rolldownVersion
-const { version: viteVersion, rolldownVersion } = vite;
-
 /**
- * @param {Partial<import('../public.d.ts').Options>} [inlineOptions]
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {Partial<Options>} [inlineOptions]
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function configure(api, inlineOptions) {
-	if (rolldownVersion) {
-		log.warn.once(
-			`!!! Support for rolldown-vite in vite-plugin-svelte is experimental (rolldown: ${rolldownVersion}, vite: ${viteVersion}) !!!
-			See https://github.com/sveltejs/vite-plugin-svelte/issues/1143 for a list of known issues and to report feedback.`.replace(
-				/\t+/g,
-				'\t'
-			)
-		);
-	}
-
 	validateInlineOptions(inlineOptions);
 
 	/**
-	 * @type {import("../types/options.d.ts").PreResolvedOptions}
+	 * @type {PreResolvedOptions}
 	 */
 	let preOptions;
 
 	/**
-	 * @type {import('vite').DepOptimizationConfig | undefined}
+	 * @type {DepOptimizationConfig | undefined}
 	 */
 	let optimizeDeps = undefined;
 
-	/** @type {import('vite').Plugin} */
+	/** @type {Plugin} */
 	return {
 		name: 'vite-plugin-svelte:config',
 		api,
@@ -78,8 +69,7 @@ export function configure(api, inlineOptions) {
 					api.options.stats = new VitePluginSvelteStats();
 				}
 
-				api.idFilter = buildIdFilter(options);
-
+				api.filter = buildIdFilter(options);
 				api.idParser = buildIdParser(options);
 				api.compileSvelte = createCompileSvelte();
 				log.debug('resolved options', api.options, 'config');

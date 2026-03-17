@@ -1,8 +1,10 @@
-import markdown from 'eslint-plugin-markdown';
-import globals from 'globals';
-import n from 'eslint-plugin-n';
+import markdown from '@eslint/markdown';
+import { defineConfig } from 'eslint/config';
 import svelteOrgEslintConfig from '@sveltejs/eslint-config';
-export default [
+import n from 'eslint-plugin-n';
+import globals from 'globals';
+
+export default defineConfig([
 	{
 		name: 'local/ignores',
 		ignores: [
@@ -15,7 +17,8 @@ export default [
 			'packages/*/types/index.d.ts',
 			'packages/*/types/index.d.ts.map',
 			'packages/*/CHANGELOG.md',
-			'packages/e2e-tests/**/logs/**'
+			'packages/e2e-tests/**/logs/**',
+			'**/.vite-inspect/**'
 		]
 	},
 	...svelteOrgEslintConfig, // contains setup for svelte and typescript
@@ -31,7 +34,14 @@ export default [
 		}
 	},
 	n.configs['flat/recommended-module'],
-	...markdown.configs.recommended,
+	{
+		name: 'local/markdown',
+		files: ['**/*.md'],
+		plugins: {
+			markdown: /** @type {any} */ (markdown)
+		},
+		extends: ['markdown/recommended', 'markdown/processor']
+	},
 	{
 		name: 'local/language-options',
 		languageOptions: {
@@ -44,6 +54,13 @@ export default [
 		rules: {
 			'n/no-unsupported-features/es-builtins': 'error',
 			'n/no-unsupported-features/es-syntax': 'error',
+			'n/no-unsupported-features/node-builtins': [
+				'error',
+				{
+					version: '>=20.19.0'
+				}
+			],
+
 			'no-console': 'off',
 			'no-debugger': 'error',
 
@@ -92,8 +109,8 @@ export default [
 	{
 		name: 'local/inspector-extras',
 		files: [
-			'packages/vite-plugin-svelte-inspector/src/runtime/load-inspector.js',
-			'packages/vite-plugin-svelte-inspector/src/runtime/Inspector.svelte'
+			'packages/vite-plugin-svelte/src/plugins/inspector/runtime/load-inspector.js',
+			'packages/vite-plugin-svelte/src/plugins/inspector/runtime/Inspector.svelte'
 		],
 
 		languageOptions: {
@@ -136,7 +153,8 @@ export default [
 		files: ['**/*.md/*.js', '**/*.md/*.ts', '**/*.md/*.svelte'],
 		rules: {
 			'n/no-missing-import': 'off',
-			'@typescript-eslint/no-unused-vars': 'off'
+			'@typescript-eslint/no-unused-vars': 'off',
+			'no-undef': 'off'
 		}
 	},
 	{
@@ -169,4 +187,4 @@ export default [
 			'@typescript-eslint/no-unused-vars': 'off'
 		}
 	}
-];
+]);

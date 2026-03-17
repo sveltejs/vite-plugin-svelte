@@ -1,3 +1,6 @@
+/** @import { IdFilter, IdParser, ModuleIdParser, RequestQuery, SvelteModuleRequest, SvelteQueryTypes, SvelteRequest } from '../types/id.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+
 import { normalizePath } from 'vite';
 import fs from 'node:fs';
 import process from 'node:process';
@@ -34,7 +37,7 @@ function splitId(id) {
  * @param {string} root
  * @param {number} timestamp
  * @param {boolean} ssr
- * @returns {import('../types/id.d.ts').SvelteRequest | undefined}
+ * @returns {SvelteRequest | undefined}
  */
 function parseToSvelteRequest(id, filename, rawQuery, root, timestamp, ssr) {
 	const query = parseRequestQuery(rawQuery);
@@ -62,7 +65,7 @@ function parseToSvelteRequest(id, filename, rawQuery, root, timestamp, ssr) {
 /**
  * @param {string} filename
  * @param {string} root
- * @param {import('../types/id.d.ts').SvelteQueryTypes} type
+ * @param {SvelteQueryTypes} type
  * @returns {string}
  */
 function createVirtualImportId(filename, root, type) {
@@ -83,7 +86,7 @@ function createVirtualImportId(filename, root, type) {
 
 /**
  * @param {string} rawQuery
- * @returns {import('../types/id.d.ts').RequestQuery}
+ * @returns {RequestQuery}
  */
 function parseRequestQuery(rawQuery) {
 	const query = Object.fromEntries(new URLSearchParams(rawQuery));
@@ -121,7 +124,7 @@ function parseRequestQuery(rawQuery) {
 		}
 	}
 
-	return /** @type {import('../types/id.d.ts').RequestQuery}*/ query;
+	return /** @type {RequestQuery}*/ query;
 }
 
 /**
@@ -168,8 +171,8 @@ function escapeRE(s) {
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {import('../types/id.d.ts').IdFilter}
+ * @param {ResolvedOptions} options
+ * @returns {IdFilter}
  */
 export function buildIdFilter(options) {
 	const { include = [], exclude = [], extensions = DEFAULT_SVELTE_EXT } = options;
@@ -184,6 +187,7 @@ export function buildIdFilter(options) {
 		id: {
 			include: [extensionsRE, .../**@type {Array<string|RegExp>}*/ arraify(include)],
 			exclude: /**@type {Array<string|RegExp>}*/ [
+				'\0',
 				SVELTE_VIRTUAL_STYLE_ID_REGEX, // exclude from regular pipeline, we load it in a separate plugin
 				...arraify(exclude)
 			]
@@ -192,8 +196,8 @@ export function buildIdFilter(options) {
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {import('../types/id.d.ts').IdParser}
+ * @param {ResolvedOptions} options
+ * @returns {IdParser}
  */
 export function buildIdParser(options) {
 	const normalizedRoot = normalizePath(options.root);
@@ -204,8 +208,8 @@ export function buildIdParser(options) {
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {import('../types/id.d.ts').IdFilter}
+ * @param {ResolvedOptions} options
+ * @returns {IdFilter}
  */
 export function buildModuleIdFilter(options) {
 	const {
@@ -225,14 +229,14 @@ export function buildModuleIdFilter(options) {
 	return {
 		id: {
 			include: [infixWithExtRE, .../**@type {Array<string|RegExp>}*/ arraify(include)],
-			exclude: /**@type {Array<string|RegExp>}*/ arraify(exclude)
+			exclude: ['\0', .../**@type {Array<string|RegExp>}*/ arraify(exclude)]
 		}
 	};
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {import('../types/id.d.ts').ModuleIdParser}
+ * @param {ResolvedOptions} options
+ * @returns {ModuleIdParser}
  */
 export function buildModuleIdParser(options) {
 	const root = options.root;
@@ -250,7 +254,7 @@ export function buildModuleIdParser(options) {
  * @param {string} root
  * @param {number} timestamp
  * @param {boolean} ssr
- * @returns {import('../types/id.d.ts').SvelteModuleRequest | undefined}
+ * @returns {SvelteModuleRequest | undefined}
  */
 function parseToSvelteModuleRequest(id, filename, rawQuery, root, timestamp, ssr) {
 	const query = parseRequestQuery(rawQuery);

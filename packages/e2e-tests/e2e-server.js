@@ -46,7 +46,33 @@ async function startedOnPort(serverProcess, port, timeout) {
 	});
 }
 
-export async function serve(root, isBuild, port) {
+async function buildWatchIdle(watchProcess, timeout) {
+	let id;
+	let stdoutListener;
+	const timerPromise = new Promise(
+		(_, reject) =>
+			(id = setTimeout(() => {
+				reject(`timeout for server start after ${timeout}`);
+			}, timeout))
+	);
+	const startedPromise = new Promise((resolve, reject) => {
+		stdoutListener = (data) => {
+			const str = data.toString();
+			const match = str.match(/built in \d+ms\./);
+			if (match) {
+				resolve();
+			}
+		};
+		watchProcess.stdout.on('data', stdoutListener);
+	});
+
+	return Promise.race([timerPromise, startedPromise]).finally(() => {
+		watchProcess.stdout.off('data', stdoutListener);
+		clearTimeout(id);
+	});
+}
+
+export async function serve(root, testMode, port) {
 	const logDir = path.join(root, 'logs');
 	const logs = {
 		server: null,
@@ -88,7 +114,7 @@ export async function serve(root, isBuild, port) {
 		}
 	}
 
-	if (isBuild) {
+	if (testMode === 'build') {
 		let buildResult;
 		let hasErr = false;
 		const out = [];
@@ -120,50 +146,72 @@ export async function serve(root, isBuild, port) {
 			throw buildResult;
 		}
 	}
+	let watchProcess;
+	if (testMode === 'build:watch') {
+		watchProcess = execa('pnpm', ['build', '--watch'], {
+			cwd: root,
+			stdio: 'pipe'
+		});
+		logs.watch = { out: [], err: [] };
+		collectLogs(watchProcess, logs.watch);
+		await buildWatchIdle(watchProcess, 10000);
+	}
 
-	const serverProcess = execa('pnpm', [isBuild ? 'preview' : 'dev', '--port', port], {
-		cwd: root,
-		stdio: 'pipe'
-	});
-	const out = [],
-		err = [];
-	logs.server = { out, err };
+	const serverProcess = execa(
+		'pnpm',
+		[testMode === 'serve' ? 'dev' : 'preview', '--port', port, '--strictPort'],
+		{
+			cwd: root,
+			stdio: 'pipe'
+		}
+	);
+	logs.server = { out: [], err: [] };
 	collectLogs(serverProcess, logs.server);
 
 	const closeServer = async () => {
-		if (serverProcess) {
-			if (serverProcess.pid) {
-				await new Promise((resolve) => {
-					treeKill(serverProcess.pid, (err) => {
-						if (err) {
-							console.error(`failed to treekill serverprocess ${serverProcess.pid}`, err);
-						}
-						resolve();
+		for (const p of [watchProcess, serverProcess]) {
+			if (p) {
+				if (p.pid) {
+					await new Promise((resolve) => {
+						treeKill(p.pid, (err) => {
+							if (err) {
+								console.error(
+									`failed to treekill ${p === watchProcess ? 'watchprocess' : 'serverprocess'} ${p.pid}`,
+									err
+								);
+							}
+							resolve();
+						});
 					});
-				});
-			} else {
-				serverProcess.cancel();
-			}
+				} else {
+					p.cancel();
+				}
 
-			try {
-				await serverProcess;
-			} catch (e) {
-				if (e.stdout) {
-					pushLines(e.stdout, out);
-				}
-				if (e.stderr) {
-					pushLines(e.stderr, err);
-				}
-				if (!!process.env.DEBUG && !isWin) {
-					// treekill on windows uses taskkill and that ends up here always
-					console.debug(`e2e server process did not exit gracefully. dir: ${root}`, e);
+				try {
+					await p;
+				} catch (e) {
+					const { out, err } = p === watchProcess ? logs.watch : logs.server;
+					if (e.stdout) {
+						pushLines(e.stdout, out);
+					}
+					if (e.stderr) {
+						pushLines(e.stderr, err);
+					}
+					if (!!process.env.DEBUG && !isWin) {
+						// treekill on windows uses taskkill and that ends up here always
+						console.debug(`e2e server process did not exit gracefully. dir: ${root}`, e);
+					}
 				}
 			}
 		}
+
 		await writeLogs('server', logs.server);
+		if (logs.watch) {
+			await writeLogs('watch', logs.watch);
+		}
 	};
 	try {
-		await startedOnPort(serverProcess, port, 20000);
+		await startedOnPort(serverProcess, port, 10000);
 		return {
 			port,
 			logs,

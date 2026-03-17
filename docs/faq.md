@@ -54,39 +54,24 @@ Bad:
 <script type="text/typescript"></script>
 ```
 
-### Where should I put my global styles?
+### Why should `cssHash` be calculated from filename during dev
 
-Global styles should always be placed in their own stylesheet files whenever possible, and not in a Svelte component's `<style>` tag. The stylesheet files can then be imported directly in JS and take advantage of Vite's own style processing. It would also significantly improve the dev server startup time.
+The output of this function is part of the js module for the component. If the hash changes when css changes, every css update also triggers a js update.
+These js updates can lead to application state resetting in your browser, which is a worse developer experience than only css updating.
+It must also be different between different components to ensure that styles are scoped and updates applied correctly.
 
-Good:
-
-```scss
-/* global.scss */
-html {
-  color: $text-color;
-}
-```
+So it is recommended to keep the pattern defined by Svelte itself. If you want to customize the prefix, use this:
 
 ```js
-// main.js
-import './global.scss';
-```
-
-Bad:
-
-```svelte
-<style lang="scss">
-  :global(html) {
-    color: $text-color;
+// svelte.config.js
+export default {
+  compilerOptions: {
+    cssHash: ({ hash, filename, css }) => `my-custom-prefix-${hash(filename ?? css)}`
   }
-</style>
+};
 ```
 
-### Why can't `cssHash` be set in development mode?
-
-`cssHash` is fixed in development for CSS HMR in Svelte components, ensuring that the hash value is stable based on the file name so that styles are only updated when changed.
-
-However, `cssHash` is respected in production builds as HMR is a dev-only feature.
+If you don't want the hash to depend on filename, either accept the worse dx or customize cssHash only during build.
 
 ### How do I add a Svelte preprocessor from a Vite plugin?
 
