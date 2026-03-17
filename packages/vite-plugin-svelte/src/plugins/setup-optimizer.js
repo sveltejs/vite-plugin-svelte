@@ -10,6 +10,13 @@ import path from 'node:path';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
+// @ts-ignore not typed on vite
+const { rolldownVersion } = vite;
+
+/**
+ * @typedef {NonNullable<import('vite').DepOptimizationOptions['esbuildOptions']>} EsbuildOptions
+ * @typedef {NonNullable<EsbuildOptions['plugins']>[number]} EsbuildPlugin
+ */
 
 /**
  * @typedef {NonNullable<Rollup.Plugin>} RollupPlugin
