@@ -1,3 +1,8 @@
+/** @import { Options, SvelteConfig } from '../public.js' */
+/** @import { PreResolvedOptions, ResolvedOptions } from '../types/options.js' */
+/** @import { ConfigEnv, EnvironmentOptions, Plugin, ResolvedConfig, UserConfig } from 'vite' */
+/** @import { CrawlFrameworkPkgsResult } from 'vitefu' */
+
 import process from 'node:process';
 import * as vite from 'vite';
 const {
@@ -48,7 +53,7 @@ const knownRootOptions = new Set(['extensions', 'compilerOptions', 'preprocess',
 const allowedInlineOptions = new Set(['configFile', ...allowedPluginOptions, ...knownRootOptions]);
 
 /**
- * @param {Partial<import('../public.d.ts').Options>} [inlineOptions]
+ * @param {Partial<Options>} [inlineOptions]
  */
 export function validateInlineOptions(inlineOptions) {
 	const invalidKeys = Object.keys(inlineOptions || {}).filter(
@@ -60,8 +65,8 @@ export function validateInlineOptions(inlineOptions) {
 }
 
 /**
- * @param {Partial<import('../public.d.ts').SvelteConfig>} [config]
- * @returns {Partial<import('../public.d.ts').Options> | undefined}
+ * @param {Partial<SvelteConfig>} [config]
+ * @returns {Partial<Options> | undefined}
  */
 function convertPluginOptions(config) {
 	if (!config) {
@@ -111,7 +116,7 @@ function convertPluginOptions(config) {
 			delete pluginOptions[unkownOption];
 		});
 	}
-	/** @type {import('../public.d.ts').Options} */
+	/** @type {Options} */
 	const result = {
 		...config,
 		...pluginOptions
@@ -124,22 +129,22 @@ function convertPluginOptions(config) {
 
 /**
  * used in config phase, merges the default options, svelte config, and inline options
- * @param {Partial<import('../public.d.ts').Options> | undefined} inlineOptions
- * @param {import('vite').UserConfig} viteUserConfig
- * @param {import('vite').ConfigEnv} viteEnv
- * @returns {Promise<import('../types/options.d.ts').PreResolvedOptions>}
+ * @param {Partial<Options> | undefined} inlineOptions
+ * @param {UserConfig} viteUserConfig
+ * @param {ConfigEnv} viteEnv
+ * @returns {Promise<PreResolvedOptions>}
  */
 export async function preResolveOptions(inlineOptions, viteUserConfig, viteEnv) {
 	if (!inlineOptions) {
 		inlineOptions = {};
 	}
-	/** @type {import('vite').UserConfig} */
+	/** @type {UserConfig} */
 	const viteConfigWithResolvedRoot = {
 		...viteUserConfig,
 		root: resolveViteRoot(viteUserConfig)
 	};
 	const isBuild = viteEnv.command === 'build';
-	/** @type {Partial<import('../types/options.d.ts').PreResolvedOptions>} */
+	/** @type {Partial<PreResolvedOptions>} */
 	const defaultOptions = {
 		extensions: DEFAULT_SVELTE_EXT,
 		emitCss: true,
@@ -148,7 +153,7 @@ export async function preResolveOptions(inlineOptions, viteUserConfig, viteEnv) 
 	const svelteConfig = convertPluginOptions(
 		await loadSvelteConfig(viteConfigWithResolvedRoot, inlineOptions)
 	);
-	/** @type {Partial<import('../types/options.d.ts').PreResolvedOptions>} */
+	/** @type {Partial<PreResolvedOptions>} */
 	const extraOptions = {
 		root: viteConfigWithResolvedRoot.root,
 		isBuild,
@@ -156,7 +161,7 @@ export async function preResolveOptions(inlineOptions, viteUserConfig, viteEnv) 
 		isDebug: process.env.DEBUG != null
 	};
 
-	const merged = /** @type {import('../types/options.d.ts').PreResolvedOptions} */ (
+	const merged = /** @type {PreResolvedOptions} */ (
 		mergeConfigs(defaultOptions, svelteConfig, inlineOptions, extraOptions)
 	);
 	// configFile of svelteConfig contains the absolute path it was loaded from,
@@ -187,13 +192,13 @@ function mergeConfigs(...configs) {
 /**
  * used in configResolved phase, merges a contextual default config, pre-resolved options, and some preprocessors. also validates the final config.
  *
- * @param {import('../types/options.d.ts').PreResolvedOptions} preResolveOptions
- * @param {import('vite').ResolvedConfig} viteConfig
- * @returns {import('../types/options.d.ts').ResolvedOptions}
+ * @param {PreResolvedOptions} preResolveOptions
+ * @param {ResolvedConfig} viteConfig
+ * @returns {ResolvedOptions}
  */
 export function resolveOptions(preResolveOptions, viteConfig) {
 	const css = preResolveOptions.emitCss ? 'external' : 'injected';
-	/** @type {Partial<import('../public.d.ts').Options>} */
+	/** @type {Partial<Options>} */
 	const defaultOptions = {
 		compilerOptions: {
 			css,
@@ -206,12 +211,12 @@ export function resolveOptions(preResolveOptions, viteConfig) {
 		}
 	};
 
-	/** @type {Partial<import('../types/options.d.ts').ResolvedOptions>} */
+	/** @type {Partial<ResolvedOptions>} */
 	const extraOptions = {
 		root: viteConfig.root,
 		isProduction: viteConfig.isProduction
 	};
-	const merged = /** @type {import('../types/options.d.ts').ResolvedOptions}*/ (
+	const merged = /** @type {ResolvedOptions}*/ (
 		mergeConfigs(defaultOptions, preResolveOptions, extraOptions)
 	);
 
@@ -225,8 +230,8 @@ export function resolveOptions(preResolveOptions, viteConfig) {
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @param {import('vite').ResolvedConfig} viteConfig
+ * @param {ResolvedOptions} options
+ * @param {ResolvedConfig} viteConfig
  */
 function enforceOptionsForHmr(options, viteConfig) {
 	if (options.compilerOptions.hmr && viteConfig.server?.hmr === false) {
@@ -265,7 +270,7 @@ function enforceOptionsForHmr(options, viteConfig) {
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  */
 function enforceOptionsForProduction(options) {
 	if (options.isProduction) {
@@ -285,7 +290,7 @@ function enforceOptionsForProduction(options) {
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  */
 function removeIgnoredOptions(options) {
 	const ignoredCompilerOptions = ['generate', 'format', 'filename'];
@@ -305,7 +310,7 @@ function removeIgnoredOptions(options) {
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  */
 function handleDeprecatedOptions(options) {
 	const experimental = /** @type {Record<string, any>} */ (options.experimental);
@@ -324,10 +329,10 @@ function handleDeprecatedOptions(options) {
 }
 
 /**
- * @param {import('vite').ResolvedConfig} config
+ * @param {ResolvedConfig} config
  */
 function logRemovedPluginAPI(config) {
-	/** @type {import('vite').Plugin[]} */
+	/** @type {Plugin[]} */
 	const pluginsWithPreprocessors = config.plugins.filter((p) => p?.api?.sveltePreprocess);
 
 	if (pluginsWithPreprocessors.length > 0) {
@@ -348,7 +353,7 @@ function logRemovedPluginAPI(config) {
  * @see https://github.com/sveltejs/vite-plugin-svelte/issues/113
  * @see https://github.com/vitejs/vite/blob/43c957de8a99bb326afd732c962f42127b0a4d1e/packages/vite/src/node/config.ts#L293
  *
- * @param {import('vite').UserConfig} viteConfig
+ * @param {UserConfig} viteConfig
  * @returns {string | undefined}
  */
 function resolveViteRoot(viteConfig) {
@@ -356,12 +361,12 @@ function resolveViteRoot(viteConfig) {
 }
 
 /**
- * @param {import('../types/options.d.ts').PreResolvedOptions} options
- * @param {import('vite').UserConfig} config
- * @returns {Promise<Partial<import('vite').UserConfig>>}
+ * @param {PreResolvedOptions} options
+ * @param {UserConfig} config
+ * @returns {Promise<Partial<UserConfig>>}
  */
 export async function buildExtraViteConfig(options, config) {
-	/** @type {Partial<import('vite').UserConfig>} */
+	/** @type {Partial<UserConfig>} */
 	const extraViteConfig = {
 		resolve: {
 			dedupe: [...SVELTE_IMPORTS]
@@ -414,9 +419,9 @@ export async function buildExtraViteConfig(options, config) {
 }
 
 /**
- * @param {Partial<import('vite').UserConfig>} extraViteConfig
- * @param {import('vite').UserConfig} config
- * @param {import('../types/options.d.ts').PreResolvedOptions} options
+ * @param {Partial<UserConfig>} extraViteConfig
+ * @param {UserConfig} config
+ * @param {PreResolvedOptions} options
  */
 function validateViteConfig(extraViteConfig, config, options) {
 	const { prebundleSvelteLibraries, isBuild } = options;
@@ -465,9 +470,9 @@ function validateViteConfig(extraViteConfig, config, options) {
 }
 
 /**
- * @param {import('../types/options.d.ts').PreResolvedOptions} options
- * @param {import('vite').UserConfig} config
- * @returns {Promise<import('vitefu').CrawlFrameworkPkgsResult>}
+ * @param {PreResolvedOptions} options
+ * @param {UserConfig} config
+ * @returns {Promise<CrawlFrameworkPkgsResult>}
  */
 async function buildExtraConfigForDependencies(options, config) {
 	// extra handling for svelte dependencies in the project
@@ -557,8 +562,8 @@ async function buildExtraConfigForDependencies(options, config) {
 }
 
 /**
- * @param {import('vite').UserConfig} config
- * @returns {import('vite').UserConfig & { optimizeDeps: { include: string[], exclude:string[] }, ssr: { noExternal:(string|RegExp)[], external: string[] } } }
+ * @param {UserConfig} config
+ * @returns {UserConfig & { optimizeDeps: { include: string[], exclude:string[] }, ssr: { noExternal:(string|RegExp)[], external: string[] } } }
  */
 function buildExtraConfigForSvelte(config) {
 	// include svelte imports for optimization unless explicitly excluded
@@ -604,7 +609,7 @@ function buildExtraConfigForSvelte(config) {
 /**
  * Mutates `config` to ensure `resolve.mainFields` is set. If unset, it emulates Vite's default fallback.
  * @param {string} name
- * @param {import('vite').EnvironmentOptions} config
+ * @param {EnvironmentOptions} config
  * @param {{ isSsrTargetWebworker?: boolean }} opts
  */
 export function ensureConfigEnvironmentMainFields(name, config, opts) {
@@ -622,7 +627,7 @@ export function ensureConfigEnvironmentMainFields(name, config, opts) {
 /**
  * Mutates `config` to ensure `resolve.conditions` is set. If unset, it emulates Vite's default fallback.
  * @param {string} name
- * @param {import('vite').EnvironmentOptions} config
+ * @param {EnvironmentOptions} config
  * @param {{ isSsrTargetWebworker?: boolean }} opts
  */
 export function ensureConfigEnvironmentConditions(name, config, opts) {
