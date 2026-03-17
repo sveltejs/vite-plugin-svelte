@@ -7,6 +7,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { readFileSync } from 'node:fs';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
