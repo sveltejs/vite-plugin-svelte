@@ -1,3 +1,6 @@
+/** @import { Options, SvelteConfig } from '../public.js' */
+/** @import { UserConfig } from 'vite' */
+
 import path from 'node:path';
 import process from 'node:process';
 import fs from 'node:fs';
@@ -17,9 +20,9 @@ async function dynamicImportDefault(filePath, timestamp) {
 }
 
 /**
- * @param {import('vite').UserConfig} [viteConfig]
- * @param {Partial<import('../public.d.ts').Options>} [inlineOptions]
- * @returns {Promise<Partial<import('../public.d.ts').SvelteConfig> | undefined>}
+ * @param {UserConfig} [viteConfig]
+ * @param {Partial<Options>} [inlineOptions]
+ * @returns {Promise<Partial<SvelteConfig> | undefined>}
  */
 export async function loadSvelteConfig(viteConfig, inlineOptions) {
 	if (inlineOptions?.configFile === false) {
@@ -48,8 +51,8 @@ export async function loadSvelteConfig(viteConfig, inlineOptions) {
 }
 
 /**
- * @param {import('vite').UserConfig | undefined} viteConfig
- * @param {Partial<import('../public.d.ts').Options> | undefined} inlineOptions
+ * @param {UserConfig | undefined} viteConfig
+ * @param {Partial<Options> | undefined} inlineOptions
  * @returns {string | undefined}
  */
 function findConfigToLoad(viteConfig, inlineOptions) {
