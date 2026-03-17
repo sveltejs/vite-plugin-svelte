@@ -10,7 +10,8 @@ import path from 'node:path';
 import { readFileSync } from 'node:fs';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
-import { toRollupError } from '../utils/error.js';
+import { toESBuildError, toRollupError } from '../utils/error.js';
+import * as vite from 'vite';
 // @ts-ignore not typed on vite
 const { rolldownVersion } = vite;
 
