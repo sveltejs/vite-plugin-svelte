@@ -57,3 +57,10 @@ overrides:
 
 # needed for _test_dependencies
 dedupeInjectedDeps: false
+
+# cli output
+# These are only documented as inline options and they also show an error in VS Code
+# based on the schema from https://json.schemastore.org/pnpm-workspace.json
+# However, they do work and are valid options
+aggregateOutput: true
+reporter: append-only
