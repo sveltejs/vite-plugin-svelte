@@ -229,6 +229,8 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
 - **Type:**
 
   ```ts
+  type CompileOptions = any;
+  // ---cut---
   type DynamicCompileOptions = (data: {
     filename: string; // The file to be compiled
     code: string; // The preprocessed Svelte code

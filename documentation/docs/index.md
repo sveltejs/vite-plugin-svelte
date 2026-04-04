@@ -1,3 +1,3 @@
 ---
-title: vite-plugin-svelte
+title: Vite Plugin
 ---

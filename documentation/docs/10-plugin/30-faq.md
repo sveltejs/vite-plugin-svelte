@@ -62,7 +62,7 @@ Global styles should always be placed in their own stylesheet files whenever pos
 
 Good:
 
-```scss
+```css
 /* global.scss */
 html {
   color: $text-color;
@@ -128,24 +128,26 @@ The way prebundling Svelte libraries affects your dev-server load times depends 
 
 Offers better DX but can cause noticable delays on your machine, especially for libraries with many files.
 
-```diff
-import { SomeComponent } from 'some-library'
-+ only one request per library
-+ intellisense for the whole library after first import
-- compiles the whole library even if you only use a few components
-- slower build and dev-server ssr
+```js
+// @errors: 2307
+import { SomeComponent } from 'some-library';
+// 👍🏻 only one request per library
+// 👍🏻 intellisense for the whole library after first import
+// 👎🏻 compiles the whole library even if you only use a few components
+// 👎🏻 slower build and dev-server ssr
 ```
 
 ### Deep imports
 
 Offers snappier dev and faster builds for libraries with many files at the expense of some DX
 
-```diff
-import SomeComponent from 'some-library/src/SomeComponent.svelte'
-+ compiles only the components you import
-+ faster build and dev-server ssr
-- one request per import can slow down initial load if you use a lot of components
-- intellisense only for imported components
+```js
+// @errors: 2307
+import SomeComponent from 'some-library/src/SomeComponent.svelte';
+// 👍🏻 compiles only the components you import
+// 👍🏻 faster build and dev-server ssr
+// 👎🏻 one request per import can slow down initial load if you use a lot of components
+// 👎🏻 intellisense only for imported components
 ```
 
 ### Rewriting imports with plugins or preprocessors
@@ -160,7 +162,9 @@ If you prefer to use these tools, please exclude the libraries you use them with
 
 If you want to disable prebundling for a single library, use `optimizeDeps.exclude`
 
-```js
+```ts
+import { defineConfig } from 'vite';
+// ---cut---
 // vite.config.js
 export default defineConfig({
   optimizeDeps: {
@@ -221,14 +225,14 @@ vite-plugin-svelte 3 still resolves it as a fallback, but in a future major rele
 
 Example:
 
-```diff
+```json
 // package.json
   "files": ["dist"],
   "svelte": "dist/index.js",
-+ "exports": {
-+   ".": {
-+     "svelte": "./dist/index.js"
-+   }
++++ "exports": {
++++   ".": {
++++     "svelte": "./dist/index.js"
++++   }
   }
 ```
 
