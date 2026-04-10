@@ -69,6 +69,7 @@ export interface PluginOptions {
 	 * `data.filename` - The file to be compiled
 	 * `data.code` - The preprocessed Svelte code
 	 * `data.compileOptions` - The current compiler options
+	 * `data.environment` - The name of the Vite environment (e.g. 'client', 'ssr')
 	 *
 	 * To change part of the compiler options, return an object with the changes you need.
 	 *
@@ -81,11 +82,27 @@ export interface PluginOptions {
 	 *   }
 	 * }
 	 * ```
+	 *
+	 * @example
+	 * ```
+	 * ({ environment }) => {
+	 *   // Use a custom renderer in a specific environment
+	 *   if (environment === 'custom') {
+	 *     return {
+	 *       generate: 'client',
+	 *       css: 'external',
+	 *       experimental: { customRenderer: 'my-custom-renderer' },
+	 *     };
+	 *   }
+	 * }
+	 * ```
 	 */
 	dynamicCompileOptions?: (data: {
 		filename: string;
 		code: string;
 		compileOptions: Partial<CompileOptions>;
+		/** The name of the Vite environment being compiled for (e.g. 'client', 'ssr') */
+		environment?: string;
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
 
 	/**
