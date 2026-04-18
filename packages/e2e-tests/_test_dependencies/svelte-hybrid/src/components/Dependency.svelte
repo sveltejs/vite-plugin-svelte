@@ -9,6 +9,8 @@
 <div id="cjs-only-dependency">{cjs()}</div>
 
 <style>
+	@import './dependency.css';
+
 	.label {
 		color: green;
 	}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildIdFilter, buildModuleIdFilter } from '../src/utils/id.js';
+import { buildIdFilter, buildIdParser, buildModuleIdFilter } from '../src/utils/id.js';
 
 function passes(filter, id) {
 	const matcher = (f) => (typeof f === 'string' ? id.includes(f) : f.test(id));
@@ -30,6 +30,14 @@ describe('buildIdFilter', () => {
 		const filter = buildIdFilter({ extensions: ['.svelte', '.svx'] });
 		expect(passes(filter, '/src/Foo.svx')).toBe(true);
 		expect(passes(filter, '/src/Foo.svx?something')).toBe(true);
+	});
+});
+
+describe('buildIdParser', () => {
+	it('creates stable virtual css ids from versioned module ids', () => {
+		const parse = buildIdParser({ root: '/root' });
+		const request = parse('/root/src/Foo.svelte?v=hash', false);
+		expect(request.cssId).toBe('/root/src/Foo.svelte?svelte&type=style&lang.css');
 	});
 });
 

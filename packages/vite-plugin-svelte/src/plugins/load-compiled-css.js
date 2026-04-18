@@ -39,14 +39,22 @@ export function loadCompiledCss(api) {
 				if (!svelteRequest) {
 					return;
 				}
-				let cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
+				const versionedFilename = findVersionedSvelteModuleId(this, svelteRequest.filename);
+				let cachedCss =
+					(versionedFilename && this.getModuleInfo(versionedFilename)?.meta.svelte?.css) ??
+					this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
 				// in `build --watch` or dev ssr reloads getModuleInfo only returns changed module data.
 				// To ensure virtual css is loaded unchanged, we cache it here separately
 				if (useLocalCache) {
 					if (cachedCss) {
+						if (versionedFilename) {
+							buildWatchCssCache.set(versionedFilename, cachedCss);
+						}
 						buildWatchCssCache.set(svelteRequest.filename, cachedCss);
 					} else {
-						cachedCss = buildWatchCssCache.get(svelteRequest.filename);
+						cachedCss =
+							(versionedFilename && buildWatchCssCache.get(versionedFilename)) ??
+							buildWatchCssCache.get(svelteRequest.filename);
 					}
 				}
 
@@ -66,4 +74,16 @@ export function loadCompiledCss(api) {
 			}
 		}
 	};
+}
+
+/**
+ * @param {{ getModuleIds(): IterableIterator<string> }} ctx
+ * @param {string} filename
+ */
+function findVersionedSvelteModuleId(ctx, filename) {
+	for (const moduleId of ctx.getModuleIds()) {
+		if (moduleId.startsWith(`${filename}?v=`)) {
+			return moduleId;
+		}
+	}
 }
