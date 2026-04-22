@@ -108,9 +108,9 @@ describe('vitePreprocess', () => {
 			expect(processed).toBeDefined();
 			// helper is used in script, so it should be preserved by oxc
 			expect(processed.code).toContain('helper');
-			// Component is only used in template (not in script), oxc would strip it
-			// but vitePreprocess should restore it
-			expect(processed.code).toContain("import Component from './Component.svelte'");
+			// Component is only used in template (not in script), but onlyRemoveTypeImports
+			// ensures it is preserved
+			expect(processed.code).toContain('import Component from "./Component.svelte"');
 		});
 
 		it('does not duplicate imports that oxc preserves', async () => {
@@ -125,7 +125,7 @@ describe('vitePreprocess', () => {
 			expect(matches.length).toBe(2); // one in import, one in usage
 		});
 
-		it('does not restore type-only imports', async () => {
+		it('strips type-only imports', async () => {
 			const content = `
   import type { SomeType } from './types.js';
   import Component from './Component.svelte';
@@ -135,27 +135,24 @@ describe('vitePreprocess', () => {
 			expect(processed).toBeDefined();
 			// type import should be correctly stripped
 			expect(processed.code).not.toContain('SomeType');
-			// value import should be restored
-			expect(processed.code).toContain("import Component from './Component.svelte'");
+			// value import should be preserved
+			expect(processed.code).toContain('import Component from "./Component.svelte"');
 		});
 
-		it('restores only stripped named imports when some are used in script', async () => {
+		it('preserves value specifiers and strips type specifiers from mixed imports', async () => {
 			const content = `
-  import { Foo, bar } from './components.js';
-  const x = bar();`;
+  import { Foo, type Bar } from './components.js';
+  const x = 1;`;
 
 			const processed = await script(scriptArgs(content));
 			expect(processed).toBeDefined();
-			// bar is used in script so oxc keeps it
-			expect(processed.code).toContain('bar');
-			// Foo is unused in script but may be used in template - should be restored
+			// Foo is a value import - preserved even though unused in script
 			expect(processed.code).toContain('Foo');
+			// Bar is a type specifier - should be stripped
+			expect(processed.code).not.toContain('Bar');
 		});
 
-		it('restores stripped value identifiers from multi-line mixed imports', async () => {
-			// Simulates the @formatjs/icu-messageformat-parser case:
-			// TYPE is a value used only in template, parse is used in script,
-			// type MessageFormatElement is a type-only specifier
+		it('preserves value identifiers from multi-line mixed imports', async () => {
 			const content = `
   import {
     parse,
@@ -166,32 +163,33 @@ describe('vitePreprocess', () => {
 
 			const processed = await script(scriptArgs(content));
 			expect(processed).toBeDefined();
-			// parse is used in script, should be preserved by oxc
+			// parse is used in script, should be preserved
 			expect(processed.code).toContain('parse');
-			// TYPE is unused in script but used in template - should be restored
+			// TYPE is a value import unused in script - should be preserved
 			expect(processed.code).toContain('TYPE');
-			// type-only specifier should NOT be restored
+			// type-only specifier should be stripped
 			expect(processed.code).not.toContain('MessageFormatElement');
-			// The restored import should reference the correct source
-			expect(processed.code).toContain('@formatjs/icu-messageformat-parser');
 		});
 
-		it('restores default import when identifier only appears as substring elsewhere', async () => {
-			// Regression: "Label" should not be confused with "InputLabels", "labels", etc.
+		it('preserves import even when identifier appears in string literals', async () => {
 			const content = `
-  import Label from './Label.svelte';
-  import type { InputLabels } from './types.js';
-  let labels: InputLabels = {};
-  const defaultLabels = { optionalLabel: 'optional' };`;
+  import Select from '../Select.svelte';
+  import { untrack } from 'svelte';
+  let { withSelect = false } = $props();
+  const defaultLabels = {
+    ariaLabelSelectAllRows: "Select all rows",
+    ariaLabelSelectRow: "Select row",
+  };
+  untrack(() => {});`;
 
 			const processed = await script(scriptArgs(content));
 			expect(processed).toBeDefined();
-			expect(processed.code).toContain("import Label from './Label.svelte'");
+			expect(processed.code).toContain('import Select from "../Select.svelte"');
 		});
 
 		it('skips non-ts script blocks', async () => {
 			const result = await script({
-				content: `import Foo from './Foo.svelte';`,
+				content: "import Foo from './Foo.svelte';",
 				attributes: {},
 				markup: '',
 				filename: `${fixtureDir}/File.svelte`
