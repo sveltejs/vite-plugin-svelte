@@ -3,6 +3,12 @@ packages:
   - 'packages/e2e-tests/*'
   - 'packages/e2e-tests/_test_dependencies/*'
 
+# pnpm catalogs are currently only suitable for dependencies that
+# wouldn't require publishing a new package version
+# see https://github.com/changesets/changesets/issues/1707
+catalog:
+  vite: ^8.0.9
+
 # package resolution settings
 minimumReleaseAge: 4320 #3 days
 
@@ -39,6 +45,8 @@ auditConfig:
     - 'GHSA-67mh-4wv8-2f99'
     - 'GHSA-v6h2-p8h4-qcjw'
     - 'GHSA-wf6x-7x77-mvgw' # we aren't using mergeDeep from immutable with public inputs
+    - 'GHSA-48c2-rrv3-qjmp' # we don't consume public yaml files
+    - 'GHSA-f886-m6hf-6m8v' # belongs to an optional peer dependency of Vite
 
 updateConfig:
   ignoreDependencies:
