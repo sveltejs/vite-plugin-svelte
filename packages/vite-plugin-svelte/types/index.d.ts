@@ -1,5 +1,5 @@
 declare module '@sveltejs/vite-plugin-svelte' {
-	import type { InlineConfig, ResolvedConfig } from 'vite';
+	import type { InlineConfig, ResolvedConfig, Plugin, UserConfig } from 'vite';
 	import type { CompileOptions, Warning, PreprocessorGroup } from 'svelte/compiler';
 	export type Options = Omit<SvelteConfig, 'vitePlugin'> & PluginOptionsInline;
 
@@ -270,9 +270,9 @@ declare module '@sveltejs/vite-plugin-svelte' {
 	 * plugins are named `vite-plugin-svelte:<task>`
 	 *
 	 * */
-	export function svelte(inlineOptions?: Partial<Options>): import("vite").Plugin[];
-	export function vitePreprocess(opts?: VitePreprocessOptions): import("svelte/compiler").PreprocessorGroup;
-	export function loadSvelteConfig(viteConfig?: import("vite").UserConfig, inlineOptions?: Partial<Options>): Promise<Partial<SvelteConfig> | undefined>;
+	export function svelte(inlineOptions?: Partial<Options>): Plugin[];
+	export function vitePreprocess(opts?: VitePreprocessOptions): PreprocessorGroup;
+	export function loadSvelteConfig(viteConfig?: UserConfig, inlineOptions?: Partial<Options>): Promise<Partial<SvelteConfig> | undefined>;
 
 	export {};
 }

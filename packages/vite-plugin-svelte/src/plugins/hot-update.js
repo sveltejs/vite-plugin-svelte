@@ -1,18 +1,23 @@
+/** @import { IdParser } from '../types/id.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import { log } from '../utils/log.js';
 import { setupWatchers } from '../utils/watch.js';
 import { SVELTE_VIRTUAL_STYLE_ID_REGEX } from '../utils/constants.js';
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function hotUpdate(api) {
 	/**
-	 * @type {import("../types/options.js").ResolvedOptions}
+	 * @type {ResolvedOptions}
 	 */
 	let options;
 	/**
-	 * @type {import('../types/id.d.ts').IdParser}
+	 * @type {IdParser}
 	 */
 	let idParser;
 
@@ -22,7 +27,7 @@ export function hotUpdate(api) {
 	 */
 	const transformResultCache = new Map();
 
-	/** @type {import('vite').Plugin} */
+	/** @type {Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:hot-update',
 		enforce: 'post',

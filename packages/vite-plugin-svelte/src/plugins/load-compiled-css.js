@@ -1,11 +1,14 @@
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import { log } from '../utils/log.js';
 import { SVELTE_VIRTUAL_STYLE_ID_REGEX } from '../utils/constants.js';
 
 const filter = { id: SVELTE_VIRTUAL_STYLE_ID_REGEX };
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function loadCompiledCss(api) {
 	let useLocalCache = false;

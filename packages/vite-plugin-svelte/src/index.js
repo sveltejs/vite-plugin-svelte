@@ -1,3 +1,7 @@
+/** @import { Options } from './public.js' */
+/** @import { PluginAPI } from './types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import process from 'node:process';
 import { log } from './utils/log.js';
 import { configure } from './plugins/configure.js';
@@ -14,14 +18,14 @@ import { hotUpdate } from './plugins/hot-update.js';
  * returns a list of plugins to handle svelte files
  * plugins are named `vite-plugin-svelte:<task>`
  *
- * @param {Partial<import('./public.d.ts').Options>} [inlineOptions]
- * @returns {import('vite').Plugin[]}
+ * @param {Partial<Options>} [inlineOptions]
+ * @returns {Plugin[]}
  */
 export function svelte(inlineOptions) {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
 	}
-	/** @type {import('./types/plugin-api.js').PluginAPI} */
+	/** @type {PluginAPI} */
 	// @ts-expect-error initialize empty to guard against early use
 	const api = {}; // initialized by configure plugin, used in others
 	return [

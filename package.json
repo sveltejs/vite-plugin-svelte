@@ -6,8 +6,8 @@
     "test": "run-s -c test:unit \"test:build {@}\" \"test:serve {@}\" \"test:build:watch {@}\" --",
     "test:unit": "vitest run",
     "test:serve": "vitest run -c vitest.config.e2e.ts",
-    "test:build": "cross-env TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
-    "test:build:watch": "cross-env TEST_BUILD_WATCH=1 vitest run -c vitest.config.e2e.ts",
+    "test:build": "TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
+    "test:build:watch": "TEST_BUILD_WATCH=1 vitest run -c vitest.config.e2e.ts",
     "check": "run-p -c check:*",
     "check:audit": "pnpm audit --prod",
     "check:publint": "pnpm --filter \"./packages/*\" --parallel check:publint",
@@ -33,7 +33,6 @@
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.19.1",
-    "cross-env": "^10.1.0",
     "dts-buddy": "^0.7.0",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
@@ -44,8 +43,7 @@
     "fs-extra": "^11.3.2",
     "globals": "^17.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
-    "node-fetch": "^3.3.2",
+    "nano-staged": "^1.0.2",
     "npm-run-all2": "^8.0.4",
     "playwright-core": "1.58.2",
     "prettier": "^3.7.3",
@@ -55,15 +53,15 @@
     "svelte-eslint-parser": "^1.6.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.0",
-    "vite": "^8.0.0-beta.7",
+    "vite": "catalog:",
     "vitest": "^4.1.0"
   },
-  "lint-staged": {
+  "nano-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
     "*": "prettier --cache --ignore-path .gitignore --ignore-unknown --write",
     "packages/*/src/**/*": "pnpm generate:types-staged"
   },
-  "packageManager": "pnpm@10.31.0",
+  "packageManager": "pnpm@10.32.1",
   "engines": {
     "pnpm": "^10.2.0",
     "node": "^20.19 || ^22.12 || >=24"
