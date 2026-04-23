@@ -29,7 +29,7 @@ const SVELTE_IMPORTS = Object.entries(sveltePkg.exports)
 
 export const SVELTE_CLIENT_IMPORTS = SVELTE_IMPORTS.map(({ name }) => {
 	// ignore names
-	if (name === './compiler' || name.endsWith('/server') || name.includes('/server/')) {
+	if (name === 'svelte/compiler' || name.endsWith('/server') || name.includes('/server/')) {
 		return '';
 	}
 
