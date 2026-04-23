@@ -1,25 +1,51 @@
 import { createRequire } from 'node:module';
 
+/** @type {import('svelte/package.json')} */
 const sveltePkg = createRequire(import.meta.url)('svelte/package.json');
 
 // list of svelte runtime dependencies to optimize together with svelte itself
-export const SVELTE_RUNTIME_DEPENDENCIES = [
+export const SVELTE_RUNTIME_DEPENDENCIES = /** @type {const} */ ([
 	'clsx' // avoids dev server restart after page load with npm + vite6 (see #1067)
-].filter((dep) => !!sveltePkg.dependencies?.[dep]);
+]).filter((dep) => !!sveltePkg.dependencies?.[dep]);
 
-export const SVELTE_IMPORTS = Object.entries(sveltePkg.exports)
-	.map(([name, config]) => {
-		// ignore type only
-		if (typeof config === 'object' && Object.keys(config).length === 1 && config.types) {
-			return '';
-		}
+const SVELTE_IMPORTS = Object.entries(sveltePkg.exports)
+	.filter(([name, config]) => {
 		// ignore names
-		if (name === './package.json' || name === './compiler') {
+		if (name === './package.json') {
 			return '';
 		}
-		return name.replace(/^\./, 'svelte');
+
+		// ignore type only
+		return !(
+			typeof config === 'object' &&
+			Object.keys(config).length === 1 &&
+			'types' in config &&
+			config.types
+		);
 	})
-	.filter((s) => s.length > 0);
+	.map(([name, config]) => {
+		return { name: name.replace(/^\./, 'svelte'), config };
+	});
+
+export const SVELTE_CLIENT_IMPORTS = SVELTE_IMPORTS.map(({ name }) => {
+	// ignore names
+	if (name === './compiler' || name.endsWith('/server') || name.includes('/server/')) {
+		return '';
+	}
+
+	return name;
+}).filter((s) => s.length > 0);
+
+export const SVELTE_SERVER_IMPORTS = SVELTE_IMPORTS.map(({ name, config }) => {
+	// ignore non-server imports
+	if (
+		!(name.endsWith('/server') || name.includes('/server/')) &&
+		((typeof config === 'object' && !('worker' in config)) || typeof config === 'string')
+	) {
+		return '';
+	}
+	return name;
+}).filter((s) => s.length > 0);
 
 export const SVELTE_EXPORT_CONDITIONS = ['svelte'];
 
