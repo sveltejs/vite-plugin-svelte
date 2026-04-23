@@ -11,6 +11,7 @@ import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
 import { SVELTE_SERVER_IMPORTS } from '../utils/constants.js';
+import { isDepExcluded } from 'vitefu';
 
 /**
  * @typedef {NonNullable<Rolldown.Plugin>} RollupPlugin
@@ -47,7 +48,10 @@ export function setupOptimizer(api) {
 				]
 			};
 
-			if (config.consumer === 'server' && config.optimizeDeps?.noDiscovery) {
+			if (
+				config.consumer === 'server' &&
+				!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])
+			) {
 				optimizeDeps.include = [...SVELTE_SERVER_IMPORTS];
 			}
 
