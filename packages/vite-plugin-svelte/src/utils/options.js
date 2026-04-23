@@ -22,6 +22,7 @@ import {
 	LINK_TRANSFORM_WITH_PLUGIN,
 	SVELTE_EXPORT_CONDITIONS,
 	SVELTE_CLIENT_IMPORTS,
+	SVELTE_DEDUPED_IMPORTS,
 	SVELTE_RUNTIME_DEPENDENCIES
 } from './constants.js';
 
@@ -369,7 +370,7 @@ export async function buildExtraViteConfig(options, config) {
 	/** @type {Partial<UserConfig>} */
 	const extraViteConfig = {
 		resolve: {
-			dedupe: [...SVELTE_CLIENT_IMPORTS]
+			dedupe: [...SVELTE_DEDUPED_IMPORTS]
 		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
