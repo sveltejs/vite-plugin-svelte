@@ -48,10 +48,7 @@ export function setupOptimizer(api) {
 				]
 			};
 
-			if (
-				config.consumer === 'server' &&
-				!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])
-			) {
+			if (consumer === 'server' && !isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
 				optimizeDeps.include = [...SVELTE_IMPORTS];
 			}
 
