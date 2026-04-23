@@ -8,7 +8,7 @@ export const SVELTE_RUNTIME_DEPENDENCIES = /** @type {const} */ ([
 	'clsx' // avoids dev server restart after page load with npm + vite6 (see #1067)
 ]).filter((dep) => !!sveltePkg.dependencies?.[dep]);
 
-const SVELTE_IMPORTS = Object.entries(sveltePkg.exports)
+export const SVELTE_IMPORTS = Object.entries(sveltePkg.exports)
 	.filter(([name, config]) => {
 		// ignore names
 		if (name === './package.json') {
@@ -23,34 +23,23 @@ const SVELTE_IMPORTS = Object.entries(sveltePkg.exports)
 			config.types
 		);
 	})
-	.map(([name, config]) => {
-		return { name: name.replace(/^\./, 'svelte'), config };
+	.map(([name]) => {
+		return name.replace(/^\./, 'svelte');
 	});
 
-export const SVELTE_DEDUPED_IMPORTS = SVELTE_IMPORTS.map(({ name }) => {
+export const SVELTE_DEDUPED_IMPORTS = SVELTE_IMPORTS.map((name) => {
 	if (name === 'svelte/compiler') {
 		return '';
 	}
 	return name;
 }).filter((s) => s.length > 0);
 
-export const SVELTE_CLIENT_IMPORTS = SVELTE_IMPORTS.map(({ name }) => {
+export const SVELTE_CLIENT_IMPORTS = SVELTE_IMPORTS.map((name) => {
 	// ignore names
 	if (name === 'svelte/compiler' || name.endsWith('/server') || name.includes('/server/')) {
 		return '';
 	}
 
-	return name;
-}).filter((s) => s.length > 0);
-
-export const SVELTE_SERVER_IMPORTS = SVELTE_IMPORTS.map(({ name, config }) => {
-	// ignore non-server imports
-	if (
-		!(name.endsWith('/server') || name.includes('/server/')) &&
-		((typeof config === 'object' && !('worker' in config)) || typeof config === 'string')
-	) {
-		return '';
-	}
 	return name;
 }).filter((s) => s.length > 0);
 

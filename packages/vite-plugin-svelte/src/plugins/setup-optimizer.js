@@ -10,7 +10,7 @@ import path from 'node:path';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
-import { SVELTE_SERVER_IMPORTS } from '../utils/constants.js';
+import { SVELTE_IMPORTS } from '../utils/constants.js';
 import { isDepExcluded } from 'vitefu';
 
 /**
@@ -52,7 +52,7 @@ export function setupOptimizer(api) {
 				config.consumer === 'server' &&
 				!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])
 			) {
-				optimizeDeps.include = [...SVELTE_SERVER_IMPORTS];
+				optimizeDeps.include = [...SVELTE_IMPORTS];
 			}
 
 			return { optimizeDeps };
