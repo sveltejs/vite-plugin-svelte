@@ -94,8 +94,8 @@ function rolldownOptimizerPlugin(api, consumer, components) {
 
 	plugin.options = (opts) => {
 		// @ts-expect-error plugins is an array here
-		const isScanner = opts.plugins?.some(
-			(/** @type {{ name: string; }} */ p) => p.name === 'vite:dep-scan:resolve'
+		const isScanner = opts.plugins.some(
+			(/** @type {{ name: string; } | undefined} */ p) => p?.name === 'vite:dep-scan:resolve'
 		);
 		if (isScanner) {
 			delete plugin.buildStart;
