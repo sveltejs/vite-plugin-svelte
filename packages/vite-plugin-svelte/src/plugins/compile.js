@@ -42,7 +42,8 @@ export function compile(api) {
 						svelteRequest,
 						code,
 						options,
-						this.getCombinedSourcemap()
+						this.getCombinedSourcemap(),
+						this.environment.name
 					);
 				} catch (e) {
 					throw toRollupError(e, options);
