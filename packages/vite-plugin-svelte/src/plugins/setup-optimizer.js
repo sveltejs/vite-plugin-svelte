@@ -10,6 +10,7 @@ import path from 'node:path';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
+import { mapToRelative } from '../utils/sourcemaps.js';
 import { SVELTE_IMPORTS } from '../utils/constants.js';
 import { isDepExcluded } from 'vitefu';
 
@@ -188,6 +189,7 @@ async function compileSvelte(options, { filename, code }, generate, statsCollect
 	if (endStat) {
 		endStat();
 	}
+	mapToRelative(compiled.js?.map, filename);
 	return {
 		...compiled.js,
 		moduleType: 'js'
@@ -211,6 +213,7 @@ async function compileSvelteModule(options, { filename, code }, generate, statsC
 	if (endStat) {
 		endStat();
 	}
+	mapToRelative(compiled.js?.map, filename);
 	return {
 		...compiled.js,
 		moduleType: 'js'
