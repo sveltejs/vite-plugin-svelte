@@ -2,6 +2,7 @@
 	import Foo from './Foo.svelte';
 	import Bar from './Bar.svelte';
 	import Preprocess from './Preprocess.svelte';
+	import TemplateOnlyImport from './TemplateOnlyImport.svelte';
 	export let hello: string;
 	const world: string = 'world'; // edit world and save to see hmr update
 	enum Baz {
@@ -17,6 +18,7 @@
 <p id="enum">{qoox}</p>
 
 <Preprocess />
+<TemplateOnlyImport />
 
 <style lang="scss">
 	@use 'sass:color';
