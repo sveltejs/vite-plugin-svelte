@@ -10,6 +10,10 @@ test('should render App', async () => {
 	expect(await getText('#enum')).toBe('qoox');
 });
 
+test('should keep value imports used only in Svelte template after vitePreprocess (OXC)', async () => {
+	expect(await getText('#template-only-import')).toBe('template-only-import-preserved');
+});
+
 test('should not mangle code from esbuild pure annotations', async () => {
 	expect(browserLogs.some((log) => log.startsWith('pure test 1'))).toBe(true);
 	expect(browserLogs.some((log) => log.startsWith('pure test 2'))).toBe(true);
