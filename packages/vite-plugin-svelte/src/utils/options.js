@@ -21,7 +21,8 @@ import {
 	FAQ_LINK_MISSING_EXPORTS_CONDITION,
 	LINK_TRANSFORM_WITH_PLUGIN,
 	SVELTE_EXPORT_CONDITIONS,
-	SVELTE_IMPORTS,
+	SVELTE_CLIENT_IMPORTS,
+	SVELTE_DEDUPED_IMPORTS,
 	SVELTE_RUNTIME_DEPENDENCIES
 } from './constants.js';
 
@@ -369,7 +370,7 @@ export async function buildExtraViteConfig(options, config) {
 	/** @type {Partial<UserConfig>} */
 	const extraViteConfig = {
 		resolve: {
-			dedupe: [...SVELTE_IMPORTS]
+			dedupe: [...SVELTE_DEDUPED_IMPORTS]
 		}
 		// this option is still awaiting a PR in vite to be supported
 		// see https://github.com/sveltejs/vite-plugin-svelte/issues/60
@@ -572,9 +573,7 @@ function buildExtraConfigForSvelte(config) {
 	/** @type {string[]} */
 	const exclude = [];
 	if (!isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
-		const svelteImportsToInclude = SVELTE_IMPORTS.filter(
-			(si) => !(si.endsWith('/server') || si.includes('/server/'))
-		);
+		const svelteImportsToInclude = [...SVELTE_CLIENT_IMPORTS];
 		svelteImportsToInclude.push(...SVELTE_RUNTIME_DEPENDENCIES.map((dep) => `svelte > ${dep}`));
 		log.debug(
 			`adding bare svelte packages and runtime dependencies to optimizeDeps.include: ${svelteImportsToInclude.join(', ')} `,
