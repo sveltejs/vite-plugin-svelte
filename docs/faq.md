@@ -1,1 +1,1 @@
-../documentation/docs/10-plugin/30-faq.md
+../documentation/docs/10-plugin/40-faq.md

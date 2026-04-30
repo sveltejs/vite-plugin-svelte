@@ -1,1 +1,1 @@
-../documentation/docs/10-plugin/10-config.md
+../documentation/docs/10-plugin/20-configuration.md

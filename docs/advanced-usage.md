@@ -1,1 +1,1 @@
-../documentation/docs/10-plugin/20-advanced-usage.md
+../documentation/docs/10-plugin/30-advanced-usage.md
