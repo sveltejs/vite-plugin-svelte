@@ -3,12 +3,6 @@ packages:
   - 'packages/e2e-tests/*'
   - 'packages/e2e-tests/_test_dependencies/*'
 
-# pnpm catalogs are currently only suitable for dependencies that
-# wouldn't require publishing a new package version
-# see https://github.com/changesets/changesets/issues/1707
-catalog:
-  vite: ^8.0.9
-
 # package resolution settings
 minimumReleaseAge: 4320 #3 days
 
@@ -62,6 +56,13 @@ overrides:
   '@types/node@<=20.12.0': '20.19.14'
   'send@<0.19.0': '^0.19.1'
   '@sveltejs/kit>cookie@<0.7.0': '^0.7.2'
+
+# pnpm catalogs are currently only suitable for dependencies that
+# wouldn't require publishing a new package version
+# see https://github.com/changesets/changesets/issues/1707
+catalog:
+  '@sveltejs/kit': ^2.59.1
+  vite: ^8.0.9
 
 # needed for _test_dependencies
 dedupeInjectedDeps: false
