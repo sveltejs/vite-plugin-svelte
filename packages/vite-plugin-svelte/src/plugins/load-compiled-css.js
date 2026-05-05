@@ -39,18 +39,18 @@ export function loadCompiledCss(api) {
 				if (!svelteRequest) {
 					return;
 				}
-				const versionedFilename = findVersionedSvelteModuleId(this, svelteRequest.filename);
-				const key = versionedFilename ?? svelteRequest.filename;
-				let cachedCss = this.getModuleInfo(key)?.meta.svelte?.css;
+				// we need to re-resolve the ID in case the dep has been optimised by Vite
+				// since it would now have a ?v=... query string suffix
+				const resolvedId = await this.resolve(svelteRequest.filename);
+				const moduleId = resolvedId?.id ?? svelteRequest.filename;
+				let cachedCss = this.getModuleInfo(moduleId)?.meta.svelte?.css;
 				// in `build --watch` or dev ssr reloads getModuleInfo only returns changed module data.
 				// To ensure virtual css is loaded unchanged, we cache it here separately
 				if (useLocalCache) {
 					if (cachedCss) {
-						buildWatchCssCache.set(key, cachedCss);
+						buildWatchCssCache.set(moduleId, cachedCss);
 					} else {
-						cachedCss =
-							(versionedFilename && buildWatchCssCache.get(versionedFilename)) ??
-							buildWatchCssCache.get(svelteRequest.filename);
+						cachedCss = buildWatchCssCache.get(moduleId);
 					}
 				}
 
@@ -70,17 +70,4 @@ export function loadCompiledCss(api) {
 			}
 		}
 	};
-}
-
-/**
- * @param {{ getModuleIds(): IterableIterator<string> }} ctx
- * @param {string} filename
- * @returns {string | undefined}
- */
-function findVersionedSvelteModuleId(ctx, filename) {
-	for (const moduleId of ctx.getModuleIds()) {
-		if (moduleId.startsWith(`${filename}?v=`)) {
-			return moduleId;
-		}
-	}
 }
