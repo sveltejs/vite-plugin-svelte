@@ -2,9 +2,9 @@
 	$schema: "https://docs.renovatebot.com/renovate-schema.json",
 	extends: [
 		"config:recommended",
-		"schedule:weekly",
-		"group:allNonMajor",
-		":semanticCommits",
+		"schedule:weekly", // each monday
+		"group:allNonMajor", // batch non-majors into one PR
+		":semanticCommits", // nicer commit messages
 	],
 	labels: ["dependencies"],
 	rangeStrategy: "update-lockfile",
