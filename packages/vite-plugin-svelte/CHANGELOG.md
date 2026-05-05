@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.1.0
+### Minor Changes
+
+
+- feat: enable optimizer for server environments during dev ([#1328](https://github.com/sveltejs/vite-plugin-svelte/pull/1328))
+
 ## 7.0.0
 ### Major Changes
 
