@@ -28,8 +28,8 @@
     "@eslint/js": "^10.0.1",
     "@eslint/markdown": "^7.5.1",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@sveltejs/eslint-config": "^9.0.0",
-    "@sveltejs/kit": "^2.55.0",
+    "@sveltejs/eslint-config": "^10.0.0",
+    "@sveltejs/kit": "catalog:",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.19.1",
@@ -43,9 +43,9 @@
     "fs-extra": "^11.3.2",
     "globals": "^17.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
+    "nano-staged": "^1.0.2",
     "npm-run-all2": "^8.0.4",
-    "playwright-core": "1.58.2",
+    "playwright-core": "1.59.1",
     "prettier": "^3.7.3",
     "prettier-plugin-svelte": "^3.4.0",
     "publint": "^0.3.15",
@@ -53,15 +53,15 @@
     "svelte-eslint-parser": "^1.6.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.0",
-    "vite": "^8.0.0-beta.7",
+    "vite": "catalog:",
     "vitest": "^4.1.0"
   },
-  "lint-staged": {
+  "nano-staged": {
     "*.{js,ts,svelte,html,md,svx}": "eslint --cache --fix",
     "*": "prettier --cache --ignore-path .gitignore --ignore-unknown --write",
     "packages/*/src/**/*": "pnpm generate:types-staged"
   },
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@10.33.2",
   "engines": {
     "pnpm": "^10.2.0",
     "node": "^20.19 || ^22.12 || >=24"
