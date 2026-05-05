@@ -1,21 +1,22 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": [
-		"config:base",
-		"schedule:weekly", // each monday
-		"group:allNonMajor", // batch non-majors into one PR
-		":semanticCommits" // nicer commit messages
+	$schema: "https://docs.renovatebot.com/renovate-schema.json",
+	extends: [
+		"config:recommended",
+		"schedule:weekly",
+		"group:allNonMajor",
+		":semanticCommits",
 	],
-	"labels": ["dependencies"],
-	"rangeStrategy": "update-lockfile",
-	"postUpdateOptions": ["pnpmDedupe"],
-	"packageRules": [
+	labels: ["dependencies"],
+	rangeStrategy: "update-lockfile",
+	postUpdateOptions: ["pnpmDedupe"],
+	packageRules: [
 		{
-			"matchDepTypes": ["peerDependencies","engines"],
-			"enabled": false
-		}, {
-			"matchDatasources": ["npm"],
-			"minimumReleaseAge": "3 days"
-		}
-	]
+			matchDepTypes: ["peerDependencies", "engines"],
+			enabled: false,
+		},
+		{
+			matchDatasources: ["npm"],
+			minimumReleaseAge: "3 days",
+		},
+	],
 }
