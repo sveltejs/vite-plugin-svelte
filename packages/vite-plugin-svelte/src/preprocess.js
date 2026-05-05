@@ -49,15 +49,12 @@ function viteScript() {
 			const lang = /** @type {'ts'} */ (attributes.lang);
 			const { code, map } = await transformWithOxc(content, filename, {
 				lang,
-				target: 'esnext'
-				// TODO, how to pass tsconfig compilerOptions (or not needed as config is loaded for file
-				/*tsconfigRaw: {
-					compilerOptions: {
-						// svelte typescript needs this flag to work with type imports
-						importsNotUsedAsValues: 'preserve',
-						preserveValueImports: true
-					}
-				}*/
+				target: 'esnext',
+				// oxc strips value imports it considers unused, but in Svelte files
+				// these imports may be referenced in the template which oxc cannot see.
+				// onlyRemoveTypeImports tells oxc to only strip type-only imports
+				// (import type {...}, import { type X }) and preserve all value imports.
+				typescript: { onlyRemoveTypeImports: true }
 			});
 
 			mapToRelative(map, filename);
