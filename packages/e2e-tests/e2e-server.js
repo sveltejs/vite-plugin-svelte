@@ -1,4 +1,5 @@
 // script to start package.json dev/build/preview scripts for e2e tests
+/** @import { ChildProcess } from 'node:child_process' */
 import { x } from 'tinyexec';
 import treeKill from 'tree-kill';
 import fs from 'node:fs';
@@ -72,6 +73,11 @@ async function buildWatchIdle(watchProcess, timeout) {
 	});
 }
 
+/**
+ * @param {string} root
+ * @param {'build' | 'serve' | 'build:watch'} testMode
+ * @param {number} port
+ */
 export async function serve(root, testMode, port) {
 	const logDir = path.join(root, 'logs');
 	const logs = {
@@ -86,6 +92,11 @@ export async function serve(root, testMode, port) {
 		}
 		Array.prototype.push.apply(arr, lines);
 	};
+
+	/**
+	 * @param {ChildProcess} proc
+	 * @param {{ out: string[]; err: string[] }} logs
+	 */
 	const collectLogs = (proc, { out, err }) => {
 		proc.stdout.on('data', (d) => pushLines(d.toString(), out));
 		proc.stderr.on('data', (d) => pushLines(d.toString(), err));
@@ -130,7 +141,7 @@ export async function serve(root, testMode, port) {
 					}
 				},
 				throwOnError: true
-			});
+			}).process;
 			logs.build = { out, err };
 			collectLogs(buildProcess, logs.build);
 			await buildProcess;
@@ -149,6 +160,7 @@ export async function serve(root, testMode, port) {
 			throw buildResult;
 		}
 	}
+	/** @type {ChildProcess} */
 	let watchProcess;
 	if (testMode === 'build:watch') {
 		watchProcess = x('pnpm', ['build', '--watch'], {
@@ -157,15 +169,16 @@ export async function serve(root, testMode, port) {
 				stdio: 'pipe'
 			},
 			throwOnError: true
-		});
+		}).process;
 		logs.watch = { out: [], err: [] };
 		collectLogs(watchProcess, logs.watch);
 		await buildWatchIdle(watchProcess, 10000);
 	}
 
+	/** @type {ChildProcess} */
 	const serverProcess = x(
 		'pnpm',
-		[testMode === 'serve' ? 'dev' : 'preview', '--port', port, '--strictPort'],
+		[testMode === 'serve' ? 'dev' : 'preview', '--port', port.toString(), '--strictPort'],
 		{
 			nodeOptions: {
 				cwd: root,
@@ -173,7 +186,7 @@ export async function serve(root, testMode, port) {
 			},
 			throwOnError: true
 		}
-	);
+	).process;
 	logs.server = { out: [], err: [] };
 	collectLogs(serverProcess, logs.server);
 
