@@ -1,5 +1,14 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.1.1
+### Patch Changes
+
+
+- fix: pass `typescript.onlyRemoveTypeImports` to `transformWithOxc` in `vitePreprocess` so that value imports are not dropped when they are only referenced in Svelte template markup ([#1326](https://github.com/sveltejs/vite-plugin-svelte/pull/1326))
+
+
+- fix: correctly resolve compiled CSS for optimised Svelte dependencies on the server ([#1336](https://github.com/sveltejs/vite-plugin-svelte/pull/1336))
+
 ## 7.1.0
 ### Minor Changes
 
