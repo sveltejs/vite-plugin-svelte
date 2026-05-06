@@ -27,7 +27,8 @@ export default {
 				'packages/playground/big/src/pages/**', // lots of generated files
 				'packages/e2e-tests/scan-deps/src/Svelte*.svelte', // various syntax tests that require no format
 				'**/.vite-inspect/**',
-				'packages/e2e-tests/_test_dependencies/**/*.svelte' // TODO remove after sourcemap bug is fixed
+				'packages/e2e-tests/_test_dependencies/**/*.svelte', // TODO remove after sourcemap bug is fixed
+				'packages/e2e-tests/*/logs'
 			],
 			options: {
 				rangeEnd: 0
