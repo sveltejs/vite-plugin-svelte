@@ -1,5 +1,5 @@
-// script to start package.json dev/build/preview scripts with execa for e2e tests
-import { execa } from 'execa';
+// script to start package.json dev/build/preview scripts for e2e tests
+import { x } from 'tinyexec';
 import treeKill from 'tree-kill';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -107,7 +107,7 @@ export async function serve(root, testMode, port) {
 	const pkg = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf-8'));
 	if (pkg.scripts?.sync) {
 		try {
-			await execa('pnpm', ['sync']);
+			await x('pnpm', ['sync'], { throwOnError: true });
 		} catch (e) {
 			console.error(`Failed to run sync script in ${rootDir}`);
 			throw e;
@@ -121,12 +121,15 @@ export async function serve(root, testMode, port) {
 		const err = [];
 
 		try {
-			const buildProcess = execa('pnpm', ['build'], {
-				cwd: root,
-				stdio: 'pipe',
-				env: {
-					NODE_ENV: 'production'
-				}
+			const buildProcess = x('pnpm', ['build'], {
+				nodeOptions: {
+					cwd: root,
+					stdio: 'pipe',
+					env: {
+						NODE_ENV: 'production'
+					}
+				},
+				throwOnError: true
 			});
 			logs.build = { out, err };
 			collectLogs(buildProcess, logs.build);
@@ -148,21 +151,27 @@ export async function serve(root, testMode, port) {
 	}
 	let watchProcess;
 	if (testMode === 'build:watch') {
-		watchProcess = execa('pnpm', ['build', '--watch'], {
-			cwd: root,
-			stdio: 'pipe'
+		watchProcess = x('pnpm', ['build', '--watch'], {
+			nodeOptions: {
+				cwd: root,
+				stdio: 'pipe'
+			},
+			throwOnError: true
 		});
 		logs.watch = { out: [], err: [] };
 		collectLogs(watchProcess, logs.watch);
 		await buildWatchIdle(watchProcess, 10000);
 	}
 
-	const serverProcess = execa(
+	const serverProcess = x(
 		'pnpm',
 		[testMode === 'serve' ? 'dev' : 'preview', '--port', port, '--strictPort'],
 		{
-			cwd: root,
-			stdio: 'pipe'
+			nodeOptions: {
+				cwd: root,
+				stdio: 'pipe'
+			},
+			throwOnError: true
 		}
 	);
 	logs.server = { out: [], err: [] };

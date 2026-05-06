@@ -42,10 +42,6 @@ auditConfig:
     - 'GHSA-48c2-rrv3-qjmp' # we don't consume public yaml files
     - 'GHSA-f886-m6hf-6m8v' # belongs to an optional peer dependency of Vite
 
-updateConfig:
-  ignoreDependencies:
-    - 'execa' # v9 is larger than v8 and doesn't work the same, we only use it in testing
-
 overrides:
   # $ prefixed package names take their version from root package.json - this is like catalogs but without them
   '@sveltejs/kit': '$@sveltejs/kit'
