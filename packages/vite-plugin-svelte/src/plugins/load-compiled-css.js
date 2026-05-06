@@ -40,12 +40,10 @@ export function loadCompiledCss(api) {
 					return;
 				}
 
-				// node_modules svelte files will have their filename as the module ID...
 				let cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
 				if (!cachedCss) {
-					// ...but user files, which are prone to changes, have a ?v=... query
-					// string suffix on the server so that they can be easily invalidated.
-					// We can get this unique module ID by running resolve again
+					// some module IDs have a ?v=... query string suffix in addition to the
+					// filename. We can retrieve this by running resolve again
 					const resolvedId = await this.resolve(svelteRequest.filename);
 					if (resolvedId?.id) {
 						cachedCss = this.getModuleInfo(resolvedId.id)?.meta.svelte?.css;
