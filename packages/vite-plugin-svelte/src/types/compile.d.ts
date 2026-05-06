@@ -7,7 +7,8 @@ export type CompileSvelte = (
 	svelteRequest: SvelteRequest,
 	code: string,
 	options: Partial<ResolvedOptions>,
-	sourcemap?: Rollup.SourceMap
+	sourcemap?: Rollup.SourceMap,
+	environment?: string
 ) => Promise<CompileData>;
 
 export type PreprocessSvelte = (

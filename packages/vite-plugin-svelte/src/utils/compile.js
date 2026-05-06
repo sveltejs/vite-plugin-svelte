@@ -21,7 +21,7 @@ export function createCompileSvelte() {
 	/** @type {StatCollection | undefined} */
 	let stats;
 	/** @type {CompileSvelte} */
-	return async function compileSvelte(svelteRequest, code, options, sourcemap) {
+	return async function compileSvelte(svelteRequest, code, options, sourcemap, environment) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
 		/** @type {Warning[]} */
@@ -72,7 +72,8 @@ export function createCompileSvelte() {
 		const dynamicCompileOptions = await options?.dynamicCompileOptions?.({
 			filename,
 			code: finalCode,
-			compileOptions
+			compileOptions,
+			environment
 		});
 		if (dynamicCompileOptions && log.debug.enabled) {
 			log.debug(
