@@ -1,5 +1,6 @@
 // script to start package.json dev/build/preview scripts for e2e tests
 /** @import { ChildProcess } from 'node:child_process' */
+/** @import { Result } from 'tinyexec' */
 import { x } from 'tinyexec';
 import treeKill from 'tree-kill';
 import fs from 'node:fs';
@@ -8,6 +9,11 @@ import process from 'node:process';
 import { rootDir } from 'vitest/node';
 const isWin = process.platform === 'win32';
 
+/**
+ * @param {ChildProcess} serverProcess
+ * @param {number} port
+ * @param {number} timeout
+ */
 async function startedOnPort(serverProcess, port, timeout) {
 	let id;
 	let stdoutListener;
@@ -47,6 +53,10 @@ async function startedOnPort(serverProcess, port, timeout) {
 	});
 }
 
+/**
+ * @param {ChildProcess} watchProcess
+ * @param {number} timeout
+ */
 async function buildWatchIdle(watchProcess, timeout) {
 	let id;
 	let stdoutListener;
@@ -132,6 +142,7 @@ export async function serve(root, testMode, port) {
 		const err = [];
 
 		try {
+			/** @type {Result} */
 			const buildProcess = x('pnpm', ['build'], {
 				nodeOptions: {
 					cwd: root,
@@ -141,9 +152,9 @@ export async function serve(root, testMode, port) {
 					}
 				},
 				throwOnError: true
-			}).process;
+			});
 			logs.build = { out, err };
-			collectLogs(buildProcess, logs.build);
+			collectLogs(buildProcess.process, logs.build);
 			await buildProcess;
 		} catch (e) {
 			buildResult = e;
@@ -160,7 +171,7 @@ export async function serve(root, testMode, port) {
 			throw buildResult;
 		}
 	}
-	/** @type {ChildProcess} */
+	/** @type {Result} */
 	let watchProcess;
 	if (testMode === 'build:watch') {
 		watchProcess = x('pnpm', ['build', '--watch'], {
@@ -169,13 +180,13 @@ export async function serve(root, testMode, port) {
 				stdio: 'pipe'
 			},
 			throwOnError: true
-		}).process;
+		});
 		logs.watch = { out: [], err: [] };
-		collectLogs(watchProcess, logs.watch);
-		await buildWatchIdle(watchProcess, 10000);
+		collectLogs(watchProcess.process, logs.watch);
+		await buildWatchIdle(watchProcess.process, 10000);
 	}
 
-	/** @type {ChildProcess} */
+	/** @type {Result} */
 	const serverProcess = x(
 		'pnpm',
 		[testMode === 'serve' ? 'dev' : 'preview', '--port', port.toString(), '--strictPort'],
@@ -186,9 +197,9 @@ export async function serve(root, testMode, port) {
 			},
 			throwOnError: true
 		}
-	).process;
+	);
 	logs.server = { out: [], err: [] };
-	collectLogs(serverProcess, logs.server);
+	collectLogs(serverProcess.process, logs.server);
 
 	const closeServer = async () => {
 		for (const p of [watchProcess, serverProcess]) {
@@ -206,7 +217,7 @@ export async function serve(root, testMode, port) {
 						});
 					});
 				} else {
-					p.cancel();
+					p.kill();
 				}
 
 				try {
@@ -233,7 +244,7 @@ export async function serve(root, testMode, port) {
 		}
 	};
 	try {
-		await startedOnPort(serverProcess, port, 10000);
+		await startedOnPort(serverProcess.process, port, 10000);
 		return {
 			port,
 			logs,
