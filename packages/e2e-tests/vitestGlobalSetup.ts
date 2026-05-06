@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'node:path';
 import process from 'node:process';
 import { chromium } from 'playwright-core';
-import { execa } from 'execa';
+import { x } from 'tinyexec';
 import { fileURLToPath } from 'node:url';
 
 const tempTestDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'temp');
@@ -18,8 +18,11 @@ const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
 const syncNodeModules = async () => {
 	// tests use symbolic linked node_modules directories. make sure the workspace is up for it
 	console.log('syncing node_modules');
-	await execa('pnpm', ['install', '--frozen-lockfile', '--prefer-offline', '--silent'], {
-		stdio: 'inherit'
+	await x('pnpm', ['install', '--frozen-lockfile', '--prefer-offline', '--silent'], {
+		nodeOptions: {
+			stdio: 'inherit'
+		},
+		throwOnError: true
 	});
 	console.log('syncing node_modules done');
 };
