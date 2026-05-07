@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.1.2
+### Patch Changes
+
+
+- fix: correctly resolve compiled CSS on the server for dependencies with Svelte files ([#1342](https://github.com/sveltejs/vite-plugin-svelte/pull/1342))
+
 ## 7.1.1
 ### Patch Changes
 
