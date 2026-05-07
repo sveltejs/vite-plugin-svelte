@@ -39,18 +39,24 @@ export function loadCompiledCss(api) {
 				if (!svelteRequest) {
 					return;
 				}
-				// we need to re-resolve the ID in case the dep has been optimised by Vite
-				// since it would now have a ?v=... query string suffix
-				const resolvedId = await this.resolve(svelteRequest.filename);
-				const moduleId = resolvedId?.id ?? svelteRequest.filename;
-				let cachedCss = this.getModuleInfo(moduleId)?.meta.svelte?.css;
+
+				let cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
+				if (!cachedCss) {
+					// some module IDs have a ?v=... query string suffix in addition to the
+					// filename. We can retrieve this by running resolve again
+					const resolvedId = await this.resolve(svelteRequest.filename);
+					if (resolvedId?.id) {
+						cachedCss = this.getModuleInfo(resolvedId.id)?.meta.svelte?.css;
+					}
+				}
+
 				// in `build --watch` or dev ssr reloads getModuleInfo only returns changed module data.
 				// To ensure virtual css is loaded unchanged, we cache it here separately
 				if (useLocalCache) {
 					if (cachedCss) {
-						buildWatchCssCache.set(moduleId, cachedCss);
+						buildWatchCssCache.set(svelteRequest.filename, cachedCss);
 					} else {
-						cachedCss = buildWatchCssCache.get(moduleId);
+						cachedCss = buildWatchCssCache.get(svelteRequest.filename);
 					}
 				}
 
