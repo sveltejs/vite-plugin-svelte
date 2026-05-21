@@ -4,27 +4,17 @@ packages:
   - 'packages/e2e-tests/_test_dependencies/*'
 
 # package resolution settings
-minimumReleaseAge: 4320 #3 days
+minimumReleaseAge: 2880
 
 minimumReleaseAgeExclude:
-  - 'vite'
-  - 'create-vite'
-  - '@vitejs/*'
-  - 'vitest'
-  - '@vitest/*'
-  - 'svelte'
   - '@sveltejs/*'
-  - 'rolldown-vite'
-  - 'rolldown'
-  - '@rolldown/*'
-  - '@oxc-project/*'
-  - 'devalue'
-  - 'esm-env'
-  - 'esrap'
-  - 'is-reference'
-  - 'locate-character'
-  - 'vitefu'
-  - 'zimmerframe'
+  - svelte
+  - esrap
+  - devalue
+  - zimmerframe
+  - prettier-plugin-svelte
+  - svelte-check
+  - esm-env
 
 onlyBuiltDependencies:
   - esbuild
