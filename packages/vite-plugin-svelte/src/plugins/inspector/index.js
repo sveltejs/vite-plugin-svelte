@@ -115,7 +115,7 @@ export function svelteInspector(api) {
 			}
 		},
 		transform: {
-			filter: { id: /vite\/dist\/client\/client\.mjs(?:\?|$)/ },
+			filter: { id: /(?:vite\/dist|dist\/vite)\/client\/client\.mjs(?:\?|$)/ },
 			handler(code) {
 				if (disabled) {
 					return;
