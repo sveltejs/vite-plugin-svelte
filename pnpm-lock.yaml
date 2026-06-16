@@ -32,6 +32,9 @@ importers:
       '@sveltejs/eslint-config':
         specifier: ^10.0.0
         version: 10.0.1(@eslint/js@10.0.1(eslint@10.5.0))(@stylistic/eslint-plugin@5.10.0(eslint@10.5.0))(eslint-config-prettier@10.1.8(eslint@10.5.0))(eslint-plugin-n@17.24.0(eslint@10.5.0)(typescript@5.9.3))(eslint-plugin-svelte@3.19.0(eslint@10.5.0)(svelte@5.56.3(@typescript-eslint/types@8.61.0)))(eslint@10.5.0)(typescript-eslint@8.61.0(eslint@10.5.0)(typescript@5.9.3))(typescript@5.9.3)
+      '@sveltejs/kit':
+        specifier: ^2.59.1
+        version: 2.59.1(svelte@5.56.3(@typescript-eslint/types@8.61.0))(typescript@5.9.3)(vite@8.0.16(@types/node@20.19.43)(sass@1.101.0)(stylus@0.64.0)(yaml@2.8.2))
       '@svitejs/changesets-changelog-github-compact':
         specifier: ^1.2.0
         version: 1.2.0
@@ -95,6 +98,9 @@ importers:
       typescript-eslint:
         specifier: ^8.57.0
         version: 8.61.0(eslint@10.5.0)(typescript@5.9.3)
+      vite:
+        specifier: ^8.0.9
+        version: 8.0.16(@types/node@20.19.43)(sass@1.101.0)(stylus@0.64.0)(yaml@2.8.2)
       vitest:
         specifier: ^4.1.0
         version: 4.1.8(@types/node@20.19.43)(jsdom@26.1.0)(vite@8.0.16(@types/node@20.19.43)(sass@1.101.0)(stylus@0.64.0)(yaml@2.8.2))
@@ -4303,6 +4309,25 @@ snapshots:
       sirv: 3.0.2
       svelte: 5.56.3(@typescript-eslint/types@8.61.0)
       vite: 8.0.16(@types/node@22.19.21)(sass@1.101.0)(stylus@0.64.0)(yaml@2.8.2)
+    optionalDependencies:
+      typescript: 5.9.3
+
+  '@sveltejs/kit@2.59.1(svelte@5.56.3(@typescript-eslint/types@8.61.0))(typescript@5.9.3)(vite@8.0.16(@types/node@20.19.43)(sass@1.101.0)(stylus@0.64.0)(yaml@2.8.2))':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@sveltejs/acorn-typescript': 1.0.10(acorn@8.17.0)
+      '@types/cookie': 0.6.0
+      acorn: 8.17.0
+      cookie: 0.7.2
+      devalue: 5.8.1
+      esm-env: 1.2.2
+      kleur: 4.1.5
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      set-cookie-parser: 3.0.1
+      sirv: 3.0.2
+      svelte: 5.56.3(@typescript-eslint/types@8.61.0)
+      vite: 8.0.16(@types/node@20.19.43)(sass@1.101.0)(stylus@0.64.0)(yaml@2.8.2)
     optionalDependencies:
       typescript: 5.9.3
 
