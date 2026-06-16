@@ -16,6 +16,13 @@ minimumReleaseAgeExclude:
   - svelte-check
   - esm-env
 
+allowBuilds:
+  esbuild: true
+  '@parcel/watcher': false
+  carbon-components-svelte: false
+  es5-ext: false
+  svelte-preprocess: false
+
 auditConfig:
   ignoreGhsas:
     - 'GHSA-67mh-4wv8-2f99'
@@ -53,9 +60,3 @@ shellEmulator: true
 # However, they do work and are valid options
 aggregateOutput: true
 reporter: append-only
-allowBuilds:
-  esbuild: true
-  '@parcel/watcher': false
-  carbon-components-svelte: false
-  es5-ext: false
-  svelte-preprocess: false
