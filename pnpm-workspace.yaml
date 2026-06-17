@@ -16,13 +16,12 @@ minimumReleaseAgeExclude:
   - svelte-check
   - esm-env
 
-onlyBuiltDependencies:
-  - esbuild
-ignoredBuiltDependencies:
-  - '@parcel/watcher'
-  - 'carbon-components-svelte'
-  - 'es5-ext'
-  - 'svelte-preprocess'
+allowBuilds:
+  esbuild: true
+  '@parcel/watcher': false
+  carbon-components-svelte: false
+  es5-ext: false
+  svelte-preprocess: false
 
 auditConfig:
   ignoreGhsas:
@@ -33,12 +32,11 @@ auditConfig:
     - 'GHSA-f886-m6hf-6m8v' # belongs to an optional peer dependency of Vite
 
 overrides:
-  # $ prefixed package names take their version from root package.json - this is like catalogs but without them
-  '@sveltejs/kit': '$@sveltejs/kit'
+  '@sveltejs/kit': 'catalog:'
   '@sveltejs/kit>@sveltejs/vite-plugin-svelte': 'workspace:^'
   '@sveltejs/vite-plugin-svelte': 'workspace:^'
-  'svelte': '$svelte'
-  'vite': '$vite'
+  'svelte': 'catalog:'
+  'vite': 'catalog:'
   '@types/node@<=20.12.0': '20.19.43'
   '@sveltejs/kit>cookie@<0.7.0': '^0.7.2'
 
@@ -47,6 +45,7 @@ overrides:
 # see https://github.com/changesets/changesets/issues/1707
 catalog:
   '@sveltejs/kit': ^2.59.1
+  svelte: ^5.56.3
   vite: ^8.0.9
 
 # needed for _test_dependencies

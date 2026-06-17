@@ -146,7 +146,6 @@ export async function serve(root, testMode, port) {
 			const buildProcess = x('pnpm', ['build'], {
 				nodeOptions: {
 					cwd: root,
-					stdio: 'pipe',
 					env: {
 						NODE_ENV: 'production'
 					}
@@ -156,6 +155,8 @@ export async function serve(root, testMode, port) {
 			logs.build = { out, err };
 			collectLogs(buildProcess.process, logs.build);
 			await buildProcess;
+			// first element is always the command that was run e.g., `$ pnpm build`
+			err.shift();
 		} catch (e) {
 			buildResult = e;
 			if (buildResult.stdout) {
@@ -176,8 +177,7 @@ export async function serve(root, testMode, port) {
 	if (testMode === 'build:watch') {
 		watchProcess = x('pnpm', ['build', '--watch'], {
 			nodeOptions: {
-				cwd: root,
-				stdio: 'pipe'
+				cwd: root
 			},
 			throwOnError: true
 		});
@@ -192,8 +192,7 @@ export async function serve(root, testMode, port) {
 		[testMode === 'serve' ? 'dev' : 'preview', '--port', port.toString(), '--strictPort'],
 		{
 			nodeOptions: {
-				cwd: root,
-				stdio: 'pipe'
+				cwd: root
 			},
 			throwOnError: true
 		}

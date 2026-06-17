@@ -382,7 +382,9 @@ function filterMessages(arr) {
 	}
 	const excludes = [];
 	excludes.push(
-		'`optimizeDeps.esbuildOptions`' //TODO: remove after sveltekit is updated
+		// somehow the command that was run is always the first log to stderr e.g., `$ vite preview`
+		'$ vite',
+		'$ svelte-kit sync'
 	);
 	if (excludes.length > 0) {
 		return arr.filter((m) => !excludes.some((e) => m.includes(e)));
