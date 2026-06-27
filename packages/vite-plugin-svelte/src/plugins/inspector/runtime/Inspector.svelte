@@ -6,6 +6,10 @@
 
 	import options from 'virtual:svelte-inspector-options';
 	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
+	// A second toggle, separate from the stock one. The stock combo (alt-x) keeps
+	// its original behaviour (click opens the innermost element); this combo
+	// enables "chain mode" where a click opens the wrapper-chain dropdown instead.
+	const chain_combo = ['alt', 'c'];
 	const escape_keys = options.escapeKeys?.map((k) => k.toLowerCase());
 	const nav_keys = Object.values(options.navKeys).map((k) => k?.toLowerCase());
 	const open_key = options.openKey?.toLowerCase();
@@ -34,6 +38,12 @@
 
 	let active_el = $state();
 
+	// Wrapper-chain dropdown: null when closed, else { x, y, chain }.
+	let menu = $state(null);
+	// True while the chain combo is the active mode — a click then opens the
+	// dropdown instead of the stock single-element open.
+	let chain_mode = $state(false);
+
 	let hold_start_ts = $state();
 
 	let show_toggle = $derived(
@@ -41,6 +51,7 @@
 	);
 
 	function mousemove(e) {
+		if (menu) return;
 		x = e.x;
 		y = e.y;
 	}
@@ -102,6 +113,7 @@
 	}
 
 	function mouseover({ target }) {
+		if (menu) return;
 		const el = find_selectable_parent(target, true);
 		activate(el, false);
 	}
@@ -140,6 +152,88 @@
 		}
 	}
 
+	// --- Wrapper-chain dropdown --------------------------------------------
+	// Stock inspector opens only the innermost element on click. This builds the
+	// component-instantiation chain so the click opens a dropdown of every
+	// wrapper, each pointing at the EXACT `<Component>` call site — not the leaf
+	// primitive, and not the nearest DOM ancestor.
+	//
+	// Source: Svelte dev attaches `el.__svelte_meta = { loc, parent }`. `loc` is
+	// the element's own tag location (0-based); `parent` is the dev_stack — a
+	// linked list of block/component entries. Each `type:'component'` entry holds
+	// `{ file, line, column, componentTag }` where file/line are the call site in
+	// the PARENT template (line 1-based, column 0-based; see the compiler's
+	// `getLocator(..., { offsetLine: 1 })`). Walking it points a click on a nested
+	// primitive at the `<Component>` that renders it, e.g. "<Button> Card.svelte:42".
+
+	function build_chain(target) {
+		const el = find_selectable_parent(target, true);
+		const meta = el?.__svelte_meta;
+		if (!meta) return [];
+		const chain = [];
+		const add = (file, line, column, tag) => {
+			if (!file || file.includes('node_modules/')) return;
+			const last = chain[chain.length - 1];
+			if (last && last.file === file && last.line === line) return;
+			chain.push({ file, line, column, tag });
+		};
+		if (meta.loc) {
+			add(meta.loc.file, meta.loc.line + 1, meta.loc.column + 1, el.tagName.toLowerCase());
+		}
+		for (let entry = meta.parent; entry; entry = entry.parent) {
+			if (entry.type === 'component') {
+				add(entry.file, entry.line, entry.column + 1, entry.componentTag);
+			}
+		}
+		return chain;
+	}
+
+	function short_path(file) {
+		const parts = file.split('/');
+		return parts.slice(-2).join('/');
+	}
+
+	// Route a click by mode — the stock combo opens the innermost element
+	// (original behaviour), the chain combo opens the wrapper dropdown.
+	function on_click(e) {
+		if (e.target?.closest?.('#svelte-inspector-menu')) {
+			return; // a menu row was clicked — let its own handler run
+		}
+		if (chain_mode) {
+			open_menu(e);
+		} else {
+			open_editor(e);
+		}
+	}
+
+	function open_menu(e) {
+		const chain = build_chain(e.target);
+		if (chain.length === 0) {
+			close_menu();
+			return;
+		}
+		stop(e);
+		menu = { x: e.clientX, y: e.clientY, chain };
+	}
+
+	function close_menu() {
+		menu = null;
+	}
+
+	function open_loc(item, e) {
+		stop(e);
+		fetch(
+			`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(
+				`${item.file}:${item.line}:${item.column}`
+			)}`
+		);
+		has_opened = true;
+		close_menu();
+		if (options.holdMode && is_holding()) {
+			disable();
+		}
+	}
+
 	function is_active(key, e) {
 		switch (key) {
 			case 'shift':
@@ -154,6 +248,14 @@
 
 	function is_combo(e) {
 		return toggle_combo?.every((k) => is_active(k, e));
+	}
+
+	function is_chain_combo(e) {
+		return chain_combo.every((k) => is_active(k, e));
+	}
+
+	function is_chain_toggle(e) {
+		return chain_combo.some((k) => is_active(k, e));
 	}
 
 	function is_escape(e) {
@@ -183,13 +285,27 @@
 	}
 
 	function keydown(e) {
-		if (e.repeat || e.key == null || (!enabled && !is_toggle(e))) {
+		if (e.repeat || e.key == null || (!enabled && !is_toggle(e) && !is_chain_toggle(e))) {
 			return;
 		}
 		if (is_combo(e)) {
+			chain_mode = false;
 			toggle();
 			if (options.holdMode && enabled) {
 				hold_start_ts = Date.now();
+			}
+		} else if (is_chain_combo(e)) {
+			// chain mode is a sticky toggle (no hold) so you can release the keys
+			// and still click rows in the dropdown.
+			stop(e);
+			if (enabled && chain_mode) {
+				disable();
+			} else {
+				chain_mode = true;
+				if (!enabled) {
+					enable();
+				}
+				hold_start_ts = null;
 			}
 		} else if (enabled) {
 			if (is_nav(e)) {
@@ -235,7 +351,7 @@
 		const l = enabled ? body.addEventListener : body.removeEventListener;
 		l('mousemove', mousemove);
 		l('mouseover', mouseover);
-		l('click', open_editor, true);
+		l('click', on_click, true);
 	}
 
 	function enable() {
@@ -277,6 +393,8 @@
 		enabled = false;
 		has_opened = false;
 		hold_start_ts = null;
+		menu = null;
+		chain_mode = false;
 		const b = document.body;
 		listeners(b, enabled);
 		if (options.customStyles) {
@@ -344,7 +462,7 @@
 		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
 	></button>
 {/if}
-{#if enabled && active_el && file_loc}
+{#if enabled && active_el && file_loc && !menu}
 	{@const loc = active_el.__svelte_meta.loc}
 	<div
 		id="svelte-inspector-overlay"
@@ -356,6 +474,25 @@
 	</div>
 	<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
 		{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column}
+	</div>
+{/if}
+{#if enabled && menu}
+	<div
+		id="svelte-inspector-menu"
+		style:left="{Math.min(menu.x + 4, document.documentElement.clientWidth - 330)}px"
+		style:top="{Math.min(
+			menu.y + 4,
+			document.documentElement.clientHeight - 12 - menu.chain.length * 28
+		)}px"
+	>
+		<div id="svelte-inspector-menu-head">wrapper chain · {menu.chain.length}</div>
+		{#each menu.chain as item, i (item.file + item.line + i)}
+			<button type="button" class="svelte-inspector-menu-row" onclick={(e) => open_loc(item, e)}>
+				<span class="svelte-inspector-menu-tag">&lt;{item.tag}&gt;</span>
+				<span class="svelte-inspector-menu-file">{short_path(item.file)}</span>
+				<span class="svelte-inspector-menu-line">:{item.line}</span>
+			</button>
+		{/each}
 	</div>
 {/if}
 
@@ -407,5 +544,62 @@
 	}
 	#svelte-inspector-toggle:hover {
 		background-color: #facece;
+	}
+
+	#svelte-inspector-menu {
+		position: fixed;
+		z-index: 1000000;
+		min-width: 240px;
+		max-width: 320px;
+		padding: 4px;
+		background-color: #161616;
+		border: 1px solid rgba(255, 62, 0, 0.5);
+		border-radius: 8px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+		font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+		font-size: 12px;
+		line-height: 1.4;
+	}
+	#svelte-inspector-menu-head {
+		padding: 4px 8px 6px;
+		color: #ff3e00;
+		text-transform: uppercase;
+		font-size: 10px;
+		letter-spacing: 0.04em;
+	}
+	.svelte-inspector-menu-row {
+		all: unset;
+		box-sizing: border-box;
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		width: 100%;
+		padding: 5px 8px;
+		border-radius: 5px;
+		color: #fff;
+		cursor: pointer;
+	}
+	.svelte-inspector-menu-row:hover {
+		background-color: rgba(255, 62, 0, 0.18);
+	}
+	.svelte-inspector-menu-tag {
+		flex-shrink: 0;
+		max-width: 11rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-weight: 600;
+	}
+	.svelte-inspector-menu-file {
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		color: #aaa;
+	}
+	.svelte-inspector-menu-line {
+		flex-shrink: 0;
+		color: #ff8a5c;
 	}
 </style>
