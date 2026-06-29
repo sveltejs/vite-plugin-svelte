@@ -11,7 +11,7 @@ overrides:
   svelte: ^5.46.4
   vite: ^8.0.9
   '@types/node@<=20.12.0': 20.19.43
-  '@sveltejs/kit>cookie@<0.7.0': ^0.7.2
+  '@sveltejs/kit>cookie@<0.7.0': ^2.0.0
 
 importers:
 
@@ -1856,9 +1856,9 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  cookie@0.7.2:
-    resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
-    engines: {node: '>= 0.6'}
+  cookie@2.0.0:
+    resolution: {integrity: sha512-hRSFuKJ6SYHrFVNltQdagQFMk7e0Q/VrORTGqZGyUAmmhA3EwPeldHCTg0HqUaDodQOfQDe7qXuOtpf4lwCsaA==}
+    engines: {node: '>=22'}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -4325,7 +4325,7 @@ snapshots:
       '@sveltejs/vite-plugin-svelte': link:packages/vite-plugin-svelte
       '@types/cookie': 0.6.0
       acorn: 8.17.0
-      cookie: 0.7.2
+      cookie: 2.0.0
       devalue: 5.8.1
       esm-env: 1.2.2
       kleur: 4.1.5
@@ -4344,7 +4344,7 @@ snapshots:
       '@sveltejs/acorn-typescript': 1.0.10(acorn@8.17.0)
       '@types/cookie': 0.6.0
       acorn: 8.17.0
-      cookie: 0.7.2
+      cookie: 2.0.0
       devalue: 5.8.1
       esm-env: 1.2.2
       kleur: 4.1.5
@@ -4698,7 +4698,7 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  cookie@0.7.2: {}
+  cookie@2.0.0: {}
 
   cross-spawn@7.0.6:
     dependencies:
