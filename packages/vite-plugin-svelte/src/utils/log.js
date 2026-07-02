@@ -1,3 +1,8 @@
+/** @import { SvelteModuleRequest, SvelteRequest } from '../types/id.js' */
+/** @import { LogFn, LogLevel, SimpleLogFn, SvelteWarningsMessage } from '../types/log.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { Warning } from 'svelte/compiler' */
+
 /* eslint-disable no-console */
 
 // eslint-disable-next-line n/no-unsupported-features/node-builtins
@@ -8,10 +13,10 @@ const red = (/** @type {string} */ txt) => styleText('red', txt);
 
 import { createDebug, enabled } from 'obug';
 
-/** @type {import('../types/log.d.ts').LogLevel[]} */
+/** @type {LogLevel[]} */
 const levels = ['debug', 'info', 'warn', 'error', 'silent'];
 const prefix = 'vite-plugin-svelte';
-/** @type {Record<import('../types/log.d.ts').LogLevel, any>} */
+/** @type {Record<LogLevel, any>} */
 const loggers = {
 	debug: {
 		log: createDebug(`${prefix}`),
@@ -38,10 +43,10 @@ const loggers = {
 	}
 };
 
-/** @type {import('../types/log.d.ts').LogLevel} */
+/** @type {LogLevel} */
 let _level = 'info';
 /**
- * @param {import('../types/log.d.ts').LogLevel} level
+ * @param {LogLevel} level
  * @returns {void}
  */
 function setLevel(level) {
@@ -98,15 +103,15 @@ function _log(logger, message, payload, namespace) {
 }
 
 /**
- * @param {import('../types/log.d.ts').LogLevel} level
- * @returns {import('../types/log.d.ts').LogFn}
+ * @param {LogLevel} level
+ * @returns {LogFn}
  */
 function createLogger(level) {
 	const logger = loggers[level];
-	const logFn = /** @type {import('../types/log.d.ts').LogFn} */ (_log.bind(null, logger));
+	const logFn = /** @type {LogFn} */ (_log.bind(null, logger));
 	/** @type {Set<string>} */
 	const logged = new Set();
-	/** @type {import('../types/log.d.ts').SimpleLogFn} */
+	/** @type {SimpleLogFn} */
 	const once = function (message, payload, namespace) {
 		if (!logger.enabled || logged.has(message)) {
 			return;
@@ -136,20 +141,20 @@ export const log = {
 };
 
 /**
- * @param {import('../types/id.d.ts').SvelteRequest | import('../types/id.d.ts').SvelteModuleRequest} svelteRequest
- * @param {import('svelte/compiler').Warning[]} warnings
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {SvelteRequest | SvelteModuleRequest} svelteRequest
+ * @param {Warning[]} warnings
+ * @param {ResolvedOptions} options
  */
 export function logCompilerWarnings(svelteRequest, warnings, options) {
 	const { emitCss, onwarn, isBuild } = options;
 	const sendViaWS = !isBuild && options.experimental?.sendWarningsToBrowser;
 	let warn = isBuild ? warnBuild : warnDev;
-	/** @type {import('svelte/compiler').Warning[]} */
+	/** @type {Warning[]} */
 	const handledByDefaultWarn = [];
 	const allWarnings = warnings?.filter((w) => !ignoreCompilerWarning(w, isBuild, emitCss));
 	if (sendViaWS) {
 		const _warn = warn;
-		/** @type {(w: import('svelte/compiler').Warning) => void} */
+		/** @type {(w: Warning) => void} */
 		warn = (w) => {
 			handledByDefaultWarn.push(w);
 			_warn(w);
@@ -163,7 +168,7 @@ export function logCompilerWarnings(svelteRequest, warnings, options) {
 		}
 	});
 	if (sendViaWS) {
-		/** @type {import('../types/log.d.ts').SvelteWarningsMessage} */
+		/** @type {SvelteWarningsMessage} */
 		const message = {
 			id: svelteRequest.id,
 			filename: svelteRequest.filename,
@@ -179,7 +184,7 @@ export function logCompilerWarnings(svelteRequest, warnings, options) {
 }
 
 /**
- * @param {import('svelte/compiler').Warning} warning
+ * @param {Warning} warning
  * @param {boolean} isBuild
  * @param {boolean} [emitCss]
  * @returns {boolean}
@@ -193,7 +198,7 @@ function ignoreCompilerWarning(warning, isBuild, emitCss) {
 
 /**
  *
- * @param {import('svelte/compiler').Warning} warning
+ * @param {Warning} warning
  * @returns {boolean}
  */
 function isNoScopableElementWarning(warning) {
@@ -202,7 +207,7 @@ function isNoScopableElementWarning(warning) {
 }
 
 /**
- * @param {import('svelte/compiler').Warning} w
+ * @param {Warning} w
  */
 function warnDev(w) {
 	if (w.filename?.includes('node_modules')) {
@@ -215,7 +220,7 @@ function warnDev(w) {
 }
 
 /**
- * @param {import('svelte/compiler').Warning & {frame?: string}} w
+ * @param {Warning & {frame?: string}} w
  */
 function warnBuild(w) {
 	if (w.filename?.includes('node_modules')) {
@@ -228,7 +233,7 @@ function warnBuild(w) {
 }
 
 /**
- * @param {import('svelte/compiler').Warning} w
+ * @param {Warning} w
  */
 export function buildExtendedLogMessage(w) {
 	const parts = [];

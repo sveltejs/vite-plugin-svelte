@@ -1,3 +1,8 @@
+/** @import { Options } from '../public.js' */
+/** @import { PreResolvedOptions } from '../types/options.js' */
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import process from 'node:process';
 import { isDebugNamespaceEnabled, log } from '../utils/log.js';
 import { VitePluginSvelteStats } from '../utils/vite-plugin-svelte-stats.js';
@@ -13,19 +18,19 @@ import { buildIdFilter, buildIdParser } from '../utils/id.js';
 import { createCompileSvelte } from '../utils/compile.js';
 
 /**
- * @param {Partial<import('../public.d.ts').Options>} [inlineOptions]
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {Partial<Options>} [inlineOptions]
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function configure(api, inlineOptions) {
 	validateInlineOptions(inlineOptions);
 
 	/**
-	 * @type {import("../types/options.d.ts").PreResolvedOptions}
+	 * @type {PreResolvedOptions}
 	 */
 	let preOptions;
 
-	/** @type {import('vite').Plugin} */
+	/** @type {Plugin} */
 	return {
 		name: 'vite-plugin-svelte:config',
 		api,

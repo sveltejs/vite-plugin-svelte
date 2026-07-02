@@ -1,3 +1,10 @@
+/** @import { PreprocessSvelte } from '../types/compile.js' */
+/** @import { SvelteRequest } from '../types/id.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { PreprocessorGroup } from 'svelte/compiler' */
+/** @import { Plugin, ResolvedConfig, Rollup, ViteDevServer } from 'vite' */
+
 import { toRollupError } from '../utils/error.js';
 import { mapToRelative } from '../utils/sourcemaps.js';
 import * as svelte from 'svelte/compiler';
@@ -7,12 +14,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function preprocess(api) {
 	/**
-	 * @type {import("../types/options.js").ResolvedOptions}
+	 * @type {ResolvedOptions}
 	 */
 	let options;
 
@@ -22,11 +29,11 @@ export function preprocess(api) {
 	let dependenciesCache;
 
 	/**
-	 * @type {import("../types/compile.d.ts").PreprocessSvelte}
+	 * @type {PreprocessSvelte}
 	 */
 	let preprocessSvelte;
 
-	/** @type {import('vite').Plugin} */
+	/** @type {Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:preprocess',
 		enforce: 'pre',
@@ -73,7 +80,7 @@ export function preprocess(api) {
 						}
 					}
 
-					/** @type {import('vite').Rollup.SourceDescription}*/
+					/** @type {Rollup.SourceDescription}*/
 					const result = { code: preprocessed.code };
 					if (preprocessed.map) {
 						// @ts-expect-error type differs but should work
@@ -89,12 +96,12 @@ export function preprocess(api) {
 	return plugin;
 }
 /**
- * @param {import("../types/options.js").ResolvedOptions} options
- * @param {import("vite").ResolvedConfig} resolvedConfig
- * @returns {import('../types/compile.d.ts').PreprocessSvelte}
+ * @param {ResolvedOptions} options
+ * @param {ResolvedConfig} resolvedConfig
+ * @returns {PreprocessSvelte}
  */
 function createPreprocessSvelte(options, resolvedConfig) {
-	/** @type {Array<import('svelte/compiler').PreprocessorGroup>} */
+	/** @type {Array<PreprocessorGroup>} */
 	const preprocessors = arraify(options.preprocess);
 
 	for (const preprocessor of preprocessors) {
@@ -103,7 +110,7 @@ function createPreprocessSvelte(options, resolvedConfig) {
 		}
 	}
 
-	/** @type {import('../types/compile.d.ts').PreprocessSvelte} */
+	/** @type {PreprocessSvelte} */
 	return async function preprocessSvelte(svelteRequest, code) {
 		const { filename } = svelteRequest;
 		let preprocessed;
@@ -133,11 +140,11 @@ class DependenciesCache {
 	/** @type {Map<string, Set<string>>} */
 	#dependants = new Map();
 
-	/** @type {import('vite').ViteDevServer} */
+	/** @type {ViteDevServer} */
 	#server;
 	/**
 	 *
-	 * @param {import('vite').ViteDevServer} server
+	 * @param {ViteDevServer} server
 	 */
 	constructor(server) {
 		this.#server = server;
@@ -184,7 +191,7 @@ class DependenciesCache {
 
 	/**
 	 *
-	 * @param {import('../types/id.d.ts').SvelteRequest} svelteRequest
+	 * @param {SvelteRequest} svelteRequest
 	 * @param {string[]} dependencies
 	 */
 	update(svelteRequest, dependencies) {

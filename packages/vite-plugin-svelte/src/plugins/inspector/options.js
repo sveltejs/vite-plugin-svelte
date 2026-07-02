@@ -1,8 +1,11 @@
+/** @import { InspectorOptions } from '../../public.js' */
+/** @import { ResolvedConfig } from 'vite' */
+
 import process from 'node:process';
 import { loadEnv } from 'vite';
 import { log } from '../../utils/log.js';
 
-/** @type {import('../../public.d.ts').InspectorOptions} */
+/** @type {InspectorOptions} */
 export const defaultInspectorOptions = {
 	toggleKeyCombo: 'alt-x',
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
@@ -15,8 +18,8 @@ export const defaultInspectorOptions = {
 };
 
 /**
- * @param {import('vite').ResolvedConfig} config
- * @returns {Partial<import('../../public.d.ts').InspectorOptions> | boolean | void}
+ * @param {ResolvedConfig} config
+ * @returns {Partial<InspectorOptions> | boolean | void}
  */
 export function parseEnvironmentOptions(config) {
 	const env = loadEnv(config.mode, config.envDir ?? process.cwd(), 'SVELTE_INSPECTOR');

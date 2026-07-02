@@ -1,14 +1,19 @@
+/** @import { Options } from '../public.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { Warning } from 'svelte/compiler' */
+/** @import { Rollup } from 'vite' */
+
 import { buildExtendedLogMessage } from './log.js';
 
 /**
  * convert an error thrown by svelte.compile to a RollupError so that vite displays it in a user friendly way
- * @param {import('svelte/compiler').Warning & Error & {frame?: string}} error a svelte compiler error, which is a mix of Warning and an error
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {import('vite').Rollup.RollupError} the converted error
+ * @param {Warning & Error & {frame?: string}} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {ResolvedOptions} options
+ * @returns {Rollup.RollupError} the converted error
  */
 export function toRollupError(error, options) {
 	const { filename, frame, start, code, name, stack } = error;
-	/** @type {import('vite').Rollup.RollupError} */
+	/** @type {Rollup.RollupError} */
 	const rollupError = {
 		name, // needed otherwise sveltekit coalesce_to_error turns it into a string
 		id: filename,
@@ -29,8 +34,8 @@ export function toRollupError(error, options) {
 
 /**
  * convert an error thrown by svelte.compile to an esbuild PartialMessage
- * @param {import('svelte/compiler').Warning & Error  & {frame?: string}} error a svelte compiler error, which is a mix of Warning and an error
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {Warning & Error  & {frame?: string}} error a svelte compiler error, which is a mix of Warning and an error
+ * @param {ResolvedOptions} options
  * @returns {any} the converted error as esbuild PartialMessage
  *
  * note: typed any to avoid esbuild devDependency for a single internal type import
@@ -114,9 +119,9 @@ function couldBeFixedByCssPreprocessor(code) {
 }
 
 /**
- * @param {import('svelte/compiler').Warning & Error} err a svelte compiler error, which is a mix of Warning and an error
+ * @param {Warning & Error} err a svelte compiler error, which is a mix of Warning and an error
  * @param {string} originalCode
- * @param {import('../public.d.ts').Options['preprocess']} [preprocessors]
+ * @param {Options['preprocess']} [preprocessors]
  */
 export function enhanceCompileError(err, originalCode, preprocessors) {
 	preprocessors = arraify(preprocessors ?? []);

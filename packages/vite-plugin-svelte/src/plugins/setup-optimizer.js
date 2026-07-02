@@ -1,58 +1,61 @@
+/** @import { Code } from '../types/compile.js' */
+/** @import { ResolvedOptions } from '../types/options.js' */
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { StatCollection } from '../types/vite-plugin-svelte-stats.js' */
+/** @import { CompileOptions } from 'svelte/compiler' */
+/** @import { Plugin, ResolvedConfig, Rolldown, UserConfig } from 'vite' */
+
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import * as svelte from 'svelte/compiler';
 import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
-import { DEFAULT_SVELTE_MODULE_EXT } from '../utils/constants.js';
+import { SVELTE_IMPORTS } from '../utils/constants.js';
+import { isDepExcluded } from 'vitefu';
 
 /**
- * @typedef {NonNullable<import('vite').Rollup.Plugin>} RollupPlugin
+ * @typedef {NonNullable<Rolldown.Plugin>} RollupPlugin
  */
 
 const optimizeSveltePluginName = 'vite-plugin-svelte:optimize';
 const optimizeSvelteModulePluginName = 'vite-plugin-svelte:optimize-module';
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function setupOptimizer(api) {
-	/** @type {import('vite').ResolvedConfig} */
+	/** @type {ResolvedConfig} */
 	let viteConfig;
 
 	return {
 		name: 'vite-plugin-svelte:setup-optimizer',
 		apply: 'serve',
-		config() {
-			/** @type {import('vite').UserConfig['optimizeDeps']} */
+		configEnvironment(name, config) {
+			// fall back to vite behavior when consumer isn't set
+			const consumer = (config.consumer ?? name === 'client') ? 'client' : 'server';
+			/** @type {UserConfig['optimizeDeps']} */
 			const optimizeDeps = {
 				// Experimental Vite API to allow these extensions to be scanned and prebundled
 				extensions: ['.svelte']
 			};
-			// Add optimizer plugins to prebundle Svelte files.
-			// Currently, a placeholder as more information is needed after Vite config is resolved,
-			// the added plugins are patched in configResolved below
 
+			// Add optimizer plugins to prebundle Svelte files.
 			optimizeDeps.rolldownOptions = {
 				plugins: [
-					placeholderRolldownOptimizerPlugin(optimizeSveltePluginName),
-					placeholderRolldownOptimizerPlugin(optimizeSvelteModulePluginName)
+					rolldownOptimizerPlugin(api, consumer, true),
+					rolldownOptimizerPlugin(api, consumer, false)
 				]
 			};
+
+			if (consumer === 'server' && !isDepExcluded('svelte', config.optimizeDeps?.exclude ?? [])) {
+				optimizeDeps.include = [...SVELTE_IMPORTS];
+			}
 
 			return { optimizeDeps };
 		},
 		configResolved(c) {
 			viteConfig = c;
-			const optimizeDeps = c.optimizeDeps;
-			const plugins =
-				// @ts-expect-error not typed
-				optimizeDeps.rolldownOptions?.plugins?.filter((p) =>
-					[optimizeSveltePluginName, optimizeSvelteModulePluginName].includes(p.name)
-				) ?? [];
-			for (const plugin of plugins) {
-				patchRolldownOptimizerPlugin(plugin, api.options);
-			}
 		},
 		async buildStart() {
 			if (!api.options.prebundleSvelteLibraries) return;
@@ -67,25 +70,29 @@ export function setupOptimizer(api) {
 }
 
 /**
- * @param {RollupPlugin} plugin
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {import('../types/plugin-api.d.ts').PluginAPI} api
+ * @param {'server'|'client'} consumer
+ * @param {boolean} components
+ * @return {Rolldown.Plugin}
  */
-function patchRolldownOptimizerPlugin(plugin, options) {
-	const components = plugin.name === optimizeSveltePluginName;
+function rolldownOptimizerPlugin(api, consumer, components) {
+	const name = components ? optimizeSveltePluginName : optimizeSvelteModulePluginName;
 	const compileFn = components ? compileSvelte : compileSvelteModule;
 	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
-	const includeRe = components
-		? /^[^?#]+\.svelte(?:[?#]|$)/
-		: buildSvelteModuleRegex(
-				options.experimental?.compileModule?.extensions || DEFAULT_SVELTE_MODULE_EXT
-			);
-	/** @type {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection | undefined} */
+	const includeRe = components ? /^[^?#]+\.svelte(?:[?#]|$)/ : /^[^?#]+\.svelte\.m?[jt]s(?:[?#]|$)/;
+	const generate = consumer === 'server' ? 'server' : 'client';
+	/** @type {StatCollection | undefined} */
 	let statsCollection;
+
+	/**@type {Rolldown.Plugin}*/
+	const plugin = {
+		name
+	};
 
 	plugin.options = (opts) => {
 		// @ts-expect-error plugins is an array here
 		const isScanner = opts.plugins.some(
-			(/** @type {{ name: string; }} */ p) => p.name === 'vite:dep-scan:resolve'
+			(/** @type {{ name: string; } | undefined} */ p) => p?.name === 'vite:dep-scan:resolve'
 		);
 		if (isScanner) {
 			delete plugin.buildStart;
@@ -100,14 +107,14 @@ function patchRolldownOptimizerPlugin(plugin, options) {
 				 */
 				async handler(code, filename) {
 					try {
-						return await compileFn(options, { filename, code }, statsCollection);
+						return await compileFn(api.options, { filename, code }, generate, statsCollection);
 					} catch (e) {
-						throw toRollupError(e, options);
+						throw toRollupError(e, api.options);
 					}
 				}
 			};
 			plugin.buildStart = () => {
-				statsCollection = options.stats?.startCollection(statsName, {
+				statsCollection = api.options.stats?.startCollection(statsName, {
 					logResult: (c) => c.stats.length > 1
 				});
 			};
@@ -116,38 +123,30 @@ function patchRolldownOptimizerPlugin(plugin, options) {
 			};
 		}
 	};
+
+	return plugin;
 }
 
 /**
- * @param {string[]} extensions
- */
-function buildSvelteModuleRegex(extensions) {
-	const escaped = extensions
-		.map((e) => (e.startsWith('.') ? e.slice(1) : e))
-		.map((e) => e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-		.join('|');
-	return new RegExp(`^[^?#]+\\.svelte\\.(?:${escaped})(?:[?#]|$)`);
-}
-
-/**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  * @param {{ filename: string, code: string }} input
- * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
- * @returns {Promise<import('../types/compile.d.ts').Code>}
+ * @param {'client'|'server'} generate
+ * @param {StatCollection} [statsCollection]
+ * @returns {Promise<Code>}
  */
-async function compileSvelte(options, { filename, code }, statsCollection) {
+async function compileSvelte(options, { filename, code }, generate, statsCollection) {
 	let css = options.compilerOptions.css;
 	if (css !== 'injected') {
 		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
 		css = 'injected';
 	}
-	/** @type {import('svelte/compiler').CompileOptions} */
+	/** @type {CompileOptions} */
 	const compileOptions = {
 		dev: true, // default to dev: true because prebundling is only used in dev
 		...options.compilerOptions,
 		css,
 		filename,
-		generate: 'client'
+		generate
 	};
 
 	let preprocessed;
@@ -196,17 +195,18 @@ async function compileSvelte(options, { filename, code }, statsCollection) {
 }
 
 /**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  * @param {{ filename: string; code: string }} input
- * @param {import('../types/vite-plugin-svelte-stats.d.ts').StatCollection} [statsCollection]
- * @returns {Promise<import('../types/compile.d.ts').Code>}
+ * @param {'client'|'server'} generate
+ * @param {StatCollection} [statsCollection]
+ * @returns {Promise<Code>}
  */
-async function compileSvelteModule(options, { filename, code }, statsCollection) {
+async function compileSvelteModule(options, { filename, code }, generate, statsCollection) {
 	const endStat = statsCollection?.start(filename);
 	const compiled = svelte.compileModule(code, {
 		dev: options.compilerOptions?.dev ?? true, // default to dev: true because prebundling is only used in dev
 		filename,
-		generate: 'client'
+		generate
 	});
 	if (endStat) {
 		endStat();
@@ -218,7 +218,7 @@ async function compileSvelteModule(options, { filename, code }, statsCollection)
 }
 
 // List of options that changes the prebundling result
-/** @type {(keyof import('../types/options.d.ts').ResolvedOptions)[]} */
+/** @type {(keyof ResolvedOptions)[]} */
 const PREBUNDLE_SENSITIVE_OPTIONS = [
 	'compilerOptions',
 	'configFile',
@@ -231,7 +231,7 @@ const PREBUNDLE_SENSITIVE_OPTIONS = [
  * stores svelte metadata in cache dir and compares if it has changed
  *
  * @param {string} cacheDir
- * @param {import('../types/options.d.ts').ResolvedOptions} options
+ * @param {ResolvedOptions} options
  * @returns {Promise<boolean>} Whether the Svelte metadata has changed
  */
 async function svelteMetadataChanged(cacheDir, options) {
@@ -257,23 +257,8 @@ async function svelteMetadataChanged(cacheDir, options) {
 }
 
 /**
- *
- * @param {string} name
- * @returns {import('vite').Rollup.Plugin}
- */
-function placeholderRolldownOptimizerPlugin(name) {
-	return {
-		name,
-		options() {},
-		buildStart() {},
-		buildEnd() {},
-		transform: { filter: { id: /^$/ }, handler() {} }
-	};
-}
-
-/**
- * @param {import('../types/options.d.ts').ResolvedOptions} options
- * @returns {Partial<import('../types/options.d.ts').ResolvedOptions>}
+ * @param {ResolvedOptions} options
+ * @returns {Partial<ResolvedOptions>}
  */
 function generateSvelteMetadata(options) {
 	/** @type {Record<string, any>} */

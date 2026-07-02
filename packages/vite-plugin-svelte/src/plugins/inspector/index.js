@@ -1,3 +1,7 @@
+/** @import { InspectorOptions } from '../../public.js' */
+/** @import { PluginAPI } from '../../types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import { normalizePath } from 'vite';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -22,14 +26,14 @@ function getInspectorPath() {
 }
 
 /**
- * @param {import('../../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function svelteInspector(api) {
 	const inspectorPath = getInspectorPath();
 	log.debug(`svelte inspector path: ${inspectorPath}`, null, 'inspector');
 
-	/** @type {import('../../public.d.ts').InspectorOptions} */
+	/** @type {InspectorOptions} */
 	let inspectorOptions;
 	let disabled = false;
 
@@ -111,7 +115,10 @@ export function svelteInspector(api) {
 			}
 		},
 		transform: {
-			filter: { id: /vite\/dist\/client\/client\.mjs(?:\?|$)/ },
+			// Vite+ projects install vite@npm:@voidzero-dev/vite-plus-core@latest which
+			// changes the path from `vite/dist/client/client.mjs` to `vite/dist/vite/client/client.mjs`
+			// so we need to also account for the additional `vite` subdirectory
+			filter: { id: /vite\/dist\/(?:vite\/)?client\/client\.mjs(?:\?|$)/ },
 			handler(code) {
 				if (disabled) {
 					return;

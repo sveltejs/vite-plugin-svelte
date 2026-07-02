@@ -4,27 +4,17 @@ packages:
   - 'packages/e2e-tests/_test_dependencies/*'
 
 # package resolution settings
-minimumReleaseAge: 4320 #3 days
+minimumReleaseAge: 2880
 
 minimumReleaseAgeExclude:
-  - 'vite'
-  - 'create-vite'
-  - '@vitejs/*'
-  - 'vitest'
-  - '@vitest/*'
-  - 'svelte'
   - '@sveltejs/*'
-  - 'rolldown-vite'
-  - 'rolldown'
-  - '@rolldown/*'
-  - '@oxc-project/*'
-  - 'devalue'
-  - 'esm-env'
-  - 'esrap'
-  - 'is-reference'
-  - 'locate-character'
-  - 'vitefu'
-  - 'zimmerframe'
+  - svelte
+  - esrap
+  - devalue
+  - zimmerframe
+  - prettier-plugin-svelte
+  - svelte-check
+  - esm-env
 
 onlyBuiltDependencies:
   - esbuild
@@ -38,10 +28,9 @@ auditConfig:
   ignoreGhsas:
     - 'GHSA-67mh-4wv8-2f99'
     - 'GHSA-v6h2-p8h4-qcjw'
-
-updateConfig:
-  ignoreDependencies:
-    - 'execa' # v9 is larger than v8 and doesn't work the same, we only use it in testing
+    - 'GHSA-wf6x-7x77-mvgw' # we aren't using mergeDeep from immutable with public inputs
+    - 'GHSA-48c2-rrv3-qjmp' # we don't consume public yaml files
+    - 'GHSA-f886-m6hf-6m8v' # belongs to an optional peer dependency of Vite
 
 overrides:
   # $ prefixed package names take their version from root package.json - this is like catalogs but without them
@@ -50,13 +39,25 @@ overrides:
   '@sveltejs/vite-plugin-svelte': 'workspace:^'
   'svelte': '$svelte'
   'vite': '$vite'
-  '@types/node@<=20.12.0': '20.19.14'
-  'send@<0.19.0': '^0.19.1'
+  '@types/node@<=20.12.0': '20.19.43'
   '@sveltejs/kit>cookie@<0.7.0': '^0.7.2'
 
-#cli output
-aggregateOutput: true
-reporter: append-only
+# pnpm catalogs are currently only suitable for dependencies that
+# wouldn't require publishing a new package version
+# see https://github.com/changesets/changesets/issues/1707
+catalog:
+  '@sveltejs/kit': ^2.59.1
+  vite: ^8.0.9
 
 # needed for _test_dependencies
 dedupeInjectedDeps: false
+
+# enables cross-platform scripting so we don't need cross-env
+shellEmulator: true
+
+# cli output
+# These are only documented as inline options and they also show an error in VS Code
+# based on the schema from https://json.schemastore.org/pnpm-workspace.json
+# However, they do work and are valid options
+aggregateOutput: true
+reporter: append-only

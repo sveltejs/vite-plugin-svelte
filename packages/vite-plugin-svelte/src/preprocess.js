@@ -1,3 +1,7 @@
+/** @import { VitePreprocessOptions } from './public.js' */
+/** @import { Preprocessor as SveltePreprocessor, PreprocessorGroup } from 'svelte/compiler' */
+/** @import { InlineConfig, ResolvedConfig } from 'vite' */
+
 import process from 'node:process';
 import * as vite from 'vite';
 import { mapToRelative, removeLangSuffix } from './utils/sourcemaps.js';
@@ -17,11 +21,11 @@ const supportedScriptLangs = ['ts'];
 export const lang_sep = '.vite-preprocess';
 
 /**
- * @param {import('./public.d.ts').VitePreprocessOptions} [opts]
- * @returns {import('svelte/compiler').PreprocessorGroup}
+ * @param {VitePreprocessOptions} [opts]
+ * @returns {PreprocessorGroup}
  */
 export function vitePreprocess(opts) {
-	/** @type {import('svelte/compiler').PreprocessorGroup} */
+	/** @type {PreprocessorGroup} */
 	const preprocessor = { name: 'vite-preprocess' };
 	if (opts?.script === true) {
 		preprocessor.script = viteScript().script;
@@ -34,7 +38,7 @@ export function vitePreprocess(opts) {
 }
 
 /**
- * @returns {{ script: import('svelte/compiler').Preprocessor }}
+ * @returns {{ script: SveltePreprocessor }}
  */
 function viteScript() {
 	return {
@@ -45,15 +49,12 @@ function viteScript() {
 			const lang = /** @type {'ts'} */ (attributes.lang);
 			const { code, map } = await transformWithOxc(content, filename, {
 				lang,
-				target: 'esnext'
-				// TODO, how to pass tsconfig compilerOptions (or not needed as config is loaded for file
-				/*tsconfigRaw: {
-					compilerOptions: {
-						// svelte typescript needs this flag to work with type imports
-						importsNotUsedAsValues: 'preserve',
-						preserveValueImports: true
-					}
-				}*/
+				target: 'esnext',
+				// oxc strips value imports it considers unused, but in Svelte files
+				// these imports may be referenced in the template which oxc cannot see.
+				// onlyRemoveTypeImports tells oxc to only strip type-only imports
+				// (import type {...}, import { type X }) and preserve all value imports.
+				typescript: { onlyRemoveTypeImports: true }
 			});
 
 			mapToRelative(map, filename);
@@ -67,44 +68,45 @@ function viteScript() {
 }
 
 /**
- * @param {import('vite').ResolvedConfig | import('vite').InlineConfig} config
- * @returns {{ style: import('svelte/compiler').Preprocessor }}
+ * @param {ResolvedConfig | InlineConfig} config
+ * @returns {{ style: SveltePreprocessor }}
  */
 function viteStyle(config = {}) {
 	/** @type {Promise<CssTransform> | CssTransform} */
 	let cssTransform;
-	/** @type {import('svelte/compiler').Preprocessor} */
-	const style = async ({ attributes, content, filename = '' }) => {
-		const ext = attributes.lang ? `.${attributes.lang}` : '.css';
-		if (attributes.lang && !isCSSRequest(ext)) return;
-		if (!cssTransform) {
-			cssTransform = createCssTransform(style, config).then((t) => (cssTransform = t));
+	const style = /** @type {SveltePreprocessor} */ (
+		async ({ attributes, content, filename = '' }) => {
+			const ext = attributes.lang ? `.${attributes.lang}` : '.css';
+			if (attributes.lang && !isCSSRequest(ext)) return;
+			if (!cssTransform) {
+				cssTransform = createCssTransform(style, config).then((t) => (cssTransform = t));
+			}
+			const transform = await cssTransform;
+			const suffix = `${lang_sep}${ext}`;
+			const moduleId = `${filename}${suffix}`;
+			const { code, map, deps } = await transform(content, moduleId);
+			removeLangSuffix(map, suffix);
+			mapToRelative(map, filename);
+			const dependencies = deps ? Array.from(deps).filter((d) => !d.endsWith(suffix)) : undefined;
+			return {
+				code,
+				map: map ?? undefined,
+				dependencies
+			};
 		}
-		const transform = await cssTransform;
-		const suffix = `${lang_sep}${ext}`;
-		const moduleId = `${filename}${suffix}`;
-		const { code, map, deps } = await transform(content, moduleId);
-		removeLangSuffix(map, suffix);
-		mapToRelative(map, filename);
-		const dependencies = deps ? Array.from(deps).filter((d) => !d.endsWith(suffix)) : undefined;
-		return {
-			code,
-			map: map ?? undefined,
-			dependencies
-		};
-	};
+	);
 	// @ts-expect-error tag so can be found by v-p-s
 	style.__resolvedConfig = null;
 	return { style };
 }
 
 /**
- * @param {import('svelte/compiler').Preprocessor} style
- * @param {import('vite').ResolvedConfig | import('vite').InlineConfig} config
+ * @param {SveltePreprocessor} style
+ * @param {ResolvedConfig | InlineConfig} config
  * @returns {Promise<CssTransform>}
  */
 async function createCssTransform(style, config) {
-	/** @type {import('vite').ResolvedConfig} */
+	/** @type {ResolvedConfig} */
 	let resolvedConfig;
 	// @ts-expect-error special prop added if running in v-p-s
 	if (style.__resolvedConfig) {
@@ -126,7 +128,7 @@ async function createCssTransform(style, config) {
 
 /**
  * @param {any} config
- * @returns {config is import('vite').ResolvedConfig}
+ * @returns {config is ResolvedConfig}
  */
 function isResolvedConfig(config) {
 	return !!config.inlineConfig;

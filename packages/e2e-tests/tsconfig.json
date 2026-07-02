@@ -2,11 +2,15 @@
 	"include": ["."],
 	"exclude": ["**/dist/**", "**/build/**", "**/node_modules/**"],
 	"compilerOptions": {
+		// TODO: we should enable strict type checking at some point
+		// "strict": true,
 		"target": "ESNext",
 		"module": "ESNext",
 		"outDir": "dist",
 		"baseUrl": ".",
+		"checkJs": true,
 		"allowJs": true,
+		"noEmit": true,
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"moduleResolution": "Bundler",

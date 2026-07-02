@@ -6,7 +6,6 @@ import path from 'node:path';
 import process from 'node:process';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
-import fetch from 'node-fetch';
 import {
 	testMode,
 	isWin,
@@ -339,6 +338,7 @@ export async function waitForNavigation(opts: Parameters<typeof page.waitForNavi
 
 export async function fetchPageText() {
 	const url = page.url();
+	// eslint-disable-next-line n/no-unsupported-features/node-builtins
 	const res = await fetch(url);
 	if (res.ok) {
 		return res.text();
@@ -349,6 +349,7 @@ export async function fetchPageText() {
 
 export async function fetchFromPage(url, init?) {
 	const fullUrl = page.url() + (url.startsWith('/') ? url.slice(1) : url);
+	// eslint-disable-next-line n/no-unsupported-features/node-builtins
 	return fetch(fullUrl, init);
 }
 export function readVitePrebundleMetadata() {

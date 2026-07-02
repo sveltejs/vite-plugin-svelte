@@ -1,11 +1,14 @@
+/** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { Plugin } from 'vite' */
+
 import { log } from '../utils/log.js';
 import { SVELTE_VIRTUAL_STYLE_ID_REGEX } from '../utils/constants.js';
 
 const filter = { id: SVELTE_VIRTUAL_STYLE_ID_REGEX };
 
 /**
- * @param {import('../types/plugin-api.d.ts').PluginAPI} api
- * @returns {import('vite').Plugin}
+ * @param {PluginAPI} api
+ * @returns {Plugin}
  */
 export function loadCompiledCss(api) {
 	let useLocalCache = false;
@@ -36,7 +39,17 @@ export function loadCompiledCss(api) {
 				if (!svelteRequest) {
 					return;
 				}
+
 				let cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
+				if (!cachedCss) {
+					// some module IDs have a ?v=... query string suffix in addition to the
+					// filename. We can retrieve this by running resolve again
+					const resolvedId = await this.resolve(svelteRequest.filename);
+					if (resolvedId?.id) {
+						cachedCss = this.getModuleInfo(resolvedId.id)?.meta.svelte?.css;
+					}
+				}
+
 				// in `build --watch` or dev ssr reloads getModuleInfo only returns changed module data.
 				// To ensure virtual css is loaded unchanged, we cache it here separately
 				if (useLocalCache) {
