@@ -79,7 +79,7 @@ function rolldownOptimizerPlugin(api, consumer, components) {
 	const name = components ? optimizeSveltePluginName : optimizeSvelteModulePluginName;
 	const compileFn = components ? compileSvelte : compileSvelteModule;
 	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
-	const includeRe = components ? /^[^?#]+\.svelte(?:[?#]|$)/ : /^[^?#]+\.svelte\.[jt]s(?:[?#]|$)/;
+	const includeRe = components ? /^[^?#]+\.svelte(?:[?#]|$)/ : /^[^?#]+\.svelte\.m?[jt]s(?:[?#]|$)/;
 	const generate = consumer === 'server' ? 'server' : 'client';
 	/** @type {StatCollection | undefined} */
 	let statsCollection;
