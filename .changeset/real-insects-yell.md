@@ -1,5 +1,5 @@
 ---
-'@sveltejs/vite-plugin-svelte': patch
+'@sveltejs/vite-plugin-svelte': minor
 ---
 
-support `.svelte.mjs`
+feat: support `.svelte.mjs`
