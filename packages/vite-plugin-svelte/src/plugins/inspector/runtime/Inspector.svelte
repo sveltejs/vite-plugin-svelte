@@ -6,10 +6,6 @@
 
 	import options from 'virtual:svelte-inspector-options';
 	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
-	// A second toggle, separate from the stock one. The stock combo (alt-x) keeps
-	// its original behaviour (click opens the innermost element); this combo
-	// enables "chain mode" where a click opens the wrapper-chain dropdown instead.
-	const chain_combo = ['alt', 'c'];
 	const escape_keys = options.escapeKeys?.map((k) => k.toLowerCase());
 	const nav_keys = Object.values(options.navKeys).map((k) => k?.toLowerCase());
 	const open_key = options.openKey?.toLowerCase();
@@ -40,9 +36,6 @@
 
 	// Wrapper-chain dropdown: null when closed, else { x, y, chain }.
 	let menu = $state(null);
-	// True while the chain combo is the active mode — a click then opens the
-	// dropdown instead of the stock single-element open.
-	let chain_mode = $state(false);
 
 	let hold_start_ts = $state();
 
@@ -251,14 +244,6 @@
 		return toggle_combo?.every((k) => is_active(k, e));
 	}
 
-	function is_chain_combo(e) {
-		return chain_combo.every((k) => is_active(k, e));
-	}
-
-	function is_chain_toggle(e) {
-		return chain_combo.some((k) => is_active(k, e));
-	}
-
 	function is_escape(e) {
 		return escape_keys?.some((k) => is_active(k, e));
 	}
@@ -286,27 +271,13 @@
 	}
 
 	function keydown(e) {
-		if (e.repeat || e.key == null || (!enabled && !is_toggle(e) && !is_chain_toggle(e))) {
+		if (e.repeat || e.key == null || (!enabled && !is_toggle(e))) {
 			return;
 		}
 		if (is_combo(e)) {
-			chain_mode = false;
 			toggle();
 			if (options.holdMode && enabled) {
 				hold_start_ts = Date.now();
-			}
-		} else if (is_chain_combo(e)) {
-			// chain mode is a sticky toggle (no hold) so you can release the keys
-			// and still click rows in the dropdown.
-			stop(e);
-			if (enabled && chain_mode) {
-				disable();
-			} else {
-				chain_mode = true;
-				if (!enabled) {
-					enable();
-				}
-				hold_start_ts = null;
 			}
 		} else if (enabled) {
 			if (is_nav(e)) {
@@ -396,7 +367,6 @@
 		has_opened = false;
 		hold_start_ts = null;
 		menu = null;
-		chain_mode = false;
 		const b = document.body;
 		listeners(b, enabled);
 		if (options.customStyles) {
