@@ -1,8 +1,6 @@
 # Inspector
 
-`@sveltejs/vite-plugin-svelte-inspector` is a Vite plugin that adds a Svelte inspector in the browser. It shows the file location where the element under cursor is defined and you can click to quickly open your code editor at this location.
-
-While the inspector is active you can also press `alt-c` to open the **wrapper chain** of the selected node — a dropdown of every wrapping `<Component>` and the `file:line` where it is used, so you can jump to where a component is _used_, not just where the hovered element is defined.
+`@sveltejs/vite-plugin-svelte-inspector` is a Vite plugin that adds a Svelte inspector in the browser. It shows the file location where the element under cursor is defined and you can click to quickly open your code editor at this location, or right-click to show a context menu with additional options.
 
 Note that `@sveltejs/vite-plugin-svelte` needs to be installed as a peer dependency as the inspector brings in Svelte components to be compiled.
 
