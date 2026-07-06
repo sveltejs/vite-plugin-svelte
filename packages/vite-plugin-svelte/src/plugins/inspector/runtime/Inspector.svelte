@@ -368,7 +368,6 @@
 	}
 	:global(#svelte-inspector-host) {
 		direction: ltr;
-		font-family: system-ui;
 	}
 
 	#svelte-inspector-overlay {
