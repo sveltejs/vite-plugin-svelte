@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.1.4
+### Patch Changes
+
+
+- fix: enforce ltr styles for inspector ([#1324](https://github.com/sveltejs/vite-plugin-svelte/pull/1324))
+
 ## 7.1.3
 ### Patch Changes
 
