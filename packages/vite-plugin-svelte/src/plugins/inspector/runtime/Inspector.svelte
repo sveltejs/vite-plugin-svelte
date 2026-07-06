@@ -366,6 +366,9 @@
 	:global(.svelte-inspector-active-target) {
 		outline: 2px dashed #ff3e00 !important;
 	}
+	:global(#svelte-inspector-host) {
+		direction: ltr;
+	}
 
 	#svelte-inspector-overlay {
 		position: fixed;
