@@ -2,92 +2,21 @@
 title: Configuration
 ---
 
-`vite-plugin-svelte` accepts inline options that can be used to change its behaviour. An object can be passed to the first argument of the `svelte` plugin:
+`vite-plugin-svelte` accepts inline options that can be used to change its behaviour. An object can be passed to the first argument of the `svelte` plugin. All properties are optional:
 
 ```js
-// vite.config.js
+/// file: vite.config.js
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+
 export default defineConfig({
-  plugins: [
-    svelte({
-      /* plugin options */
-    })
-  ]
+	plugins: [
+		svelte({
+			/* plugin options */
+		})
+	]
 });
 ```
-
-Explore the various options below!
-
-## Config file
-
-### Config file resolving
-
-Besides inline options in Vite config, `vite-plugin-svelte` will also automatically resolve options from a Svelte config file if one exists. The default search paths are:
-
-- `svelte.config.js`
-- `svelte.config.mjs`
-- `svelte.config.ts`
-- `svelte.config.mts`
-
-To set a specific config file, use the `configFile` inline option. The path can be absolute or relative to the [Vite root](https://vitejs.dev/config/#root). For example:
-
-```js
-// vite.config.js
-export default defineConfig({
-  plugins: [
-    svelte({
-      configFile: 'my-svelte.config.js'
-    })
-  ]
-});
-```
-
-A basic Svelte config looks like this:
-
-```js
-// svelte.config.js
-export default {
-  // Svelte options
-  extensions: ['.svelte'],
-  compilerOptions: {},
-  preprocess: [],
-  onwarn: (warning, handler) => handler(warning),
-  // plugin options
-  vitePlugin: {
-    exclude: [],
-    // experimental options
-    experimental: {}
-  }
-};
-```
-
-### Config file extension
-
-The Svelte config should always be written in ESM syntax. Depending on Node's mode, make sure you're using the correct extension.
-
-- If `type: "module"` is defined in `package.json`, prefer `.js` or `.ts`
-- If `type: "module"` is not defined, use `.mjs` or `.mts`
-
-> Try to stick with the `.js` extension whenever possible.
-
-### Disable automatic handling of Svelte config
-
-Use `configFile: false` to prevent `vite-plugin-svelte` from reading the config file or restarting the Vite dev server when it changes.
-
-```js
-// vite.config.js
-export default defineConfig({
-  plugins: [
-    svelte({
-      configFile: false
-      // your Svelte config here
-    })
-  ]
-});
-```
-
-> Warning:
-> This option primarily exists for frameworks like SvelteKit that do their own parsing of Svelte config and control the Vite dev server.
-> You are responsible to provide the complete inline config when used.
 
 ## Svelte options
 
@@ -108,15 +37,15 @@ These options are specific to the Svelte compiler and are generally shared acros
   **Example:**
 
   ```js
-  // vite.config.js
+  /// file: vite.config.js
   import sveltePreprocess from 'svelte-preprocess';
 
   export default defineConfig({
-    plugins: [
-      svelte({
-        preprocess: [sveltePreprocess({ typescript: true })]
-      })
-    ]
+  	plugins: [
+  		svelte({
+  			preprocess: [sveltePreprocess({ typescript: true })]
+  		})
+  	]
   });
   ```
 
@@ -137,17 +66,17 @@ These options are specific to the Svelte compiler and are generally shared acros
 
   ```js
   export default defineConfig({
-    plugins: [
-      svelte({
-        onwarn(warning, defaultHandler) {
-          // don't warn on <marquee> elements, cos they're cool
-          if (warning.code === 'a11y-distracting-elements') return;
+  	plugins: [
+  		svelte({
+  			onwarn(warning, defaultHandler) {
+  				// don't warn on <marquee> elements, cos they're cool
+  				if (warning.code === 'a11y-distracting-elements') return;
 
-          // handle all other warnings normally
-          defaultHandler(warning);
-        }
-      })
-    ]
+  				// handle all other warnings normally
+  				defaultHandler(warning);
+  			}
+  		})
+  	]
   });
   ```
 
@@ -232,9 +161,9 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
   type CompileOptions = any;
   // ---cut---
   type DynamicCompileOptions = (data: {
-    filename: string; // The file to be compiled
-    code: string; // The preprocessed Svelte code
-    compileOptions: Partial<CompileOptions>; // The current compiler options
+  	filename: string; // The file to be compiled
+  	code: string; // The preprocessed Svelte code
+  	compileOptions: Partial<CompileOptions>; // The current compiler options
   }) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
   ```
 
@@ -243,18 +172,18 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
   **Example:**
 
   ```js
-  // vite.config.js
+  /// file: vite.config.js
   export default defineConfig({
-    plugins: [
-      svelte({
-        dynamicCompileOptions({ filename, compileOptions }) {
-          // Dynamically set runes mode per Svelte file
-          if (forceRunesMode(filename) && !compileOptions.runes) {
-            return { runes: true };
-          }
-        }
-      })
-    ]
+  	plugins: [
+  		svelte({
+  			dynamicCompileOptions({ filename, compileOptions }) {
+  				// Dynamically set runes mode per Svelte file
+  				if (forceRunesMode(filename) && !compileOptions.runes) {
+  					return { runes: true };
+  				}
+  			}
+  		})
+  	]
   });
   ```
 
@@ -265,29 +194,16 @@ These options are considered experimental and breaking changes to them can occur
 Either in Vite config:
 
 ```js
-// vite.config.js
+/// file: vite.config.js
 export default defineConfig({
-  plugins: [
-    svelte({
-      experimental: {
-        // experimental options
-      }
-    })
-  ]
+	plugins: [
+		svelte({
+			experimental: {
+				// experimental options
+			}
+		})
+	]
 });
-```
-
-or in Svelte config:
-
-```js
-// svelte.config.js
-export default {
-  vitePlugin: {
-    experimental: {
-      // experimental options
-    }
-  }
-};
 ```
 
 ### sendWarningsToBrowser
@@ -301,8 +217,8 @@ export default {
 
   ```js
   import.meta.hot.on('svelte:warnings', (message) => {
-    // handle warnings message, eg log to console
-    console.warn(`Warnings for ${message.filename}`, message.warnings);
+  	// handle warnings message, eg log to console
+  	console.warn(`Warnings for ${message.filename}`, message.warnings);
   });
   ```
 
@@ -310,13 +226,13 @@ export default {
 
   ```ts
   type SvelteWarningsMessage = {
-    id: string;
-    filename: string;
-    normalizedFilename: string;
-    timestamp: number;
-    warnings: Warning[]; // allWarnings filtered by warnings where onwarn did not call the default handler
-    allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite-plugin-svelte warnings
-    rawWarnings: Warning[]; // raw compiler output
+  	id: string;
+  	filename: string;
+  	normalizedFilename: string;
+  	timestamp: number;
+  	warnings: Warning[]; // allWarnings filtered by warnings where onwarn did not call the default handler
+  	allWarnings: Warning[]; // includes warnings filtered by onwarn and our extra vite-plugin-svelte warnings
+  	rawWarnings: Warning[]; // raw compiler output
   };
   ```
 
