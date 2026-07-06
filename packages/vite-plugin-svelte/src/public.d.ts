@@ -167,7 +167,7 @@ interface CompileModuleOptions {
 	infixes?: string[];
 	/**
 	 * module extensions
-	 * @default ['.ts','.js','.mjs']
+	 * @default ['.ts','.js']
 	 */
 	extensions?: string[];
 	include?: Arrayable<string | RegExp>;
