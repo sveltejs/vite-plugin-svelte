@@ -185,11 +185,6 @@
 		return chain;
 	}
 
-	function short_path(file) {
-		const parts = file.split('/');
-		return parts.slice(-2).join('/');
-	}
-
 	// Route a click by mode — the stock combo opens the innermost element
 	// (original behaviour), the chain combo opens the wrapper dropdown.
 	function on_contextmenu(e) {
@@ -456,7 +451,7 @@
 	</div>
 {/if}
 {#if enabled && menu}
-	<div
+	<ul
 		id="svelte-inspector-menu"
 		style:left="{Math.min(menu.x + 4, document.documentElement.clientWidth - 330)}px"
 		style:top="{Math.min(
@@ -465,13 +460,14 @@
 		)}px"
 	>
 		{#each menu.chain as item, i (item.file + item.line + i)}
-			<button type="button" class="svelte-inspector-menu-row" onclick={(e) => open_loc(item, e)}>
-				<span class="svelte-inspector-menu-tag">&lt;{item.tag}&gt;</span>
-				<span class="svelte-inspector-menu-file">{short_path(item.file)}</span>
-				<span class="svelte-inspector-menu-line">:{item.line}</span>
-			</button>
+			<li>
+				<button type="button" class="svelte-inspector-menu-row" onclick={(e) => open_loc(item, e)}>
+					<span class="svelte-inspector-menu-tag">&lt;{item.tag}&gt;</span>
+					<span class="svelte-inspector-menu-file">{item.file}:{item.line}</span>
+				</button>
+			</li>
 		{/each}
-	</div>
+	</ul>
 {/if}
 
 <style>
@@ -531,56 +527,52 @@
 		position: fixed;
 		z-index: 1000000;
 		min-width: 240px;
-		max-width: 320px;
+		max-width: 480px;
+		list-style: none;
 		padding: 4px;
 		background-color: #161616;
-		border: 1px solid rgba(255, 62, 0, 0.5);
-		border-radius: 8px;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+		border-radius: 2px;
+		filter: drop-shadow(2px 2px 4px rgb(0 0 0 / 0.1));
 		font-family: ui-monospace, 'SF Mono', Menlo, monospace;
 		font-size: 12px;
 		line-height: 1.4;
-	}
-	#svelte-inspector-menu-head {
-		padding: 4px 8px 6px;
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 10px;
-		letter-spacing: 0.04em;
-	}
-	.svelte-inspector-menu-row {
-		all: unset;
-		box-sizing: border-box;
-		display: flex;
-		align-items: baseline;
-		gap: 8px;
-		width: 100%;
-		padding: 5px 8px;
-		border-radius: 5px;
-		color: #fff;
-		cursor: pointer;
-	}
-	.svelte-inspector-menu-row:hover {
-		background-color: rgba(255, 62, 0, 0.18);
-	}
-	.svelte-inspector-menu-tag {
-		flex-shrink: 0;
-		max-width: 11rem;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		font-weight: 600;
-	}
-	.svelte-inspector-menu-file {
-		flex: 1;
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		color: #aaa;
-	}
-	.svelte-inspector-menu-line {
-		flex-shrink: 0;
-		color: #ff8a5c;
+		display: grid;
+		grid-template-columns: max-content 1fr;
+
+		li {
+			display: contents;
+		}
+
+		.svelte-inspector-menu-row {
+			all: unset;
+			display: grid;
+			grid-column: 1 / 3;
+			grid-template-columns: subgrid;
+			box-sizing: border-box;
+			align-items: baseline;
+			gap: 8px;
+			width: 100%;
+			padding: 4px 8px;
+			color: #fff;
+			cursor: pointer;
+
+			&:hover {
+				background-color: rgb(255 255 255 / 0.1);
+			}
+
+			.svelte-inspector-menu-tag {
+				white-space: nowrap;
+				font-weight: 600;
+			}
+
+			.svelte-inspector-menu-file {
+				flex: 1;
+				min-width: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				color: #ddd;
+			}
+		}
 	}
 </style>
