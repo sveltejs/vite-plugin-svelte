@@ -167,7 +167,7 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		infixes?: string[];
 		/**
 		 * module extensions
-		 * @default ['.ts','.js','.mjs']
+		 * @default ['.ts','.js']
 		 */
 		extensions?: string[];
 		include?: Arrayable<string | RegExp>;
