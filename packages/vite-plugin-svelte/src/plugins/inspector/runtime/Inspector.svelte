@@ -464,7 +464,6 @@
 			document.documentElement.clientHeight - 12 - menu.chain.length * 28
 		)}px"
 	>
-		<div id="svelte-inspector-menu-head">wrapper chain · {menu.chain.length}</div>
 		{#each menu.chain as item, i (item.file + item.line + i)}
 			<button type="button" class="svelte-inspector-menu-row" onclick={(e) => open_loc(item, e)}>
 				<span class="svelte-inspector-menu-tag">&lt;{item.tag}&gt;</span>
