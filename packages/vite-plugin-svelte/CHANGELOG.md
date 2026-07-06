@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.1.3
+### Patch Changes
+
+
+- fix: ensure the inspector is injected into the client correctly for Vite+ projects ([#1355](https://github.com/sveltejs/vite-plugin-svelte/pull/1355))
+
 ## 7.1.2
 ### Patch Changes
 
