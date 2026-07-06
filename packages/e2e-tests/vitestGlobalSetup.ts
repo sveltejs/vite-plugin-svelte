@@ -1,9 +1,9 @@
 import os from 'node:os';
-import fs from 'fs-extra';
+import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { chromium } from 'playwright-core';
-import { execa } from 'execa';
+import { x } from 'tinyexec';
 import { fileURLToPath } from 'node:url';
 
 const tempTestDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'temp');
@@ -18,8 +18,11 @@ const DIR = path.join(os.tmpdir(), 'vitest_playwright_global_setup');
 const syncNodeModules = async () => {
 	// tests use symbolic linked node_modules directories. make sure the workspace is up for it
 	console.log('syncing node_modules');
-	await execa('pnpm', ['install', '--frozen-lockfile', '--prefer-offline', '--silent'], {
-		stdio: 'inherit'
+	await x('pnpm', ['install', '--frozen-lockfile', '--prefer-offline', '--silent'], {
+		nodeOptions: {
+			stdio: 'inherit'
+		},
+		throwOnError: true
 	});
 	console.log('syncing node_modules done');
 };
@@ -51,19 +54,22 @@ export async function setup() {
 	const browserServer = await startPlaywrightServer();
 	console.log('Playwright server running');
 	console.log('storing wsEndpoint in ' + DIR);
-	await fs.mkdirp(DIR);
+	await fs.mkdir(DIR, { recursive: true });
 	await fs.writeFile(path.join(DIR, 'wsEndpoint'), browserServer.wsEndpoint());
 	console.log('clearing previous test artifacts');
 	if (!preserveArtifacts) {
-		await fs.remove(tempTestDir);
+		await fs.rm(tempTestDir, { recursive: true, force: true });
 	} else {
-		await fs.remove(path.join(tempTestDir, isBuildTest ? 'build' : 'serve'));
+		await fs.rm(path.join(tempTestDir, isBuildTest ? 'build' : 'serve'), {
+			recursive: true,
+			force: true
+		});
 	}
 	console.log('vitest global setup done');
 	return async () => {
 		if (!preserveArtifacts) {
 			try {
-				await fs.remove(tempTestDir);
+				await fs.rm(tempTestDir, { recursive: true, force: true });
 			} catch (e) {
 				console.error('failed to clear ' + tempTestDir, e);
 			}

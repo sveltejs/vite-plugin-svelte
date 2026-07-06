@@ -1,6 +1,7 @@
 import {
 	browserLogs,
 	editFile,
+	getColor,
 	getText,
 	IS_SVELTE_BASELINE,
 	isBuild,
@@ -11,8 +12,11 @@ import {
 async function expectPageToWork() {
 	browserLogs.forEach((msg) => {
 		expect(msg).not.toMatch('404');
+		expect(msg).not.toMatch('Unknown word <script>');
+		expect(msg).not.toMatch('failed to load virtual css module');
 	});
 	expect(await getText('#hybrid .label')).toBe('dependency-import');
+	expect(await getColor('#hybrid #sticky-dep')).toBe('purple');
 	expect(await getText('#nested #message')).toBe('nested');
 	expect(await getText('#nested #cjs-and-esm')).toBe('esm');
 	expect(await getText('#api-only')).toBe('api loaded: true');

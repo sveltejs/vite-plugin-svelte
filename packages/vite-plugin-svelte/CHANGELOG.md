@@ -1,5 +1,32 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.1.3
+### Patch Changes
+
+
+- fix: ensure the inspector is injected into the client correctly for Vite+ projects ([#1355](https://github.com/sveltejs/vite-plugin-svelte/pull/1355))
+
+## 7.1.2
+### Patch Changes
+
+
+- fix: correctly resolve compiled CSS on the server for dependencies with Svelte files ([#1342](https://github.com/sveltejs/vite-plugin-svelte/pull/1342))
+
+## 7.1.1
+### Patch Changes
+
+
+- fix: pass `typescript.onlyRemoveTypeImports` to `transformWithOxc` in `vitePreprocess` so that value imports are not dropped when they are only referenced in Svelte template markup ([#1326](https://github.com/sveltejs/vite-plugin-svelte/pull/1326))
+
+
+- fix: correctly resolve compiled CSS for optimised Svelte dependencies on the server ([#1336](https://github.com/sveltejs/vite-plugin-svelte/pull/1336))
+
+## 7.1.0
+### Minor Changes
+
+
+- feat: enable optimizer for server environments during dev ([#1328](https://github.com/sveltejs/vite-plugin-svelte/pull/1328))
+
 ## 7.0.0
 ### Major Changes
 

@@ -1,4 +1,5 @@
-import fs from 'fs-extra';
+import * as fs from 'node:fs';
+import * as fsPromises from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { chromium, type Browser, type Page } from 'playwright-core';
@@ -65,7 +66,7 @@ const onConsole = (msg) => {
  * @param testMode
  */
 const getUniqueTestPort = async (testRoot, testName, testMode) => {
-	const testDirs = await fs.readdir(testRoot, { withFileTypes: true });
+	const testDirs = await fsPromises.readdir(testRoot, { withFileTypes: true });
 	const idx = testDirs
 		.filter((f) => f.isDirectory())
 		.map((d) => d.name)
@@ -125,8 +126,10 @@ beforeAll(
 					const segments = file.split(path.sep);
 					return segments.some((segment) => directoriesToIgnore.includes(segment));
 				};
-				await fs.copy(srcDir, tempDir, {
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins -- cp is available in Node 20 and we only use it for test setup anyway
+				await fsPromises.cp(srcDir, tempDir, {
 					dereference: true,
+					recursive: true,
 					filter(file) {
 						return !isIgnored(file);
 					}
@@ -137,7 +140,7 @@ beforeAll(
 				if (fs.existsSync(temp_node_modules)) {
 					console.error('temp node_modules already exist', temp_node_modules);
 				}
-				await fs.symlink(e2e_tests_node_modules, temp_node_modules, 'dir');
+				await fsPromises.symlink(e2e_tests_node_modules, temp_node_modules, 'dir');
 				const stat = fs.lstatSync(temp_node_modules);
 				if (!stat.isSymbolicLink()) {
 					console.error(`failed to symlink ${e2e_tests_node_modules} to ${temp_node_modules}`);
@@ -145,7 +148,7 @@ beforeAll(
 				// ensure there is no leftover vite cache
 				const tempViteCache = path.join(temp_node_modules, '.vite');
 				if (fs.existsSync(tempViteCache)) {
-					await fs.rm(tempViteCache, { force: true, recursive: true });
+					await fsPromises.rm(tempViteCache, { force: true, recursive: true });
 				}
 				const logsDir = path.join(tempDir, 'logs');
 				if (fs.existsSync(logsDir)) {
@@ -162,7 +165,7 @@ beforeAll(
 					);
 					fs.writeFileSync(pkgFile, newContent, 'utf-8');
 				}
-				await fs.mkdir(logsDir);
+				await fsPromises.mkdir(logsDir);
 				const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
 				const defaultServerScript = path.resolve(e2eTestsRoot, 'e2e-server.js');
 				const hasCustomServer = fs.existsSync(customServerScript);
@@ -209,7 +212,7 @@ beforeAll(
 				// unlink node modules to prevent removal of linked modules on cleanup
 				const temp_node_modules = path.join(tempDir, 'node_modules');
 				try {
-					await fs.unlink(temp_node_modules);
+					await fsPromises.unlink(temp_node_modules);
 				} catch (e) {
 					console.error(`failed to unlink ${temp_node_modules}`);
 					if (!err) {
@@ -219,7 +222,7 @@ beforeAll(
 				const logDir = path.join(tempDir, 'logs');
 				const logFile = path.join(logDir, 'browser.log');
 				try {
-					await fs.writeFile(logFile, logs.join('\n'));
+					await fsPromises.writeFile(logFile, logs.join('\n'));
 				} catch (e) {
 					console.error(`failed to write browserlogs in ${logFile}`, e);
 					if (!err) {
