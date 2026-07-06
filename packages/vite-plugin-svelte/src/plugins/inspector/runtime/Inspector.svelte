@@ -422,6 +422,13 @@
 	});
 </script>
 
+<svelte:window
+	onclick={() => {
+		menu = null;
+		active_el = null;
+	}}
+/>
+
 {#if show_toggle}
 	<button
 		id="svelte-inspector-toggle"
