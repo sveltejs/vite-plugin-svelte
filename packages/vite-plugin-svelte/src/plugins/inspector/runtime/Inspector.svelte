@@ -142,6 +142,10 @@
 	}
 
 	function open_editor(e) {
+		if (menu) {
+			return;
+		}
+
 		if (file_loc) {
 			stop(e);
 			fetch(`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
@@ -195,15 +199,12 @@
 
 	// Route a click by mode — the stock combo opens the innermost element
 	// (original behaviour), the chain combo opens the wrapper dropdown.
-	function on_click(e) {
+	function on_contextmenu(e) {
 		if (e.target?.closest?.('#svelte-inspector-menu')) {
 			return; // a menu row was clicked — let its own handler run
 		}
-		if (chain_mode) {
-			open_menu(e);
-		} else {
-			open_editor(e);
-		}
+		e.preventDefault();
+		open_menu(e);
 	}
 
 	function open_menu(e) {
@@ -351,7 +352,8 @@
 		const l = enabled ? body.addEventListener : body.removeEventListener;
 		l('mousemove', mousemove);
 		l('mouseover', mouseover);
-		l('click', on_click, true);
+		l('click', open_editor, true);
+		l('contextmenu', on_contextmenu, true);
 	}
 
 	function enable() {
