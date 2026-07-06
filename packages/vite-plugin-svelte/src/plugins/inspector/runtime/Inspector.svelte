@@ -366,7 +366,7 @@
 	:global(.svelte-inspector-active-target) {
 		outline: 2px dashed #ff3e00 !important;
 	}
-	:global(html[dir='rtl'] #svelte-inspector-host) {
+	:global(#svelte-inspector-host) {
 		direction: ltr;
 		font-family: system-ui;
 	}
