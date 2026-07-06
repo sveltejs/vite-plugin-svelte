@@ -7,7 +7,7 @@
 export default defineConfig({
   plugins: [
     svelte({
-      /* plugin options */
+      // plugin options
     })
   ]
 });
