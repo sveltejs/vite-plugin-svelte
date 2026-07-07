@@ -444,7 +444,7 @@
 		bind:offsetHeight={h}
 	>
 		{#if menu}
-			<button aria-label="close" class="svelte-inspector-button">
+			<button aria-label="close" class="svelte-inspector-button" {@attach (node) => node.focus()}>
 				<span>close</span>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -452,8 +452,6 @@
 					width="1em"
 					height="1em"
 					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
 					stroke-width="2"
 					stroke-linecap="round"
 					stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
@@ -504,6 +502,11 @@
 		direction: ltr;
 	}
 
+	*:not(svg *) {
+		all: unset;
+		box-sizing: border-box;
+	}
+
 	#svelte-inspector-overlay {
 		position: fixed;
 		padding: 4px;
@@ -527,7 +530,6 @@
 	}
 
 	#svelte-inspector-toggle {
-		all: unset;
 		border: 1px solid #ff3e00;
 		border-radius: 8px;
 		position: fixed;
@@ -592,10 +594,16 @@
 	}
 
 	hr {
-		margin: 2px 4px;
+		margin: 2px;
 		background: rgb(255 255 255 / 0.2);
 		border: none;
 		height: 1px;
+		width: 100%;
+		display: block;
+	}
+
+	svg path {
+		stroke: currentColor;
 	}
 
 	.svelte-inspector-button {
@@ -606,7 +614,6 @@
 	}
 
 	.svelte-inspector-menu-row {
-		all: unset;
 		display: grid;
 		grid-column: 1 / 3;
 		grid-template-columns: subgrid;
@@ -616,7 +623,8 @@
 		padding: 4px 8px;
 		cursor: pointer;
 
-		&:hover {
+		&:hover,
+		&:focus-visible {
 			background-color: rgb(255 255 255 / 0.1);
 		}
 	}
