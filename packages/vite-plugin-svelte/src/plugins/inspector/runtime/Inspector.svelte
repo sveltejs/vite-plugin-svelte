@@ -153,6 +153,7 @@
 		let entry = meta;
 		while ((entry = entry.parent)) {
 			if (entry.type !== 'component') continue;
+			if (/(^|\/)(node_modules|\.svelte-kit)\//.test(entry.file)) continue;
 
 			stack.push({
 				file: entry.file,
