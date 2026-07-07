@@ -30,7 +30,8 @@
 	// cursor pos and width for file_loc overlay positioning
 	let x = $state(),
 		y = $state(),
-		w = $state();
+		w = $state(),
+		h = $state();
 
 	let active_el = $state();
 
@@ -436,34 +437,35 @@
 		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
 	></button>
 {/if}
+
 {#if enabled && active_el && file_loc && !menu}
 	{@const loc = active_el.__svelte_meta.loc}
 	<div
 		id="svelte-inspector-overlay"
 		style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
-		style:top="{document.documentElement.clientHeight < y + 50 ? y - 30 : y + 30}px"
+		style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
 		bind:offsetWidth={w}
+		bind:offsetHeight={h}
 	>
-		&lt;{active_el.tagName.toLowerCase()}&gt;&nbsp;{file_loc}
+		<span class="svelte-inspector-tag">&lt;{active_el.tagName.toLowerCase()}&gt;</span>
+		<span class="svelte-inspector-file">{loc.file}:{loc.line + 1}</span>
 	</div>
 	<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
 		{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column}
 	</div>
-{/if}
-{#if enabled && menu}
+{:else if enabled && menu}
 	<ul
 		id="svelte-inspector-menu"
-		style:left="{Math.min(menu.x + 4, document.documentElement.clientWidth - 330)}px"
-		style:top="{Math.min(
-			menu.y + 4,
-			document.documentElement.clientHeight - 12 - menu.chain.length * 28
-		)}px"
+		style:left="{Math.min(menu.x + 3, document.documentElement.clientWidth - w - 10)}px"
+		style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
+		bind:offsetWidth={w}
+		bind:offsetHeight={h}
 	>
 		{#each menu.chain as item, i (item.file + item.line + i)}
 			<li>
 				<button type="button" class="svelte-inspector-menu-row" onclick={(e) => open_loc(item, e)}>
-					<span class="svelte-inspector-menu-tag">&lt;{item.tag}&gt;</span>
-					<span class="svelte-inspector-menu-file">{item.file}:{item.line}</span>
+					<span class="svelte-inspector-tag">&lt;{item.tag}&gt;</span>
+					<span class="svelte-inspector-file">{item.file}:{item.line}</span>
 				</button>
 			</li>
 		{/each}
@@ -481,14 +483,27 @@
 		direction: ltr;
 	}
 
-	#svelte-inspector-overlay {
+	#svelte-inspector-overlay,
+	#svelte-inspector-menu {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		gap: 8px;
 		position: fixed;
-		background-color: rgba(0, 0, 0, 0.8);
-		color: #fff;
-		padding: 2px 4px;
-		border-radius: 5px;
+		padding: 4px;
+		margin: 0;
+		border-radius: 2px;
+		filter: drop-shadow(2px 2px 4px rgb(0 0 0 / 0.1));
+		font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+		font-size: 12px;
+		line-height: 1.4;
 		z-index: 999999;
+		background-color: #161616;
+		color: #fff;
+	}
+
+	#svelte-inspector-overlay {
 		pointer-events: none;
+		padding: 8px 12px;
 	}
 
 	#svelte-inspector-toggle {
@@ -523,21 +538,23 @@
 		background-color: #facece;
 	}
 
+	.svelte-inspector-tag {
+		white-space: nowrap;
+		font-weight: 600;
+	}
+
+	.svelte-inspector-file {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		color: #ddd;
+	}
+
 	#svelte-inspector-menu {
 		position: fixed;
 		z-index: 1000000;
-		min-width: 240px;
 		max-width: 480px;
 		list-style: none;
-		padding: 4px;
-		background-color: #161616;
-		border-radius: 2px;
-		filter: drop-shadow(2px 2px 4px rgb(0 0 0 / 0.1));
-		font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-		font-size: 12px;
-		line-height: 1.4;
-		display: grid;
-		grid-template-columns: max-content 1fr;
 
 		li {
 			display: contents;
@@ -550,7 +567,6 @@
 			grid-template-columns: subgrid;
 			box-sizing: border-box;
 			align-items: baseline;
-			gap: 8px;
 			width: 100%;
 			padding: 4px 8px;
 			color: #fff;
@@ -558,20 +574,6 @@
 
 			&:hover {
 				background-color: rgb(255 255 255 / 0.1);
-			}
-
-			.svelte-inspector-menu-tag {
-				white-space: nowrap;
-				font-weight: 600;
-			}
-
-			.svelte-inspector-menu-file {
-				flex: 1;
-				min-width: 0;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-				color: #ddd;
 			}
 		}
 	}
