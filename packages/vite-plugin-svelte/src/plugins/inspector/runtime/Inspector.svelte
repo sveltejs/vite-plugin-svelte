@@ -174,10 +174,6 @@
 		menu = { x: e.clientX, y: e.clientY, stack: get_stack(active_el) };
 	}
 
-	function close_menu() {
-		menu = null;
-	}
-
 	function open_loc(item, e) {
 		stop(e);
 		send(item);
@@ -190,7 +186,7 @@
 			)}`
 		);
 		has_opened = true;
-		close_menu();
+		menu = null;
 		if (options.holdMode && is_holding()) {
 			disable();
 		}
