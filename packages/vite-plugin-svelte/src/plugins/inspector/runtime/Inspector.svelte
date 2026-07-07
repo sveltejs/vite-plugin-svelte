@@ -396,7 +396,14 @@
 	});
 </script>
 
-<svelte:window onclick={disable} />
+<svelte:window
+	onclick={disable}
+	onkeydown={(e) => {
+		if (e.key === 'Escape') {
+			disable();
+		}
+	}}
+/>
 
 {#if show_toggle}
 	<button
@@ -486,7 +493,7 @@
 
 	#svelte-inspector-overlay {
 		position: fixed;
-		padding: 4px;
+		padding: 2px;
 		margin: 0;
 		border-radius: 2px;
 		filter: drop-shadow(2px 2px 4px rgb(0 0 0 / 0.1));
@@ -494,8 +501,8 @@
 		font-size: 12px;
 		line-height: 1.4;
 		z-index: 999999;
-		background-color: #161616;
-		color: #fff;
+		background-color: #fff;
+		color: #222;
 		cursor: auto;
 	}
 
@@ -503,7 +510,7 @@
 		display: grid;
 		grid-template-columns: max-content 1fr;
 		column-gap: 8px;
-		row-gap: 4px;
+		/* row-gap: 4px; */
 	}
 
 	#svelte-inspector-toggle {
@@ -546,7 +553,7 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		color: #ddd;
+		color: #444;
 	}
 
 	ul {
@@ -568,15 +575,21 @@
 		pointer-events: all;
 		font: inherit;
 		align-items: center;
+		cursor: pointer;
 
 		&:focus-visible {
 			outline: 2px solid #ff3e00;
+		}
+
+		&:hover,
+		&:focus-visible {
+			background-color: rgb(0 0 0 / 0.05);
 		}
 	}
 
 	hr {
 		margin: 2px;
-		background: rgb(255 255 255 / 0.2);
+		background: rgb(0 0 0 / 0.05);
 		border: none;
 		height: 1px;
 		width: 100%;
@@ -606,7 +619,7 @@
 
 		&:hover,
 		&:focus-visible {
-			background-color: rgb(255 255 255 / 0.1);
+			background-color: rgb(0 0 0 / 0.05);
 		}
 	}
 </style>
