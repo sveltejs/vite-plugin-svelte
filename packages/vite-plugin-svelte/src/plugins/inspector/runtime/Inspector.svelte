@@ -168,7 +168,7 @@
 		if (!meta) return [];
 		const chain = [];
 		const add = (file, line, column, tag) => {
-			if (!file || file.includes('node_modules/')) return;
+			if (!file || file.includes('node_modules/') || file.includes('.svelte-kit')) return;
 			const last = chain[chain.length - 1];
 			if (last && last.file === file && last.line === line) return;
 			chain.push({ file, line, column, tag });
