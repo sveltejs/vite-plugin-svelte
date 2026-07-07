@@ -136,9 +136,7 @@
 	}
 
 	function open_editor(e) {
-		if (menu) {
-			return;
-		}
+		if (menu) return;
 
 		if (file_loc) {
 			stop(e);
@@ -189,7 +187,7 @@
 	// Route a click by mode — the stock combo opens the innermost element
 	// (original behaviour), the chain combo opens the wrapper dropdown.
 	function on_contextmenu(e) {
-		if (e.target?.closest?.('#svelte-inspector-menu')) {
+		if (e.target?.closest?.('#svelte-inspector-overlay')) {
 			return; // a menu row was clicked — let its own handler run
 		}
 		e.preventDefault();
