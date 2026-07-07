@@ -123,7 +123,7 @@
 		}
 		if (el) {
 			const { file, line, column } = el.__svelte_meta.loc;
-			file_loc = `${file}:${line + 1}:${column + 1}`;
+			file_loc = `${file}:${line}:${column + 1}`;
 		} else {
 			file_loc = null;
 		}
@@ -165,22 +165,28 @@
 	function build_chain(target) {
 		const el = find_selectable_parent(target, true);
 		const meta = el?.__svelte_meta;
-		if (!meta) return [];
-		const chain = [];
-		const add = (file, line, column, tag) => {
-			if (!file || file.includes('node_modules/') || file.includes('.svelte-kit')) return;
-			const last = chain[chain.length - 1];
-			if (last && last.file === file && last.line === line) return;
-			chain.push({ file, line, column, tag });
-		};
-		if (meta.loc) {
-			add(meta.loc.file, meta.loc.line + 1, meta.loc.column + 1, el.tagName.toLowerCase());
-		}
-		for (let entry = meta.parent; entry; entry = entry.parent) {
-			if (entry.type === 'component') {
-				add(entry.file, entry.line, entry.column + 1, entry.componentTag);
+
+		const chain = [
+			{
+				file: meta.loc.file,
+				line: meta.loc.line,
+				column: meta.loc.column + 1,
+				tag: el.tagName.toLowerCase()
 			}
+		];
+
+		let entry = meta;
+		while ((entry = entry.parent)) {
+			if (entry.type !== 'component') continue;
+
+			chain.push({
+				file: entry.file,
+				line: entry.line,
+				column: entry.column + 1,
+				tag: entry.componentTag
+			});
 		}
+
 		return chain;
 	}
 
@@ -480,7 +486,7 @@
 			<div class="svelte-inspector-grid">
 				<div class="svelte-inspector-menu-row">
 					<span class="svelte-inspector-tag">&lt;{active_el.tagName.toLowerCase()}&gt;</span>
-					<span class="svelte-inspector-file">{loc.file}:{loc.line + 1}</span>
+					<span class="svelte-inspector-file">{loc.file}:{loc.line}</span>
 				</div>
 			</div>
 
