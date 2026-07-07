@@ -165,14 +165,8 @@
 	}
 
 	function on_contextmenu(e) {
-		if (e.target?.closest?.('#svelte-inspector-overlay')) {
-			return; // a menu row was clicked — let its own handler run
-		}
 		e.preventDefault();
-		open_menu(e);
-	}
 
-	function open_menu(e) {
 		active_el ??= find_selectable_parent(e.target);
 		if (!active_el) return;
 
