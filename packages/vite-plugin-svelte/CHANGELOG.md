@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.2.0
+### Minor Changes
+
+
+- feat(inspector): add a context menu with current component stack ([#1370](https://github.com/sveltejs/vite-plugin-svelte/pull/1370))
+
 ## 7.1.4
 ### Patch Changes
 
