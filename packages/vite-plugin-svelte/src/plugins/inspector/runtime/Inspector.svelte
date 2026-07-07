@@ -132,7 +132,7 @@
 
 		if (active_el) {
 			stop(e);
-			open_in_editor(active_el.__svelte_meta.loc);
+			send(active_el.__svelte_meta.loc);
 		}
 	}
 
@@ -185,10 +185,10 @@
 
 	function open_loc(item, e) {
 		stop(e);
-		open_in_editor(item);
+		send(item);
 	}
 
-	function open_in_editor(loc) {
+	function send(loc) {
 		fetch(
 			`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(
 				`${loc.file}:${loc.line}:${loc.column + 1}`
@@ -260,9 +260,7 @@
 					stop(e);
 				}
 			} else if (is_open(e)) {
-				if (!menu) {
-					open_editor(e);
-				}
+				open_editor(e);
 			} else if (is_holding() || is_escape(e)) {
 				// is_holding() checks for unhandled additional key pressed
 				// while holding the toggle keys, which is possibly another
