@@ -438,38 +438,44 @@
 	></button>
 {/if}
 
-{#if enabled && active_el && file_loc && !menu}
-	{@const loc = active_el.__svelte_meta.loc}
-	<div
-		id="svelte-inspector-overlay"
-		style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
-		style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
-		bind:offsetWidth={w}
-		bind:offsetHeight={h}
-	>
-		<span class="svelte-inspector-tag">&lt;{active_el.tagName.toLowerCase()}&gt;</span>
-		<span class="svelte-inspector-file">{loc.file}:{loc.line + 1}</span>
-	</div>
-	<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
-		{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column}
-	</div>
-{:else if enabled && menu}
-	<ul
-		id="svelte-inspector-menu"
-		style:left="{Math.min(menu.x + 3, document.documentElement.clientWidth - w - 10)}px"
-		style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
-		bind:offsetWidth={w}
-		bind:offsetHeight={h}
-	>
-		{#each menu.chain as item, i (item.file + item.line + i)}
-			<li>
-				<button type="button" class="svelte-inspector-menu-row" onclick={(e) => open_loc(item, e)}>
-					<span class="svelte-inspector-tag">&lt;{item.tag}&gt;</span>
-					<span class="svelte-inspector-file">{item.file}:{item.line}</span>
-				</button>
-			</li>
-		{/each}
-	</ul>
+{#if enabled}
+	{#if menu}
+		<ul
+			id="svelte-inspector-menu"
+			style:left="{Math.min(menu.x + 3, document.documentElement.clientWidth - w - 10)}px"
+			style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
+			bind:offsetWidth={w}
+			bind:offsetHeight={h}
+		>
+			{#each menu.chain as item, i (item.file + item.line + i)}
+				<li>
+					<button
+						type="button"
+						class="svelte-inspector-menu-row"
+						onclick={(e) => open_loc(item, e)}
+					>
+						<span class="svelte-inspector-tag">&lt;{item.tag}&gt;</span>
+						<span class="svelte-inspector-file">{item.file}:{item.line}</span>
+					</button>
+				</li>
+			{/each}
+		</ul>
+	{:else if active_el && file_loc}
+		{@const loc = active_el.__svelte_meta.loc}
+		<div
+			id="svelte-inspector-overlay"
+			style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
+			style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
+			bind:offsetWidth={w}
+			bind:offsetHeight={h}
+		>
+			<span class="svelte-inspector-tag">&lt;{active_el.tagName.toLowerCase()}&gt;</span>
+			<span class="svelte-inspector-file">{loc.file}:{loc.line + 1}</span>
+		</div>
+		<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
+			{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column}
+		</div>
+	{/if}
 {/if}
 
 <style>
