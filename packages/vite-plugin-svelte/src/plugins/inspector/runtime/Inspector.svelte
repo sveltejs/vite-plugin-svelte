@@ -438,44 +438,42 @@
 	></button>
 {/if}
 
-{#if enabled}
-	{#if menu}
-		<ul
-			id="svelte-inspector-menu"
-			style:left="{Math.min(menu.x + 3, document.documentElement.clientWidth - w - 10)}px"
-			style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
-			bind:offsetWidth={w}
-			bind:offsetHeight={h}
-		>
-			{#each menu.chain as item, i (item.file + item.line + i)}
-				<li>
-					<button
-						type="button"
-						class="svelte-inspector-menu-row"
-						onclick={(e) => open_loc(item, e)}
-					>
-						<span class="svelte-inspector-tag">&lt;{item.tag}&gt;</span>
-						<span class="svelte-inspector-file">{item.file}:{item.line}</span>
-					</button>
-				</li>
-			{/each}
-		</ul>
-	{:else if active_el && file_loc}
-		{@const loc = active_el.__svelte_meta.loc}
-		<div
-			id="svelte-inspector-overlay"
-			style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
-			style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
-			bind:offsetWidth={w}
-			bind:offsetHeight={h}
-		>
-			<span class="svelte-inspector-tag">&lt;{active_el.tagName.toLowerCase()}&gt;</span>
-			<span class="svelte-inspector-file">{loc.file}:{loc.line + 1}</span>
-		</div>
-		<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
-			{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column}
-		</div>
-	{/if}
+{#if enabled && (menu || (active_el && file_loc))}
+	<div
+		id="svelte-inspector-overlay"
+		style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
+		style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
+		bind:offsetWidth={w}
+		bind:offsetHeight={h}
+	>
+		{#if menu}
+			<ul>
+				{#each menu.chain as item, i (item.file + item.line + i)}
+					<li>
+						<button
+							type="button"
+							class="svelte-inspector-menu-row"
+							onclick={(e) => open_loc(item, e)}
+						>
+							<span class="svelte-inspector-tag">&lt;{item.tag}&gt;</span>
+							<span class="svelte-inspector-file">{item.file}:{item.line}</span>
+						</button>
+					</li>
+				{/each}
+			</ul>
+		{:else}
+			{@const loc = active_el.__svelte_meta.loc}
+
+			<div class="svelte-inspector-menu-row">
+				<span class="svelte-inspector-tag">&lt;{active_el.tagName.toLowerCase()}&gt;</span>
+				<span class="svelte-inspector-file">{loc.file}:{loc.line + 1}</span>
+			</div>
+
+			<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
+				{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column}
+			</div>
+		{/if}
+	</div>
 {/if}
 
 <style>
@@ -489,11 +487,11 @@
 		direction: ltr;
 	}
 
-	#svelte-inspector-overlay,
-	#svelte-inspector-menu {
+	#svelte-inspector-overlay {
 		display: grid;
 		grid-template-columns: max-content 1fr;
-		gap: 8px;
+		column-gap: 8px;
+		row-gap: 4px;
 		position: fixed;
 		padding: 4px;
 		margin: 0;
@@ -505,11 +503,7 @@
 		z-index: 999999;
 		background-color: #161616;
 		color: #fff;
-	}
-
-	#svelte-inspector-overlay {
 		pointer-events: none;
-		padding: 8px 12px;
 	}
 
 	#svelte-inspector-toggle {
@@ -556,31 +550,33 @@
 		color: #ddd;
 	}
 
-	#svelte-inspector-menu {
-		position: fixed;
-		z-index: 1000000;
+	ul {
 		max-width: 480px;
 		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: contents;
 
 		li {
 			display: contents;
 		}
+	}
 
-		.svelte-inspector-menu-row {
-			all: unset;
-			display: grid;
-			grid-column: 1 / 3;
-			grid-template-columns: subgrid;
-			box-sizing: border-box;
-			align-items: baseline;
-			width: 100%;
-			padding: 4px 8px;
-			color: #fff;
-			cursor: pointer;
+	.svelte-inspector-menu-row {
+		all: unset;
+		display: grid;
+		grid-column: 1 / 3;
+		grid-template-columns: subgrid;
+		box-sizing: border-box;
+		align-items: baseline;
+		width: 100%;
+		padding: 4px 8px;
+		color: #fff;
+		cursor: pointer;
+		pointer-events: all;
 
-			&:hover {
-				background-color: rgb(255 255 255 / 0.1);
-			}
+		&:hover {
+			background-color: rgb(255 255 255 / 0.1);
 		}
 	}
 </style>
