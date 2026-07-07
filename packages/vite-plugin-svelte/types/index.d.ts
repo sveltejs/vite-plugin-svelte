@@ -229,6 +229,13 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		openKey?: string;
 
 		/**
+		 * define key to open the context menu for the currently selected dom node
+		 *
+		 * @default ' '
+		 */
+		openMenuKey?: string;
+
+		/**
 		 * define keys to close the inspector
 		 * @default ['Backspace', 'Escape']
 		 */
