@@ -492,6 +492,7 @@
 		background-color: #fff;
 		color: #222;
 		cursor: auto;
+		user-select: none;
 	}
 
 	.svelte-inspector-grid {
