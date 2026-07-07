@@ -591,6 +591,10 @@
 		pointer-events: all;
 		font: inherit;
 		align-items: center;
+
+		&:focus-visible {
+			outline: 2px solid #ff3e00;
+		}
 	}
 
 	hr {
