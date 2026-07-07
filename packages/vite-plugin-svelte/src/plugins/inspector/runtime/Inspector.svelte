@@ -174,11 +174,6 @@
 		menu = { x: e.clientX, y: e.clientY, stack: get_stack(active_el) };
 	}
 
-	function open_loc(item, e) {
-		stop(e);
-		send(item);
-	}
-
 	function send(loc) {
 		fetch(
 			`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(
@@ -436,11 +431,7 @@
 			<ul class="svelte-inspector-grid">
 				{#each menu.stack as item, i (item.file + item.line + i)}
 					<li>
-						<button
-							type="button"
-							class="svelte-inspector-menu-row"
-							onclick={(e) => open_loc(item, e)}
-						>
+						<button type="button" class="svelte-inspector-menu-row" onclick={() => send(item)}>
 							<span class="svelte-inspector-tag">&lt;{item.tag}&gt;</span>
 							<span class="svelte-inspector-file">{item.file}:{item.line}</span>
 						</button>
