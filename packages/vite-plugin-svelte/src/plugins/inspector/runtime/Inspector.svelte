@@ -173,6 +173,7 @@
 	}
 
 	function open_menu(e) {
+		active_el ??= find_selectable_parent(e.target);
 		if (!active_el) return;
 
 		stop(e);
