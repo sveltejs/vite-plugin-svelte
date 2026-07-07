@@ -84,6 +84,13 @@ SVELTE_INSPECTOR_OPTIONS=true
 
   Define key to open the editor for the currently selected dom node.
 
+### openMenuKey
+
+- **Type:** `string`
+- **Default:** `' '`
+
+  Define key to open the context menu for the currently selected dom node.
+
 ### escapeKeys
 
 - **Type:** `string[]`

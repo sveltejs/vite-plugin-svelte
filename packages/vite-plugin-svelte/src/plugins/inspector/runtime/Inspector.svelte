@@ -9,6 +9,7 @@
 	const escape_keys = options.escapeKeys?.map((k) => k.toLowerCase());
 	const nav_keys = Object.values(options.navKeys).map((k) => k?.toLowerCase());
 	const open_key = options.openKey?.toLowerCase();
+	const open_menu_key = options.openMenuKey?.toLowerCase();
 
 	let enabled = $state(false);
 	let has_opened = $state(false);
@@ -219,6 +220,10 @@
 		return open_key && is_active(open_key, e);
 	}
 
+	function is_open_menu(e) {
+		return open_menu_key && is_active(open_menu_key, e);
+	}
+
 	function is_holding() {
 		return hold_start_ts && Date.now() - hold_start_ts > 250;
 	}
@@ -247,6 +252,8 @@
 				}
 			} else if (is_open(e)) {
 				open_editor(e);
+			} else if (is_open_menu(e)) {
+				on_contextmenu(e);
 			} else if (is_holding() || is_escape(e)) {
 				// is_holding() checks for unhandled additional key pressed
 				// while holding the toggle keys, which is possibly another
