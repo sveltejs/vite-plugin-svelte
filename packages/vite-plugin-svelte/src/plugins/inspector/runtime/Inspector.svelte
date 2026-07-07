@@ -25,9 +25,7 @@
 			.trim()
 	)}`;
 
-	// location of code in file
-	let file_loc = $state();
-	// cursor pos and width for file_loc overlay positioning
+	// overlay positioning
 	let x = $state(),
 		y = $state(),
 		w = $state(),
@@ -120,12 +118,7 @@
 				el.classList.add('svelte-inspector-active-target');
 			}
 		}
-		if (el) {
-			const { file, line, column } = el.__svelte_meta.loc;
-			file_loc = `${file}:${line}:${column + 1}`;
-		} else {
-			file_loc = null;
-		}
+
 		active_el = el;
 		if (set_bubble_pos) {
 			const pos = el.getBoundingClientRect();
@@ -137,13 +130,9 @@
 	function open_editor(e) {
 		if (menu) return;
 
-		if (file_loc) {
+		if (active_el) {
 			stop(e);
-			fetch(`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
-			has_opened = true;
-			if (options.holdMode && is_holding()) {
-				disable();
-			}
+			open_in_editor(active_el.__svelte_meta.loc);
 		}
 	}
 
@@ -155,7 +144,7 @@
 			{
 				file: meta.loc.file,
 				line: meta.loc.line,
-				column: meta.loc.column + 1,
+				column: meta.loc.column,
 				tag: el.tagName.toLowerCase()
 			}
 		];
@@ -167,7 +156,7 @@
 			stack.push({
 				file: entry.file,
 				line: entry.line,
-				column: entry.column + 1,
+				column: entry.column,
 				tag: entry.componentTag
 			});
 		}
@@ -196,9 +185,13 @@
 
 	function open_loc(item, e) {
 		stop(e);
+		open_in_editor(item);
+	}
+
+	function open_in_editor(loc) {
 		fetch(
 			`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(
-				`${item.file}:${item.line}:${item.column}`
+				`${loc.file}:${loc.line}:${loc.column + 1}`
 			)}`
 		);
 		has_opened = true;
@@ -267,7 +260,9 @@
 					stop(e);
 				}
 			} else if (is_open(e)) {
-				open_editor(e);
+				if (!menu) {
+					open_editor(e);
+				}
 			} else if (is_holding() || is_escape(e)) {
 				// is_holding() checks for unhandled additional key pressed
 				// while holding the toggle keys, which is possibly another
@@ -417,7 +412,7 @@
 	></button>
 {/if}
 
-{#if enabled && (menu || (active_el && file_loc))}
+{#if enabled && (menu || active_el)}
 	<div
 		id="svelte-inspector-overlay"
 		style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
@@ -467,7 +462,8 @@
 			</div>
 
 			<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
-				{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column}
+				{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column +
+					1}
 			</div>
 		{/if}
 	</div>
