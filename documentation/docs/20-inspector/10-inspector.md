@@ -13,9 +13,9 @@ Note that `@sveltejs/vite-plugin-svelte` needs to be installed as a peer depende
 ```js
 // svelte.config.js
 export default {
-  vitePlugin: {
-    inspector: true
-  }
+	vitePlugin: {
+		inspector: true
+	}
 };
 ```
 
@@ -24,13 +24,13 @@ export default {
 ```js
 // svelte.config.js
 export default {
-  vitePlugin: {
-    inspector: {
-      toggleKeyCombo: 'alt-x',
-      showToggleButton: 'always',
-      toggleButtonPos: 'bottom-right'
-    }
-  }
+	vitePlugin: {
+		inspector: {
+			toggleKeyCombo: 'alt-x',
+			showToggleButton: 'always',
+			toggleButtonPos: 'bottom-right'
+		}
+	}
 };
 ```
 
@@ -85,6 +85,13 @@ SVELTE_INSPECTOR_OPTIONS=true
 - **Default:** `'Enter'`
 
   Define key to open the editor for the currently selected dom node.
+
+### openMenuKey
+
+- **Type:** `string`
+- **Default:** `' '`
+
+  Define key to open the context menu for the currently selected dom node.
 
 ### escapeKeys
 

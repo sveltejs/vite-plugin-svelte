@@ -9,6 +9,7 @@
 	const escape_keys = options.escapeKeys?.map((k) => k.toLowerCase());
 	const nav_keys = Object.values(options.navKeys).map((k) => k?.toLowerCase());
 	const open_key = options.openKey?.toLowerCase();
+	const open_menu_key = options.openMenuKey?.toLowerCase();
 
 	let enabled = $state(false);
 	let has_opened = $state(false);
@@ -25,14 +26,15 @@
 			.trim()
 	)}`;
 
-	// location of code in file
-	let file_loc = $state();
-	// cursor pos and width for file_loc overlay positioning
+	// overlay positioning
 	let x = $state(),
 		y = $state(),
-		w = $state();
+		w = $state(),
+		h = $state();
 
 	let active_el = $state();
+
+	let menu = $state(null);
 
 	let hold_start_ts = $state();
 
@@ -41,6 +43,7 @@
 	);
 
 	function mousemove(e) {
+		if (menu) return;
 		x = e.x;
 		y = e.y;
 	}
@@ -102,6 +105,7 @@
 	}
 
 	function mouseover({ target }) {
+		if (menu) return;
 		const el = find_selectable_parent(target, true);
 		activate(el, false);
 	}
@@ -115,12 +119,7 @@
 				el.classList.add('svelte-inspector-active-target');
 			}
 		}
-		if (el) {
-			const { file, line, column } = el.__svelte_meta.loc;
-			file_loc = `${file}:${line + 1}:${column + 1}`;
-		} else {
-			file_loc = null;
-		}
+
 		active_el = el;
 		if (set_bubble_pos) {
 			const pos = el.getBoundingClientRect();
@@ -130,13 +129,63 @@
 	}
 
 	function open_editor(e) {
-		if (file_loc) {
+		if (menu) return;
+
+		if (active_el) {
 			stop(e);
-			fetch(`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(file_loc)}`);
-			has_opened = true;
-			if (options.holdMode && is_holding()) {
-				disable();
+			send(active_el.__svelte_meta.loc);
+		}
+	}
+
+	function get_stack(target) {
+		const el = find_selectable_parent(target, true);
+		const meta = el?.__svelte_meta;
+
+		const stack = [
+			{
+				file: meta.loc.file,
+				line: meta.loc.line,
+				column: meta.loc.column,
+				tag: el.tagName.toLowerCase()
 			}
+		];
+
+		let entry = meta;
+		while ((entry = entry.parent)) {
+			if (entry.type !== 'component') continue;
+			if (/(^|\/)(node_modules|\.svelte-kit)\//.test(entry.file)) continue;
+
+			stack.push({
+				file: entry.file,
+				line: entry.line,
+				column: entry.column,
+				tag: entry.componentTag
+			});
+		}
+
+		return stack;
+	}
+
+	function on_contextmenu(e) {
+		e.preventDefault();
+
+		active_el ??= find_selectable_parent(e.target);
+		if (!active_el) return;
+
+		stop(e);
+		menu = { x: e.clientX, y: e.clientY, stack: get_stack(active_el) };
+	}
+
+	function send(loc) {
+		fetch(
+			`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(
+				`${loc.file}:${loc.line}:${loc.column + 1}`
+			)}`
+		);
+		has_opened = true;
+		menu = null;
+		if (options.holdMode && is_holding()) {
+			disable();
 		}
 	}
 
@@ -172,6 +221,10 @@
 		return open_key && is_active(open_key, e);
 	}
 
+	function is_open_menu(e) {
+		return open_menu_key && is_active(open_menu_key, e);
+	}
+
 	function is_holding() {
 		return hold_start_ts && Date.now() - hold_start_ts > 250;
 	}
@@ -200,6 +253,8 @@
 				}
 			} else if (is_open(e)) {
 				open_editor(e);
+			} else if (is_open_menu(e)) {
+				on_contextmenu(e);
 			} else if (is_holding() || is_escape(e)) {
 				// is_holding() checks for unhandled additional key pressed
 				// while holding the toggle keys, which is possibly another
@@ -236,6 +291,7 @@
 		l('mousemove', mousemove);
 		l('mouseover', mouseover);
 		l('click', open_editor, true);
+		l('contextmenu', on_contextmenu, true);
 	}
 
 	function enable() {
@@ -277,6 +333,7 @@
 		enabled = false;
 		has_opened = false;
 		hold_start_ts = null;
+		menu = null;
 		const b = document.body;
 		listeners(b, enabled);
 		if (options.customStyles) {
@@ -332,6 +389,15 @@
 	});
 </script>
 
+<svelte:window
+	onclick={disable}
+	onkeydown={(e) => {
+		if (e.key === 'Escape') {
+			disable();
+		}
+	}}
+/>
+
 {#if show_toggle}
 	<button
 		id="svelte-inspector-toggle"
@@ -344,18 +410,57 @@
 		aria-label={`${enabled ? 'disable' : 'enable'} svelte-inspector`}
 	></button>
 {/if}
-{#if enabled && active_el && file_loc}
-	{@const loc = active_el.__svelte_meta.loc}
+
+{#if enabled && (menu || active_el)}
 	<div
 		id="svelte-inspector-overlay"
 		style:left="{Math.min(x + 3, document.documentElement.clientWidth - w - 10)}px"
-		style:top="{document.documentElement.clientHeight < y + 50 ? y - 30 : y + 30}px"
+		style:top="{document.documentElement.clientHeight < y + h + 40 ? y - h - 10 : y + 30}px"
 		bind:offsetWidth={w}
+		bind:offsetHeight={h}
 	>
-		&lt;{active_el.tagName.toLowerCase()}&gt;&nbsp;{file_loc}
-	</div>
-	<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
-		{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column}
+		{#if menu}
+			<button aria-label="close" class="svelte-inspector-button" {@attach (node) => node.focus()}>
+				<span>close</span>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					role="img"
+					width="1em"
+					height="1em"
+					viewBox="0 0 24 24"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
+				>
+			</button>
+
+			<hr />
+
+			<ul class="svelte-inspector-grid">
+				{#each menu.stack as item, i (item.file + item.line + i)}
+					<li>
+						<button type="button" class="svelte-inspector-menu-row" onclick={() => send(item)}>
+							<span class="svelte-inspector-tag">&lt;{item.tag}&gt;</span>
+							<span class="svelte-inspector-file">{item.file}:{item.line}</span>
+						</button>
+					</li>
+				{/each}
+			</ul>
+		{:else}
+			{@const loc = active_el.__svelte_meta.loc}
+
+			<div class="svelte-inspector-grid">
+				<div class="svelte-inspector-menu-row">
+					<span class="svelte-inspector-tag">&lt;{active_el.tagName.toLowerCase()}&gt;</span>
+					<span class="svelte-inspector-file">{loc.file}:{loc.line}</span>
+				</div>
+			</div>
+
+			<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
+				{active_el.tagName.toLowerCase()} in file {loc.file} on line {loc.line} column {loc.column +
+					1}
+			</div>
+		{/if}
 	</div>
 {/if}
 
@@ -366,19 +471,39 @@
 	:global(.svelte-inspector-active-target) {
 		outline: 2px dashed #ff3e00 !important;
 	}
+	:global(#svelte-inspector-host) {
+		direction: ltr;
+	}
+
+	*:not(svg *) {
+		all: unset;
+		box-sizing: border-box;
+	}
 
 	#svelte-inspector-overlay {
 		position: fixed;
-		background-color: rgba(0, 0, 0, 0.8);
-		color: #fff;
-		padding: 2px 4px;
-		border-radius: 5px;
+		padding: 2px;
+		margin: 0;
+		border-radius: 2px;
+		filter: drop-shadow(2px 2px 4px rgb(0 0 0 / 0.1));
+		font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+		font-size: 12px;
+		line-height: 1.4;
 		z-index: 999999;
-		pointer-events: none;
+		background-color: #fff;
+		color: #222;
+		cursor: auto;
+		user-select: none;
+	}
+
+	.svelte-inspector-grid {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		column-gap: 8px;
+		/* row-gap: 4px; */
 	}
 
 	#svelte-inspector-toggle {
-		all: unset;
 		border: 1px solid #ff3e00;
 		border-radius: 8px;
 		position: fixed;
@@ -407,5 +532,84 @@
 	}
 	#svelte-inspector-toggle:hover {
 		background-color: #facece;
+	}
+
+	.svelte-inspector-tag {
+		white-space: nowrap;
+		font-weight: 600;
+	}
+
+	.svelte-inspector-file {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		color: #444;
+	}
+
+	ul {
+		max-width: 480px;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: contents;
+
+		li {
+			display: contents;
+		}
+	}
+
+	button {
+		background: transparent;
+		border: none;
+		color: inherit;
+		pointer-events: all;
+		font: inherit;
+		align-items: center;
+		cursor: pointer;
+
+		&:focus-visible {
+			outline: 2px solid #ff3e00;
+		}
+
+		&:hover,
+		&:focus-visible {
+			background-color: rgb(0 0 0 / 0.05);
+		}
+	}
+
+	hr {
+		margin: 2px;
+		background: rgb(0 0 0 / 0.05);
+		border: none;
+		height: 1px;
+		width: 100%;
+		display: block;
+	}
+
+	svg path {
+		stroke: currentColor;
+	}
+
+	.svelte-inspector-button {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		padding: 4px 8px;
+	}
+
+	.svelte-inspector-menu-row {
+		display: grid;
+		grid-column: 1 / 3;
+		grid-template-columns: subgrid;
+		box-sizing: border-box;
+		align-items: baseline;
+		width: 100%;
+		padding: 4px 8px;
+		cursor: pointer;
+
+		&:hover,
+		&:focus-visible {
+			background-color: rgb(0 0 0 / 0.05);
+		}
 	}
 </style>

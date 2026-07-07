@@ -11,6 +11,7 @@ export const defaultInspectorOptions = {
 	navKeys: { parent: 'ArrowUp', child: 'ArrowDown', next: 'ArrowRight', prev: 'ArrowLeft' },
 	escapeKeys: ['Backspace', 'Escape'],
 	openKey: 'Enter',
+	openMenuKey: ' ',
 	holdMode: true,
 	showToggleButton: 'active',
 	toggleButtonPos: 'top-right',
