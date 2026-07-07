@@ -195,7 +195,7 @@
 	}
 
 	function open_menu(e) {
-		const chain = build_chain(e.target);
+		const chain = build_chain(active_el);
 		if (chain.length === 0) {
 			close_menu();
 			return;
