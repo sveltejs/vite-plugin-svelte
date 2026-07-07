@@ -35,7 +35,6 @@
 
 	let active_el = $state();
 
-	// Wrapper-chain dropdown: null when closed, else { x, y, chain }.
 	let menu = $state(null);
 
 	let hold_start_ts = $state();
@@ -148,25 +147,11 @@
 		}
 	}
 
-	// --- Wrapper-chain dropdown --------------------------------------------
-	// Stock inspector opens only the innermost element on click. This builds the
-	// component-instantiation chain so the click opens a dropdown of every
-	// wrapper, each pointing at the EXACT `<Component>` call site — not the leaf
-	// primitive, and not the nearest DOM ancestor.
-	//
-	// Source: Svelte dev attaches `el.__svelte_meta = { loc, parent }`. `loc` is
-	// the element's own tag location (0-based); `parent` is the dev_stack — a
-	// linked list of block/component entries. Each `type:'component'` entry holds
-	// `{ file, line, column, componentTag }` where file/line are the call site in
-	// the PARENT template (line 1-based, column 0-based; see the compiler's
-	// `getLocator(..., { offsetLine: 1 })`). Walking it points a click on a nested
-	// primitive at the `<Component>` that renders it, e.g. "<Button> Card.svelte:42".
-
-	function build_chain(target) {
+	function get_stack(target) {
 		const el = find_selectable_parent(target, true);
 		const meta = el?.__svelte_meta;
 
-		const chain = [
+		const stack = [
 			{
 				file: meta.loc.file,
 				line: meta.loc.line,
@@ -179,7 +164,7 @@
 		while ((entry = entry.parent)) {
 			if (entry.type !== 'component') continue;
 
-			chain.push({
+			stack.push({
 				file: entry.file,
 				line: entry.line,
 				column: entry.column + 1,
@@ -187,11 +172,9 @@
 			});
 		}
 
-		return chain;
+		return stack;
 	}
 
-	// Route a click by mode — the stock combo opens the innermost element
-	// (original behaviour), the chain combo opens the wrapper dropdown.
 	function on_contextmenu(e) {
 		if (e.target?.closest?.('#svelte-inspector-overlay')) {
 			return; // a menu row was clicked — let its own handler run
@@ -201,13 +184,10 @@
 	}
 
 	function open_menu(e) {
-		const chain = build_chain(active_el);
-		if (chain.length === 0) {
-			close_menu();
-			return;
-		}
+		if (!active_el) return;
+
 		stop(e);
-		menu = { x: e.clientX, y: e.clientY, chain };
+		menu = { x: e.clientX, y: e.clientY, stack: get_stack(active_el) };
 	}
 
 	function close_menu() {
@@ -422,11 +402,7 @@
 	});
 </script>
 
-<svelte:window
-	onclick={() => {
-		disable();
-	}}
-/>
+<svelte:window onclick={disable} />
 
 {#if show_toggle}
 	<button
@@ -467,7 +443,7 @@
 			<hr />
 
 			<ul class="svelte-inspector-grid">
-				{#each menu.chain as item, i (item.file + item.line + i)}
+				{#each menu.stack as item, i (item.file + item.line + i)}
 					<li>
 						<button
 							type="button"
