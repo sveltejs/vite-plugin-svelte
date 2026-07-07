@@ -420,8 +420,7 @@
 
 <svelte:window
 	onclick={() => {
-		menu = null;
-		active_el = null;
+		disable();
 	}}
 />
 
@@ -447,7 +446,25 @@
 		bind:offsetHeight={h}
 	>
 		{#if menu}
-			<ul>
+			<button aria-label="close" class="svelte-inspector-button">
+				<span>close</span>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					role="img"
+					width="1em"
+					height="1em"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
+				>
+			</button>
+
+			<hr />
+
+			<ul class="svelte-inspector-grid">
 				{#each menu.chain as item, i (item.file + item.line + i)}
 					<li>
 						<button
@@ -464,9 +481,11 @@
 		{:else}
 			{@const loc = active_el.__svelte_meta.loc}
 
-			<div class="svelte-inspector-menu-row">
-				<span class="svelte-inspector-tag">&lt;{active_el.tagName.toLowerCase()}&gt;</span>
-				<span class="svelte-inspector-file">{loc.file}:{loc.line + 1}</span>
+			<div class="svelte-inspector-grid">
+				<div class="svelte-inspector-menu-row">
+					<span class="svelte-inspector-tag">&lt;{active_el.tagName.toLowerCase()}&gt;</span>
+					<span class="svelte-inspector-file">{loc.file}:{loc.line + 1}</span>
+				</div>
 			</div>
 
 			<div id="svelte-inspector-announcer" aria-live="assertive" aria-atomic="true">
@@ -488,10 +507,6 @@
 	}
 
 	#svelte-inspector-overlay {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		column-gap: 8px;
-		row-gap: 4px;
 		position: fixed;
 		padding: 4px;
 		margin: 0;
@@ -503,7 +518,14 @@
 		z-index: 999999;
 		background-color: #161616;
 		color: #fff;
-		pointer-events: none;
+		cursor: auto;
+	}
+
+	.svelte-inspector-grid {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		column-gap: 8px;
+		row-gap: 4px;
 	}
 
 	#svelte-inspector-toggle {
@@ -562,6 +584,29 @@
 		}
 	}
 
+	button {
+		background: transparent;
+		border: none;
+		color: inherit;
+		pointer-events: all;
+		font: inherit;
+		align-items: center;
+	}
+
+	hr {
+		margin: 2px 4px;
+		background: rgb(255 255 255 / 0.2);
+		border: none;
+		height: 1px;
+	}
+
+	.svelte-inspector-button {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		padding: 4px 8px;
+	}
+
 	.svelte-inspector-menu-row {
 		all: unset;
 		display: grid;
@@ -571,9 +616,7 @@
 		align-items: baseline;
 		width: 100%;
 		padding: 4px 8px;
-		color: #fff;
 		cursor: pointer;
-		pointer-events: all;
 
 		&:hover {
 			background-color: rgb(255 255 255 / 0.1);
