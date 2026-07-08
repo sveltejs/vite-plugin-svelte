@@ -1,15 +1,37 @@
-<svelte:options runes={true} />
-
-<script>
-	// do not use TS here so that this component works in non-ts projects too
+<script lang="ts">
 	import { onMount } from 'svelte';
-
 	import options from 'virtual:svelte-inspector-options';
-	const toggle_combo = options.toggleKeyCombo?.toLowerCase().split('-');
-	const escape_keys = options.escapeKeys?.map((k) => k.toLowerCase());
-	const nav_keys = Object.values(options.navKeys).map((k) => k?.toLowerCase());
-	const open_key = options.openKey?.toLowerCase();
-	const open_menu_key = options.openMenuKey?.toLowerCase();
+
+	// Copied from Svelte's internal types
+	interface DevStackEntry {
+		file: string;
+		type: 'component' | 'if' | 'each' | 'await' | 'key' | 'render';
+		line: number;
+		column: number;
+		parent: DevStackEntry | null;
+		componentTag?: string;
+	}
+
+	interface Metadata {
+		loc: Loc;
+		parent?: DevStackEntry;
+	}
+
+	interface Loc {
+		file: string;
+		line: number;
+		column: number;
+	}
+
+	interface ElementWithMetadata extends Element {
+		__svelte_meta: Metadata;
+	}
+
+	const toggle_combo = options.toggleKeyCombo.toLowerCase().split('-');
+	const escape_keys = options.escapeKeys.map((k) => k.toLowerCase());
+	const nav_keys = Object.values(options.navKeys).map((k) => k.toLowerCase());
+	const open_key = options.openKey.toLowerCase();
+	const open_menu_key = options.openMenuKey.toLowerCase();
 
 	let enabled = $state(false);
 	let has_opened = $state(false);
@@ -27,53 +49,58 @@
 	)}`;
 
 	// overlay positioning
-	let x = $state(),
-		y = $state(),
-		w = $state(),
-		h = $state();
+	let x = $state(0),
+		y = $state(0),
+		w = $state(0),
+		h = $state(0);
 
-	let active_el = $state();
+	let active_el = $state<ElementWithMetadata | undefined>();
 
-	let menu = $state(null);
+	let menu = $state<{ x: number; y: number; stack: Array<Loc & { tag: string }> } | null>(null);
 
-	let hold_start_ts = $state();
+	let hold_start_ts = $state<number | null>(null);
 
 	let show_toggle = $derived(
 		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled)
 	);
 
-	function mousemove(e) {
+	function mousemove(e: MouseEvent) {
 		if (menu) return;
 		x = e.x;
 		y = e.y;
 	}
 
-	function find_selectable_parent(el, include_self = false) {
+	function find_selectable_parent(el: Element | undefined, include_self = false) {
+		let candidate: Element | undefined = el;
+
 		if (!include_self) {
-			el = el.parentNode;
+			candidate = (candidate?.parentNode as Element) ?? undefined;
 		}
-		while (el) {
-			if (is_selectable(el)) {
-				return el;
+
+		while (candidate) {
+			if (is_selectable(candidate)) {
+				return candidate;
 			}
-			el = el.parentNode;
+
+			candidate = candidate.parentNode as Element;
 		}
 	}
 
-	function find_selectable_child(el) {
+	function find_selectable_child(el: Element) {
 		return [...el.querySelectorAll('*')].find(is_selectable);
 	}
 
-	function find_selectable_sibling(el, prev = false) {
+	function find_selectable_sibling(el: Element, prev = false) {
+		let candidate: Element | null = el;
 		do {
-			el = prev ? el.previousElementSibling : el.nextElementSibling;
-			if (is_selectable(el)) {
-				return el;
+			candidate = prev ? candidate.previousElementSibling : candidate.nextElementSibling;
+			if (is_selectable(candidate)) {
+				return candidate;
 			}
-		} while (el);
+		} while (candidate);
 	}
 
-	function find_selectable_for_nav(key) {
+	function find_selectable_for_nav(key: string) {
 		const el = active_el;
 		if (!el) {
 			return find_selectable_child(document?.body);
@@ -92,8 +119,9 @@
 		}
 	}
 
-	function is_selectable(el) {
-		const file = el?.__svelte_meta?.loc?.file;
+	function is_selectable(el: Element | null): el is ElementWithMetadata {
+		if (!el) return false;
+		const file = (el as ElementWithMetadata)?.__svelte_meta?.loc?.file;
 		if (!file || file.includes('node_modules/')) {
 			return false; // no file or 3rd party
 		}
@@ -104,13 +132,13 @@
 		return true;
 	}
 
-	function mouseover({ target }) {
+	function mouseover(e: MouseEvent) {
 		if (menu) return;
-		const el = find_selectable_parent(target, true);
+		const el = find_selectable_parent(e.target as ElementWithMetadata, true);
 		activate(el, false);
 	}
 
-	function activate(el, set_bubble_pos = true) {
+	function activate(el: ElementWithMetadata | undefined, set_bubble_pos = true) {
 		if (options.customStyles && el !== active_el) {
 			if (active_el) {
 				active_el.classList.remove('svelte-inspector-active-target');
@@ -122,13 +150,13 @@
 
 		active_el = el;
 		if (set_bubble_pos) {
-			const pos = el.getBoundingClientRect();
+			const pos = el!.getBoundingClientRect();
 			x = Math.ceil(pos.left);
 			y = Math.ceil(pos.bottom - 20);
 		}
 	}
 
-	function open_editor(e) {
+	function open_editor(e: Event) {
 		if (menu) return;
 
 		if (active_el) {
@@ -137,9 +165,9 @@
 		}
 	}
 
-	function get_stack(target) {
-		const el = find_selectable_parent(target, true);
-		const meta = el?.__svelte_meta;
+	function get_stack(target: ElementWithMetadata) {
+		const el = find_selectable_parent(target, true)!;
+		const meta = el.__svelte_meta;
 
 		const stack = [
 			{
@@ -150,8 +178,9 @@
 			}
 		];
 
-		let entry = meta;
-		while ((entry = entry.parent)) {
+		let entry: Metadata | DevStackEntry | undefined = meta;
+
+		while ((entry = entry.parent ?? undefined)) {
 			if (entry.type !== 'component') continue;
 			if (/(^|\/)(node_modules|\.svelte-kit)\//.test(entry.file)) continue;
 
@@ -159,24 +188,24 @@
 				file: entry.file,
 				line: entry.line,
 				column: entry.column,
-				tag: entry.componentTag
+				tag: entry.componentTag!
 			});
 		}
 
 		return stack;
 	}
 
-	function on_contextmenu(e) {
+	function on_contextmenu(e: Event) {
 		e.preventDefault();
 
-		active_el ??= find_selectable_parent(e.target);
+		active_el ??= find_selectable_parent(e.target as Element);
 		if (!active_el) return;
 
 		stop(e);
-		menu = { x: e.clientX, y: e.clientY, stack: get_stack(active_el) };
+		menu = { x, y, stack: get_stack(active_el) };
 	}
 
-	function send(loc) {
+	function send(loc: Loc) {
 		fetch(
 			`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(
 				`${loc.file}:${loc.line}:${loc.column + 1}`
@@ -189,7 +218,7 @@
 		}
 	}
 
-	function is_active(key, e) {
+	function is_active(key: string, e: KeyboardEvent) {
 		switch (key) {
 			case 'shift':
 			case 'control':
@@ -201,27 +230,27 @@
 		}
 	}
 
-	function is_combo(e) {
+	function is_combo(e: KeyboardEvent) {
 		return toggle_combo?.every((k) => is_active(k, e));
 	}
 
-	function is_escape(e) {
+	function is_escape(e: KeyboardEvent) {
 		return escape_keys?.some((k) => is_active(k, e));
 	}
 
-	function is_toggle(e) {
+	function is_toggle(e: KeyboardEvent) {
 		return toggle_combo?.some((k) => is_active(k, e));
 	}
 
-	function is_nav(e) {
+	function is_nav(e: KeyboardEvent) {
 		return nav_keys?.some((k) => is_active(k, e));
 	}
 
-	function is_open(e) {
+	function is_open(e: KeyboardEvent) {
 		return open_key && is_active(open_key, e);
 	}
 
-	function is_open_menu(e) {
+	function is_open_menu(e: KeyboardEvent) {
 		return open_menu_key && is_active(open_menu_key, e);
 	}
 
@@ -229,13 +258,13 @@
 		return hold_start_ts && Date.now() - hold_start_ts > 250;
 	}
 
-	function stop(e) {
+	function stop(e: Event) {
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
 	}
 
-	function keydown(e) {
+	function keydown(e: KeyboardEvent) {
 		if (e.repeat || e.key == null || (!enabled && !is_toggle(e))) {
 			return;
 		}
@@ -265,7 +294,7 @@
 		}
 	}
 
-	function keyup(e) {
+	function keyup(e: KeyboardEvent) {
 		if (e.repeat || e.key == null || !enabled) {
 			return;
 		}
@@ -286,7 +315,7 @@
 		}
 	}
 
-	function listeners(body, enabled) {
+	function listeners(body: HTMLBodyElement, enabled: boolean) {
 		const l = enabled ? body.addEventListener : body.removeEventListener;
 		l('mousemove', mousemove);
 		l('mouseover', mouseover);
@@ -296,7 +325,7 @@
 
 	function enable() {
 		enabled = true;
-		const b = document.body;
+		const b = document.body as HTMLBodyElement;
 		if (options.customStyles) {
 			b.classList.add('svelte-inspector-enabled');
 		}
@@ -308,7 +337,7 @@
 		const hov = innermost_hover_el();
 		let el = find_selectable_parent(hov, true);
 		if (!el) {
-			const act = document.activeElement;
+			const act = document.activeElement ?? undefined;
 			el = find_selectable_parent(act, true);
 		}
 		if (!el) {
@@ -334,13 +363,13 @@
 		has_opened = false;
 		hold_start_ts = null;
 		menu = null;
-		const b = document.body;
+		const b = document.body as HTMLBodyElement;
 		listeners(b, enabled);
 		if (options.customStyles) {
 			b.classList.remove('svelte-inspector-enabled');
 			active_el?.classList.remove('svelte-inspector-active-target');
 		}
-		active_el = null;
+		active_el = undefined;
 	}
 
 	function visibilityChange() {
@@ -446,7 +475,7 @@
 					</li>
 				{/each}
 			</ul>
-		{:else}
+		{:else if active_el}
 			{@const loc = active_el.__svelte_meta.loc}
 
 			<div class="svelte-inspector-grid">
