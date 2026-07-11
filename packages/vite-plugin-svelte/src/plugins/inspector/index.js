@@ -117,8 +117,11 @@ export function svelteInspector(api) {
 		transform: {
 			// Vite+ projects install vite@npm:@voidzero-dev/vite-plus-core@latest which
 			// changes the path from `vite/dist/client/client.mjs` to `vite/dist/vite/client/client.mjs`
-			// so we need to also account for the additional `vite` subdirectory
-			filter: { id: /vite\/dist\/(?:vite\/)?client\/client\.mjs(?:\?|$)/ },
+			// so we need to also account for the additional `vite` subdirectory.
+			// Under pnpm the `vite` alias is a symlink that Node's ESM resolver realpaths,
+			// so the client resolves to `…/@voidzero-dev/vite-plus-core/dist/vite/client/client.mjs`
+			// with no `vite/` segment before `dist/` — hence the leading `vite/` is optional
+			filter: { id: /(?:vite\/)?dist\/(?:vite\/)?client\/client\.mjs(?:\?|$)/ },
 			handler(code) {
 				if (disabled) {
 					return;
