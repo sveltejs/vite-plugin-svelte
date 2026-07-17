@@ -60,8 +60,12 @@ export function validateInlineOptions(inlineOptions) {
 	const invalidKeys = Object.keys(inlineOptions || {}).filter(
 		(key) => !allowedInlineOptions.has(key)
 	);
-	if (invalidKeys.length) {
-		log.warn(`invalid plugin options "${invalidKeys.join(', ')}" in inline config`, inlineOptions);
+
+	const n = invalidKeys.length;
+	if (n > 0) {
+		log.warn(
+			`invalid plugin ${n === 1 ? 'option' : 'options'} ${invalidKeys.map((k) => `\`${k}\``).join(', ')} in inline config`
+		);
 	}
 }
 
