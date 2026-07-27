@@ -24,7 +24,7 @@
     "generate:types-staged": "pnpm generate:types && :"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "1.0.0-next.6",
+    "@changesets/changelog-github": "1.0.0-next.7",
     "@changesets/cli": "^2.29.8",
     "@eslint/js": "^10.0.1",
     "@eslint/markdown": "^7.5.1",
@@ -59,7 +59,7 @@
     "*": "prettier --cache --ignore-path .gitignore --ignore-unknown --write",
     "packages/*/src/**/*": "pnpm generate:types-staged"
   },
-  "packageManager": "pnpm@10.34.4",
+  "packageManager": "pnpm@10.34.5",
   "engines": {
     "pnpm": "^10.2.0",
     "node": "^20.19 || ^22.12 || >=24"
