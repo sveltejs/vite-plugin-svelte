@@ -98,7 +98,21 @@ function rolldownOptimizerPlugin(api, consumer, components) {
 			delete plugin.buildStart;
 			delete plugin.transform;
 			delete plugin.buildEnd;
+			if (components) {
+				plugin.load = {
+					filter: { id: includeRe },
+					async handler(filename) {
+						try {
+							const code = await fs.readFile(filename.replace(/[?#].*$/s, ''), 'utf8');
+							return await compileFn(api.options, { filename, code }, generate, statsCollection);
+						} catch (e) {
+							throw toRollupError(e, api.options);
+						}
+					}
+				};
+			}
 		} else {
+			delete plugin.load;
 			plugin.transform = {
 				filter: { id: includeRe },
 				/**
