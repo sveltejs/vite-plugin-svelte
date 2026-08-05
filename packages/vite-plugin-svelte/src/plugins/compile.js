@@ -23,12 +23,6 @@ export function compile(api) {
 	/** @type {Plugin} */
 	const plugin = {
 		name: 'vite-plugin-svelte:compile',
-		configResolved() {
-			//@ts-expect-error defined below but filter not in type
-			plugin.transform.filter = api.filter;
-			options = api.options;
-			compileSvelte = api.compileSvelte;
-		},
 		transform: {
 			async handler(code, id) {
 				const ssr = this.environment.config.consumer === 'server';
@@ -66,5 +60,11 @@ export function compile(api) {
 			}
 		}
 	};
+	api.onConfigResolved(() => {
+		//@ts-expect-error defined below but filter not in type
+		plugin.transform.filter = api.filter;
+		options = api.options;
+		compileSvelte = api.compileSvelte;
+	});
 	return plugin;
 }

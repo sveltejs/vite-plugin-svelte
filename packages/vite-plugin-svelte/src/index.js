@@ -25,9 +25,18 @@ export function svelte(inlineOptions) {
 	if (process.env.DEBUG != null) {
 		log.setLevel('debug');
 	}
+	/** @type {Array<(config: import('vite').ResolvedConfig) => void>} */
+	const configResolvedCallbacks = [];
 	/** @type {PluginAPI} */
-	// @ts-expect-error initialize empty to guard against early use
-	const api = {}; // initialized by configure plugin, used in others
+	// @ts-expect-error resolved fields are initialized by the configure plugin
+	const api = {
+		onConfigResolved(callback) {
+			configResolvedCallbacks.push(callback);
+		},
+		runConfigResolved(config) {
+			for (const callback of configResolvedCallbacks) callback(config);
+		}
+	};
 	return [
 		{ name: 'vite-plugin-svelte' }, // marker for detection logic in other plugins that expect this name
 		configure(api, inlineOptions),

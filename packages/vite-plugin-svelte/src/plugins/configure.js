@@ -30,6 +30,21 @@ export function configure(api, inlineOptions) {
 	 */
 	let preOptions;
 
+	/** @param {import('vite').ResolvedConfig} config */
+	function configureApi(config) {
+		const options = resolveOptions(preOptions, config);
+		api.options = options;
+		if (isDebugNamespaceEnabled('stats')) {
+			api.options.stats = new VitePluginSvelteStats();
+		}
+
+		api.filter = buildIdFilter(options);
+		api.idParser = buildIdParser(options);
+		api.compileSvelte = createCompileSvelte();
+		api.runConfigResolved(config);
+		log.debug('resolved options', api.options, 'config');
+	}
+
 	/** @type {Plugin} */
 	return {
 		name: 'vite-plugin-svelte:config',
@@ -56,16 +71,27 @@ export function configure(api, inlineOptions) {
 		configResolved: {
 			order: 'pre',
 			handler(config) {
-				const options = resolveOptions(preOptions, config);
-				api.options = options;
-				if (isDebugNamespaceEnabled('stats')) {
-					api.options.stats = new VitePluginSvelteStats();
-				}
+				configureApi(config);
+			}
+		},
 
-				api.filter = buildIdFilter(options);
-				api.idParser = buildIdParser(options);
-				api.compileSvelte = createCompileSvelte();
-				log.debug('resolved options', api.options, 'config');
+		buildStart: {
+			order: 'pre',
+			sequential: true,
+			async handler() {
+				if (api.options) return;
+				// Plugins returned by applyToEnvironment are created after Vite runs configResolved.
+				const config = this.environment.getTopLevelConfig();
+				preOptions = await preResolveOptions(
+					inlineOptions,
+					{ root: config.root },
+					{
+						command: config.command,
+						mode: config.mode,
+						isSsrBuild: config.command === 'build' && !!config.build.ssr
+					}
+				);
+				configureApi(config);
 			}
 		},
 

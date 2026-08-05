@@ -15,14 +15,9 @@ export function loadCompiledCss(api) {
 
 	/** @type{Map<string,any>} */
 	const buildWatchCssCache = new Map();
-	return {
+	/** @type {Plugin} */
+	const plugin = {
 		name: 'vite-plugin-svelte:load-compiled-css',
-
-		configResolved(c) {
-			const isDev = c.command === 'serve';
-			const isBuildWatch = !!c.build?.watch;
-			useLocalCache = isDev || isBuildWatch;
-		},
 
 		resolveId: {
 			filter, // same filter in load to ensure minimal work
@@ -76,4 +71,10 @@ export function loadCompiledCss(api) {
 			}
 		}
 	};
+	api.onConfigResolved((config) => {
+		const isDev = config.command === 'serve';
+		const isBuildWatch = !!config.build?.watch;
+		useLocalCache = isDev || isBuildWatch;
+	});
+	return plugin;
 }

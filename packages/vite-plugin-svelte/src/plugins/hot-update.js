@@ -31,24 +31,6 @@ export function hotUpdate(api) {
 	const plugin = {
 		name: 'vite-plugin-svelte:hot-update',
 		enforce: 'post',
-		configResolved() {
-			options = api.options;
-			idParser = api.idParser;
-
-			// @ts-expect-error
-			plugin.transform.filter = {
-				id: {
-					// reinclude virtual styles to get their output
-					include: [...api.filter.id.include, SVELTE_VIRTUAL_STYLE_ID_REGEX],
-					exclude: [
-						// ignore files in node_modules, we don't hot update them
-						/\/node_modules\//,
-						// remove style exclusion
-						...api.filter.id.exclude.filter((filter) => filter !== SVELTE_VIRTUAL_STYLE_ID_REGEX)
-					]
-				}
-			};
-		},
 
 		applyToEnvironment(env) {
 			// we only handle updates for client components
@@ -141,6 +123,24 @@ export function hotUpdate(api) {
 			}
 		}
 	};
+	api.onConfigResolved(() => {
+		options = api.options;
+		idParser = api.idParser;
+
+		// @ts-expect-error
+		plugin.transform.filter = {
+			id: {
+				// reinclude virtual styles to get their output
+				include: [...api.filter.id.include, SVELTE_VIRTUAL_STYLE_ID_REGEX],
+				exclude: [
+					// ignore files in node_modules, we don't hot update them
+					/\/node_modules\//,
+					// remove style exclusion
+					...api.filter.id.exclude.filter((filter) => filter !== SVELTE_VIRTUAL_STYLE_ID_REGEX)
+				]
+			}
+		};
+	});
 
 	return plugin;
 }

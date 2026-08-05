@@ -33,13 +33,6 @@ export function compileModule(api) {
 	const plugin = {
 		name: 'vite-plugin-svelte:compile-module',
 		enforce: 'post',
-		async configResolved() {
-			options = api.options;
-			//@ts-expect-error transform defined below but filter not in type
-			plugin.transform.filter = buildModuleIdFilter(options);
-			idParser = buildModuleIdParser(options);
-			staticModuleCompileOptions = filterNonModuleCompilerOptions(options.compilerOptions);
-		},
 		transform: {
 			async handler(code, id) {
 				const ssr = this.environment.config.consumer === 'server';
@@ -97,6 +90,13 @@ export function compileModule(api) {
 			}
 		}
 	};
+	api.onConfigResolved(() => {
+		options = api.options;
+		//@ts-expect-error transform defined below but filter not in type
+		plugin.transform.filter = buildModuleIdFilter(options);
+		idParser = buildModuleIdParser(options);
+		staticModuleCompileOptions = filterNonModuleCompilerOptions(options.compilerOptions);
+	});
 	return plugin;
 }
 

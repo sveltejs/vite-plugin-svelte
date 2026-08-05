@@ -28,7 +28,8 @@ export function setupOptimizer(api) {
 	/** @type {ResolvedConfig} */
 	let viteConfig;
 
-	return {
+	/** @type {Plugin} */
+	const plugin = {
 		name: 'vite-plugin-svelte:setup-optimizer',
 		apply: 'serve',
 		configEnvironment(name, config) {
@@ -54,9 +55,6 @@ export function setupOptimizer(api) {
 
 			return { optimizeDeps };
 		},
-		configResolved(c) {
-			viteConfig = c;
-		},
 		async buildStart() {
 			if (!api.options.prebundleSvelteLibraries) return;
 			const changed = await svelteMetadataChanged(viteConfig.cacheDir, api.options);
@@ -67,6 +65,10 @@ export function setupOptimizer(api) {
 			}
 		}
 	};
+	api.onConfigResolved((config) => {
+		viteConfig = config;
+	});
+	return plugin;
 }
 
 /**

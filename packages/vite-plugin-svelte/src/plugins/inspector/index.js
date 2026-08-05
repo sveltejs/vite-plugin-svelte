@@ -37,7 +37,8 @@ export function svelteInspector(api) {
 	let inspectorOptions;
 	let disabled = false;
 
-	return {
+	/** @type {Plugin} */
+	const plugin = {
 		name: 'vite-plugin-svelte-inspector',
 		apply: 'serve',
 		enforce: 'pre',
@@ -46,35 +47,6 @@ export function svelteInspector(api) {
 			return !disabled && env.config.consumer === 'client';
 		},
 
-		configResolved(config) {
-			const environmentOptions = parseEnvironmentOptions(config);
-			if (environmentOptions === false) {
-				log.debug('environment options set to false, inspector disabled', null, 'inspector');
-				disabled = true;
-				return;
-			}
-			const configFileOptions = api.options?.inspector;
-
-			if (!configFileOptions && !environmentOptions) {
-				log.debug('no inspector options found, inspector disabled', null, 'inspector');
-				disabled = true;
-				return;
-			}
-
-			if (environmentOptions === true) {
-				inspectorOptions = defaultInspectorOptions;
-			} else {
-				inspectorOptions = {
-					...defaultInspectorOptions,
-					...(typeof configFileOptions === 'object' ? configFileOptions : {}),
-					...(environmentOptions || {})
-				};
-			}
-
-			inspectorOptions.__internal = {
-				base: config.base?.replace(/\/$/, '') || ''
-			};
-		},
 		resolveId: {
 			filter: {
 				id: /^virtual:svelte-inspector-/
@@ -127,4 +99,34 @@ export function svelteInspector(api) {
 			}
 		}
 	};
+	api.onConfigResolved((config) => {
+		const environmentOptions = parseEnvironmentOptions(config);
+		if (environmentOptions === false) {
+			log.debug('environment options set to false, inspector disabled', null, 'inspector');
+			disabled = true;
+			return;
+		}
+		const configFileOptions = api.options?.inspector;
+
+		if (!configFileOptions && !environmentOptions) {
+			log.debug('no inspector options found, inspector disabled', null, 'inspector');
+			disabled = true;
+			return;
+		}
+
+		if (environmentOptions === true) {
+			inspectorOptions = defaultInspectorOptions;
+		} else {
+			inspectorOptions = {
+				...defaultInspectorOptions,
+				...(typeof configFileOptions === 'object' ? configFileOptions : {}),
+				...(environmentOptions || {})
+			};
+		}
+
+		inspectorOptions.__internal = {
+			base: config.base?.replace(/\/$/, '') || ''
+		};
+	});
+	return plugin;
 }

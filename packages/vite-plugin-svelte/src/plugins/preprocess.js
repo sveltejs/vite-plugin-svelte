@@ -37,24 +37,6 @@ export function preprocess(api) {
 	const plugin = {
 		name: 'vite-plugin-svelte:preprocess',
 		enforce: 'pre',
-		configResolved(c) {
-			options = api.options;
-			if (arraify(options.preprocess).length > 0) {
-				preprocessSvelte = createPreprocessSvelte(options, c);
-				// @ts-expect-error defined below but filter not in type
-				plugin.transform.filter = api.filter;
-			} else {
-				log.debug(
-					`disabling ${plugin.name} because no preprocessor is configured`,
-					undefined,
-					'preprocess'
-				);
-				// @ts-expect-error force set undefined to clear memory
-				preprocessSvelte = undefined;
-				// @ts-expect-error defined below but filter not in type
-				plugin.transform.filter = { id: /$./ }; // never match
-			}
-		},
 		configureServer(server) {
 			dependenciesCache = new DependenciesCache(server);
 		},
@@ -93,6 +75,24 @@ export function preprocess(api) {
 			}
 		}
 	};
+	api.onConfigResolved((config) => {
+		options = api.options;
+		if (arraify(options.preprocess).length > 0) {
+			preprocessSvelte = createPreprocessSvelte(options, config);
+			// @ts-expect-error defined below but filter not in type
+			plugin.transform.filter = api.filter;
+		} else {
+			log.debug(
+				`disabling ${plugin.name} because no preprocessor is configured`,
+				undefined,
+				'preprocess'
+			);
+			// @ts-expect-error force set undefined to clear memory
+			preprocessSvelte = undefined;
+			// @ts-expect-error defined below but filter not in type
+			plugin.transform.filter = { id: /$./ }; // never match
+		}
+	});
 	return plugin;
 }
 /**
