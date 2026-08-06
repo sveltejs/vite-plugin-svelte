@@ -42,6 +42,7 @@ export function compile(api) {
 						svelteRequest,
 						code,
 						options,
+						this.environment,
 						this.getCombinedSourcemap()
 					);
 				} catch (e) {

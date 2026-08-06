@@ -5,8 +5,13 @@ export default defineConfig(() => {
 	return {
 		plugins: [
 			svelte({
-				dynamicCompileOptions({ filename }) {
+				dynamicCompileOptions({ filename, environment }) {
 					if (filename.endsWith('A.svelte')) {
+						return {
+							preserveWhitespace: true
+						};
+					}
+					if (filename.endsWith('Environment.svelte') && environment?.name === 'client') {
 						return {
 							preserveWhitespace: true
 						};

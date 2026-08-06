@@ -1,12 +1,13 @@
 import type { Processed, CompileResult } from 'svelte/compiler';
 import type { SvelteRequest } from './id.d.ts';
 import type { ResolvedOptions } from './options.d.ts';
-import type { CustomPluginOptionsVite, Rollup } from 'vite';
+import type { CustomPluginOptionsVite, Environment, Rollup } from 'vite';
 
 export type CompileSvelte = (
 	svelteRequest: SvelteRequest,
 	code: string,
 	options: Partial<ResolvedOptions>,
+	environment: Environment,
 	sourcemap?: Rollup.SourceMap
 ) => Promise<CompileData>;
 

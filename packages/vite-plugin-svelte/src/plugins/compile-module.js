@@ -58,7 +58,8 @@ export function compileModule(api) {
 				const dynamicCompileOptions = await options?.dynamicCompileOptions?.({
 					filename,
 					code,
-					compileOptions
+					compileOptions,
+					environment: this.environment
 				});
 				if (dynamicCompileOptions && log.debug.enabled) {
 					log.debug(

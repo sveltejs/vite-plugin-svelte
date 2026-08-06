@@ -43,8 +43,8 @@ export function setupOptimizer(api) {
 			// Add optimizer plugins to prebundle Svelte files.
 			optimizeDeps.rolldownOptions = {
 				plugins: [
-					rolldownOptimizerPlugin(api, consumer, true),
-					rolldownOptimizerPlugin(api, consumer, false)
+					rolldownOptimizerPlugin(api, name, consumer, true),
+					rolldownOptimizerPlugin(api, name, consumer, false)
 				]
 			};
 
@@ -71,13 +71,13 @@ export function setupOptimizer(api) {
 
 /**
  * @param {import('../types/plugin-api.d.ts').PluginAPI} api
+ * @param {string} environmentName
  * @param {'server'|'client'} consumer
  * @param {boolean} components
  * @return {Rolldown.Plugin}
  */
-function rolldownOptimizerPlugin(api, consumer, components) {
+function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 	const name = components ? optimizeSveltePluginName : optimizeSvelteModulePluginName;
-	const compileFn = components ? compileSvelte : compileSvelteModule;
 	const statsName = components ? 'prebundle library components' : 'prebundle library modules';
 	const includeRe = components ? /^[^?#]+\.svelte(?:[?#]|$)/ : /^[^?#]+\.svelte\.[jt]s(?:[?#]|$)/;
 	const generate = consumer === 'server' ? 'server' : 'client';
@@ -107,7 +107,22 @@ function rolldownOptimizerPlugin(api, consumer, components) {
 				 */
 				async handler(code, filename) {
 					try {
-						return await compileFn(api.options, { filename, code }, generate, statsCollection);
+						if (components) {
+							const environment = api.options.server?.environments[environmentName];
+							return await compileSvelte(
+								api.options,
+								{ filename, code },
+								generate,
+								environment,
+								statsCollection
+							);
+						}
+						return await compileSvelteModule(
+							api.options,
+							{ filename, code },
+							generate,
+							statsCollection
+						);
 					} catch (e) {
 						throw toRollupError(e, api.options);
 					}
@@ -131,10 +146,11 @@ function rolldownOptimizerPlugin(api, consumer, components) {
  * @param {ResolvedOptions} options
  * @param {{ filename: string, code: string }} input
  * @param {'client'|'server'} generate
+ * @param {import('vite').Environment | undefined} environment
  * @param {StatCollection} [statsCollection]
  * @returns {Promise<Code>}
  */
-async function compileSvelte(options, { filename, code }, generate, statsCollection) {
+async function compileSvelte(options, { filename, code }, generate, environment, statsCollection) {
 	let css = options.compilerOptions.css;
 	if (css !== 'injected') {
 		// TODO ideally we'd be able to externalize prebundled styles too, but for now always put them in the js
@@ -163,11 +179,15 @@ async function compileSvelte(options, { filename, code }, generate, statsCollect
 
 	const finalCode = preprocessed ? preprocessed.code : code;
 
-	const dynamicCompileOptions = await options?.dynamicCompileOptions?.({
-		filename,
-		code: finalCode,
-		compileOptions
-	});
+	let dynamicCompileOptions;
+	if (options.dynamicCompileOptions) {
+		dynamicCompileOptions = await options.dynamicCompileOptions({
+			filename,
+			code: finalCode,
+			compileOptions,
+			environment
+		});
+	}
 
 	if (dynamicCompileOptions && log.debug.enabled) {
 		log.debug(

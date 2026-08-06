@@ -1,4 +1,4 @@
-import type { InlineConfig, ResolvedConfig } from 'vite';
+import type { Environment, InlineConfig, ResolvedConfig } from 'vite';
 import type { CompileOptions, Warning, PreprocessorGroup } from 'svelte/compiler';
 
 export type Options = Omit<SvelteConfig, 'vitePlugin'> & PluginOptionsInline;
@@ -69,6 +69,7 @@ export interface PluginOptions {
 	 * `data.filename` - The file to be compiled
 	 * `data.code` - The preprocessed Svelte code
 	 * `data.compileOptions` - The current compiler options
+	 * `data.environment` - The current Vite environment, if available
 	 *
 	 * To change part of the compiler options, return an object with the changes you need.
 	 *
@@ -86,6 +87,7 @@ export interface PluginOptions {
 		filename: string;
 		code: string;
 		compileOptions: Partial<CompileOptions>;
+		environment?: Environment;
 	}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
 
 	/**

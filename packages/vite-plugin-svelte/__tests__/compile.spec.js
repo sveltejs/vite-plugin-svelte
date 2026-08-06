@@ -1,5 +1,5 @@
 import process from 'node:process';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createCompileSvelte } from '../src/utils/compile.js';
 /** @type {import('../../types/options.d.ts').ResolvedOptions} */
 const options = {
@@ -22,6 +22,32 @@ describe('createCompileSvelte', () => {
 	});
 
 	describe('compileSvelte', async () => {
+		it('passes the current environment to dynamicCompileOptions', async () => {
+			const dynamicCompileOptions = vi.fn();
+			const environment = /** @type {import('vite').Environment} */ (
+				/** @type {unknown} */ ({ name: 'client' })
+			);
+			const compileSvelte = createCompileSvelte(options);
+
+			await compileSvelte(
+				{
+					cssId: 'svelte-xxxxx',
+					query: {},
+					raw: false,
+					ssr: false,
+					timestamp: Date.now(),
+					id: 'id',
+					filename: '/some/File.svelte',
+					normalizedFilename: 'some/File.svelte'
+				},
+				'<div />',
+				{ dynamicCompileOptions },
+				environment
+			);
+
+			expect(dynamicCompileOptions).toHaveBeenCalledWith(expect.objectContaining({ environment }));
+		});
+
 		it('removes dangling pure annotations', async () => {
 			const code = `<script>
 				const x=1;
