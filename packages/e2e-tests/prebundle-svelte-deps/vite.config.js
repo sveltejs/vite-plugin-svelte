@@ -3,7 +3,17 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [svelte()],
+	plugins: [
+		svelte({
+			dynamicCompileOptions({ filename, environment }) {
+				if (filename.endsWith('Environment.svelte') && environment?.name === 'client') {
+					return {
+						preserveWhitespace: true
+					};
+				}
+			}
+		})
+	],
 	optimizeDeps: {
 		exclude: [
 			// TODO this must be excluded because nested has an scss dep that prebundle can't handle!

@@ -4,3 +4,7 @@ test('should respect dynamic compile option preserveWhitespace: true for A', asy
 	expect(await getText('#A')).toBe('    preserved leading whitespace');
 	expect(await getText('#B')).toBe('removed leading whitespace');
 });
+
+test('passes the current environment to dynamicCompileOptions', async () => {
+	expect(await getText('#environment')).toBe('    environment');
+});

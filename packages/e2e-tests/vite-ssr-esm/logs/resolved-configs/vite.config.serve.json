@@ -1,0 +1,983 @@
+{
+	"server": {
+		"port": 5173,
+		"strictPort": false,
+		"allowedHosts": [],
+		"open": false,
+		"cors": {
+			"origin": "/^https?:\\/\\/(?:(?:[^:]+\\.)?localhost|127\\.0\\.0\\.1|\\[::1\\])(?::\\d+)?$/",
+			"preflightContinue": true
+		},
+		"headers": {},
+		"warmup": {
+			"clientFiles": [],
+			"ssrFiles": []
+		},
+		"middlewareMode": false,
+		"fs": {
+			"strict": true,
+			"deny": [
+				".env",
+				".env.*",
+				"*.{crt,pem,key,p12,pfx,cer,der}",
+				".npmrc",
+				".yarnrc.yml",
+				"**/.git/**"
+			],
+			"allow": [
+				"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/src/lib",
+				"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/src/routes",
+				"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/.svelte-kit",
+				"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/preprocess-with-vite/src",
+				"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/preprocess-with-vite/node_modules",
+				"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules"
+			]
+		},
+		"preTransformRequests": true,
+		"perEnvironmentStartEndDuringDev": false,
+		"perEnvironmentWatchChangeDuringDev": false,
+		"forwardConsole": {
+			"enabled": false,
+			"unhandledErrors": false,
+			"logLevels": []
+		},
+		"watch": {
+			"usePolling": true,
+			"interval": 100,
+			"ignored": [
+				"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/.svelte-kit/!(generated)"
+			]
+		},
+		"ws": {},
+		"hmr": {}
+	},
+	"build": {
+		"target": ["chrome111", "edge111", "firefox114", "safari16.4", "ios16.4"],
+		"polyfillModulePreload": true,
+		"modulePreload": {
+			"polyfill": true
+		},
+		"outDir": "dist",
+		"assetsDir": "assets",
+		"assetsInlineLimit": 4096,
+		"sourcemap": true,
+		"terserOptions": {},
+		"chunkImportMap": false,
+		"rolldownOptions": {
+			"platform": "node",
+			"input": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/@sveltejs+kit@2.59.1_@sveltejs+vite-plugin-svelte@packages+vite-plugin-svelte_svelte@5._1056496848653c64063c2b6cdefa49f7/node_modules/@sveltejs/kit/src/runtime/client/entry.js"
+		},
+		"commonjsOptions": {
+			"include": ["/node_modules/"],
+			"extensions": [".js", ".cjs"]
+		},
+		"dynamicImportVarsOptions": {
+			"exclude": ["/node_modules/"]
+		},
+		"write": true,
+		"emptyOutDir": null,
+		"copyPublicDir": true,
+		"license": false,
+		"manifest": false,
+		"lib": false,
+		"ssrManifest": false,
+		"ssrEmitAssets": false,
+		"reportCompressedSize": true,
+		"chunkSizeWarningLimit": 500,
+		"watch": null,
+		"cssCodeSplit": true,
+		"minify": false,
+		"rollupOptions": {
+			"platform": "node",
+			"input": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/@sveltejs+kit@2.59.1_@sveltejs+vite-plugin-svelte@packages+vite-plugin-svelte_svelte@5._1056496848653c64063c2b6cdefa49f7/node_modules/@sveltejs/kit/src/runtime/client/entry.js"
+		},
+		"ssr": false,
+		"emitAssets": false,
+		"cssTarget": ["chrome111", "edge111", "firefox114", "safari16.4", "ios16.4"],
+		"cssMinify": false
+	},
+	"plugins": [
+		"vite:optimized-deps",
+		"vite:watch-package-data",
+		"vite:pre-alias",
+		"alias",
+		"transform-validation:1",
+		"vite-plugin-svelte:config",
+		"vite-plugin-svelte:load-custom",
+		"vite-plugin-svelte:preprocess",
+		"vite-plugin-svelte-inspector",
+		"vite-plugin-sveltekit-guard",
+		"vite:modulepreload-polyfill",
+		"vite:resolve-dev",
+		"vite:resolve-builtin:get-environment",
+		"vite:resolve-builtin",
+		"vite:html-inline-proxy",
+		"vite:css",
+		"builtin:oxc-runtime",
+		"vite:oxc",
+		"builtin:vite-json",
+		"vite:wasm-helper",
+		"vite:worker",
+		"vite:asset",
+		"transform-validation:2",
+		"vite-plugin-svelte",
+		"vite-plugin-svelte:setup-optimizer",
+		"vite-plugin-svelte:load-compiled-css",
+		"vite-plugin-svelte:compile",
+		"vite-plugin-sveltekit-setup",
+		"vite-plugin-sveltekit-virtual-modules",
+		"vite-plugin-sveltekit-compile",
+		"vite:define",
+		"vite:css-post",
+		"vite:build-html",
+		"vite:worker-import-meta-url",
+		"vite:asset-import-meta-url",
+		"vite:dynamic-import-vars",
+		"vite:import-glob",
+		"transform-validation:3",
+		"vite-plugin-svelte:compile-module",
+		"vite-plugin-svelte:hot-update",
+		"writeResolvedConfig",
+		"vite:client-inject",
+		"vite:css-analysis",
+		"vite:import-analysis"
+	],
+	"optimizeDeps": {
+		"include": [
+			"svelte-i18n",
+			"e2e-test-dep-svelte-api-only",
+			"svelte",
+			"svelte/animate",
+			"svelte/attachments",
+			"svelte/easing",
+			"svelte/internal",
+			"svelte/internal/client",
+			"svelte/internal/disclose-version",
+			"svelte/internal/flags/async",
+			"svelte/internal/flags/legacy",
+			"svelte/internal/flags/tracing",
+			"svelte/legacy",
+			"svelte/motion",
+			"svelte/reactivity",
+			"svelte/reactivity/window",
+			"svelte/store",
+			"svelte/transition",
+			"svelte/events",
+			"svelte > clsx"
+		],
+		"exclude": ["@sveltejs/kit", "$app", "$env"],
+		"needsInterop": [],
+		"rolldownOptions": {
+			"plugins": [
+				{
+					"name": "vite-plugin-svelte:optimize"
+				},
+				{
+					"name": "vite-plugin-svelte:optimize-module"
+				}
+			],
+			"resolve": {
+				"symlinks": true
+			},
+			"output": {
+				"topLevelVar": true
+			}
+		},
+		"extensions": [".svelte"],
+		"holdUntilCrawlEnd": true,
+		"force": false,
+		"ignoreOutdatedRequests": false,
+		"noDiscovery": false,
+		"entries": [
+			"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/src/routes/**/+*.{svelte,js,ts}",
+			"!/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/src/routes/**/+*server.*"
+		],
+		"rollupOptions": {
+			"plugins": [
+				{
+					"name": "vite-plugin-svelte:optimize"
+				},
+				{
+					"name": "vite-plugin-svelte:optimize-module"
+				}
+			],
+			"resolve": {
+				"symlinks": true
+			},
+			"output": {
+				"topLevelVar": true
+			}
+		},
+		"esbuildOptions": {
+			"preserveSymlinks": false
+		}
+	},
+	"css": {
+		"transformer": "postcss",
+		"preprocessorMaxWorkers": true,
+		"devSourcemap": false,
+		"postcss": {
+			"plugins": [
+				{
+					"postcssPlugin": "noop"
+				}
+			]
+		}
+	},
+	"root": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm",
+	"configFile": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/kit-node/vite.config.js",
+	"logLevel": "error",
+	"worker": {
+		"format": "iife",
+		"rollupOptions": {},
+		"rolldownOptions": {}
+	},
+	"resolve": {
+		"externalConditions": ["node", "module-sync"],
+		"extensions": [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json"],
+		"dedupe": [
+			"svelte",
+			"svelte/animate",
+			"svelte/attachments",
+			"svelte/easing",
+			"svelte/internal",
+			"svelte/internal/client",
+			"svelte/internal/disclose-version",
+			"svelte/internal/flags/async",
+			"svelte/internal/flags/legacy",
+			"svelte/internal/flags/tracing",
+			"svelte/internal/server",
+			"svelte/legacy",
+			"svelte/motion",
+			"svelte/reactivity",
+			"svelte/reactivity/window",
+			"svelte/server",
+			"svelte/store",
+			"svelte/transition",
+			"svelte/events"
+		],
+		"noExternal": [],
+		"external": [],
+		"preserveSymlinks": false,
+		"tsconfigPaths": false,
+		"alias": [
+			{
+				"find": "__SERVER__",
+				"replacement": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/.svelte-kit/generated/server"
+			},
+			{
+				"find": "$app",
+				"replacement": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/@sveltejs+kit@2.59.1_@sveltejs+vite-plugin-svelte@packages+vite-plugin-svelte_svelte@5._1056496848653c64063c2b6cdefa49f7/node_modules/@sveltejs/kit/src/runtime/app"
+			},
+			{
+				"find": "$lib",
+				"replacement": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/src/lib"
+			},
+			{
+				"find": "/^\\/?@vite\\/env/",
+				"replacement": "/@fs/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/vite@8.2.0_@types+node@22.20.1_sass@1.102.0_stylus@0.64.0_yaml@2.8.2/node_modules/vite/dist/client/env.mjs"
+			},
+			{
+				"find": "/^\\/?@vite\\/client/",
+				"replacement": "/@fs/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/vite@8.2.0_@types+node@22.20.1_sass@1.102.0_stylus@0.64.0_yaml@2.8.2/node_modules/vite/dist/client/client.mjs"
+			}
+		],
+		"mainFields": ["svelte", "browser", "module", "jsnext:main", "jsnext"],
+		"conditions": ["module", "browser", "development|production", "svelte"],
+		"builtins": []
+	},
+	"ssr": {
+		"target": "node",
+		"optimizeDeps": {
+			"esbuildOptions": {
+				"preserveSymlinks": false
+			},
+			"include": [
+				"svelte",
+				"svelte/animate",
+				"svelte/attachments",
+				"svelte/compiler",
+				"svelte/easing",
+				"svelte/internal",
+				"svelte/internal/client",
+				"svelte/internal/disclose-version",
+				"svelte/internal/flags/async",
+				"svelte/internal/flags/legacy",
+				"svelte/internal/flags/tracing",
+				"svelte/internal/server",
+				"svelte/legacy",
+				"svelte/motion",
+				"svelte/reactivity",
+				"svelte/reactivity/window",
+				"svelte/server",
+				"svelte/store",
+				"svelte/transition",
+				"svelte/events"
+			],
+			"exclude": [],
+			"needsInterop": [],
+			"rolldownOptions": {
+				"plugins": [
+					{
+						"name": "vite-plugin-svelte:optimize"
+					},
+					{
+						"name": "vite-plugin-svelte:optimize-module"
+					}
+				],
+				"resolve": {
+					"symlinks": true
+				},
+				"output": {
+					"topLevelVar": true
+				}
+			},
+			"extensions": [".svelte"],
+			"holdUntilCrawlEnd": true,
+			"force": false,
+			"ignoreOutdatedRequests": false,
+			"noDiscovery": true,
+			"rollupOptions": {
+				"plugins": [
+					{
+						"name": "vite-plugin-svelte:optimize"
+					},
+					{
+						"name": "vite-plugin-svelte:optimize-module"
+					}
+				],
+				"resolve": {
+					"symlinks": true
+				},
+				"output": {
+					"topLevelVar": true
+				}
+			}
+		},
+		"external": [
+			"cli-color",
+			"deepmerge",
+			"e2e-test-dep-cjs-and-esm",
+			"e2e-test-dep-cjs-only",
+			"e2e-test-dep-scss-only",
+			"estree-walker",
+			"intl-messageformat",
+			"sade",
+			"tiny-glob",
+			"cookie",
+			"set-cookie-parser"
+		],
+		"noExternal": [
+			"svelte",
+			"/^svelte\\//",
+			"esm-env",
+			"e2e-test-dep-svelte-api-only",
+			"e2e-test-dep-svelte-nested-workspace-devdep",
+			"e2e-test-dep-svelte-simple",
+			"svelte-i18n",
+			"esm-env",
+			"@sveltejs/kit/src/runtime"
+		],
+		"resolve": {
+			"conditions": ["module", "node", "development|production", "svelte"],
+			"externalConditions": ["node", "module-sync"]
+		}
+	},
+	"experimental": {
+		"importGlobRestoreExtension": false,
+		"hmrPartialAccept": true,
+		"bundledDev": false
+	},
+	"preview": {
+		"port": 4173,
+		"strictPort": false,
+		"allowedHosts": [],
+		"open": false,
+		"cors": {
+			"preflightContinue": true
+		},
+		"headers": {}
+	},
+	"define": {
+		"__SVELTEKIT_APP_DIR__": "\"_app\"",
+		"__SVELTEKIT_EMBEDDED__": "false",
+		"__SVELTEKIT_FORK_PRELOADS__": "false",
+		"__SVELTEKIT_PATHS_ASSETS__": "\"\"",
+		"__SVELTEKIT_PATHS_BASE__": "\"\"",
+		"__SVELTEKIT_PATHS_RELATIVE__": "true",
+		"__SVELTEKIT_CLIENT_ROUTING__": "true",
+		"__SVELTEKIT_HASH_ROUTING__": "false",
+		"__SVELTEKIT_SERVER_TRACING_ENABLED__": "false",
+		"__SVELTEKIT_EXPERIMENTAL_USE_TRANSFORM_ERROR__": "false",
+		"__SVELTEKIT_APP_VERSION_POLL_INTERVAL__": "0",
+		"__SVELTEKIT_PAYLOAD__": "globalThis.__sveltekit_dev",
+		"__SVELTEKIT_HAS_SERVER_LOAD__": "true",
+		"__SVELTEKIT_HAS_UNIVERSAL_LOAD__": "true"
+	},
+	"appType": "custom",
+	"base": "/",
+	"publicDir": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/static",
+	"environments": {
+		"client": {
+			"define": {
+				"__SVELTEKIT_APP_DIR__": "\"_app\"",
+				"__SVELTEKIT_EMBEDDED__": "false",
+				"__SVELTEKIT_FORK_PRELOADS__": "false",
+				"__SVELTEKIT_PATHS_ASSETS__": "\"\"",
+				"__SVELTEKIT_PATHS_BASE__": "\"\"",
+				"__SVELTEKIT_PATHS_RELATIVE__": "true",
+				"__SVELTEKIT_CLIENT_ROUTING__": "true",
+				"__SVELTEKIT_HASH_ROUTING__": "false",
+				"__SVELTEKIT_SERVER_TRACING_ENABLED__": "false",
+				"__SVELTEKIT_EXPERIMENTAL_USE_TRANSFORM_ERROR__": "false",
+				"__SVELTEKIT_APP_VERSION_POLL_INTERVAL__": "0",
+				"__SVELTEKIT_PAYLOAD__": "globalThis.__sveltekit_dev",
+				"__SVELTEKIT_HAS_SERVER_LOAD__": "true",
+				"__SVELTEKIT_HAS_UNIVERSAL_LOAD__": "true"
+			},
+			"resolve": {
+				"externalConditions": ["node", "module-sync"],
+				"extensions": [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json"],
+				"dedupe": [
+					"svelte",
+					"svelte/animate",
+					"svelte/attachments",
+					"svelte/easing",
+					"svelte/internal",
+					"svelte/internal/client",
+					"svelte/internal/disclose-version",
+					"svelte/internal/flags/async",
+					"svelte/internal/flags/legacy",
+					"svelte/internal/flags/tracing",
+					"svelte/internal/server",
+					"svelte/legacy",
+					"svelte/motion",
+					"svelte/reactivity",
+					"svelte/reactivity/window",
+					"svelte/server",
+					"svelte/store",
+					"svelte/transition",
+					"svelte/events"
+				],
+				"noExternal": [],
+				"external": [],
+				"preserveSymlinks": false,
+				"tsconfigPaths": false,
+				"alias": [
+					{
+						"find": "__SERVER__",
+						"replacement": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/.svelte-kit/generated/server"
+					},
+					{
+						"find": "$app",
+						"replacement": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/@sveltejs+kit@2.59.1_@sveltejs+vite-plugin-svelte@packages+vite-plugin-svelte_svelte@5._1056496848653c64063c2b6cdefa49f7/node_modules/@sveltejs/kit/src/runtime/app"
+					},
+					{
+						"find": "$lib",
+						"replacement": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/src/lib"
+					},
+					{
+						"find": "/^\\/?@vite\\/env/",
+						"replacement": "/@fs/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/vite@8.2.0_@types+node@22.20.1_sass@1.102.0_stylus@0.64.0_yaml@2.8.2/node_modules/vite/dist/client/env.mjs"
+					},
+					{
+						"find": "/^\\/?@vite\\/client/",
+						"replacement": "/@fs/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/vite@8.2.0_@types+node@22.20.1_sass@1.102.0_stylus@0.64.0_yaml@2.8.2/node_modules/vite/dist/client/client.mjs"
+					}
+				],
+				"mainFields": ["svelte", "browser", "module", "jsnext:main", "jsnext"],
+				"conditions": ["module", "browser", "development|production", "svelte"],
+				"builtins": []
+			},
+			"keepProcessEnv": false,
+			"consumer": "client",
+			"optimizeDeps": {
+				"include": [
+					"svelte-i18n",
+					"e2e-test-dep-svelte-api-only",
+					"svelte",
+					"svelte/animate",
+					"svelte/attachments",
+					"svelte/easing",
+					"svelte/internal",
+					"svelte/internal/client",
+					"svelte/internal/disclose-version",
+					"svelte/internal/flags/async",
+					"svelte/internal/flags/legacy",
+					"svelte/internal/flags/tracing",
+					"svelte/legacy",
+					"svelte/motion",
+					"svelte/reactivity",
+					"svelte/reactivity/window",
+					"svelte/store",
+					"svelte/transition",
+					"svelte/events",
+					"svelte > clsx"
+				],
+				"exclude": ["@sveltejs/kit", "$app", "$env"],
+				"needsInterop": [],
+				"rolldownOptions": {
+					"plugins": [
+						{
+							"name": "vite-plugin-svelte:optimize"
+						},
+						{
+							"name": "vite-plugin-svelte:optimize-module"
+						}
+					],
+					"resolve": {
+						"symlinks": true
+					},
+					"output": {
+						"topLevelVar": true
+					}
+				},
+				"extensions": [".svelte"],
+				"holdUntilCrawlEnd": true,
+				"force": false,
+				"ignoreOutdatedRequests": false,
+				"noDiscovery": false,
+				"entries": [
+					"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/src/routes/**/+*.{svelte,js,ts}",
+					"!/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/src/routes/**/+*server.*"
+				],
+				"rollupOptions": {
+					"plugins": [
+						{
+							"name": "vite-plugin-svelte:optimize"
+						},
+						{
+							"name": "vite-plugin-svelte:optimize-module"
+						}
+					],
+					"resolve": {
+						"symlinks": true
+					},
+					"output": {
+						"topLevelVar": true
+					}
+				},
+				"esbuildOptions": {
+					"preserveSymlinks": false
+				}
+			},
+			"dev": {
+				"warmup": [],
+				"sourcemap": {
+					"js": true
+				},
+				"preTransformRequests": true,
+				"recoverable": true,
+				"moduleRunnerTransform": false
+			},
+			"build": {
+				"target": ["chrome111", "edge111", "firefox114", "safari16.4", "ios16.4"],
+				"polyfillModulePreload": true,
+				"modulePreload": {
+					"polyfill": true
+				},
+				"outDir": "dist",
+				"assetsDir": "assets",
+				"assetsInlineLimit": 4096,
+				"sourcemap": true,
+				"terserOptions": {},
+				"chunkImportMap": false,
+				"rolldownOptions": {
+					"platform": "browser",
+					"input": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/@sveltejs+kit@2.59.1_@sveltejs+vite-plugin-svelte@packages+vite-plugin-svelte_svelte@5._1056496848653c64063c2b6cdefa49f7/node_modules/@sveltejs/kit/src/runtime/client/entry.js"
+				},
+				"commonjsOptions": {
+					"include": ["/node_modules/"],
+					"extensions": [".js", ".cjs"]
+				},
+				"dynamicImportVarsOptions": {
+					"exclude": ["/node_modules/"]
+				},
+				"write": true,
+				"emptyOutDir": null,
+				"copyPublicDir": true,
+				"license": false,
+				"manifest": false,
+				"lib": false,
+				"ssrManifest": false,
+				"ssrEmitAssets": false,
+				"reportCompressedSize": true,
+				"chunkSizeWarningLimit": 500,
+				"watch": null,
+				"cssCodeSplit": true,
+				"minify": false,
+				"rollupOptions": {
+					"platform": "browser",
+					"input": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/@sveltejs+kit@2.59.1_@sveltejs+vite-plugin-svelte@packages+vite-plugin-svelte_svelte@5._1056496848653c64063c2b6cdefa49f7/node_modules/@sveltejs/kit/src/runtime/client/entry.js"
+				},
+				"ssr": false,
+				"emitAssets": true,
+				"cssTarget": ["chrome111", "edge111", "firefox114", "safari16.4", "ios16.4"],
+				"cssMinify": false
+			},
+			"isBundled": false
+		},
+		"ssr": {
+			"define": {
+				"__SVELTEKIT_APP_DIR__": "\"_app\"",
+				"__SVELTEKIT_EMBEDDED__": "false",
+				"__SVELTEKIT_FORK_PRELOADS__": "false",
+				"__SVELTEKIT_PATHS_ASSETS__": "\"\"",
+				"__SVELTEKIT_PATHS_BASE__": "\"\"",
+				"__SVELTEKIT_PATHS_RELATIVE__": "true",
+				"__SVELTEKIT_CLIENT_ROUTING__": "true",
+				"__SVELTEKIT_HASH_ROUTING__": "false",
+				"__SVELTEKIT_SERVER_TRACING_ENABLED__": "false",
+				"__SVELTEKIT_EXPERIMENTAL_USE_TRANSFORM_ERROR__": "false",
+				"__SVELTEKIT_APP_VERSION_POLL_INTERVAL__": "0",
+				"__SVELTEKIT_PAYLOAD__": "globalThis.__sveltekit_dev",
+				"__SVELTEKIT_HAS_SERVER_LOAD__": "true",
+				"__SVELTEKIT_HAS_UNIVERSAL_LOAD__": "true"
+			},
+			"resolve": {
+				"externalConditions": ["node", "module-sync"],
+				"extensions": [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json"],
+				"dedupe": [
+					"svelte",
+					"svelte/animate",
+					"svelte/attachments",
+					"svelte/easing",
+					"svelte/internal",
+					"svelte/internal/client",
+					"svelte/internal/disclose-version",
+					"svelte/internal/flags/async",
+					"svelte/internal/flags/legacy",
+					"svelte/internal/flags/tracing",
+					"svelte/internal/server",
+					"svelte/legacy",
+					"svelte/motion",
+					"svelte/reactivity",
+					"svelte/reactivity/window",
+					"svelte/server",
+					"svelte/store",
+					"svelte/transition",
+					"svelte/events"
+				],
+				"noExternal": [
+					"svelte",
+					"/^svelte\\//",
+					"esm-env",
+					"e2e-test-dep-svelte-api-only",
+					"e2e-test-dep-svelte-nested-workspace-devdep",
+					"e2e-test-dep-svelte-simple",
+					"svelte-i18n",
+					"esm-env",
+					"@sveltejs/kit/src/runtime"
+				],
+				"external": [
+					"cli-color",
+					"deepmerge",
+					"e2e-test-dep-cjs-and-esm",
+					"e2e-test-dep-cjs-only",
+					"e2e-test-dep-scss-only",
+					"estree-walker",
+					"intl-messageformat",
+					"sade",
+					"tiny-glob",
+					"cookie",
+					"set-cookie-parser"
+				],
+				"preserveSymlinks": false,
+				"tsconfigPaths": false,
+				"alias": [
+					{
+						"find": "__SERVER__",
+						"replacement": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/.svelte-kit/generated/server"
+					},
+					{
+						"find": "$app",
+						"replacement": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/@sveltejs+kit@2.59.1_@sveltejs+vite-plugin-svelte@packages+vite-plugin-svelte_svelte@5._1056496848653c64063c2b6cdefa49f7/node_modules/@sveltejs/kit/src/runtime/app"
+					},
+					{
+						"find": "$lib",
+						"replacement": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/src/lib"
+					},
+					{
+						"find": "/^\\/?@vite\\/env/",
+						"replacement": "/@fs/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/vite@8.2.0_@types+node@22.20.1_sass@1.102.0_stylus@0.64.0_yaml@2.8.2/node_modules/vite/dist/client/env.mjs"
+					},
+					{
+						"find": "/^\\/?@vite\\/client/",
+						"replacement": "/@fs/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/vite@8.2.0_@types+node@22.20.1_sass@1.102.0_stylus@0.64.0_yaml@2.8.2/node_modules/vite/dist/client/client.mjs"
+					}
+				],
+				"mainFields": ["svelte", "module", "jsnext:main", "jsnext"],
+				"conditions": ["module", "node", "development|production", "svelte"],
+				"builtins": [
+					"_http_agent",
+					"_http_client",
+					"_http_common",
+					"_http_incoming",
+					"_http_outgoing",
+					"_http_server",
+					"_stream_duplex",
+					"_stream_passthrough",
+					"_stream_readable",
+					"_stream_transform",
+					"_stream_wrap",
+					"_stream_writable",
+					"_tls_common",
+					"_tls_wrap",
+					"assert",
+					"assert/strict",
+					"async_hooks",
+					"buffer",
+					"child_process",
+					"cluster",
+					"console",
+					"constants",
+					"crypto",
+					"dgram",
+					"diagnostics_channel",
+					"dns",
+					"dns/promises",
+					"domain",
+					"electron/js2c/browser_init",
+					"electron/js2c/isolated_bundle",
+					"electron/js2c/node_init",
+					"electron/js2c/preload_realm_bundle",
+					"electron/js2c/renderer_init",
+					"electron/js2c/sandbox_bundle",
+					"electron/js2c/utility_init",
+					"electron/js2c/worker_init",
+					"events",
+					"fs",
+					"fs/promises",
+					"http",
+					"http2",
+					"https",
+					"inspector",
+					"inspector/promises",
+					"module",
+					"net",
+					"original-fs",
+					"original-fs/promises",
+					"os",
+					"path",
+					"path/posix",
+					"path/win32",
+					"perf_hooks",
+					"process",
+					"punycode",
+					"querystring",
+					"readline",
+					"readline/promises",
+					"repl",
+					"stream",
+					"stream/consumers",
+					"stream/promises",
+					"stream/web",
+					"string_decoder",
+					"sys",
+					"timers",
+					"timers/promises",
+					"tls",
+					"trace_events",
+					"tty",
+					"url",
+					"util",
+					"util/types",
+					"v8",
+					"vm",
+					"wasi",
+					"worker_threads",
+					"zlib",
+					"/^node:/",
+					"/^bun:/"
+				]
+			},
+			"keepProcessEnv": true,
+			"consumer": "server",
+			"optimizeDeps": {
+				"include": [
+					"svelte",
+					"svelte/animate",
+					"svelte/attachments",
+					"svelte/compiler",
+					"svelte/easing",
+					"svelte/internal",
+					"svelte/internal/client",
+					"svelte/internal/disclose-version",
+					"svelte/internal/flags/async",
+					"svelte/internal/flags/legacy",
+					"svelte/internal/flags/tracing",
+					"svelte/internal/server",
+					"svelte/legacy",
+					"svelte/motion",
+					"svelte/reactivity",
+					"svelte/reactivity/window",
+					"svelte/server",
+					"svelte/store",
+					"svelte/transition",
+					"svelte/events"
+				],
+				"exclude": [],
+				"needsInterop": [],
+				"rolldownOptions": {
+					"plugins": [
+						{
+							"name": "vite-plugin-svelte:optimize"
+						},
+						{
+							"name": "vite-plugin-svelte:optimize-module"
+						}
+					],
+					"resolve": {
+						"symlinks": true
+					},
+					"output": {
+						"topLevelVar": true
+					}
+				},
+				"extensions": [".svelte"],
+				"holdUntilCrawlEnd": true,
+				"force": false,
+				"ignoreOutdatedRequests": false,
+				"noDiscovery": true,
+				"rollupOptions": {
+					"plugins": [
+						{
+							"name": "vite-plugin-svelte:optimize"
+						},
+						{
+							"name": "vite-plugin-svelte:optimize-module"
+						}
+					],
+					"resolve": {
+						"symlinks": true
+					},
+					"output": {
+						"topLevelVar": true
+					}
+				},
+				"esbuildOptions": {
+					"preserveSymlinks": false
+				}
+			},
+			"dev": {
+				"warmup": [],
+				"sourcemap": {
+					"js": true
+				},
+				"preTransformRequests": false,
+				"recoverable": false,
+				"moduleRunnerTransform": true
+			},
+			"build": {
+				"target": ["chrome111", "edge111", "firefox114", "safari16.4", "ios16.4"],
+				"polyfillModulePreload": true,
+				"modulePreload": {
+					"polyfill": true
+				},
+				"outDir": "dist",
+				"assetsDir": "assets",
+				"assetsInlineLimit": 4096,
+				"sourcemap": true,
+				"terserOptions": {},
+				"chunkImportMap": false,
+				"rolldownOptions": {
+					"platform": "node",
+					"input": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/@sveltejs+kit@2.59.1_@sveltejs+vite-plugin-svelte@packages+vite-plugin-svelte_svelte@5._1056496848653c64063c2b6cdefa49f7/node_modules/@sveltejs/kit/src/runtime/client/entry.js"
+				},
+				"commonjsOptions": {
+					"include": ["/node_modules/"],
+					"extensions": [".js", ".cjs"]
+				},
+				"dynamicImportVarsOptions": {
+					"exclude": ["/node_modules/"]
+				},
+				"write": true,
+				"emptyOutDir": null,
+				"copyPublicDir": true,
+				"license": false,
+				"manifest": false,
+				"lib": false,
+				"ssrManifest": false,
+				"ssrEmitAssets": false,
+				"reportCompressedSize": true,
+				"chunkSizeWarningLimit": 500,
+				"watch": null,
+				"cssCodeSplit": true,
+				"minify": false,
+				"rollupOptions": {
+					"platform": "node",
+					"input": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/node_modules/.pnpm/@sveltejs+kit@2.59.1_@sveltejs+vite-plugin-svelte@packages+vite-plugin-svelte_svelte@5._1056496848653c64063c2b6cdefa49f7/node_modules/@sveltejs/kit/src/runtime/client/entry.js"
+				},
+				"ssr": true,
+				"emitAssets": false,
+				"cssTarget": ["chrome111", "edge111", "firefox114", "safari16.4", "ios16.4"],
+				"cssMinify": "lightningcss"
+			},
+			"isBundled": false
+		}
+	},
+	"configFileDependencies": [
+		"/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/kit-node/vite.config.js"
+	],
+	"inlineConfig": {
+		"root": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/kit-node",
+		"configFile": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/kit-node/vite.config.js",
+		"logLevel": "error",
+		"build": {},
+		"worker": {},
+		"optimizeDeps": {}
+	},
+	"decodedBase": "/",
+	"rawBase": "/",
+	"cacheDir": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm/node_modules/.vite",
+	"command": "serve",
+	"mode": "development",
+	"isWorker": false,
+	"mainConfig": null,
+	"bundleChain": [],
+	"isProduction": false,
+	"json": {
+		"namedExports": true,
+		"stringify": "auto"
+	},
+	"esbuild": {
+		"jsxDev": true,
+		"charset": "utf8",
+		"legalComments": "none"
+	},
+	"oxc": {
+		"jsx": {
+			"development": true
+		}
+	},
+	"envDir": "/Users/paoloricciuti/Desktop/code/vite-plugin-svelte/packages/e2e-tests/vite-ssr-esm",
+	"env": {
+		"VITE_USER_NODE_ENV": "production",
+		"BASE_URL": "/",
+		"MODE": "development",
+		"DEV": true,
+		"PROD": false
+	},
+	"rawAssetsInclude": [],
+	"logger": {
+		"hasWarned": false
+	},
+	"packageCache": {},
+	"dev": {
+		"warmup": [],
+		"sourcemap": {
+			"js": true
+		},
+		"preTransformRequests": false,
+		"recoverable": false,
+		"moduleRunnerTransform": false
+	},
+	"devtools": {
+		"config": {
+			"host": "localhost"
+		},
+		"enabled": false
+	},
+	"webSocketToken": "N6BFpnldwZQ9",
+	"safeModulePaths": {}
+}

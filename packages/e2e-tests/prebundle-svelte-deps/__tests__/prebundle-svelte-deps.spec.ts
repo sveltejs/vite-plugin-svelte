@@ -25,6 +25,10 @@ async function expectPageToWork() {
 	expect(await getText('#module button:first-child')).toBe('count is 0');
 }
 
+test('passes the current environment while compiling a Svelte dependency', async () => {
+	expect(await getText('#optimizer-environment')).toBe('    optimizer environment');
+});
+
 if (!isBuild) {
 	test('page works with pre-bundling enabled', async () => {
 		await expectPageToWork();

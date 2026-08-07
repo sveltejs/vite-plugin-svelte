@@ -1,6 +1,6 @@
 <script>
 	import Hybrid from 'e2e-test-dep-svelte-hybrid';
-	import Simple from 'e2e-test-dep-svelte-simple';
+	import Simple, { Environment as OptimizerEnvironment } from 'e2e-test-dep-svelte-simple';
 	import { Dependency } from 'e2e-test-dep-svelte-exports-simple';
 	import { Message as Nested } from 'e2e-test-dep-svelte-nested';
 	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
@@ -16,6 +16,9 @@
 	</div>
 	<div id="simple">
 		<Simple />
+	</div>
+	<div>
+		<OptimizerEnvironment />
 	</div>
 	<div id="nested">
 		<Nested id="message" message="nested" />
