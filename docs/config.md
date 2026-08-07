@@ -231,7 +231,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
     filename: string; // The file to be compiled
     code: string; // The preprocessed Svelte code
     compileOptions: Partial<CompileOptions>; // The current compiler options
-    environment?: Environment; // The current Vite environment, if available
+    environment: Environment; // The current Vite environment, if available
   }) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
   ```
 
@@ -244,9 +244,9 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
   export default defineConfig({
     plugins: [
       svelte({
-        dynamicCompileOptions({ filename, compileOptions }) {
+        dynamicCompileOptions({ filename, compileOptions, environment }) {
           // Dynamically set runes mode per Svelte file
-          if (forceRunesMode(filename) && !compileOptions.runes) {
+          if (environment.name === 'client' && forceRunesMode(filename) && !compileOptions.runes) {
             return { runes: true };
           }
         }

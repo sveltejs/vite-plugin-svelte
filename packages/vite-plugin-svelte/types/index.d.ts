@@ -87,7 +87,7 @@ declare module '@sveltejs/vite-plugin-svelte' {
 			filename: string;
 			code: string;
 			compileOptions: Partial<CompileOptions>;
-			environment?: Environment;
+			environment: Environment;
 		}) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
 
 		/**

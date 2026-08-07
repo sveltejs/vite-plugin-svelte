@@ -108,7 +108,11 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 				async handler(code, filename) {
 					try {
 						if (components) {
-							const environment = api.options.server?.environments[environmentName];
+							const environment =
+								/**
+								 * Given the order of plugin execution, we can be sure that the environment is already there.
+								 * @type {import("vite").Environment}
+								 */ (api.options.server?.environments[environmentName]);
 							return await compileSvelte(
 								api.options,
 								{ filename, code },
@@ -146,7 +150,7 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
  * @param {ResolvedOptions} options
  * @param {{ filename: string, code: string }} input
  * @param {'client'|'server'} generate
- * @param {import('vite').Environment | undefined} environment
+ * @param {import('vite').Environment} environment
  * @param {StatCollection} [statsCollection]
  * @returns {Promise<Code>}
  */
