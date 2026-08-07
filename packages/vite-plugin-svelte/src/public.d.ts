@@ -69,7 +69,7 @@ export interface PluginOptions {
 	 * `data.filename` - The file to be compiled
 	 * `data.code` - The preprocessed Svelte code
 	 * `data.compileOptions` - The current compiler options
-	 * `data.environment` - The current Vite environment, if available
+	 * `data.environment` - The current Vite environment
 	 *
 	 * To change part of the compiler options, return an object with the changes you need.
 	 *

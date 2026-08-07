@@ -231,7 +231,7 @@ A [picomatch pattern](https://github.com/micromatch/picomatch), or array of patt
     filename: string; // The file to be compiled
     code: string; // The preprocessed Svelte code
     compileOptions: Partial<CompileOptions>; // The current compiler options
-    environment: Environment; // The current Vite environment, if available
+    environment: Environment; // The current Vite environment
   }) => Promise<Partial<CompileOptions> | void> | Partial<CompileOptions> | void;
   ```
 
