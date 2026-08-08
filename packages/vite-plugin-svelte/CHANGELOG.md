@@ -1,5 +1,17 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.3.0
+### Minor Changes
+
+
+- feat: pass environment to `dynamicCompileOptions` ([#1386](https://github.com/sveltejs/vite-plugin-svelte/pull/1386))
+
+
+### Patch Changes
+
+
+- fix: don't log inline config when encountering unexpected options ([#1376](https://github.com/sveltejs/vite-plugin-svelte/pull/1376))
+
 ## 7.2.0
 ### Minor Changes
 
