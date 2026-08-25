@@ -12,6 +12,7 @@ import { log } from '../utils/log.js';
 import { arraify } from '../utils/options.js';
 import fs from 'node:fs';
 import path from 'node:path';
+import { normalizePath } from 'vite';
 
 /**
  * @param {PluginAPI} api
@@ -150,7 +151,7 @@ class DependenciesCache {
 		this.#server = server;
 		/** @type {(filename: string) => void} */
 		const emitChangeEventOnDependants = (filename) => {
-			const dependants = this.#dependants.get(filename);
+			const dependants = this.#dependants.get(normalizePath(filename));
 			dependants?.forEach((dependant) => {
 				if (fs.existsSync(dependant)) {
 					log.debug(
@@ -201,14 +202,16 @@ class DependenciesCache {
 		this.#dependencies.set(id, dependencies);
 		const removed = prevDependencies.filter((d) => !dependencies.includes(d));
 		const added = dependencies.filter((d) => !prevDependencies.includes(d));
-		added.forEach((d) => {
+		added.forEach((rawDep) => {
+			const d = normalizePath(rawDep);
 			this.#ensureWatchedFile(d);
 			if (!this.#dependants.has(d)) {
 				this.#dependants.set(d, new Set());
 			}
 			/** @type {Set<string>} */ (this.#dependants.get(d)).add(svelteRequest.filename);
 		});
-		removed.forEach((d) => {
+		removed.forEach((rawDep) => {
+			const d = normalizePath(rawDep);
 			/** @type {Set<string>} */ (this.#dependants.get(d)).delete(svelteRequest.filename);
 		});
 	}
