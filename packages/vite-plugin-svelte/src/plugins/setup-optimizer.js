@@ -99,7 +99,7 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 			delete plugin.buildEnd;
 			if (components) {
 				plugin.transform = {
-					filter: { id: /^virtual-module:[^?#]+\.svelte(?:[?#]|$)/ },
+					filter: { id: includeRe },
 					handler(code) {
 						return { code, moduleType: 'ts' };
 					}
