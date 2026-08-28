@@ -96,6 +96,7 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 		);
 		if (isScanner) {
 			delete plugin.buildStart;
+			delete plugin.transform;
 			delete plugin.buildEnd;
 			if (components) {
 				plugin.transform = {
@@ -104,8 +105,6 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 						return { code, moduleType: 'ts' };
 					}
 				};
-			} else {
-				delete plugin.transform;
 			}
 		} else {
 			plugin.transform = {
