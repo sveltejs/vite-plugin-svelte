@@ -96,8 +96,17 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 		);
 		if (isScanner) {
 			delete plugin.buildStart;
-			delete plugin.transform;
 			delete plugin.buildEnd;
+			if (components) {
+				plugin.transform = {
+					filter: { id: /^virtual-module:[^?#]+\.svelte(?:[?#]|$)/ },
+					handler(code) {
+						return { code, moduleType: 'ts' };
+					}
+				};
+			} else {
+				delete plugin.transform;
+			}
 		} else {
 			plugin.transform = {
 				filter: { id: includeRe },
