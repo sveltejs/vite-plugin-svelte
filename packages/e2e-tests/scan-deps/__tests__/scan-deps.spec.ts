@@ -12,6 +12,8 @@ describe('vite import scan', () => {
 		expect(await getText('#svelte4single')).toBe('svelte4single');
 		expect(await getText('#svelte4none')).toBe('svelte4none');
 		expect(await getText('#svelte4space')).toBe('svelte4space');
+		expect(await getText('#svelte5named')).toBe('svelte5named');
 		expect(await getText('#svelte5snippet')).toBe('svelte5snippet');
+		expect(await getText('#svelte5snippet-alias')).toBe('svelte5snippet');
 	});
 });
