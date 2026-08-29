@@ -102,11 +102,11 @@ export function hotUpdate(api) {
 					const affectedModules = [];
 					const prevResults = svelteModules.map((m) => transformResultCache.get(m.id));
 
-					// Svelte components self-accept updates at their stable URLs. If a
-					// child was updated earlier, Vite would otherwise timestamp its import
-					// while eagerly transforming the parent, creating a second browser
-					// module instance. Keep subsequent transforms on the stable URL until
-					// the child itself receives another update timestamp.
+					// If an imported Svelte module was updated earlier, the browser would
+					// have already created a module instance. Updating its timestamp again
+					// from a parent update would create a second instance. We need to avoid
+					// this since future updates to the imported module will only update the
+					// first instance
 					for (const mod of svelteModules) {
 						for (const imported of mod.importedModules) {
 							const importedRequest = imported.id && idParser(imported.id, false);
