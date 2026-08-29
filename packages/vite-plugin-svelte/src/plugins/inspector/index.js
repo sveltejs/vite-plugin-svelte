@@ -118,7 +118,9 @@ export function svelteInspector(api) {
 			// Vite+ projects install vite@npm:@voidzero-dev/vite-plus-core@latest which
 			// changes the path from `vite/dist/client/client.mjs` to `vite/dist/vite/client/client.mjs`
 			// TODO: inject with transformIndexHtml when it works with SSR
-			filter: { id: /(?:vite\/dist|vite\/dist\/vite|vite-plus-core\/dist\/vite)\/client\/client\.mjs(?:\?|$)/ },
+			filter: {
+				id: /(?:vite\/dist|vite\/dist\/vite|vite-plus-core\/dist\/vite)\/client\/client\.mjs(?:\?|$)/
+			},
 			handler(code) {
 				if (disabled) {
 					return;
