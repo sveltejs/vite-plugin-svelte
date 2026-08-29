@@ -98,6 +98,10 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 			delete plugin.buildStart;
 			delete plugin.transform;
 			delete plugin.buildEnd;
+			// treat all Svelte file script blocks as TypeScript for the sake of dependency
+			// scanning so that it doesn't treat exported snippets as a missing reference
+			// since they are only defined in the template. This is a lot cheaper than
+			// compiling every Svelte file
 			if (components) {
 				plugin.transform = {
 					filter: { id: includeRe },
