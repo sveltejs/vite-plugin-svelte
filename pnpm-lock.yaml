@@ -625,6 +625,21 @@ importers:
         specifier: ^8.0.9
         version: 8.2.2(@types/node@22.20.1)(sass@1.103.1)(stylus@0.64.0)(yaml@2.9.0)
 
+  packages/e2e-tests/sourcemap-pretransform:
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: workspace:^
+        version: link:../../vite-plugin-svelte
+      magic-string:
+        specifier: ^1.0.0
+        version: 1.2.2
+      svelte:
+        specifier: ^5.46.4
+        version: 5.56.10(@typescript-eslint/types@8.68.0)
+      vite:
+        specifier: ^8.0.9
+        version: 8.2.2(@types/node@22.20.1)(sass@1.103.1)(stylus@0.64.0)(yaml@2.9.0)
+
   packages/e2e-tests/svelte-preprocess:
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
