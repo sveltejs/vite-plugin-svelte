@@ -1,5 +1,11 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.3.1
+
+### Patch Changes
+
+- fix: inject the inspector into the client under Vite+ on pnpm, where the realpathed client module has no `vite/` segment before `dist/` ([#1373](https://github.com/sveltejs/vite-plugin-svelte/pull/1373))
+
 ## 7.3.0
 ### Minor Changes
 
