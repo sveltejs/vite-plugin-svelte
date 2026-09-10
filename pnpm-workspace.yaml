@@ -31,6 +31,7 @@ auditConfig:
     - 'GHSA-wf6x-7x77-mvgw' # we aren't using mergeDeep from immutable with public inputs
     - 'GHSA-48c2-rrv3-qjmp' # we don't consume public yaml files
     - 'GHSA-f886-m6hf-6m8v' # belongs to an optional peer dependency of Vite
+    - 'GHSA-2v37-7h3g-55p8' # belongs to an optional peer dependency of Vitefu
 
 overrides:
   # $ prefixed package names take their version from root package.json - this is like catalogs but without them
