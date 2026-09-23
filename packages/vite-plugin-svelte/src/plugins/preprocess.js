@@ -85,6 +85,17 @@ export function preprocess(api) {
 					if (preprocessed.map) {
 						// @ts-expect-error type differs but should work
 						result.map = preprocessed.map;
+						// hand our own preprocess map to the compile hook so it can forward
+						// it to svelte.compile as the external-preprocessor map (svelte
+						// needs it to chain preprocessor sources like scss into css.map)
+						api.preprocessedMaps.set(
+							svelteRequest.id,
+							/** @type {import('vite').Rollup.SourceMap} */ (
+								/** @type {unknown} */ (preprocessed.map)
+							)
+						);
+					} else {
+						api.preprocessedMaps.delete(svelteRequest.id);
 					}
 					return result;
 				} catch (e) {
