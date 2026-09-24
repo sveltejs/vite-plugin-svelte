@@ -706,8 +706,8 @@ importers:
         specifier: ^1.0.0
         version: 1.2.3
       obug:
-        specifier: ^2.1.0
-        version: 2.1.4
+        specifier: ^3.0.0
+        version: 3.0.0
       vitefu:
         specifier: ^1.1.2
         version: 1.1.3(vite@8.2.2(@types/node@22.20.1)(sass@1.104.0)(stylus@0.64.0)(yaml@2.9.0))
@@ -2709,6 +2709,10 @@ packages:
 
   obug@2.1.4:
     resolution: {integrity: sha512-4a+OsYv9UktOJKE+l1A4OufDgdRF9PifWj+tJnHURo/P+WOxpG4GzUFL9qCalmWauao6ogiG+QvnCovwPoyAWA==}
+    engines: {node: '>=12.20.0'}
+
+  obug@3.0.0:
+    resolution: {integrity: sha512-5vvB5+W7ePv+p3uqxi+RcW1XAzLW0/hxt3/4X4Lc4qHudzOhmBiBwOY6DRob4WnanAEGvNcLjF+KNOufrUoEQw==}
     engines: {node: '>=12.20.0'}
 
   on-headers@1.1.0:
@@ -5458,6 +5462,8 @@ snapshots:
     optional: true
 
   obug@2.1.4: {}
+
+  obug@3.0.0: {}
 
   on-headers@1.1.0: {}
 
