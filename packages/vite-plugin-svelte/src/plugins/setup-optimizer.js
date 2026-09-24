@@ -12,6 +12,11 @@ import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
 import { SVELTE_IMPORTS } from '../utils/constants.js';
 import { isDepExcluded } from 'vitefu';
+import * as vite from 'vite';
+const {
+	//@ts-ignore rolldown types don't exist
+	transformWithOxc
+} = vite;
 
 /**
  * @typedef {NonNullable<Rolldown.Plugin>} RollupPlugin
@@ -226,8 +231,35 @@ async function compileSvelte(options, { filename, code }, generate, environment,
  * @returns {Promise<Code>}
  */
 async function compileSvelteModule(options, { filename, code }, generate, statsCollection) {
+	let preprocessed;
+
+	if (options.preprocess) {
+		try {
+			preprocessed = await svelte.preprocess(code, options.preprocess, { filename });
+		} catch (e) {
+			e.message = `Error while preprocessing ${filename}${e.message ? ` - ${e.message}` : ''}`;
+			throw e;
+		}
+	}
+	let finalCode = preprocessed ? preprocessed.code : code;
+
+	if (/\.svelte\.ts(?:[?#]|$)/.test(filename)) {
+		// in the normal transform pipeline vite core strips typescript from `.svelte.ts`
+		// modules before they reach compileModule, but prebundling intercepts the file
+		// before that can happen
+		finalCode = (
+			await transformWithOxc(finalCode, filename, {
+				lang: 'ts',
+				target: 'esnext',
+				// only strip type-only imports, value imports may be relied upon by
+				// reexporting modules or dynamic import sites we cannot see
+				typescript: { onlyRemoveTypeImports: true }
+			})
+		).code;
+	}
+
 	const endStat = statsCollection?.start(filename);
-	const compiled = svelte.compileModule(code, {
+	const compiled = svelte.compileModule(finalCode, {
 		dev: options.compilerOptions?.dev ?? true, // default to dev: true because prebundling is only used in dev
 		filename,
 		generate
