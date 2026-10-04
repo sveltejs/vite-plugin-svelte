@@ -1,6 +1,9 @@
 {
   "name": "e2e-tests-kit-async",
   "private": true,
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  },
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -13,7 +16,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
   },
   "devDependencies": {
-    "@sveltejs/adapter-node": "^5.4.0",
+    "@sveltejs/adapter-node": "^6.0.0",
     "@sveltejs/kit": "catalog:",
     "@sveltejs/vite-plugin-svelte": "workspace:^",
     "svelte": "^5.45.4",

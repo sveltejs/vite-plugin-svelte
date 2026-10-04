@@ -1,5 +1,5 @@
 <script>
-	import { asyncFoo } from '$lib/async.svelte.js';
+	import { asyncFoo } from '#lib/async.svelte.js';
 </script>
 
 <h1>Hello async world!</h1>

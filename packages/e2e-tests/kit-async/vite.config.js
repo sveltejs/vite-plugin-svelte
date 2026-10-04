@@ -1,3 +1,4 @@
+import node from '@sveltejs/adapter-node';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
@@ -13,5 +14,14 @@ export default defineConfig({
 	build: {
 		minify: false
 	},
-	plugins: [sveltekit()]
+	plugins: [
+		sveltekit({
+			adapter: node(),
+			compilerOptions: {
+				experimental: {
+					async: true
+				}
+			}
+		})
+	]
 });
