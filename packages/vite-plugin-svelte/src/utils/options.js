@@ -27,7 +27,6 @@ import {
 } from './constants.js';
 
 import path from 'node:path';
-import deepmerge from 'deepmerge';
 import {
 	crawlFrameworkPkgs,
 	isDepExcluded,
@@ -167,7 +166,7 @@ export async function preResolveOptions(inlineOptions, viteUserConfig, viteEnv) 
 	};
 
 	const merged = /** @type {PreResolvedOptions} */ (
-		mergeConfigs(defaultOptions, svelteConfig, inlineOptions, extraOptions)
+		merge(defaultOptions, svelteConfig, inlineOptions, extraOptions)
 	);
 	// configFile of svelteConfig contains the absolute path it was loaded from,
 	// prefer it over the possibly relative inline path
@@ -178,20 +177,34 @@ export async function preResolveOptions(inlineOptions, viteUserConfig, viteEnv) 
 }
 
 /**
- * @template T
- * @param  {(Partial<T> | undefined)[]} configs
- * @returns T
+ * @param {unknown} value
+ * @returns {value is Record<string, any>}
  */
-function mergeConfigs(...configs) {
-	/** @type {Partial<T>} */
+function isPlainObject(value) {
+	if (!value || typeof value !== 'object') return false;
+	const proto = Object.getPrototypeOf(value);
+	return proto === Object.prototype || proto === null;
+}
+
+/**
+ * merge option objects into a new object, later ones win.
+ * Plain objects are merged recursively and never shared with a source, so the result can be mutated.
+ * Every other value (arrays, functions, class instances) replaces the previous one as is
+ *
+ * @param {(Record<string, any> | false | null | undefined)[]} sources
+ * @returns {Record<string, any>}
+ */
+export function merge(...sources) {
+	/** @type {Record<string, any>} */
 	let result = {};
-	for (const config of configs.filter((x) => x != null)) {
-		result = deepmerge(result, /** @type {Partial<T>} */ (config), {
-			// replace arrays
-			arrayMerge: (target, source) => source ?? target
-		});
+	for (const source of sources) {
+		if (!source) continue;
+		const nested = Object.entries(source)
+			.filter(([, value]) => isPlainObject(value))
+			.map(([key, value]) => [key, merge(isPlainObject(result[key]) && result[key], value)]);
+		result = { ...result, ...source, ...Object.fromEntries(nested) };
 	}
-	return /** @type {T} */ result;
+	return result;
 }
 
 /**
@@ -222,7 +235,7 @@ export function resolveOptions(preResolveOptions, viteConfig) {
 		isProduction: viteConfig.isProduction
 	};
 	const merged = /** @type {ResolvedOptions}*/ (
-		mergeConfigs(defaultOptions, preResolveOptions, extraOptions)
+		merge(defaultOptions, preResolveOptions, extraOptions)
 	);
 
 	removeIgnoredOptions(merged);
