@@ -162,7 +162,7 @@ You should not use prebundleSvelteLibraries during build or for ssr, disable one
 
 You really shouldn't. Svelte and Vite are esm first and the ecosystem is moving away from commonjs and so should you. Consider migrating to esm.
 
-In case you have to, you can rely on node's "require esm" feature available in v20.19+
+In case you have to, you can rely on node's "require esm" feature available in v22.12+
 
 ```js
 // vite.config.cjs

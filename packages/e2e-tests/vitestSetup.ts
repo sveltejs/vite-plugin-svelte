@@ -126,7 +126,7 @@ beforeAll(
 					const segments = file.split(path.sep);
 					return segments.some((segment) => directoriesToIgnore.includes(segment));
 				};
-				// eslint-disable-next-line n/no-unsupported-features/node-builtins -- cp is available in Node 20 and we only use it for test setup anyway
+
 				await fsPromises.cp(srcDir, tempDir, {
 					dereference: true,
 					recursive: true,
@@ -153,17 +153,6 @@ beforeAll(
 				const logsDir = path.join(tempDir, 'logs');
 				if (fs.existsSync(logsDir)) {
 					fs.rmSync(logsDir, { recursive: true, force: true });
-				}
-				// remove strip types flag for node < 22, it doesn't work there
-				// TODO: remove once node20 is no longer part of CI
-				if (Number(process.versions.node?.split('.', 1)[0]) < 22) {
-					const pkgFile = path.join(tempDir, 'package.json');
-					const pkgContent = fs.readFileSync(pkgFile, 'utf-8');
-					const newContent = pkgContent.replaceAll(
-						'NODE_OPTIONS=\\"--experimental-strip-types\\" ',
-						''
-					);
-					fs.writeFileSync(pkgFile, newContent, 'utf-8');
 				}
 				await fsPromises.mkdir(logsDir);
 				const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
