@@ -1,6 +1,6 @@
 /** @import { CompileSvelte } from '../types/compile.js' */
 /** @import { StatCollection } from '../types/vite-plugin-svelte-stats.js' */
-/** @import { CompileOptions, CompileResult, Warning } from 'svelte/compiler' */
+/** @import { CompileOptions, CompileResult } from 'svelte/compiler' */
 
 import * as svelte from 'svelte/compiler';
 import { log } from './log.js';
@@ -24,8 +24,6 @@ export function createCompileSvelte() {
 	return async function compileSvelte(svelteRequest, code, options, environment, sourcemap) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
-		/** @type {Warning[]} */
-		const warnings = [];
 
 		if (options.stats) {
 			if (options.isBuild) {
@@ -118,12 +116,6 @@ export function createCompileSvelte() {
 		}
 		mapToRelative(compiled.js?.map, filename);
 		mapToRelative(compiled.css?.map, filename);
-		if (warnings.length) {
-			if (!compiled.warnings) {
-				compiled.warnings = [];
-			}
-			compiled.warnings.push(...warnings);
-		}
 		if (!raw) {
 			// wire css import and code for hmr
 			const hasCss = compiled.css?.code?.trim()?.length ?? 0 > 0;
