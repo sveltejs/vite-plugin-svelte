@@ -33,50 +33,6 @@ export function toRollupError(error, options) {
 }
 
 /**
- * convert an error thrown by svelte.compile to an esbuild PartialMessage
- * @param {Warning & Error  & {frame?: string}} error a svelte compiler error, which is a mix of Warning and an error
- * @param {ResolvedOptions} options
- * @returns {any} the converted error as esbuild PartialMessage
- *
- * note: typed any to avoid esbuild devDependency for a single internal type import
- */
-export function toESBuildError(error, options) {
-	const { filename, frame, start, stack } = error;
-	/** @type any */
-	const partialMessage = {
-		text: buildExtendedLogMessage(error)
-	};
-	if (start) {
-		partialMessage.location = {
-			line: start.line,
-			column: start.column,
-			file: filename,
-			lineText: lineFromFrame(start.line, frame) // needed to get a meaningful error message on cli
-		};
-	}
-	if (options.isBuild || options.isDebug || !frame) {
-		partialMessage.detail = stack;
-	}
-	return partialMessage;
-}
-
-/**
- * extract line with number from codeframe
- *
- * @param {number} lineNo
- * @param {string} [frame]
- * @returns {string}
- */
-function lineFromFrame(lineNo, frame) {
-	if (!frame) {
-		return '';
-	}
-	const lines = frame.split('\n');
-	const errorLine = lines.find((line) => line.trimStart().startsWith(`${lineNo}: `));
-	return errorLine ? errorLine.substring(errorLine.indexOf(': ') + 3) : '';
-}
-
-/**
  * vite error overlay expects a specific format to show frames
  * this reformats svelte frame (colon separated, less whitespace)
  * to one that vite displays on overlay ( pipe separated, more whitespace)
