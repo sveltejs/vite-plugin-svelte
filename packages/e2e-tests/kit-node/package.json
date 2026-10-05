@@ -2,6 +2,9 @@
   "name": "e2e-tests-kit-node",
   "version": "0.0.0",
   "private": true,
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  },
   "scripts": {
     "dev": "svelte-kit sync && vite dev",
     "build": "svelte-kit sync && vite build",
@@ -13,7 +16,7 @@
     "package": "svelte-package && echo just here for testing, don't remove svelte-package!"
   },
   "devDependencies": {
-    "@sveltejs/adapter-node": "^5.4.0",
+    "@sveltejs/adapter-node": "^6.0.0",
     "@sveltejs/kit": "catalog:",
     "@sveltejs/package": "^2.5.7",
     "@sveltejs/vite-plugin-svelte": "workspace:^",

@@ -268,7 +268,7 @@ describe('kit-node', () => {
 		it('should have generated values', async () => {
 			const configs = [];
 			if (isBuild) {
-				configs.push('serve', 'build', 'build.ssr');
+				configs.push('serve', 'build');
 			} else {
 				configs.push('serve');
 			}
@@ -293,30 +293,33 @@ describe('kit-node', () => {
 								'sade',
 								'cli-color',
 								'tiny-glob',
-								'cookie',
-								'set-cookie-parser',
+								'@opentelemetry/api',
 								'e2e-test-dep-cjs-and-esm',
 								'e2e-test-dep-cjs-only',
 								'e2e-test-dep-scss-only'
 							]
-						: [],
+						: ['@opentelemetry/api'],
 					`ssr.external in ${filename}`
 				);
-				expectArrayEqual(
-					config.ssr.noExternal,
-					[
-						'svelte',
-						'/^svelte\\//', // serialized with toString
-						'e2e-test-dep-svelte-api-only',
-						'svelte-i18n',
-						'esm-env', // first added by svelte-kit
-						'esm-env', // second added by vite-plugin-svelte
-						'@sveltejs/kit/src/runtime',
-						'e2e-test-dep-svelte-nested-workspace-devdep',
-						'e2e-test-dep-svelte-simple'
-					],
-					`ssr.noExternal in ${filename}`
-				);
+				if (isServe) {
+					expectArrayEqual(
+						config.ssr.noExternal,
+						[
+							'svelte',
+							'/^svelte\\//', // serialized with toString
+							'e2e-test-dep-svelte-api-only',
+							'svelte-i18n',
+							'esm-env', // first added by svelte-kit
+							'esm-env', // second added by vite-plugin-svelte
+							'@sveltejs/kit/src/runtime',
+							'e2e-test-dep-svelte-nested-workspace-devdep',
+							'e2e-test-dep-svelte-simple'
+						],
+						`ssr.noExternal in ${filename}`
+					);
+				} else {
+					expect(config.ssr.noExternal, `ssr.noExternal in ${filename}`).toBe(true);
+				}
 				const expectedExcludes = ['@sveltejs/kit', '$app', '$env'];
 				if (!isServe) {
 					expectedExcludes.push(
@@ -346,7 +349,9 @@ describe('kit-node', () => {
 					'svelte/legacy',
 					'svelte-i18n > deepmerge',
 					'svelte-i18n > cli-color',
-					'svelte-i18n > tiny-glob'
+					'svelte-i18n > tiny-glob',
+					'@sveltejs/kit > devalue',
+					'@sveltejs/kit > esm-env'
 				];
 				if (!IS_SVELTE_BASELINE) {
 					expectedIncludes.push(
