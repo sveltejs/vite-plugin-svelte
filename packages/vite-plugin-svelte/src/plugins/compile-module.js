@@ -8,7 +8,6 @@ import { buildModuleIdFilter, buildModuleIdParser } from '../utils/id.js';
 import * as svelteCompiler from 'svelte/compiler';
 import { log, logCompilerWarnings } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
-import { isSvelteWithAsync } from '../utils/svelte-version.js';
 
 /**
  * @param {PluginAPI} api
@@ -108,10 +107,14 @@ export function compileModule(api) {
  */
 function filterNonModuleCompilerOptions(compilerOptions) {
 	/** @type {Array<keyof ModuleCompileOptions>} */
-	const knownModuleCompileOptionNames = ['dev', 'generate', 'filename', 'rootDir', 'warningFilter'];
-	if (isSvelteWithAsync) {
-		knownModuleCompileOptionNames.push('experimental');
-	}
+	const knownModuleCompileOptionNames = [
+		'dev',
+		'generate',
+		'filename',
+		'rootDir',
+		'warningFilter',
+		'experimental'
+	];
 	// not typed but this is temporary until svelte itself ignores CompileOptions passed to compileModule
 	const experimentalModuleCompilerOptionNames = ['async'];
 
