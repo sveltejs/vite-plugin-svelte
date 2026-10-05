@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { merge } from '../src/utils/merge.js';
+import { merge } from '../src/utils/options.js';
 
 describe('merge', () => {
 	it('merges nested objects, later sources win', () => {
