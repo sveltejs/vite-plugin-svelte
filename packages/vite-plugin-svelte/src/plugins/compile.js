@@ -38,12 +38,17 @@ export function compile(api) {
 				}
 				let compileData;
 				try {
+					// Only forward the map from our own preprocess hook to svelte. Never
+					// use this.getCombinedSourcemap(): it also contains maps of transforms
+					// from other plugins, which the bundler already chains again after this
+					// hook returns. Forwarding them makes svelte compose them a second
+					// time, dropping mapping segments (sveltejs/svelte#18778).
 					compileData = await compileSvelte(
 						svelteRequest,
 						code,
 						options,
 						this.environment,
-						this.getCombinedSourcemap()
+						api.preprocessedMaps.get(svelteRequest.id)
 					);
 				} catch (e) {
 					throw toRollupError(e, options);

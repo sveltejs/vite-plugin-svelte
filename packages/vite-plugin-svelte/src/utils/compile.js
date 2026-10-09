@@ -21,7 +21,7 @@ export function createCompileSvelte() {
 	/** @type {StatCollection | undefined} */
 	let stats;
 	/** @type {CompileSvelte} */
-	return async function compileSvelte(svelteRequest, code, options, environment, sourcemap) {
+	return async function compileSvelte(svelteRequest, code, options, environment, preprocessorMap) {
 		const { filename, normalizedFilename, cssId, ssr, raw } = svelteRequest;
 		const { emitCss = true } = options;
 		/** @type {Warning[]} */
@@ -88,8 +88,15 @@ export function createCompileSvelte() {
 					...dynamicCompileOptions
 				}
 			: compileOptions;
-		if (sourcemap) {
-			finalCompileOptions.sourcemap = sourcemap;
+		// Forward only the external-preprocessor map from our own preprocess hook.
+		// It maps the code svelte is compiling back to the original source, and svelte
+		// needs it to chain preprocessor sources (e.g. scss) into css.map. Never pass
+		// the bundler's combined sourcemap here: it also contains maps from unrelated
+		// transforms, which Vite/Rollup chain again after this hook returns. Composing
+		// them in svelte too double-composes the maps and drops mapping segments
+		// (sveltejs/svelte#18778).
+		if (preprocessorMap) {
+			finalCompileOptions.sourcemap = preprocessorMap;
 		}
 		const endStat = stats?.start(filename);
 		/** @type {CompileResult} */

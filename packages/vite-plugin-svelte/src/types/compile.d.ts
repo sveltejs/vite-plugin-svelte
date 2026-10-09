@@ -8,7 +8,7 @@ export type CompileSvelte = (
 	code: string,
 	options: Partial<ResolvedOptions>,
 	environment: Environment,
-	sourcemap?: Rollup.SourceMap
+	preprocessorMap?: Rollup.SourceMap
 ) => Promise<CompileData>;
 
 export type PreprocessSvelte = (
