@@ -12,6 +12,7 @@ import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
 import { SVELTE_IMPORTS } from '../utils/constants.js';
 import { isDepExcluded } from 'vitefu';
+import { filterNonModuleCompilerOptions } from './compile-module.js';
 
 /**
  * @typedef {NonNullable<Rolldown.Plugin>} RollupPlugin
@@ -228,6 +229,7 @@ async function compileSvelte(options, { filename, code }, generate, environment,
 async function compileSvelteModule(options, { filename, code }, generate, statsCollection) {
 	const endStat = statsCollection?.start(filename);
 	const compiled = svelte.compileModule(code, {
+		...filterNonModuleCompilerOptions(options.compilerOptions),
 		dev: options.compilerOptions?.dev ?? true, // default to dev: true because prebundling is only used in dev
 		filename,
 		generate

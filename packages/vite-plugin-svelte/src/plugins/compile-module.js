@@ -106,7 +106,7 @@ export function compileModule(api) {
  * @param {CompileOptions} compilerOptions
  * @return {ModuleCompileOptions}
  */
-function filterNonModuleCompilerOptions(compilerOptions) {
+export function filterNonModuleCompilerOptions(compilerOptions) {
 	/** @type {Array<keyof ModuleCompileOptions>} */
 	const knownModuleCompileOptionNames = ['dev', 'generate', 'filename', 'rootDir', 'warningFilter'];
 	if (isSvelteWithAsync) {
