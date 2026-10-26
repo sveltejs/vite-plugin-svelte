@@ -65,6 +65,9 @@ export function compile(api) {
 					}
 				};
 			}
+		},
+		async buildEnd() {
+			await options.stats?.finishAll();
 		}
 	};
 	return plugin;
