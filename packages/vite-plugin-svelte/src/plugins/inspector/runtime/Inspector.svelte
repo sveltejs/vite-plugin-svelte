@@ -323,8 +323,21 @@
 		l('contextmenu', on_contextmenu, true);
 	}
 
+	/**
+	 * The top layer is a stack, elements shown later are rendered above earlier ones.
+	 * Show the inspector host again to move it above anything that entered the top layer after it.
+	 */
+	function bring_host_to_front() {
+		const host = document.getElementById('svelte-inspector-host');
+		if (host && typeof host.hidePopover === 'function' && host.matches(':popover-open')) {
+			host.hidePopover();
+			host.showPopover();
+		}
+	}
+
 	function enable() {
 		enabled = true;
+		bring_host_to_front();
 		const b = document.body as HTMLBodyElement;
 		if (options.customStyles) {
 			b.classList.add('svelte-inspector-enabled');
@@ -502,6 +515,18 @@
 	}
 	:global(#svelte-inspector-host) {
 		direction: ltr;
+	}
+	/* reset user agent styles for [popover] so the host does not affect the page layout */
+	:global(#svelte-inspector-host:popover-open) {
+		position: fixed;
+		inset: 0 auto auto 0;
+		width: 0;
+		height: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		overflow: visible;
+		background: transparent;
 	}
 
 	*:not(svg *) {
