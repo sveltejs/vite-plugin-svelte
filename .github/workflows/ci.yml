@@ -84,16 +84,12 @@ jobs:
         vite: ['current']
         svelte: ['current']
         include:
-          - node: 20
-            os: ubuntu-latest
-            vite: 'current'
-            svelte: 'current'
           - node: 24
             os: ubuntu-latest
             vite: 'current'
             svelte: 'current'
           # baseline test lowest svelte, vite and node version
-          - node: 20.19
+          - node: 22.12
             os: ubuntu-latest
             vite: 'baseline'
             svelte: 'baseline'
