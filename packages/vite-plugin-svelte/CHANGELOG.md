@@ -1,5 +1,13 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.3.2
+
+### Patch Changes
+
+- fix: log compile stats at the end of a build ([#1418](https://github.com/sveltejs/vite-plugin-svelte/pull/1418))
+
+- fix: remove unused `magic-string` dependency ([#1413](https://github.com/sveltejs/vite-plugin-svelte/pull/1413))
+
 ## 7.3.1
 
 ### Patch Changes
