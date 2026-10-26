@@ -1,7 +1,5 @@
 /** @import { ResolvedOptions } from '../types/options.js' */
-/** @import { FSWatcher } from 'vite' */
 
-import fs from 'node:fs';
 import { log } from './log.js';
 import { knownSvelteConfigNames } from './load-svelte-config.js';
 import path from 'node:path';
@@ -74,25 +72,4 @@ export function setupWatchers(options) {
 			watcher.on(evt, (filename) => listeners.forEach((listener) => listener(filename)));
 		}
 	});
-}
-
-/**
- * taken from vite utils
- * @param {FSWatcher} watcher
- * @param {string | null} file
- * @param {string} root
- * @returns {void}
- */
-export function ensureWatchedFile(watcher, file, root) {
-	if (
-		file &&
-		// only need to watch if out of root
-		!file.startsWith(root + '/') &&
-		// some rollup plugins use null bytes for private resolved Ids
-		!file.includes('\0') &&
-		fs.existsSync(file)
-	) {
-		// resolve file to normalized system path
-		watcher.add(path.resolve(file));
-	}
 }
