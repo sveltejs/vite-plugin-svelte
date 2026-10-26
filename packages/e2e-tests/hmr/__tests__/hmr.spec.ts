@@ -126,6 +126,18 @@ if (!isBuild) {
 			expect(await getText('#hmr-test-3 .counter')).toBe('0');
 		});
 
+		test('should update a child component after updating its parent', async () => {
+			await updateHmrTest((content) =>
+				content.replace(
+					"const label = 'hmr-test-updated'",
+					"const label = 'hmr-test-updated-again'"
+				)
+			);
+			expect(await getText('#hmr-test-1 .label')).toBe('hmr-test-updated-again');
+			expect(await getText('#hmr-test-2 .label')).toBe('hmr-test-updated-again');
+			expect(await getText('#hmr-test-3 .label')).toBe('hmr-test-updated-again');
+		});
+
 		test('should preserve state of store when editing hmr-stores.js', async () => {
 			// change state
 			await (await getEl('#hmr-test-2 .increment')).click();

@@ -90,6 +90,20 @@ export function hotUpdate(api) {
 					const nonSvelteModules = [];
 					for (const mod of modules) {
 						if (transformResultCache.has(mod.id)) {
+							// If an imported Svelte module was updated before this, it would be
+							// imported on the browser with that timestamp. This can cause
+							// subsequent edits to the imported module to never be reflected
+							// in the browser. Therefore, we strip the timestamp to ensure that
+							// the HMR update imports the module without a stale timestamp query
+							if (this.environment.name === 'client') {
+								for (const imported of mod.importedModules) {
+									const importedRequest = imported.id && idParser(imported.id, false);
+									if (importedRequest && !importedRequest.query.type) {
+										imported.lastHMRTimestamp = 0;
+									}
+								}
+							}
+
 							svelteModules.push(mod);
 						} else {
 							nonSvelteModules.push(mod);
