@@ -27,7 +27,10 @@ export function svelte(inlineOptions) {
 	}
 	/** @type {PluginAPI} */
 	// @ts-expect-error initialize empty to guard against early use
-	const api = {}; // initialized by configure plugin, used in others
+	const api = {
+		// maps of code produced by our own preprocess hook, keyed by svelte request id
+		preprocessedMaps: new Map()
+	}; // rest is initialized by configure plugin, used in others
 	return [
 		{ name: 'vite-plugin-svelte' }, // marker for detection logic in other plugins that expect this name
 		configure(api, inlineOptions),

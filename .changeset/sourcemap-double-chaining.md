@@ -1,0 +1,5 @@
+---
+'@sveltejs/vite-plugin-svelte': patch
+---
+
+fix: no longer forward the bundler's combined sourcemap to `svelte.compile`. The transform hook previously passed `this.getCombinedSourcemap()` as svelte's `sourcemap` option; svelte composed it into its own map, and Vite/Rollup then chained the same upstream transforms again after the hook returned. This double composition interpreted source coordinates (already pointing at the original file) as generated coordinates of the upstream map, so mapping segments were dropped: stack traces and devtools locations for code transformed by plugins running before svelte (e.g. plugins using MagicString) fell back to the start of the script block instead of the real location. The compile hook now only forwards the sourcemap produced by the plugin's own preprocess hook, which is the external-preprocessor map svelte needs to chain preprocessor sources (such as scss) into its css sourcemap; all other transform maps are left for the bundler to chain exactly once
