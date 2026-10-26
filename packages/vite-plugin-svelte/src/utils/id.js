@@ -4,7 +4,6 @@
 import { normalizePath } from 'vite';
 import fs from 'node:fs';
 import process from 'node:process';
-import { log } from './log.js';
 import {
 	DEFAULT_SVELTE_EXT,
 	DEFAULT_SVELTE_MODULE_EXT,
@@ -15,9 +14,6 @@ import { arraify } from './options.js';
 
 const VITE_FS_PREFIX = '/@fs/';
 const IS_WINDOWS = process.platform === 'win32';
-
-const SUPPORTED_COMPILER_OPTIONS = ['generate', 'dev', 'css', 'customElement', 'immutable'];
-const TYPES_WITH_COMPILER_OPTIONS = ['style', 'script', 'all'];
 
 /**
  * @param {string} id
@@ -96,34 +92,6 @@ function parseRequestQuery(rawQuery) {
 			query[key] = true;
 		}
 	}
-	const compilerOptions = query.compilerOptions;
-	if (compilerOptions) {
-		if (!((query.raw || query.direct) && TYPES_WITH_COMPILER_OPTIONS.includes(query.type))) {
-			throw new Error(
-				`Invalid compilerOptions in query ${rawQuery}. CompilerOptions are only supported for raw or direct queries with type in "${TYPES_WITH_COMPILER_OPTIONS.join(
-					', '
-				)}" e.g. '?svelte&raw&type=script&compilerOptions={"generate":"server","dev":false}`
-			);
-		}
-		try {
-			const parsed = JSON.parse(compilerOptions);
-			const invalid = Object.keys(parsed).filter(
-				(key) => !SUPPORTED_COMPILER_OPTIONS.includes(key)
-			);
-			if (invalid.length) {
-				throw new Error(
-					`Invalid compilerOptions in query ${rawQuery}: ${invalid.join(
-						', '
-					)}. Supported: ${SUPPORTED_COMPILER_OPTIONS.join(', ')}`
-				);
-			}
-			query.compilerOptions = parsed;
-		} catch (e) {
-			log.error('failed to parse request query compilerOptions', e);
-			throw e;
-		}
-	}
-
 	return /** @type {RequestQuery}*/ query;
 }
 
