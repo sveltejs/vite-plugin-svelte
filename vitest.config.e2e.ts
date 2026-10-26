@@ -33,6 +33,12 @@ if (isBuildWatch) {
 	exclude.push(...buildWatchPatterns);
 }
 
+// SvelteKit 3 requires node 22
+// TODO: remove once node20 is no longer part of CI
+if (Number(process.versions.node.split('.', 1)[0]) < 22) {
+	exclude.push('./packages/e2e-tests/{kit-node,kit-async,inspector-kit}/**');
+}
+
 const reporters = ['dot'];
 const isGithubActions = !!process.env.GITHUB_ACTIONS;
 if (isGithubActions) {

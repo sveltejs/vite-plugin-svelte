@@ -10,7 +10,13 @@ const config = {
 			interval: 100
 		}
 	},
-	plugins: [sveltekit()]
+	plugins: [
+		sveltekit({
+			inspector: {
+				showToggleButton: 'always'
+			}
+		})
+	]
 };
 
 export default config;

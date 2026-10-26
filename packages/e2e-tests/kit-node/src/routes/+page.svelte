@@ -1,10 +1,10 @@
 <script>
 	import { onMount } from 'svelte';
 	import { addMessages, init, _ } from 'svelte-i18n';
-	import Counter from '$lib/Counter.svelte';
-	import Child from '$lib/Child.svelte';
+	import Counter from '#lib/Counter.svelte';
+	import Child from '#lib/Child.svelte';
 	import { setSomeContext } from 'e2e-test-dep-svelte-api-only';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	export let data = {};
 	$: load_status = data?.load_status ?? 'NOT_LOADED';
