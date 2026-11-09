@@ -12,6 +12,20 @@ describe('inspector-vite', () => {
 			expect(await getEl('#svelte-inspector-toggle')).not.toBe(null);
 		});
 
+		it('should enable and disable the inspector via the toggle button', async () => {
+			const isEnabled = () =>
+				page.evaluate(() => document.body.classList.contains('svelte-inspector-enabled'));
+
+			const toggle = page.locator('#svelte-inspector-toggle');
+
+			expect(await isEnabled()).toBe(false);
+			await toggle.click();
+			await expect.poll(isEnabled, { timeout: isCI ? 2000 : 1000 }).toBe(true);
+
+			await toggle.click();
+			await expect.poll(isEnabled, { timeout: isCI ? 2000 : 1000 }).toBe(false);
+		});
+
 		it('should open a context menu', async () => {
 			await page.evaluate(() =>
 				document.body.dispatchEvent(
