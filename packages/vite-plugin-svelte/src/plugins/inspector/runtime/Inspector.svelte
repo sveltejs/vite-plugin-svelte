@@ -159,6 +159,12 @@
 	function open_editor(e: Event) {
 		if (menu) return;
 
+		// clicks on the toggle are handled by `toggle()`, don't open the editor for them
+		const target = e.target;
+		if (target instanceof Element && target.closest('#svelte-inspector-toggle')) {
+			return;
+		}
+
 		if (active_el) {
 			stop(e);
 			send(active_el.__svelte_meta.loc);
@@ -419,7 +425,14 @@
 </script>
 
 <svelte:window
-	onclick={disable}
+	onclick={(e) => {
+		// clicks on the toggle are handled by `toggle()`, disabling here would cancel them out
+		const target = e.target;
+		if (target instanceof Element && target.closest('#svelte-inspector-toggle')) {
+			return;
+		}
+		disable();
+	}}
 	onkeydown={(e) => {
 		if (e.key === 'Escape') {
 			disable();
