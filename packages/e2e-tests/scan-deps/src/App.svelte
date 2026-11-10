@@ -1,5 +1,5 @@
 <script>
-	import { svelte5 } from './Svelte5.svelte';
+	import { svelte5, svelte5named, svelte5snippet, svelte5snippetAlias } from './Svelte5.svelte';
 	import { svelte4double } from './Svelte4DoubleQuote.svelte';
 	import { svelte4single } from './Svelte4SingleQuote.svelte';
 	import { svelte4none } from './Svelte4NoQuote.svelte';
@@ -11,3 +11,6 @@
 <div id="svelte4single">{svelte4single}</div>
 <div id="svelte4none">{svelte4none}</div>
 <div id="svelte4space">{svelte4space}</div>
+<div id="svelte5named">{svelte5named}</div>
+<div id="svelte5snippet">{@render svelte5snippet()}</div>
+<div id="svelte5snippet-alias">{@render svelte5snippetAlias()}</div>
