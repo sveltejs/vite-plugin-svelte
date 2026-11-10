@@ -84,6 +84,21 @@ describe('inspector-vite', () => {
 				await toggleInspector();
 				await page.evaluate(() => document.getElementById('dialog').close());
 			});
+
+			it('should show the host again if the page dismissed it', async () => {
+				// for example code that hides all popovers on navigation
+				await page.evaluate(() => document.getElementById('svelte-inspector-host').hidePopover());
+				expect(
+					await page.evaluate(() =>
+						document.getElementById('svelte-inspector-host').matches(':popover-open')
+					)
+				).toBe(false);
+				await toggleInspector();
+				await page.waitForFunction(() =>
+					document.getElementById('svelte-inspector-host').matches(':popover-open')
+				);
+				await toggleInspector();
+			});
 		});
 	} else {
 		it('should not show inspector toggle during preview', async () => {

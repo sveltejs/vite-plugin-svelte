@@ -329,8 +329,11 @@
 	 */
 	function bring_host_to_front() {
 		const host = document.getElementById('svelte-inspector-host');
-		if (host && typeof host.hidePopover === 'function' && host.matches(':popover-open')) {
-			host.hidePopover();
+		if (host && typeof host.hidePopover === 'function') {
+			// the host may have been dismissed by the page (for example by code that hides all popovers on navigation)
+			if (host.matches(':popover-open')) {
+				host.hidePopover();
+			}
 			host.showPopover();
 		}
 	}
