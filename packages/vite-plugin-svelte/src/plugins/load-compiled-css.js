@@ -1,6 +1,9 @@
 /** @import { PluginAPI } from '../types/plugin-api.js' */
+/** @import { SvelteRequest } from '../types/id.js' */
 /** @import { Plugin } from 'vite' */
 
+import path from 'node:path';
+import { normalizePath } from 'vite';
 import { log } from '../utils/log.js';
 import { SVELTE_VIRTUAL_STYLE_ID_REGEX } from '../utils/constants.js';
 
@@ -40,15 +43,20 @@ export function loadCompiledCss(api) {
 					return;
 				}
 
-				let cachedCss = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
-				if (!cachedCss) {
+				const getCompiledCss = async () => {
+					const css = this.getModuleInfo(svelteRequest.filename)?.meta.svelte?.css;
+					if (css) {
+						return css;
+					}
 					// some module IDs have a ?v=... query string suffix in addition to the
 					// filename. We can retrieve this by running resolve again
 					const resolvedId = await this.resolve(svelteRequest.filename);
 					if (resolvedId?.id) {
-						cachedCss = this.getModuleInfo(resolvedId.id)?.meta.svelte?.css;
+						return this.getModuleInfo(resolvedId.id)?.meta.svelte?.css;
 					}
-				}
+				};
+
+				let cachedCss = await getCompiledCss();
 
 				// in `build --watch` or dev ssr reloads getModuleInfo only returns changed module data.
 				// To ensure virtual css is loaded unchanged, we cache it here separately
@@ -57,6 +65,16 @@ export function loadCompiledCss(api) {
 						buildWatchCssCache.set(svelteRequest.filename, cachedCss);
 					} else {
 						cachedCss = buildWatchCssCache.get(svelteRequest.filename);
+					}
+				}
+
+				if (!cachedCss && this.environment.mode === 'dev') {
+					// the css was requested before the svelte component was compiled, e.g. via a
+					// `?direct` or `?inline` query. Transform the component first to compile its css.
+					await this.environment.transformRequest(toDevServerUrl(svelteRequest));
+					cachedCss = await getCompiledCss();
+					if (cachedCss) {
+						buildWatchCssCache.set(svelteRequest.filename, cachedCss);
 					}
 				}
 
@@ -76,4 +94,18 @@ export function loadCompiledCss(api) {
 			}
 		}
 	};
+}
+
+/**
+ * Returns the url of the svelte component in the dev server module graph, using the same format as vite:
+ * root relative for files inside the root and prefixed with `/@fs` for files outside of it.
+ *
+ * @param {SvelteRequest} svelteRequest
+ * @returns {string}
+ */
+function toDevServerUrl({ filename, normalizedFilename }) {
+	const normalizedPath = normalizePath(filename);
+	return normalizedFilename !== normalizedPath
+		? normalizedFilename
+		: path.posix.join('/@fs/', normalizedPath);
 }

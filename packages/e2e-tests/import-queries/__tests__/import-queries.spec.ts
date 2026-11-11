@@ -50,4 +50,40 @@ describe.runIf(!isBuild)('ssrLoadModule', () => {
 		const result = await ssrLoadDummy('?raw');
 		await expect(result).toMatchFileSnapshot(snapshotFilename('ssr-raw'));
 	});
+
+	test('?inline&svelte&type=style&lang.css before the component', async () => {
+		const result = await ssrLoadDummy('?inline&svelte&type=style&lang.css');
+		expect(result).toContain('button.svelte-');
+		expect(result).not.toContain('<script');
+	});
+});
+
+describe.runIf(!isBuild)('client css request before the component', () => {
+	let vite: ViteDevServer;
+	beforeAll(async () => {
+		vite = await createServer({
+			root: testDir + '/',
+			appType: 'custom',
+			server: { middlewareMode: true, hmr: false }
+		});
+		// needed to init plugins
+		await vite.pluginContainer.buildStart({});
+		return async () => {
+			await vite.close();
+			vite = null;
+		};
+	});
+
+	test('?direct&svelte&type=style&lang.css', async () => {
+		const client = vite.environments.client;
+		const result = await client.transformRequest(
+			'/src/Dummy.svelte?direct&svelte&type=style&lang.css'
+		);
+		expect(result.code).toContain('button.svelte-');
+		expect(result.code).not.toContain('<script');
+		// the component is compiled with the same url it gets when it is imported regularly
+		const component = await client.moduleGraph.getModuleByUrl('/src/Dummy.svelte');
+		expect(component?.url).toBe('/src/Dummy.svelte');
+		expect(component?.transformResult?.code).toContain('export default function Dummy');
+	});
 });
