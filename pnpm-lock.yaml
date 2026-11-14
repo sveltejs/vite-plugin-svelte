@@ -699,9 +699,9 @@ importers:
 
   packages/vite-plugin-svelte:
     dependencies:
-      deepmerge:
-        specifier: ^4.3.1
-        version: 4.3.1
+      '@fastify/deepmerge':
+        specifier: ^3.2.4
+        version: 3.2.4
       obug:
         specifier: ^2.1.0
         version: 2.2.1
@@ -1032,6 +1032,9 @@ packages:
   '@eslint/plugin-kit@0.7.3':
     resolution: {integrity: sha512-IkO+/KEUvwbVpiURZg+P7zF74z5Jxe0UgJxVni+RtoHQ6IZieXaO02kmadomap/q+l6bc/jdPGGqTjhuZnuz1Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+
+  '@fastify/deepmerge@3.2.4':
+    resolution: {integrity: sha512-kc8GQq5gX9RRhw0rov3DMrN8wS8yRlxJRdDzsYwwdBV/wazuVgc/1K7CKL90tlvu3RlHan6Y0R0aE3nJtBz2eQ==}
 
   '@formatjs/ecma402-abstract@2.3.6':
     resolution: {integrity: sha512-HJnTFeRM2kVFVr5gr5kH1XP6K0JcJtE7Lzvtr3FS/so5f1kpsqqqxy5JF+FRaO6H2qmcMfAUIox7AJteieRtVw==}
@@ -3451,6 +3454,8 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
+
+  '@fastify/deepmerge@3.2.4': {}
 
   '@formatjs/ecma402-abstract@2.3.6':
     dependencies:

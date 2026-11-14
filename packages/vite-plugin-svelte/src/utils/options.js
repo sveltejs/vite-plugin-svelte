@@ -27,7 +27,7 @@ import {
 } from './constants.js';
 
 import path from 'node:path';
-import deepmerge from 'deepmerge';
+import { mergeConfigs } from './merge.js';
 import {
 	crawlFrameworkPkgs,
 	isDepExcluded,
@@ -175,23 +175,6 @@ export async function preResolveOptions(inlineOptions, viteUserConfig, viteEnv) 
 		merged.configFile = svelteConfig.configFile;
 	}
 	return merged;
-}
-
-/**
- * @template T
- * @param  {(Partial<T> | undefined)[]} configs
- * @returns T
- */
-function mergeConfigs(...configs) {
-	/** @type {Partial<T>} */
-	let result = {};
-	for (const config of configs.filter((x) => x != null)) {
-		result = deepmerge(result, /** @type {Partial<T>} */ (config), {
-			// replace arrays
-			arrayMerge: (target, source) => source ?? target
-		});
-	}
-	return /** @type {T} */ result;
 }
 
 /**
