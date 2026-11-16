@@ -40,11 +40,9 @@ ignoredBuiltDependencies:
 
 auditConfig:
   ignoreGhsas:
-    - 'GHSA-67mh-4wv8-2f99'
-    - 'GHSA-v6h2-p8h4-qcjw'
-    - 'GHSA-wf6x-7x77-mvgw' # we aren't using mergeDeep from immutable with public inputs
-    - 'GHSA-48c2-rrv3-qjmp' # we don't consume public yaml files
-    - 'GHSA-f886-m6hf-6m8v' # belongs to an optional peer dependency of Vite
+    - 'GHSA-3g3m-2fjr-6pw4' # glob via stylus, an optional peer dependency of old vite versions vitefu allows
+    - 'GHSA-g3hv-75wg-m249' # minimatch via the same stylus path
+    - 'GHSA-gcqx-w48m-w2h4' # deepmerge only merges the users own config
 
 overrides:
   # $ prefixed package names take their version from root package.json - this is like catalogs but without them
