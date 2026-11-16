@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import options from 'virtual:svelte-inspector-options';
+	import { INSPECTOR_ICON_HOTSPOT, INSPECTOR_ICON_SVG } from './icon.js';
 
 	// Copied from Svelte's internal types
 	interface DevStackEntry {
@@ -27,6 +28,20 @@
 		__svelte_meta: Metadata;
 	}
 
+	type StackItem = Loc & { tag: string };
+
+	/** set when a host (the Vite DevTools dock) controls the inspector */
+	interface Host {
+		/** open `loc` in the editor */
+		openInEditor(loc: Loc): void;
+		/** the inspector was enabled or disabled, by the host or by itself (key combo, escape, click) */
+		onenabledchange?(enabled: boolean): void;
+		/** events on the host's own ui (rendered in the page) that the inspector must not handle */
+		ignore?(e: Event): boolean;
+	}
+
+	let { host }: { host?: Host } = $props();
+
 	const toggle_combo = options.toggleKeyCombo.toLowerCase().split('-');
 	const escape_keys = options.escapeKeys.map((k) => k.toLowerCase());
 	const nav_keys = Object.values(options.navKeys).map((k) => k.toLowerCase());
@@ -36,17 +51,7 @@
 	let enabled = $state(false);
 	let has_opened = $state(false);
 
-	const icon = `data:image/svg+xml;base64,${btoa(
-		`
-<svg xmlns="http://www.w3.org/2000/svg" width="21" height="25" viewBox="0 0 107 128">
-  <title>svelte-inspector-logo</title>
-  <path d="M94.1566,22.8189c-10.4-14.8851-30.94-19.2971-45.7914-9.8348L22.2825,29.6078A29.9234,29.9234,0,0,0,8.7639,49.6506a31.5136,31.5136,0,0,0,3.1076,20.2318A30.0061,30.0061,0,0,0,7.3953,81.0653a31.8886,31.8886,0,0,0,5.4473,24.1157c10.4022,14.8865,30.9423,19.2966,45.7914,9.8348L84.7167,98.3921A29.9177,29.9177,0,0,0,98.2353,78.3493,31.5263,31.5263,0,0,0,95.13,58.117a30,30,0,0,0,4.4743-11.1824,31.88,31.88,0,0,0-5.4473-24.1157" style="fill:#ff3e00"/><path d="M45.8171,106.5815A20.7182,20.7182,0,0,1,23.58,98.3389a19.1739,19.1739,0,0,1-3.2766-14.5025,18.1886,18.1886,0,0,1,.6233-2.4357l.4912-1.4978,1.3363.9815a33.6443,33.6443,0,0,0,10.203,5.0978l.9694.2941-.0893.9675a5.8474,5.8474,0,0,0,1.052,3.8781,6.2389,6.2389,0,0,0,6.6952,2.485,5.7449,5.7449,0,0,0,1.6021-.7041L69.27,76.281a5.4306,5.4306,0,0,0,2.4506-3.631,5.7948,5.7948,0,0,0-.9875-4.3712,6.2436,6.2436,0,0,0-6.6978-2.4864,5.7427,5.7427,0,0,0-1.6.7036l-9.9532,6.3449a19.0329,19.0329,0,0,1-5.2965,2.3259,20.7181,20.7181,0,0,1-22.2368-8.2427,19.1725,19.1725,0,0,1-3.2766-14.5024,17.9885,17.9885,0,0,1,8.13-12.0513L55.8833,23.7472a19.0038,19.0038,0,0,1,5.3-2.3287A20.7182,20.7182,0,0,1,83.42,29.6611a19.1739,19.1739,0,0,1,3.2766,14.5025,18.4,18.4,0,0,1-.6233,2.4357l-.4912,1.4978-1.3356-.98a33.6175,33.6175,0,0,0-10.2037-5.1l-.9694-.2942.0893-.9675a5.8588,5.8588,0,0,0-1.052-3.878,6.2389,6.2389,0,0,0-6.6952-2.485,5.7449,5.7449,0,0,0-1.6021.7041L37.73,51.719a5.4218,5.4218,0,0,0-2.4487,3.63,5.7862,5.7862,0,0,0,.9856,4.3717,6.2437,6.2437,0,0,0,6.6978,2.4864,5.7652,5.7652,0,0,0,1.602-.7041l9.9519-6.3425a18.978,18.978,0,0,1,5.2959-2.3278,20.7181,20.7181,0,0,1,22.2368,8.2427,19.1725,19.1725,0,0,1,3.2766,14.5024,17.9977,17.9977,0,0,1-8.13,12.0532L51.1167,104.2528a19.0038,19.0038,0,0,1-5.3,2.3287" style="fill:#fff"/>
-  <polygon points="0,0 15,40 40,20" stroke="#ff3e00" fill="#ff3e00"></polygon>
-</svg>
-`
-			.replace(/[\n\r\t\s]+/g, ' ')
-			.trim()
-	)}`;
+	const icon = `data:image/svg+xml;base64,${btoa(INSPECTOR_ICON_SVG)}`;
 
 	// overlay positioning
 	let x = $state(0),
@@ -60,8 +65,10 @@
 
 	let hold_start_ts = $state<number | null>(null);
 
+	// with a host, its own button (the dock entry) toggles the inspector
 	let show_toggle = $derived(
-		options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled)
+		!host &&
+			(options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled))
 	);
 
 	function mousemove(e: MouseEvent) {
@@ -133,7 +140,7 @@
 	}
 
 	function mouseover(e: MouseEvent) {
-		if (menu) return;
+		if (menu || host?.ignore?.(e)) return;
 		const el = find_selectable_parent(e.target as ElementWithMetadata, true);
 		activate(el, false);
 	}
@@ -157,7 +164,7 @@
 	}
 
 	function open_editor(e: Event) {
-		if (menu) return;
+		if (menu || host?.ignore?.(e)) return;
 
 		if (active_el) {
 			stop(e);
@@ -169,7 +176,7 @@
 		const el = find_selectable_parent(target, true)!;
 		const meta = el.__svelte_meta;
 
-		const stack = [
+		const stack: StackItem[] = [
 			{
 				file: meta.loc.file,
 				line: meta.loc.line,
@@ -196,6 +203,7 @@
 	}
 
 	function on_contextmenu(e: Event) {
+		if (host?.ignore?.(e)) return;
 		e.preventDefault();
 
 		active_el ??= find_selectable_parent(e.target as Element);
@@ -206,11 +214,22 @@
 	}
 
 	function send(loc: Loc) {
-		fetch(
-			`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(
-				`${loc.file}:${loc.line}:${loc.column + 1}`
-			)}`
+		// a standard event for other in-page tools (e.g. to reveal the component in a devtools panel)
+		const stack = active_el ? get_stack(active_el) : [];
+		window.dispatchEvent(
+			new CustomEvent<{ loc: Loc; stack: StackItem[] }>('svelte-inspector:pick', {
+				detail: { loc, stack }
+			})
 		);
+		if (host) {
+			host.openInEditor(loc);
+		} else {
+			fetch(
+				`${options.__internal.base}/__open-in-editor?file=${encodeURIComponent(
+					`${loc.file}:${loc.line}:${loc.column + 1}`
+				)}`
+			);
+		}
 		has_opened = true;
 		menu = null;
 		if (options.holdMode && is_holding()) {
@@ -323,7 +342,8 @@
 		l('contextmenu', on_contextmenu, true);
 	}
 
-	function enable() {
+	export function enable() {
+		if (enabled) return;
 		enabled = true;
 		const b = document.body as HTMLBodyElement;
 		if (options.customStyles) {
@@ -331,6 +351,7 @@
 		}
 		listeners(b, enabled);
 		activate_initial_el();
+		host?.onenabledchange?.(true);
 	}
 
 	function activate_initial_el() {
@@ -358,7 +379,8 @@
 		return result;
 	}
 
-	function disable() {
+	export function disable() {
+		const was_enabled = enabled;
 		enabled = false;
 		has_opened = false;
 		hold_start_ts = null;
@@ -370,6 +392,7 @@
 			active_el?.classList.remove('svelte-inspector-active-target');
 		}
 		active_el = undefined;
+		if (was_enabled) host?.onenabledchange?.(false);
 	}
 
 	function visibilityChange() {
@@ -389,7 +412,7 @@
 		const s = document.createElement('style');
 		s.setAttribute('type', 'text/css');
 		s.setAttribute('id', 'svelte-inspector-style');
-		s.textContent = `:root { --svelte-inspector-icon: url(${icon})};`;
+		s.textContent = `:root { --svelte-inspector-icon: url(${icon}); --svelte-inspector-cursor: url(${icon}) ${INSPECTOR_ICON_HOTSPOT}, crosshair; }`;
 		document.head.append(s);
 		if (toggle_combo) {
 			document.body.addEventListener('keydown', keydown);
@@ -495,7 +518,7 @@
 
 <style>
 	:global(body.svelte-inspector-enabled *) {
-		cursor: var(--svelte-inspector-icon), crosshair !important;
+		cursor: var(--svelte-inspector-cursor) !important;
 	}
 	:global(.svelte-inspector-active-target) {
 		outline: 2px dashed #ff3e00 !important;

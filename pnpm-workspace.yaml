@@ -15,6 +15,20 @@ minimumReleaseAgeExclude:
   - prettier-plugin-svelte
   - svelte-check
   - esm-env
+  # the inspector-devtools e2e fixture tests Vite DevTools 0.8.3 (exact versions only)
+  - '@vitejs/devtools@0.8.3'
+  - '@vitejs/devtools-kit@0.8.3'
+  - 'devframe@1.3.5'
+  - '@devframes/hub@1.3.5'
+  - '@devframes/hub-ui@1.3.5'
+  - '@devframes/agentic@1.3.5'
+  - '@devframes/json-render@1.3.5'
+  - '@devframes/json-render-ui@1.3.5'
+  - '@devframes/plugin-inspect@1.3.5'
+  - '@devframes/plugin-messages@1.3.5'
+  - '@devframes/plugin-terminals@1.3.5'
+  - '@devframes/service-open@1.3.5'
+  - '@devframes/vite@1.3.5'
 
 onlyBuiltDependencies:
   - esbuild
@@ -51,6 +65,10 @@ catalog:
 
 # needed for _test_dependencies
 dedupeInjectedDeps: false
+
+# keep Vite's optional @vitejs/devtools peer to the e2e project that installs it:
+# deduping it across projects gives them a different vite instance than SvelteKit's
+dedupePeerDependents: false
 
 # enables cross-platform scripting so we don't need cross-env
 shellEmulator: true

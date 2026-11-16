@@ -1,0 +1,89 @@
+// Client script of the `svelte:inspector-settings` view in the Vite DevTools dock: a hand-written
+// settings view mounted into the panel the dock gives a `custom-render` entry.
+// eslint-disable-next-line n/no-missing-import
+import SettingsView from 'virtual:svelte-inspector-path:SettingsView.svelte';
+// eslint-disable-next-line n/no-missing-import
+import options from 'virtual:svelte-inspector-options';
+import { mount, unmount } from 'svelte';
+import { SETTINGS_VIEW_CSS } from './settings-view-styles.js';
+
+// part of the devtools, not the app (see load-inspector.js)
+/** @type {any} */ (SettingsView)[Symbol.for('svelte.devtools.ignore')] = true;
+
+/** the dock's own colour scheme root (in its shadow root), whose class is `light` or `dark` */
+function dock_theme_root() {
+	const host = document.querySelector('devframes-dock-embedded');
+	return host?.shadowRoot?.querySelector('.devframes-color-root') ?? null;
+}
+
+/**
+ * @param {HTMLElement} panel
+ */
+function add_styles(panel) {
+	const root = panel.getRootNode();
+	const target = root instanceof ShadowRoot ? root : document.head;
+	if (target.querySelector('style[data-svelte-inspector-settings]')) return;
+	const style = document.createElement('style');
+	style.setAttribute('data-svelte-inspector-settings', '');
+	style.textContent = SETTINGS_VIEW_CSS;
+	target.append(style);
+}
+
+/**
+ * @param {any} ctx devframe dock client script context (`DockClientScriptContext`)
+ */
+export default function setup(ctx) {
+	/** @type {Record<string, any> | null} */
+	let view = null;
+	/** @type {MutationObserver | null} */
+	let observer = null;
+
+	/** @param {string} name */
+	const call = async (name, /** @type {unknown[]} */ ...args) =>
+		/** @type {{ ok: boolean; status: string }} */ (await ctx.rpc.call(name, ...args));
+
+	/** @param {HTMLElement} panel */
+	const render = (panel) => {
+		if (view) unmount(view);
+		observer?.disconnect();
+		add_styles(panel);
+
+		const target = document.createElement('div');
+		target.style.height = '100%';
+		panel.replaceChildren(target);
+
+		// follow the dock's light/dark mode (its own setting, not only the OS one)
+		const theme_root = dock_theme_root();
+		const sync = () => {
+			const dark = theme_root
+				? theme_root.classList.contains('dark')
+				: matchMedia('(prefers-color-scheme: dark)').matches;
+			target.firstElementChild?.setAttribute('data-theme', dark ? 'dark' : 'light');
+		};
+		if (theme_root) {
+			observer = new MutationObserver(sync);
+			observer.observe(theme_root, { attributes: true, attributeFilter: ['class'] });
+		}
+
+		/** @type {Record<string, unknown>} */
+		const current = { ...options };
+		delete current.__internal;
+		const defaults = options.__internal?.defaults ?? current;
+		view = mount(SettingsView, {
+			target,
+			props: {
+				current,
+				defaults,
+				file: '.env.local',
+				save: (/** @type {unknown} */ settings) => call('svelte:inspector:save-settings', settings),
+				reset: () => call('svelte:inspector:reset-settings')
+			}
+		});
+		sync();
+	};
+
+	// the panel can exist before this script has loaded (the dock creates it first)
+	ctx.current.events.on('dom:panel:mounted', render);
+	const existing = ctx.current.domElements?.panel;
+	if (existing) render(existing);
+}

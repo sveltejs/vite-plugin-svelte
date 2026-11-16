@@ -1,0 +1,17 @@
+{
+  "name": "e2e-tests-inspector-devtools",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "SVELTE_INSPECTOR_OPTIONS= LAUNCH_EDITOR=true vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "workspace:^",
+    "svelte": "^5.45.4",
+    "vite": "catalog:",
+    "@vitejs/devtools": "^0.8.3"
+  }
+}

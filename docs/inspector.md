@@ -6,6 +6,30 @@ Note that `@sveltejs/vite-plugin-svelte` needs to be installed as a peer depende
 
 ## Setup
 
+### with Vite DevTools
+
+When [Vite DevTools](https://devtools.vite.dev) (`@vitejs/devtools`) is in your Vite config, the inspector is added to its dock automatically: no `inspector` option is needed.
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite';
+import { DevTools } from '@vitejs/devtools';
+import { sveltekit } from '@sveltejs/kit/vite';
+
+export default defineConfig({
+  plugins: [DevTools(), sveltekit()]
+});
+```
+
+- **Svelte Inspector** on the dock bar turns the inspector on and off, as do the `toggleKeyCombo` and the **Toggle Svelte Inspector** command (<kbd>Mod</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> by default, rebindable in Vite DevTools' settings); all of them stay in sync. The floating toggle button is not shown.
+- Files are opened through Vite DevTools' `vite:core:open-in-editor` instead of the `/__open-in-editor` middleware.
+- **Svelte Inspector settings**, in the dock's **Svelte** group (or the command palette), edits your personal [plugin options](#plugin-options): the shortcut and keys (click one and press the key to use), hold mode and styles. Saving writes the options that differ from your Svelte config to `.env.local` as `SVELTE_INSPECTOR_OPTIONS` (see [environment variables](#configure-with-environment-variables)); Vite restarts the dev server to apply them. **Reset to defaults** removes the variable again. A `SVELTE_INSPECTOR_OPTIONS` set in the shell takes precedence over `.env.local`.
+- The inspector loads once the browser is authorized for Vite DevTools.
+
+The **Svelte** group (id `svelte`) is registered by vite-plugin-svelte for all Svelte tools: other tools can add their dock entries to it with `groupId: 'svelte'`.
+
+To turn it off, set `inspector: false` or `SVELTE_INSPECTOR_OPTIONS=false`.
+
 ### enable in Svelte config
 
 ```js
@@ -130,6 +154,21 @@ SVELTE_INSPECTOR_OPTIONS=true
   Inject custom styles when inspector is active. This is useful if you want to customize the inspector styles to match your app.
 
   When the inspector is active, the `svelte-inspector-enabled` class is added to the `body` element, and the `svelte-inspector-active-target` class is added to the current active target (e.g. via hover or keyboard).
+
+## Events
+
+Every time an element is opened, the inspector dispatches a `svelte-inspector:pick` event on `window`, so other in-page tools (e.g. a devtools panel revealing the component) can react to it:
+
+```js
+window.addEventListener('svelte-inspector:pick', (e) => {
+  // e.detail.loc: { file, line, column } of the element
+  // e.detail.stack: the element and the components it is rendered in, innermost first
+});
+```
+
+## Devtools UIs
+
+The inspector component is marked with `Symbol.for('svelte.devtools.ignore')`. Devtools that list the app's components and state leave a marked component, everything it renders and its state out of their panels. Other devtools UIs mounted into the page can use the same marker.
 
 ## Editors
 
