@@ -21,13 +21,10 @@ function cleanUrl(url) {
 	return url.replace(/[?#].*$/s, '');
 }
 
-/** The Vite DevTools dock's action script, served at `/@id/__x00__virtual:svelte-inspector-dock` */
 const DOCK_MODULE_ID = '\0virtual:svelte-inspector-dock';
 
-/** The settings view's client script, served at `/@id/__x00__virtual:svelte-inspector-settings` */
 const SETTINGS_MODULE_ID = '\0virtual:svelte-inspector-settings';
 
-/** The Vite DevTools dock group Svelte tools share (registered here) */
 const SVELTE_DOCK_GROUP = 'svelte';
 
 function getInspectorPath() {
@@ -49,18 +46,13 @@ export function svelteInspector(api) {
 	/** @type {InspectorOptions} */
 	let inspectorOptions;
 	let disabled = false;
-	/**
-	 * Vite DevTools is installed: the inspector is a toggle in its dock instead of injecting itself
-	 * into the vite client, and opens files through the dock's own RPC.
-	 */
+	/** Vite DevTools is installed: the inspector lives in its dock */
 	let dock = false;
 	let root = process.cwd();
-	/** where `.env.local` is read from (Vite's envDir), `false` when Vite loads no env files */
-	/** @type {string | false} */
+	/** @type {string | false} Vite's envDir, `false` when it loads no env files */
 	let envDir = false;
 	let mode = 'development';
-	/** options before the environment overrides them: what the saved settings are compared to */
-	/** @type {InspectorOptions} */
+	/** @type {InspectorOptions} the options without environment overrides */
 	let baseOptions = defaultInspectorOptions;
 
 	return {
@@ -96,7 +88,6 @@ export function svelteInspector(api) {
 			}
 
 			if (environmentOptions === true) {
-				// a copy: `__internal` is set on it below
 				inspectorOptions = { ...defaultInspectorOptions };
 			} else {
 				inspectorOptions = {
@@ -117,22 +108,18 @@ export function svelteInspector(api) {
 			inspectorOptions.__internal = {
 				base: config.base?.replace(/\/$/, '') || '',
 				root: config.root,
-				// what "Reset to defaults" in the settings view returns to: the options without the
-				// personal ones saved to .env.local
+				// what "Reset to defaults" in the settings view returns to
 				defaults: /** @type {Omit<InspectorOptions, '__internal'>} */ (
 					Object.fromEntries(Object.entries(baseOptions).filter(([key]) => key !== '__internal'))
 				)
 			};
 		},
-		// Vite DevTools integration, only called by `@vitejs/devtools`
 		devtools: {
 			/** @param {any} ctx */
 			setup(ctx) {
 				if (disabled || !dock) return;
 
-				// The `svelte` dock group: one place for Svelte tools in the dock. vite-plugin-svelte
-				// owns it (every Svelte app runs it); other Svelte tools join with `groupId: 'svelte'`.
-				// Registering an existing id throws, so a group another plugin registered first is kept.
+				// shared by Svelte tools (`groupId: 'svelte'`); keep one another plugin registered first
 				try {
 					ctx.docks.register({
 						id: SVELTE_DOCK_GROUP,
@@ -145,7 +132,7 @@ export function svelteInspector(api) {
 					log.debug('svelte dock group already registered', e, 'inspector');
 				}
 
-				// on the bar itself (not in the group) so the picker stays one click away
+				// on the bar itself, not in the group, so the picker stays one click away
 				ctx.docks.register({
 					id: 'svelte:inspector',
 					title: 'Svelte Inspector',
@@ -154,22 +141,18 @@ export function svelteInspector(api) {
 					type: 'action',
 					toggle: true,
 					action: {
-						// eager: mounted once the dock is trusted, so the key combo works before the first click
+						// so the key combo works before the first click
 						eager: true,
-						// a url, not the bare id: `virtual:` reads as a url scheme, so the host would not resolve it
+						// a url: the host would read `virtual:` as a url scheme
 						importFrom: `${inspectorOptions.__internal?.base ?? ''}/@id/__x00__${DOCK_MODULE_ID.slice(1)}`
 					}
 				});
 
-				// settings view: a hand-written view (runtime/SettingsView.svelte) mounted into the panel
-				// the dock gives a custom-render entry; it edits the inspector's personal settings,
-				// saved to `.env.local`
 				ctx.docks.register({
 					id: 'svelte:inspector-settings',
 					title: 'Svelte Inspector settings',
 					description: `Shortcut, keys and styles of the Svelte Inspector, saved to ${SETTINGS_FILE}`,
 					icon: `data:image/svg+xml;base64,${Buffer.from(INSPECTOR_SETTINGS_ICON_SVG).toString('base64')}`,
-					// in the Svelte group (and the command palette): used rarely, so off the bar itself
 					groupId: SVELTE_DOCK_GROUP,
 					category: 'inspector',
 					type: 'custom-render',
@@ -178,8 +161,7 @@ export function svelteInspector(api) {
 					}
 				});
 				/**
-				 * Why settings saved to .env.local would not apply: a shell variable wins over env files
-				 * (Vite's loadEnv), and so do the mode's own env files
+				 * Where SVELTE_INSPECTOR_OPTIONS is also set and wins over .env.local
 				 * @param {string} dir
 				 */
 				const overridden = (dir) => {

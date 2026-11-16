@@ -251,16 +251,19 @@ describe('inspector settings view', () => {
 
 describe('settings helpers', () => {
 	it('accepts the default options as they are', () => {
+		// the toggle button's options are left out: the dock replaces the button
+		const settings = structuredClone(defaultInspectorOptions);
+		delete settings.showToggleButton;
+		delete settings.toggleButtonPos;
 		expect(validateSettings(structuredClone(defaultInspectorOptions))).toEqual({
-			options: defaultInspectorOptions
+			options: settings
 		});
 	});
 
 	it.each([
 		[{ toggleKeyCombo: '' }, 'Shortcut needs a key'],
 		[{ openKey: "'" }, "Open in editor can't be '"],
-		[{ escapeKeys: [] }, 'Stop picking needs at least one key'],
-		[{ showToggleButton: 'sometimes' }, 'Toggle button must be one of always, active, never']
+		[{ escapeKeys: [] }, 'Stop picking needs at least one key']
 	])('rejects %j', (patch, error) => {
 		expect(validateSettings({ ...structuredClone(defaultInspectorOptions), ...patch })).toEqual({
 			error

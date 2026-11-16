@@ -9,11 +9,8 @@ const ENV_KEY = 'SVELTE_INSPECTOR_OPTIONS';
 /** @param {string} line */
 const sets_key = (line) => new RegExp(`^\\s*(export\\s+)?${ENV_KEY}\\s*=`).test(line);
 
-const TOGGLE_BUTTON = ['always', 'active', 'never'];
-const TOGGLE_BUTTON_POS = ['top-right', 'top-left', 'bottom-right', 'bottom-left'];
-
 /**
- * Inspector options from the settings view, checked: what it sends is saved to an env file.
+ * Check the options the settings view sends before they are written to an env file
  * @param {any} input
  * @returns {{ options: Omit<InspectorOptions, '__internal'> } | { error: string }}
  */
@@ -26,13 +23,6 @@ export function validateSettings(input) {
 		}
 		// saved inside single quotes in the env file, which cannot be escaped
 		if (value.includes("'")) throw new Error(`${label} can't be '`);
-		return value;
-	};
-	/** @param {unknown} value @param {string[]} allowed @param {string} label */
-	const one_of = (value, allowed, label) => {
-		if (typeof value !== 'string' || !allowed.includes(value)) {
-			throw new Error(`${label} must be one of ${allowed.join(', ')}`);
-		}
 		return value;
 	};
 	try {
@@ -53,12 +43,6 @@ export function validateSettings(input) {
 					next: key(nav.next, 'Next sibling'),
 					prev: key(nav.prev, 'Previous sibling')
 				},
-				showToggleButton: /** @type {InspectorOptions['showToggleButton']} */ (
-					one_of(input.showToggleButton, TOGGLE_BUTTON, 'Toggle button')
-				),
-				toggleButtonPos: /** @type {InspectorOptions['toggleButtonPos']} */ (
-					one_of(input.toggleButtonPos, TOGGLE_BUTTON_POS, 'Button position')
-				),
 				customStyles: input.customStyles === true
 			}
 		};
@@ -68,7 +52,7 @@ export function validateSettings(input) {
 }
 
 /**
- * The options in `options` that differ from `base` (what the env variable has to override)
+ * The options in `options` that differ from `base`
  * @param {Partial<InspectorOptions>} options
  * @param {Partial<InspectorOptions>} base
  */
@@ -85,9 +69,8 @@ export function changedOptions(options, base) {
 }
 
 /**
- * Write `options` to the env file in `dir` as `SVELTE_INSPECTOR_OPTIONS`, replacing an earlier
- * value and keeping every other line. `null` (or nothing to override) removes the variable, and
- * the file when nothing else is left in it.
+ * Set `SVELTE_INSPECTOR_OPTIONS` in `dir`'s .env.local, keeping other lines. `null` or `{}` removes
+ * it, and the file if nothing else is left.
  * @param {string} dir
  * @param {Record<string, unknown> | null} options
  * @returns {string} the file written
@@ -103,7 +86,6 @@ export function writeSettings(dir, options) {
 	if (kept.length > 0) {
 		fs.writeFileSync(file, `${kept.join('\n')}\n`);
 	} else if (existing !== '') {
-		// only the inspector's variable was in it
 		fs.rmSync(file);
 	}
 	return file;

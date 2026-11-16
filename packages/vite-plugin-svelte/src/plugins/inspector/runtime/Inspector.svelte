@@ -28,15 +28,13 @@
 		__svelte_meta: Metadata;
 	}
 
-	type StackItem = Loc & { tag: string };
-
 	/** set when a host (the Vite DevTools dock) controls the inspector */
 	interface Host {
 		/** open `loc` in the editor */
 		openInEditor(loc: Loc): void;
-		/** the inspector was enabled or disabled, by the host or by itself (key combo, escape, click) */
+		/** the inspector was enabled or disabled */
 		onenabledchange?(enabled: boolean): void;
-		/** events on the host's own ui (rendered in the page) that the inspector must not handle */
+		/** events from the host's own ui, which the inspector must not handle */
 		ignore?(e: Event): boolean;
 	}
 
@@ -65,7 +63,6 @@
 
 	let hold_start_ts = $state<number | null>(null);
 
-	// with a host, its own button (the dock entry) toggles the inspector
 	let show_toggle = $derived(
 		!host &&
 			(options.showToggleButton === 'always' || (options.showToggleButton === 'active' && enabled))
@@ -176,7 +173,7 @@
 		const el = find_selectable_parent(target, true)!;
 		const meta = el.__svelte_meta;
 
-		const stack: StackItem[] = [
+		const stack = [
 			{
 				file: meta.loc.file,
 				line: meta.loc.line,
@@ -214,13 +211,6 @@
 	}
 
 	function send(loc: Loc) {
-		// a standard event for other in-page tools (e.g. to reveal the component in a devtools panel)
-		const stack = active_el ? get_stack(active_el) : [];
-		window.dispatchEvent(
-			new CustomEvent<{ loc: Loc; stack: StackItem[] }>('svelte-inspector:pick', {
-				detail: { loc, stack }
-			})
-		);
 		if (host) {
 			host.openInEditor(loc);
 		} else {

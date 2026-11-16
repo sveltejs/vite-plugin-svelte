@@ -10,7 +10,7 @@
 	let { mode, value, onchange, label }: Props = $props();
 
 	let recording = $state(false);
-	// modifiers held down while recording (not reactive: only read by the key handlers)
+	// modifiers held while recording
 	let held: string[] = [];
 
 	const MODIFIERS = ['shift', 'control', 'alt', 'meta'];
