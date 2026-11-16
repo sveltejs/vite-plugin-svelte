@@ -18,5 +18,11 @@
 			matchDatasources: ["npm"],
 			minimumReleaseAge: "3 days",
 		},
+		{
+			// vitest 5 requires node ^22.12, but CI still runs tests on node 20 and 20.19
+			// TODO: remove once node 20 is dropped from the CI test matrix
+			matchPackageNames: ["vitest"],
+			allowedVersions: "<5",
+		},
 	],
 }
