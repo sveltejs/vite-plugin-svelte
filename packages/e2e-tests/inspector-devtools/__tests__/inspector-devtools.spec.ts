@@ -212,7 +212,11 @@ describe('inspector-devtools', () => {
 			}
 		);
 
-		await page.locator('#counter').click();
+		// dispatched on the element: on smaller viewports the dock bar covers it, so a real click
+		// would land on the dock
+		const counter = page.locator('#counter');
+		await counter.dispatchEvent('mouseover');
+		await counter.dispatchEvent('click');
 
 		const { picks, calls } = await page.evaluate(() => ({
 			picks: (window as any).__picks,
