@@ -16,26 +16,15 @@ describe('inspector-devtools', () => {
 		return;
 	}
 
-	it('should be added to the Vite DevTools dock instead of injecting a toggle button', async () => {
+	it('should keep the picker on the bar and its settings in the Svelte group', async () => {
+		// the dock's action script has mounted the inspector
 		await page.waitForFunction(
 			() => document.getElementById('svelte-inspector-host') !== null,
 			null,
-			{
-				timeout
-			}
+			{ timeout }
 		);
-		const ids = await page.evaluate(
-			() =>
-				(window as any).__DEVFRAME_HUB_CLIENT_CONTEXT__.docks.entries.map(
-					(e: any) => e.id
-				) as string[]
-		);
-		expect(ids).toContain('svelte:inspector');
-		expect(ids).toContain('svelte:inspector-settings');
+		// the dock button replaces the floating one
 		expect(await getEl('#svelte-inspector-toggle')).toBe(null);
-	});
-
-	it('should keep the picker on the bar and its settings in the Svelte group', async () => {
 		const { labels, settingsGroup, opened } = await page.evaluate(async () => {
 			const docks = (window as any).__DEVFRAME_HUB_CLIENT_CONTEXT__.docks;
 			const root = document.querySelector('devframes-dock-embedded')!.shadowRoot!;

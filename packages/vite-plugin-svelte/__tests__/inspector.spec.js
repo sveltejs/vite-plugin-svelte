@@ -121,16 +121,6 @@ describe('inspector with Vite DevTools', () => {
 		expect(docks.map((d) => d.id)).toEqual(['svelte:inspector', 'svelte:inspector-settings']);
 	});
 
-	it.each([
-		['\0virtual:svelte-inspector-dock', 'devtools-action.js'],
-		['\0virtual:svelte-inspector-settings', 'settings-view.js']
-	])('serves %s', async (module, script) => {
-		const plugin = setup(undefined, { devtools: true });
-		const id = await plugin.resolveId.handler(module);
-		expect(id).toBe(module);
-		expect(await plugin.load.handler(id)).toContain(script);
-	});
-
 	it('stays off with `inspector: false`', () => {
 		const plugin = setup(false, { devtools: true });
 		const { ctx, docks } = fakeDevtools();
@@ -260,18 +250,15 @@ describe('settings helpers', () => {
 		});
 	});
 
+	/** @param {Record<string, unknown>} patch */
+	const settings = (patch) => ({ ...structuredClone(defaultInspectorOptions), ...patch });
 	it.each([
-		[{ toggleKeyCombo: '' }, 'Shortcut needs a key'],
-		[{ openKey: "'" }, "Open in editor can't be '"],
-		[{ escapeKeys: [] }, 'Stop picking needs at least one key']
-	])('rejects %j', (patch, error) => {
-		expect(validateSettings({ ...structuredClone(defaultInspectorOptions), ...patch })).toEqual({
-			error
-		});
-	});
-
-	it('rejects input that is not settings', () => {
-		expect(validateSettings(null)).toEqual({ error: 'No settings to save' });
+		[settings({ toggleKeyCombo: '' }), 'Shortcut needs a key'],
+		[settings({ openKey: "'" }), "Open in editor can't be '"],
+		[settings({ escapeKeys: [] }), 'Stop picking needs at least one key'],
+		[null, 'No settings to save']
+	])('rejects %j', (input, error) => {
+		expect(validateSettings(input)).toEqual({ error });
 	});
 
 	it('lists only changed options', () => {
