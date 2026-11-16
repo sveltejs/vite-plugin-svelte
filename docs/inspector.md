@@ -30,7 +30,14 @@ The **Svelte** group (id `svelte`) is registered by vite-plugin-svelte for all S
 
 To turn it off, set `inspector: false` or `SVELTE_INSPECTOR_OPTIONS=false`.
 
-### enable in Svelte config
+### without Vite DevTools (deprecated)
+
+> [!WARNING]
+> Using the inspector without Vite DevTools is deprecated and will be removed in the next major version. Add Vite DevTools to your Vite config as shown [above](#with-vite-devtools) instead.
+
+Without Vite DevTools, the inspector injects itself into the page and has to be enabled with the `inspector` option or [environment variables](#configure-with-environment-variables).
+
+#### enable in Svelte config
 
 ```js
 // svelte.config.js
@@ -41,7 +48,7 @@ export default {
 };
 ```
 
-### enable with custom options in Svelte config
+#### enable with custom options in Svelte config
 
 ```js
 // svelte.config.js
@@ -131,6 +138,8 @@ SVELTE_INSPECTOR_OPTIONS=true
 
 ### showToggleButton
 
+> Deprecated: only used without Vite DevTools. In the dock, the **Svelte Inspector** button on the dock bar replaces it.
+
 - **Type:** `'always' | 'active' | 'never'`
 - **Default:** `'active'`
 
@@ -140,6 +149,8 @@ SVELTE_INSPECTOR_OPTIONS=true
   - `'never'`: never show the toggle button
 
 ### toggleButtonPos
+
+> Deprecated: only used without Vite DevTools. In the dock, the **Svelte Inspector** button on the dock bar replaces it.
 
 - **Type:** `'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'`
 - **Default:** `'top-right'`

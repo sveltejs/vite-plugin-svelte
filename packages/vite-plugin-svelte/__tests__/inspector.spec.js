@@ -2,8 +2,15 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { svelteInspector } from '../src/plugins/inspector/index.js';
+import { log } from '../src/utils/log.js';
+
+// `log.warn.once` is a getter that can't be spied on, and dedupes across tests
+vi.mock('../src/utils/log.js', async (importOriginal) => {
+	const { log } = /** @type {any} */ (await importOriginal());
+	return { log: { ...log, warn: Object.assign(() => {}, { once: vi.fn() }) } };
+});
 import { defaultInspectorOptions } from '../src/plugins/inspector/options.js';
 import {
 	changedOptions,
@@ -150,6 +157,20 @@ describe('inspector without Vite DevTools', () => {
 	it('is off without options', () => {
 		const plugin = setup(undefined);
 		expect(plugin.applyToEnvironment({ config: { consumer: 'client' } })).toBe(false);
+	});
+
+	it('warns that it is deprecated once enabled, and only then', () => {
+		const warn = vi.mocked(log.warn.once);
+		warn.mockClear();
+		setup(undefined);
+		setup(true, { devtools: true });
+		expect(warn).not.toHaveBeenCalled();
+		setup(true);
+		expect(warn).toHaveBeenCalledWith(
+			expect.stringContaining('without Vite DevTools is deprecated'),
+			null,
+			'inspector'
+		);
 	});
 });
 

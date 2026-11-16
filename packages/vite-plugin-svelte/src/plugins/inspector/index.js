@@ -87,6 +87,14 @@ export function svelteInspector(api) {
 				return;
 			}
 
+			if (!dock) {
+				log.warn.once(
+					'Using the Svelte Inspector without Vite DevTools is deprecated and will be removed in the next major version. Add `@vitejs/devtools` to your Vite config to use the inspector from its dock. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/inspector.md',
+					null,
+					'inspector'
+				);
+			}
+
 			if (environmentOptions === true) {
 				inspectorOptions = { ...defaultInspectorOptions };
 			} else {

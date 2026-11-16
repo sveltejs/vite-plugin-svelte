@@ -252,12 +252,14 @@ declare module '@sveltejs/vite-plugin-svelte' {
 		/**
 		 * when to show the toggle button
 		 * @default 'active'
+		 * @deprecated only used without Vite DevTools, which is deprecated: the dock has its own toggle
 		 */
 		showToggleButton?: 'always' | 'active' | 'never';
 
 		/**
 		 * where to display the toggle button
 		 * @default 'top-right'
+		 * @deprecated only used without Vite DevTools, which is deprecated: the dock has its own toggle
 		 */
 		toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 
