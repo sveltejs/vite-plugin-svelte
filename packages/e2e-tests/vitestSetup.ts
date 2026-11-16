@@ -165,6 +165,16 @@ beforeAll(
 					);
 					fs.writeFileSync(pkgFile, newContent, 'utf-8');
 				}
+				// temp copies are outside the workspace so a global pnpm would not switch to the pinned version
+				const rootPkg = JSON.parse(
+					fs.readFileSync(path.resolve(e2eTestsRoot, '../../package.json'), 'utf-8')
+				);
+				if (rootPkg.packageManager) {
+					const pkgFile = path.join(tempDir, 'package.json');
+					const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
+					pkg.packageManager = rootPkg.packageManager;
+					fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, '\t'), 'utf-8');
+				}
 				await fsPromises.mkdir(logsDir);
 				const customServerScript = path.resolve(path.dirname(testPath), 'serve.js');
 				const defaultServerScript = path.resolve(e2eTestsRoot, 'e2e-server.js');
