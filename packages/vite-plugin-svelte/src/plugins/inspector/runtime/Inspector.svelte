@@ -284,6 +284,8 @@
 	}
 
 	function keydown(e: KeyboardEvent) {
+		// typing in the host's own ui (e.g. the dock's command palette)
+		if (host?.ignore?.(e)) return;
 		if (e.repeat || e.key == null || (!enabled && !is_toggle(e))) {
 			return;
 		}

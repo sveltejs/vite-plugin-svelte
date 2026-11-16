@@ -68,6 +68,19 @@ export default function setup(ctx) {
 		)
 	);
 
+	// a command for the palette with its own shortcut, rebindable in the dock's settings (not
+	// Alt-based like `toggleKeyCombo`: Alt+letter types characters on macOS). Registered here, in
+	// the page, so it toggles this tab only.
+	ctx.commands?.register({
+		id: 'svelte:toggle-inspector',
+		source: 'client',
+		title: 'Toggle Svelte Inspector',
+		icon: 'logos:svelte-icon',
+		category: 'svelte',
+		keybindings: [{ key: 'Mod+Shift+X' }],
+		action: () => docks.toggleEntry(id)
+	});
+
 	// deferred: the click that activated the dock entry would otherwise reach the inspector's
 	// window click handler, which disables it again
 	ctx.current.events.on('entry:activated', () => setTimeout(() => inspector.enable()));

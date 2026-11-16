@@ -6,6 +6,7 @@ import SettingsView from 'virtual:svelte-inspector-path:SettingsView.svelte';
 import options from 'virtual:svelte-inspector-options';
 import { mount, unmount } from 'svelte';
 import { SETTINGS_VIEW_CSS } from './settings-view-styles.js';
+import { RESET_SETTINGS, SAVE_SETTINGS, SETTINGS_FILE } from './settings-constants.js';
 
 // part of the devtools, not the app (see load-inspector.js)
 /** @type {any} */ (SettingsView)[Symbol.for('svelte.devtools.ignore')] = true;
@@ -74,9 +75,9 @@ export default function setup(ctx) {
 			props: {
 				current,
 				defaults,
-				file: '.env.local',
-				save: (/** @type {unknown} */ settings) => call('svelte:inspector:save-settings', settings),
-				reset: () => call('svelte:inspector:reset-settings')
+				file: SETTINGS_FILE,
+				save: (/** @type {unknown} */ settings) => call(SAVE_SETTINGS, settings),
+				reset: () => call(RESET_SETTINGS)
 			}
 		});
 		sync();

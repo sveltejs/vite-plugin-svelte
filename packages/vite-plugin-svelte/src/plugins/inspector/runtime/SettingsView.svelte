@@ -46,7 +46,10 @@
 			status = null;
 			return;
 		}
-		run(reset).then(() => (form = clone(defaults)));
+		run(reset).then((ok) => {
+			// only once removed: after a failed reset the saved settings are still the ones in use
+			if (ok) form = clone(defaults);
+		});
 	}
 
 	const icon = `data:image/svg+xml;base64,${btoa(INSPECTOR_ICON_SVG)}`;
@@ -56,8 +59,10 @@
 		try {
 			const r = await action();
 			status = { ok: r.ok, text: r.status };
+			return r.ok;
 		} catch (e) {
 			status = { ok: false, text: `Couldn't save: ${(e as Error).message}` };
+			return false;
 		} finally {
 			busy = false;
 		}

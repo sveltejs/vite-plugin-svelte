@@ -152,6 +152,44 @@ describe('inspector-devtools', () => {
 		await enabled(false);
 	});
 
+	it('should leave keys typed in the dock alone while picking', async () => {
+		await page.evaluate(() =>
+			(window as any).__DEVFRAME_HUB_CLIENT_CONTEXT__.docks.setActionActive(
+				'svelte:inspector',
+				true
+			)
+		);
+		await page.waitForFunction(
+			() => document.body.classList.contains('svelte-inspector-enabled'),
+			null,
+			{ timeout }
+		);
+		const result = await page.evaluate(() => {
+			const dock = document.querySelector('devframes-dock-embedded')!;
+			const press = (key: string) => {
+				const e = new KeyboardEvent('keydown', {
+					key,
+					bubbles: true,
+					composed: true,
+					cancelable: true
+				});
+				dock.dispatchEvent(e);
+				return e.defaultPrevented;
+			};
+			// a nav key and an escape key (e.g. moving through and editing the command palette)
+			const arrow = press('ArrowUp');
+			press('Backspace');
+			return { arrow, enabled: document.body.classList.contains('svelte-inspector-enabled') };
+		});
+		expect(result).toEqual({ arrow: false, enabled: true });
+		await page.evaluate(() =>
+			(window as any).__DEVFRAME_HUB_CLIENT_CONTEXT__.docks.setActionActive(
+				'svelte:inspector',
+				false
+			)
+		);
+	});
+
 	it('should open the picked element through Vite DevTools', async () => {
 		await page.evaluate(() => {
 			const w = window as any;

@@ -10,7 +10,8 @@ import { fileURLToPath } from 'node:url';
 import { defaultInspectorOptions, parseEnvironmentOptions } from './options.js';
 import { log } from '../../utils/log.js';
 import { INSPECTOR_ICON_SVG, INSPECTOR_SETTINGS_ICON_SVG } from './runtime/icon.js';
-import { SETTINGS_FILE, changedOptions, validateSettings, writeSettings } from './settings.js';
+import { changedOptions, overridingEnvFiles, validateSettings, writeSettings } from './settings.js';
+import { RESET_SETTINGS, SAVE_SETTINGS, SETTINGS_FILE } from './runtime/settings-constants.js';
 
 /**
  * @param {string} url
@@ -25,10 +26,6 @@ const DOCK_MODULE_ID = '\0virtual:svelte-inspector-dock';
 
 /** The settings view's client script, served at `/@id/__x00__virtual:svelte-inspector-settings` */
 const SETTINGS_MODULE_ID = '\0virtual:svelte-inspector-settings';
-
-/** RPC actions of the settings view */
-const SAVE_SETTINGS = 'svelte:inspector:save-settings';
-const RESET_SETTINGS = 'svelte:inspector:reset-settings';
 
 /** The Vite DevTools dock group Svelte tools share (registered here) */
 const SVELTE_DOCK_GROUP = 'svelte';
@@ -58,8 +55,10 @@ export function svelteInspector(api) {
 	 */
 	let dock = false;
 	let root = process.cwd();
-	/** where `.env.local` is read from (Vite's envDir) */
-	let envDir = '';
+	/** where `.env.local` is read from (Vite's envDir), `false` when Vite loads no env files */
+	/** @type {string | false} */
+	let envDir = false;
+	let mode = 'development';
 	/** options before the environment overrides them: what the saved settings are compared to */
 	/** @type {InspectorOptions} */
 	let baseOptions = defaultInspectorOptions;
@@ -97,7 +96,8 @@ export function svelteInspector(api) {
 			}
 
 			if (environmentOptions === true) {
-				inspectorOptions = defaultInspectorOptions;
+				// a copy: `__internal` is set on it below
+				inspectorOptions = { ...defaultInspectorOptions };
 			} else {
 				inspectorOptions = {
 					...defaultInspectorOptions,
@@ -107,7 +107,8 @@ export function svelteInspector(api) {
 			}
 
 			root = config.root;
-			envDir = config.envDir || config.root;
+			envDir = config.envDir === false ? false : config.envDir || config.root;
+			mode = config.mode;
 			baseOptions = {
 				...defaultInspectorOptions,
 				...(typeof configFileOptions === 'object' ? configFileOptions : {})
@@ -160,18 +161,6 @@ export function svelteInspector(api) {
 					}
 				});
 
-				// a command for the palette with its own shortcut, rebindable in the dock's settings
-				// (not Alt-based like `toggleKeyCombo`: Alt+letter types characters on macOS)
-				ctx.commands?.register({
-					id: 'svelte:toggle-inspector',
-					title: 'Toggle Svelte Inspector',
-					icon: 'logos:svelte-icon',
-					category: 'svelte',
-					keybindings: [{ key: 'Mod+Shift+X' }],
-					// activating a toggle action flips it
-					handler: () => ctx.docks.activate('svelte:inspector')
-				});
-
 				// settings view: a hand-written view (runtime/SettingsView.svelte) mounted into the panel
 				// the dock gives a custom-render entry; it edits the inspector's personal settings,
 				// saved to `.env.local`
@@ -188,14 +177,21 @@ export function svelteInspector(api) {
 						importFrom: `${inspectorOptions.__internal?.base ?? ''}/@id/__x00__${SETTINGS_MODULE_ID.slice(1)}`
 					}
 				});
-				// shell variables win over env files (Vite's loadEnv): saved settings would not apply
-				const shadowed = () =>
-					process.env.SVELTE_INSPECTOR_OPTIONS !== undefined
-						? ' SVELTE_INSPECTOR_OPTIONS is also set in the shell, which takes precedence.'
-						: '';
+				/**
+				 * Why settings saved to .env.local would not apply: a shell variable wins over env files
+				 * (Vite's loadEnv), and so do the mode's own env files
+				 * @param {string} dir
+				 */
+				const overridden = (dir) => {
+					const sources = overridingEnvFiles(dir, mode);
+					if (process.env.SVELTE_INSPECTOR_OPTIONS !== undefined) sources.unshift('the shell');
+					return sources.length === 0
+						? ''
+						: ` SVELTE_INSPECTOR_OPTIONS is also set in ${sources.join(' and ')}, which takes precedence.`;
+				};
 				/**
 				 * @param {string} name
-				 * @param {(params: any) => { ok: boolean; status: string }} handler
+				 * @param {(dir: string, params: any) => { ok: boolean; status: string }} handler
 				 */
 				const action = (name, handler) =>
 					ctx.rpc.register({
@@ -203,8 +199,14 @@ export function svelteInspector(api) {
 						type: 'action',
 						setup: () => ({
 							handler: async (/** @type {any} */ params) => {
+								if (envDir === false) {
+									return {
+										ok: false,
+										status: `Vite loads no env files (envDir: false), so settings can't be saved to ${SETTINGS_FILE}. Set SVELTE_INSPECTOR_OPTIONS in the shell instead.`
+									};
+								}
 								try {
-									return handler(params ?? {});
+									return handler(envDir, params ?? {});
 								} catch (e) {
 									return {
 										ok: false,
@@ -214,22 +216,25 @@ export function svelteInspector(api) {
 							}
 						})
 					});
-				action(SAVE_SETTINGS, (params) => {
+				action(SAVE_SETTINGS, (dir, params) => {
 					const result = validateSettings(params);
 					if ('error' in result) return { ok: false, status: result.error };
 					const changed = changedOptions(result.options, baseOptions);
-					const file = writeSettings(envDir, changed);
+					const file = writeSettings(dir, changed);
 					log.debug(`saved inspector settings to ${file}`, changed, 'inspector');
 					const where = path.relative(root, file) || file;
 					return {
 						ok: true,
-						status: `${Object.keys(changed).length === 0 ? 'Same as the defaults: removed from' : 'Saved to'} ${where}.${shadowed()} Restarting…`
+						status: `${Object.keys(changed).length === 0 ? 'Same as the defaults: removed from' : 'Saved to'} ${where}.${overridden(dir)} Restarting…`
 					};
 				});
-				action(RESET_SETTINGS, () => {
-					const file = writeSettings(envDir, null);
+				action(RESET_SETTINGS, (dir) => {
+					const file = writeSettings(dir, null);
 					const where = path.relative(root, file) || file;
-					return { ok: true, status: `Reset: removed from ${where}.${shadowed()} Restarting…` };
+					return {
+						ok: true,
+						status: `Reset: removed from ${where}.${overridden(dir)} Restarting…`
+					};
 				});
 			}
 		},

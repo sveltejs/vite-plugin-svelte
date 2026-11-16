@@ -2,11 +2,12 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-
-/** The file personal inspector settings are saved to (Vite loads it; `*.local` is not committed) */
-export const SETTINGS_FILE = '.env.local';
+import { SETTINGS_FILE } from './runtime/settings-constants.js';
 
 const ENV_KEY = 'SVELTE_INSPECTOR_OPTIONS';
+
+/** @param {string} line */
+const sets_key = (line) => new RegExp(`^\\s*(export\\s+)?${ENV_KEY}\\s*=`).test(line);
 
 const TOGGLE_BUTTON = ['always', 'active', 'never'];
 const TOGGLE_BUTTON_POS = ['top-right', 'top-left', 'bottom-right', 'bottom-left'];
@@ -95,7 +96,7 @@ export function writeSettings(dir, options) {
 	const file = path.join(dir, SETTINGS_FILE);
 	const existing = fs.existsSync(file) ? fs.readFileSync(file, 'utf-8') : '';
 	const lines = existing === '' ? [] : existing.replace(/\r?\n$/, '').split(/\r?\n/);
-	const kept = lines.filter((line) => !new RegExp(`^\\s*(export\\s+)?${ENV_KEY}\\s*=`).test(line));
+	const kept = lines.filter((line) => !sets_key(line));
 	if (options && Object.keys(options).length > 0) {
 		kept.push(`${ENV_KEY}='${JSON.stringify(options)}'`);
 	}
@@ -106,4 +107,18 @@ export function writeSettings(dir, options) {
 		fs.rmSync(file);
 	}
 	return file;
+}
+
+/**
+ * The env files in `dir` that Vite loads after `.env.local` for `mode` and that also set
+ * `SVELTE_INSPECTOR_OPTIONS`: their value wins over the saved settings.
+ * @param {string} dir
+ * @param {string} mode
+ * @returns {string[]} file names
+ */
+export function overridingEnvFiles(dir, mode) {
+	return [`.env.${mode}`, `.env.${mode}.local`].filter((name) => {
+		const file = path.join(dir, name);
+		return fs.existsSync(file) && fs.readFileSync(file, 'utf-8').split(/\r?\n/).some(sets_key);
+	});
 }

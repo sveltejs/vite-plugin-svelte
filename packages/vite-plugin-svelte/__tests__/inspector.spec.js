@@ -28,16 +28,16 @@ const read = () => fs.readFileSync(path.join(dir, '.env.local'), 'utf-8');
 
 /**
  * @param {any} inspector `inspector` plugin option
- * @param {{ devtools?: boolean }} [opts]
+ * @param {{ devtools?: boolean; envDir?: string | false }} [opts]
  */
-function setup(inspector, { devtools = false } = {}) {
+function setup(inspector, { devtools = false, envDir = dir } = {}) {
 	const plugin = /** @type {any} */ (
 		svelteInspector(/** @type {any} */ ({ options: { inspector } }))
 	);
 	plugin.configResolved({
 		mode: 'development',
 		root: dir,
-		envDir: dir,
+		envDir,
 		base: '/',
 		plugins: devtools ? [{ name: 'vite:devtools' }, { name: 'vite:devtools:injection' }] : [],
 		logger: { error() {} }
@@ -49,23 +49,15 @@ function setup(inspector, { devtools = false } = {}) {
 function fakeDevtools() {
 	/** @type {any[]} */
 	const docks = [];
-	/** @type {any[]} */
-	const commands = [];
-	/** @type {string[]} */
-	const activated = [];
 	/** @type {Map<string, (params?: any) => Promise<{ ok: boolean; status: string }>>} */
 	const actions = new Map();
 	const ctx = {
-		docks: {
-			register: (/** @type {any} */ entry) => docks.push(entry),
-			activate: (/** @type {string} */ id) => activated.push(id)
-		},
-		commands: { register: (/** @type {any} */ command) => commands.push(command) },
+		docks: { register: (/** @type {any} */ entry) => docks.push(entry) },
 		rpc: {
 			register: (/** @type {any} */ fn) => actions.set(fn.name, fn.setup().handler)
 		}
 	};
-	return { ctx, docks, commands, activated, actions };
+	return { ctx, docks, actions };
 }
 
 /**
@@ -115,17 +107,6 @@ describe('inspector with Vite DevTools', () => {
 		);
 		// a hand-written view, mounted into the dock panel by its own client script
 		expect(settings.renderer.importFrom).toBe('/@id/__x00__virtual:svelte-inspector-settings');
-	});
-
-	it('registers a command that toggles the picker', () => {
-		const plugin = setup(undefined, { devtools: true });
-		const { ctx, commands, activated } = fakeDevtools();
-		plugin.devtools.setup(ctx);
-		expect(commands.map((c) => [c.id, c.keybindings])).toEqual([
-			['svelte:toggle-inspector', [{ key: 'Mod+Shift+X' }]]
-		]);
-		commands[0].handler();
-		expect(activated).toEqual(['svelte:inspector']);
 	});
 
 	it('keeps a Svelte group another plugin registered first', () => {
@@ -222,6 +203,34 @@ describe('inspector settings view', () => {
 			openKey: '  '
 		});
 		expect(result).toEqual({ ok: false, status: 'Open in editor needs a key' });
+		expect(fs.existsSync(path.join(dir, '.env.local'))).toBe(false);
+	});
+
+	it('says when an env file of the mode overrides the saved settings', async () => {
+		fs.writeFileSync(path.join(dir, '.env.development'), "SVELTE_INSPECTOR_OPTIONS='{}'\n");
+		const plugin = setup(undefined, { devtools: true });
+		const { ctx, actions } = fakeDevtools();
+		plugin.devtools.setup(ctx);
+		const saved = await actions.get('svelte:inspector:save-settings')?.({
+			...form(await served_options(plugin)),
+			toggleKeyCombo: 'meta-k'
+		});
+		expect(saved?.ok).toBe(true);
+		expect(saved?.status).toContain(
+			'SVELTE_INSPECTOR_OPTIONS is also set in .env.development, which takes precedence.'
+		);
+	});
+
+	it('does not save when Vite loads no env files', async () => {
+		const plugin = setup(undefined, { devtools: true, envDir: false });
+		const { ctx, actions } = fakeDevtools();
+		plugin.devtools.setup(ctx);
+		const saved = await actions.get('svelte:inspector:save-settings')?.({
+			...form(await served_options(plugin)),
+			toggleKeyCombo: 'meta-k'
+		});
+		expect(saved?.ok).toBe(false);
+		expect(saved?.status).toMatch(/envDir: false/);
 		expect(fs.existsSync(path.join(dir, '.env.local'))).toBe(false);
 	});
 
