@@ -8,7 +8,8 @@ import {
 	sleep,
 	getColor,
 	browserLogs,
-	getWatchErrors
+	getWatchErrors,
+	reloadPage
 } from '~utils';
 
 describe.runIf(isBuildWatch)('build-watch', () => {
@@ -48,6 +49,11 @@ describe.runIf(isBuildWatch)('build-watch', () => {
 	});
 
 	describe('edit files', () => {
+		// a retry must not inherit in memory state such as clicked counters
+		beforeEach(({ onTestFailed }) => {
+			onTestFailed(() => reloadPage());
+		});
+
 		const updateHmrTest = editFileAndWaitForBuildWatchComplete.bind(
 			null,
 			'src/components/HmrTest.svelte'
