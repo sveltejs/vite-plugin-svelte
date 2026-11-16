@@ -195,13 +195,17 @@ describe('inspector-devtools', () => {
 			const w = window as any;
 			w.__picks = [];
 			w.__calls = [];
-			window.addEventListener('svelte-inspector:pick', (e: any) => w.__picks.push(e.detail));
-			const rpc = w.__DEVFRAME_HUB_CLIENT_CONTEXT__.rpc;
-			const call = rpc.call.bind(rpc);
-			rpc.call = (name: string, ...args: unknown[]) => {
-				w.__calls.push([name, ...args]);
-				return call(name, ...args);
-			};
+			// once per page: a retry runs this again on the same page
+			if (!w.__recording) {
+				w.__recording = true;
+				window.addEventListener('svelte-inspector:pick', (e: any) => w.__picks.push(e.detail));
+				const rpc = w.__DEVFRAME_HUB_CLIENT_CONTEXT__.rpc;
+				const call = rpc.call.bind(rpc);
+				rpc.call = (name: string, ...args: unknown[]) => {
+					w.__calls.push([name, ...args]);
+					return call(name, ...args);
+				};
+			}
 			return w.__DEVFRAME_HUB_CLIENT_CONTEXT__.docks.setActionActive('svelte:inspector', true);
 		});
 		await page.waitForFunction(
@@ -229,7 +233,7 @@ describe('inspector-devtools', () => {
 			expect.stringMatching(/App\.svelte$/)
 		]);
 		const open = calls.find((c: any[]) => c[0] === 'vite:core:open-in-editor');
-		// absolute path, line and column
-		expect(open?.[1]).toMatch(/^\/.*\/src\/lib\/Counter\.svelte:\d+:\d+$/);
+		// absolute path (a drive letter on Windows), line and column
+		expect(open?.[1]).toMatch(/^(\/|[a-zA-Z]:\/).*\/src\/lib\/Counter\.svelte:\d+:\d+$/);
 	});
 });
