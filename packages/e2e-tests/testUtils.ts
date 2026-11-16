@@ -6,6 +6,7 @@ import path from 'node:path';
 import process from 'node:process';
 import colors from 'css-color-names';
 import { ElementHandle } from 'playwright-core';
+import { onTestFailed } from 'vitest';
 import {
 	testMode,
 	isWin,
@@ -217,6 +218,7 @@ export async function editFileAndWaitForHmrComplete(file, replacer, fileUpdateTo
 }
 
 export async function editFileAndWaitForBuildWatchComplete(file, replacer) {
+	restoreFileOnTestFailed(file);
 	const newContent = editFile(file, replacer);
 
 	try {
@@ -237,6 +239,19 @@ export async function editFileAndWaitForBuildWatchComplete(file, replacer) {
 		await saveScreenshot(`failed_update_${file}`);
 		throw lastErr;
 	}
+}
+
+// edits are cumulative, so a retry would apply them on top of the failed attempt
+function restoreFileOnTestFailed(file: string) {
+	const original = fs.readFileSync(path.resolve(testDir, file), 'utf-8');
+	onTestFailed(async () => {
+		if (readFileContent(file) === original) {
+			await reloadPage();
+			return;
+		}
+		editFile(file, () => original);
+		await waitForBuildWatchAndPageReload(hmrUpdateTimeout);
+	});
 }
 
 export function hmrCount(file) {
@@ -279,7 +294,13 @@ export async function waitForBuildWatchAndPageReload(timeout = 10000) {
 	let completed = false;
 	while (timeleft > 0) {
 		await sleep(pollInterval);
-		if (logs.some((text, i) => i > startIdx && text.match(/\d+ modules transformed\./))) {
+		// vite logs built in on BUNDLE_END after writing, it empties outDir after modules transformed
+		// only a build started after the edit includes it, and none may still be running
+		const events = logs
+			.slice(startIdx)
+			.filter((text) => /built in \d+ms\.|build started\.\.\./.test(text));
+		const started = events.findLastIndex((text) => text.includes('build started...'));
+		if (started !== -1 && started < events.length - 1) {
 			completed = true;
 			break;
 		}
@@ -290,9 +311,7 @@ export async function waitForBuildWatchAndPageReload(timeout = 10000) {
 		throw new Error(`watch rebuild did not finish after ${timeout}ms`);
 	}
 
-	// wait for page to completely load
-	await sleep(100);
-	await page.reload();
+	await page.reload({ waitUntil: 'load' });
 }
 
 export async function waitForServerRestartAndPageReload(timeout = 10000) {
