@@ -32,6 +32,9 @@ auditConfig:
     - 'GHSA-48c2-rrv3-qjmp' # we don't consume public yaml files
     - 'GHSA-f886-m6hf-6m8v' # belongs to an optional peer dependency of Vite
     - 'GHSA-2v37-7h3g-55p8' # belongs to an optional peer dependency of Vitefu
+    - 'GHSA-3g3m-2fjr-6pw4' # glob, via stylus, an optional peer dependency of the Vite range Vitefu allows
+    - 'GHSA-g3hv-75wg-m249' # minimatch, via the same stylus > glob path
+    - 'GHSA-gcqx-w48m-w2h4' # deepmerge only merges the user's own config, never public inputs
 
 overrides:
   # $ prefixed package names take their version from root package.json - this is like catalogs but without them
