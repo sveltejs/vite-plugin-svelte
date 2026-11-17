@@ -59,7 +59,7 @@ describe('inspector deprecation', () => {
 		expect(log.warn.once).not.toHaveBeenCalled();
 	});
 
-	it('stays off without a warning when vite-devtools-svelte-inspector is in the config', () => {
+	it('stays off without a warning when the inspector of @sveltejs/vite-devtools-svelte is in the config', () => {
 		process.env.SVELTE_INSPECTOR_OPTIONS = '{"holdMode":false}';
 		expect(enabled(setup(true, [{ name: 'vite-devtools-svelte-inspector' }]))).toBe(false);
 		expect(log.warn.once).not.toHaveBeenCalled();

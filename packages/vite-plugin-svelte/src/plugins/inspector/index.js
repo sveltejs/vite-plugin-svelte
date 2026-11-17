@@ -17,7 +17,7 @@ function cleanUrl(url) {
 	return url.replace(/[?#].*$/s, '');
 }
 
-/** The plugin of `vite-devtools-svelte-inspector`, which replaces this inspector and turns it off */
+/** The inspector plugin of `@sveltejs/vite-devtools-svelte`, which replaces this one and turns it off */
 const DOCK_INSPECTOR_PLUGIN = 'vite-devtools-svelte-inspector';
 
 function getInspectorPath() {
@@ -71,7 +71,7 @@ export function svelteInspector(api) {
 			}
 
 			log.warn.once(
-				'The `inspector` option and SVELTE_INSPECTOR_OPTIONS are deprecated and will be removed in the next major version. Use the `vite-devtools-svelte-inspector` plugin instead: https://github.com/sveltejs/vite-devtools-svelte/tree/main/packages/inspector',
+				'The `inspector` option and SVELTE_INSPECTOR_OPTIONS are deprecated and will be removed in the next major version. Use `@sveltejs/vite-devtools-svelte` instead, which includes the Svelte Inspector along with the other Svelte devtools: https://github.com/sveltejs/vite-devtools-svelte',
 				null,
 				'inspector'
 			);
