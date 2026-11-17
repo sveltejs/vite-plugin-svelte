@@ -182,12 +182,10 @@ describe('inspector-devtools', () => {
 	it('should open the picked element through Vite DevTools', async () => {
 		await page.evaluate(() => {
 			const w = window as any;
-			w.__picks = [];
 			w.__calls = [];
 			// once per page: a retry runs this again on the same page
 			if (!w.__recording) {
 				w.__recording = true;
-				window.addEventListener('svelte-inspector:pick', (e: any) => w.__picks.push(e.detail));
 				const rpc = w.__DEVFRAME_HUB_CLIENT_CONTEXT__.rpc;
 				const call = rpc.call.bind(rpc);
 				rpc.call = (name: string, ...args: unknown[]) => {
@@ -211,16 +209,7 @@ describe('inspector-devtools', () => {
 		await counter.dispatchEvent('mouseover');
 		await counter.dispatchEvent('click');
 
-		const { picks, calls } = await page.evaluate(() => ({
-			picks: (window as any).__picks,
-			calls: (window as any).__calls
-		}));
-		expect(picks).toHaveLength(1);
-		expect(picks[0].loc.file).toMatch(/Counter\.svelte$/);
-		expect(picks[0].stack.map((s: any) => s.file)).toEqual([
-			expect.stringMatching(/Counter\.svelte$/),
-			expect.stringMatching(/App\.svelte$/)
-		]);
+		const calls = await page.evaluate(() => (window as any).__calls);
 		const opens = calls.filter((c: any[]) => c[0] === 'vite:core:open-in-editor');
 		expect(opens).toHaveLength(1);
 		const open = opens[0];

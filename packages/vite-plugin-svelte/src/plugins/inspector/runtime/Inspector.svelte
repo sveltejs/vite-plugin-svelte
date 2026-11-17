@@ -28,8 +28,6 @@
 		__svelte_meta: Metadata;
 	}
 
-	type StackItem = Loc & { tag: string };
-
 	/** set when a host (the Vite DevTools dock) controls the inspector */
 	interface Host {
 		/** open `loc` in the editor */
@@ -175,7 +173,7 @@
 		const el = find_selectable_parent(target, true)!;
 		const meta = el.__svelte_meta;
 
-		const stack: StackItem[] = [
+		const stack = [
 			{
 				file: meta.loc.file,
 				line: meta.loc.line,
@@ -213,13 +211,6 @@
 	}
 
 	function send(loc: Loc) {
-		// for other in-page tools, e.g. to reveal the component in a devtools panel
-		const stack = active_el ? get_stack(active_el) : [];
-		window.dispatchEvent(
-			new CustomEvent<{ loc: Loc; stack: StackItem[] }>('svelte-inspector:pick', {
-				detail: { loc, stack }
-			})
-		);
 		if (host) {
 			host.openInEditor(loc);
 		} else {

@@ -6,9 +6,6 @@ import options from 'virtual:svelte-inspector-options';
 import { mount, unmount } from 'svelte';
 import { RESET_SETTINGS, SAVE_SETTINGS, SETTINGS_FILE } from './settings-constants.js';
 
-// devtools leave this component, what it renders and its state out of their panels
-/** @type {any} */ (SettingsView)[Symbol.for('svelte.devtools.ignore')] = true;
-
 /** the dock's colour scheme root, whose class is `light` or `dark` */
 function dock_theme_root() {
 	const host = document.querySelector('devframes-dock-embedded');

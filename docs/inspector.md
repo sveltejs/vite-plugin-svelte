@@ -166,21 +166,6 @@ SVELTE_INSPECTOR_OPTIONS=true
 
   When the inspector is active, the `svelte-inspector-enabled` class is added to the `body` element, and the `svelte-inspector-active-target` class is added to the current active target (e.g. via hover or keyboard).
 
-## Events
-
-Every time an element is opened, the inspector dispatches a `svelte-inspector:pick` event on `window`, so other in-page tools (e.g. a devtools panel revealing the component) can react to it:
-
-```js
-window.addEventListener('svelte-inspector:pick', (e) => {
-  // e.detail.loc: { file, line, column } of the element
-  // e.detail.stack: the element and the components it is rendered in, innermost first
-});
-```
-
-## Devtools UIs
-
-The inspector component is marked with `Symbol.for('svelte.devtools.ignore')`. Devtools that list the app's components and state leave a marked component, everything it renders and its state out of their panels. Other devtools UIs mounted into the page can use the same marker.
-
 ## Editors
 
 If your editor is not [supported out of the box](https://github.com/yyx990803/launch-editor#supported-editors), you can follow [the instructions here](https://github.com/yyx990803/launch-editor#custom-editor-support) to add it.

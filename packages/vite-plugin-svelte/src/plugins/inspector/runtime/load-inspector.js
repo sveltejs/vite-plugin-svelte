@@ -2,9 +2,6 @@
 import Inspector from 'virtual:svelte-inspector-path:Inspector.svelte';
 import { mount } from 'svelte';
 
-// devtools leave this component, what it renders and its state out of their panels
-/** @type {any} */ (Inspector)[Symbol.for('svelte.devtools.ignore')] = true;
-
 function create_inspector_host() {
 	const id = 'svelte-inspector-host';
 	if (document.getElementById(id) != null) {
