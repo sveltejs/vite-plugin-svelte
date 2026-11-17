@@ -71,7 +71,7 @@ export function svelteInspector(api) {
 			}
 
 			log.warn.once(
-				'The `inspector` option and SVELTE_INSPECTOR_OPTIONS are deprecated and will be removed in the next major version. Use `@sveltejs/vite-devtools-svelte` instead, which includes the Svelte Inspector along with the other Svelte devtools: https://github.com/sveltejs/vite-devtools-svelte',
+				'The `inspector` option and SVELTE_INSPECTOR_OPTIONS are deprecated and will be removed in the next major version. Use `@sveltejs/vite-devtools-svelte` instead, which includes the Svelte Inspector along with the other Svelte devtools: https://www.npmjs.com/package/@sveltejs/vite-devtools-svelte',
 				null,
 				'inspector'
 			);

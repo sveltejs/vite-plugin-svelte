@@ -5,7 +5,7 @@
 Note that `@sveltejs/vite-plugin-svelte` needs to be installed as a peer dependency as the inspector brings in Svelte components to be compiled.
 
 > [!WARNING]
-> The `inspector` option and the `SVELTE_INSPECTOR_OPTIONS` and `SVELTE_INSPECTOR_TOGGLE` environment variables are deprecated and will be removed in the next major version. The Svelte Inspector now ships in [`@sveltejs/vite-devtools-svelte`](https://github.com/sveltejs/vite-devtools-svelte), which brings the Svelte devtools together, including the inspector. When its inspector is in your Vite config, this one stays off.
+> The `inspector` option and the `SVELTE_INSPECTOR_OPTIONS` and `SVELTE_INSPECTOR_TOGGLE` environment variables are deprecated and will be removed in the next major version. The Svelte Inspector now ships in [`@sveltejs/vite-devtools-svelte`](https://www.npmjs.com/package/@sveltejs/vite-devtools-svelte), which brings the Svelte devtools together, including the inspector. When its inspector is in your Vite config, this one stays off.
 
 ## Setup
 
