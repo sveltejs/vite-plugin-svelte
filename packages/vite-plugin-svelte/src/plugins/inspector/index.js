@@ -125,7 +125,9 @@ export function svelteInspector(api) {
 				if (disabled) {
 					return;
 				}
-				return { code: `${code}\nimport('virtual:svelte-inspector-path:load-inspector.js')` };
+				return {
+					code: `${code}\nif (typeof document !== 'undefined') import('virtual:svelte-inspector-path:load-inspector.js')`
+				};
 			}
 		}
 	};
