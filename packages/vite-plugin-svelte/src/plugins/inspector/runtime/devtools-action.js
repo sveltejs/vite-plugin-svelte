@@ -5,6 +5,9 @@ import Inspector from 'virtual:svelte-inspector-path:Inspector.svelte';
 import options from 'virtual:svelte-inspector-options';
 import { mount } from 'svelte';
 
+// devtools leave this component, what it renders and its state out of their panels
+/** @type {any} */ (Inspector)[Symbol.for('svelte.devtools.ignore')] = true;
+
 /**
  * @param {string} file
  * @returns {string} `file` resolved against the vite root (Vite DevTools opens paths inside its workspace)
