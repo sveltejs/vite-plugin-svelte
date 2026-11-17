@@ -384,9 +384,6 @@ function filterMessages(arr) {
 	excludes.push(
 		'`optimizeDeps.esbuildOptions`' //TODO: remove after sveltekit is updated
 	);
-	if (excludes.length > 0) {
-		return arr.filter((m) => !excludes.some((e) => m.includes(e)));
-	} else {
-		return arr;
-	}
+	// pnpm 11+ prints the `$ <script>` banner to stderr
+	return arr.filter((m) => !m.startsWith('$ ') && !excludes.some((e) => m.includes(e)));
 }
