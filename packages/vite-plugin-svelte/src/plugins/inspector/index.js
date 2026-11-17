@@ -17,9 +17,6 @@ function cleanUrl(url) {
 	return url.replace(/[?#].*$/s, '');
 }
 
-/** The inspector plugin of `@sveltejs/vite-devtools-svelte`, which replaces this one and turns it off */
-const DOCK_INSPECTOR_PLUGIN = 'vite-devtools-svelte-inspector';
-
 function getInspectorPath() {
 	const pluginPath = normalizePath(path.dirname(fileURLToPath(import.meta.url)));
 	return pluginPath.replace(
@@ -50,12 +47,6 @@ export function svelteInspector(api) {
 		},
 
 		configResolved(config) {
-			// it turns this inspector off itself; returning early also skips the deprecation warning
-			if (config.plugins.some((p) => p.name === DOCK_INSPECTOR_PLUGIN)) {
-				log.debug(`${DOCK_INSPECTOR_PLUGIN} found, inspector disabled`, null, 'inspector');
-				disabled = true;
-				return;
-			}
 			const environmentOptions = parseEnvironmentOptions(config);
 			if (environmentOptions === false) {
 				log.debug('environment options set to false, inspector disabled', null, 'inspector');
