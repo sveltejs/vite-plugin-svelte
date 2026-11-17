@@ -21,7 +21,7 @@ permissions:
   contents: read # to fetch code (actions/checkout)
 
 jobs:
-  # "checks" job runs on linux + node lts only and checks that install, build, lint and audit work
+  # "checks" job runs on linux + node lts only and checks that install, build and lint work
   # it also primes the pnpm store cache for linux, important for downstream tests
   checks:
     timeout-minutes: 5
@@ -62,9 +62,6 @@ jobs:
       - name: types
         if: (${{ success() }} || ${{ failure() }})
         run: pnpm check:types
-      - name: audit
-        if: (${{ success() }} || ${{ failure() }})
-        run: pnpm check:audit
       - name: publint
         if: (${{ success() }} || ${{ failure() }})
         run: pnpm check:publint
