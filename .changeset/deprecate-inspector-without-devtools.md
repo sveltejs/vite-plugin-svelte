@@ -1,5 +1,5 @@
 ---
-'@sveltejs/vite-plugin-svelte': minor
+'@sveltejs/vite-plugin-svelte': patch
 ---
 
-feat: deprecate using the inspector without Vite DevTools, along with the `showToggleButton` and `toggleButtonPos` options that only apply there
+chore: deprecate using the inspector without Vite DevTools, along with the `showToggleButton` and `toggleButtonPos` options that only apply there
