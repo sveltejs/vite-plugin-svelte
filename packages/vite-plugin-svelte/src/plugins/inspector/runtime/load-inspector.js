@@ -1,7 +1,6 @@
 // eslint-disable-next-line n/no-missing-import
 import Inspector from 'virtual:svelte-inspector-path:Inspector.svelte';
 import { mount } from 'svelte';
-
 function create_inspector_host() {
 	const id = 'svelte-inspector-host';
 	if (document.getElementById(id) != null) {

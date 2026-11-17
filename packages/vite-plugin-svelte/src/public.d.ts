@@ -60,6 +60,7 @@ export interface PluginOptions {
 	 * toggle/configure Svelte Inspector
 	 *
 	 * @default unset for dev, always false for build
+	 * @deprecated use the `vite-devtools-svelte-inspector` plugin instead
 	 */
 	inspector?: InspectorOptions | boolean;
 
@@ -252,14 +253,12 @@ export interface InspectorOptions {
 	/**
 	 * when to show the toggle button
 	 * @default 'active'
-	 * @deprecated only used without Vite DevTools, which is deprecated: the dock has its own toggle
 	 */
 	showToggleButton?: 'always' | 'active' | 'never';
 
 	/**
 	 * where to display the toggle button
 	 * @default 'top-right'
-	 * @deprecated only used without Vite DevTools, which is deprecated: the dock has its own toggle
 	 */
 	toggleButtonPos?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 
@@ -275,10 +274,6 @@ export interface InspectorOptions {
 	__internal?: {
 		// vite base url
 		base: string;
-		// vite root, to open files by absolute path through Vite DevTools
-		root?: string;
-		// the options without personal settings from the environment (the settings view's defaults)
-		defaults?: Omit<InspectorOptions, '__internal'>;
 	};
 }
 

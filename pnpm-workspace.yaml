@@ -50,10 +50,6 @@ catalog:
 # needed for _test_dependencies
 dedupeInjectedDeps: false
 
-# keep Vite's optional @vitejs/devtools peer to the e2e project that installs it:
-# deduping it across projects gives them a different vite instance than SvelteKit's
-dedupePeerDependents: false
-
 # enables cross-platform scripting so we don't need cross-env
 shellEmulator: true
 

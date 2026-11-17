@@ -4,40 +4,12 @@
 
 Note that `@sveltejs/vite-plugin-svelte` needs to be installed as a peer dependency as the inspector brings in Svelte components to be compiled.
 
+> [!WARNING]
+> The `inspector` option and the `SVELTE_INSPECTOR_OPTIONS` and `SVELTE_INSPECTOR_TOGGLE` environment variables are deprecated and will be removed in the next major version. Use the [`vite-devtools-svelte-inspector`](https://github.com/sveltejs/vite-devtools-svelte/tree/main/packages/inspector) plugin instead: pass the options from `inspector` to `svelteInspector()` in your Vite config and remove `inspector`. It still reads an options object from `SVELTE_INSPECTOR_OPTIONS` and the key combo from `SVELTE_INSPECTOR_TOGGLE`, but it is on whenever the plugin is added, so `SVELTE_INSPECTOR_OPTIONS=true` or `false` no longer turns it on or off. When that plugin is in your Vite config, this inspector stays off.
+
 ## Setup
 
-### with Vite DevTools
-
-When [Vite DevTools](https://devtools.vite.dev) (`@vitejs/devtools`) is in your Vite config, the inspector is added to its dock automatically: no `inspector` option is needed.
-
-```js
-// vite.config.js
-import { defineConfig } from 'vite';
-import { DevTools } from '@vitejs/devtools';
-import { sveltekit } from '@sveltejs/kit/vite';
-
-export default defineConfig({
-  plugins: [DevTools(), sveltekit()]
-});
-```
-
-- **Svelte Inspector** on the dock bar turns the inspector on and off, as do the `toggleKeyCombo` and the **Toggle Svelte Inspector** command in the command palette; all of them stay in sync. The floating toggle button is not shown.
-- Files are opened through Vite DevTools' `vite:core:open-in-editor` instead of the `/__open-in-editor` middleware.
-- **Svelte Inspector settings**, in the dock's **Svelte** group (or the command palette), edits your personal [plugin options](#plugin-options): the shortcut and keys (click one and press the key to use), hold mode and styles. Saving writes the options that differ from your Svelte config to `.env.local` as `SVELTE_INSPECTOR_OPTIONS` (see [environment variables](#configure-with-environment-variables)); Vite restarts the dev server to apply them. **Reset to defaults** removes the variable again. A `SVELTE_INSPECTOR_OPTIONS` set in the shell takes precedence over `.env.local`.
-- The inspector loads once the browser is authorized for Vite DevTools.
-
-The **Svelte** group (id `svelte`) is registered by vite-plugin-svelte for all Svelte tools: other tools can add their dock entries to it with `groupId: 'svelte'`.
-
-To turn it off, set `inspector: false` or `SVELTE_INSPECTOR_OPTIONS=false`.
-
-### without Vite DevTools (deprecated)
-
-> [!WARNING]
-> Using the inspector without Vite DevTools is deprecated and will be removed in the next major version. Add Vite DevTools to your Vite config as shown [above](#with-vite-devtools) instead.
-
-Without Vite DevTools, the inspector injects itself into the page and has to be enabled with the `inspector` option or [environment variables](#configure-with-environment-variables).
-
-#### enable in Svelte config
+### enable in Svelte config
 
 ```js
 // svelte.config.js
@@ -48,7 +20,7 @@ export default {
 };
 ```
 
-#### enable with custom options in Svelte config
+### enable with custom options in Svelte config
 
 ```js
 // svelte.config.js
@@ -138,8 +110,6 @@ SVELTE_INSPECTOR_OPTIONS=true
 
 ### showToggleButton
 
-> Deprecated: only used without Vite DevTools. In the dock, the **Svelte Inspector** button on the dock bar replaces it.
-
 - **Type:** `'always' | 'active' | 'never'`
 - **Default:** `'active'`
 
@@ -149,8 +119,6 @@ SVELTE_INSPECTOR_OPTIONS=true
   - `'never'`: never show the toggle button
 
 ### toggleButtonPos
-
-> Deprecated: only used without Vite DevTools. In the dock, the **Svelte Inspector** button on the dock bar replaces it.
 
 - **Type:** `'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'`
 - **Default:** `'top-right'`
