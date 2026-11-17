@@ -128,16 +128,21 @@ describe('inspector-devtools', () => {
 		);
 	});
 
-	it('should toggle from its Vite DevTools command shortcut', async () => {
+	it('should toggle from its Vite DevTools command', async () => {
 		const enabled = (on: boolean) =>
 			page.waitForFunction(
 				(on) => document.body.classList.contains('svelte-inspector-enabled') === on,
 				on,
 				{ timeout }
 			);
-		await page.keyboard.press('ControlOrMeta+Shift+X');
+		const run = async () => {
+			await page.keyboard.press('ControlOrMeta+K');
+			await page.keyboard.type('Toggle Svelte Inspector');
+			await page.keyboard.press('Enter');
+		};
+		await run();
 		await enabled(true);
-		await page.keyboard.press('ControlOrMeta+Shift+X');
+		await run();
 		await enabled(false);
 	});
 

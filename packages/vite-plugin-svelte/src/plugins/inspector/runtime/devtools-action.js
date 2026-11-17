@@ -63,14 +63,13 @@ export default function setup(ctx) {
 		)
 	);
 
-	// client-side so it toggles this tab only; not Alt-based, as Alt+letter types characters on macOS
+	// client-side so it toggles this tab only; no keybinding of its own, toggleKeyCombo already is one
 	ctx.commands?.register({
 		id: 'svelte:toggle-inspector',
 		source: 'client',
 		title: 'Toggle Svelte Inspector',
 		icon: 'logos:svelte-icon',
 		category: 'svelte',
-		keybindings: [{ key: 'Mod+Shift+X' }],
 		action: () => docks.toggleEntry(id)
 	});
 

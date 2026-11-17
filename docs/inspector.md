@@ -21,7 +21,7 @@ export default defineConfig({
 });
 ```
 
-- **Svelte Inspector** on the dock bar turns the inspector on and off, as do the `toggleKeyCombo` and the **Toggle Svelte Inspector** command (<kbd>Mod</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> by default, rebindable in Vite DevTools' settings); all of them stay in sync. The floating toggle button is not shown.
+- **Svelte Inspector** on the dock bar turns the inspector on and off, as do the `toggleKeyCombo` and the **Toggle Svelte Inspector** command in the command palette; all of them stay in sync. The floating toggle button is not shown.
 - Files are opened through Vite DevTools' `vite:core:open-in-editor` instead of the `/__open-in-editor` middleware.
 - **Svelte Inspector settings**, in the dock's **Svelte** group (or the command palette), edits your personal [plugin options](#plugin-options): the shortcut and keys (click one and press the key to use), hold mode and styles. Saving writes the options that differ from your Svelte config to `.env.local` as `SVELTE_INSPECTOR_OPTIONS` (see [environment variables](#configure-with-environment-variables)); Vite restarts the dev server to apply them. **Reset to defaults** removes the variable again. A `SVELTE_INSPECTOR_OPTIONS` set in the shell takes precedence over `.env.local`.
 - The inspector loads once the browser is authorized for Vite DevTools.
