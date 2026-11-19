@@ -1,11 +1,10 @@
 <script>
-	let count = $state(0);
+	import { async_doubled } from '#lib/async.svelte.js';
 
-	const increment = () => {
-		count += 1;
-	};
+	let count = $state(1);
+
+	const doubled = await async_doubled(() => count);
 </script>
 
-<button onclick={increment}>
-	Clicks: {count}
-</button>
+<button onclick={() => (count += 1)}>increment</button>
+<span>{doubled.current}</span>

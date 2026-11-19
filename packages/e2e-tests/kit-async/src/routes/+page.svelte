@@ -1,13 +1,11 @@
 <script>
-	import { asyncFoo } from '#lib/async.svelte.js';
+	import Counter from '#lib/Counter.svelte';
 </script>
 
 <h1>Hello async world!</h1>
-<span>
-	<svelte:boundary>
-		{(await asyncFoo())()}
-		{#snippet pending()}
-			Wait for it ...
-		{/snippet}
-	</svelte:boundary>
-</span>
+<svelte:boundary>
+	<Counter />
+	{#snippet pending()}
+		<p>Wait for it ...</p>
+	{/snippet}
+</svelte:boundary>
