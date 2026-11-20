@@ -1,10 +1,4 @@
 export async function asyncFoo() {
-	const foo = $derived(
-		await new Promise((resolve) =>
-			setTimeout(() => {
-				resolve('foo');
-			}, 500)
-		)
-	);
-	return () => foo;
+	const foo = $derived(await Promise.resolve('foo'));
+	return foo;
 }
