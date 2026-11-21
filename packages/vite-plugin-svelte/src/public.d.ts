@@ -60,6 +60,7 @@ export interface PluginOptions {
 	 * toggle/configure Svelte Inspector
 	 *
 	 * @default unset for dev, always false for build
+	 * @deprecated use [`@sveltejs/vite-devtools-svelte`](https://www.npmjs.com/package/@sveltejs/vite-devtools-svelte), which includes the Svelte Inspector
 	 */
 	inspector?: InspectorOptions | boolean;
 
