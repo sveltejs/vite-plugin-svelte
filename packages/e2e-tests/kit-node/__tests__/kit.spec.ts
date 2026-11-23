@@ -13,6 +13,7 @@ import {
 	reloadPage,
 	readFileContent,
 	IS_SVELTE_BASELINE,
+	HAS_SVELTE_CUSTOM_RENDERER,
 	getServerErrors
 } from '~utils';
 
@@ -363,6 +364,13 @@ describe('kit-node', () => {
 						'svelte/internal/flags/tracing'
 					);
 				}
+				if (HAS_SVELTE_CUSTOM_RENDERER) {
+					expectedIncludes.push(
+						'svelte/internal/flags/custom-renderer',
+						'svelte/internal/init-operations',
+						'svelte/renderer'
+					);
+				}
 
 				expectedIncludes = expectedIncludes.filter(
 					(item) => !(isServe && item.startsWith('svelte-i18n >'))
@@ -402,6 +410,13 @@ describe('kit-node', () => {
 						'svelte/internal/flags/legacy',
 						'svelte/internal/flags/tracing',
 						'svelte/reactivity/window'
+					);
+				}
+				if (HAS_SVELTE_CUSTOM_RENDERER) {
+					expectedDedupe.push(
+						'svelte/internal/flags/custom-renderer',
+						'svelte/internal/init-operations',
+						'svelte/renderer'
 					);
 				}
 
