@@ -10,8 +10,10 @@
 <button
 	onclick={() => {
 		clicks++;
-	}}>{name} clicks: {clicks}</button
+	}}
 >
+	{name} clicks: {clicks}
+</button>
 
 <style lang="scss">
 	@use 'sass:color';
