@@ -12,7 +12,7 @@ import {
 	fetchPageText,
 	reloadPage,
 	readFileContent,
-	IS_SVELTE_BASELINE,
+	HAS_SVELTE_CUSTOM_RENDERER,
 	getServerErrors
 } from '~utils';
 
@@ -351,16 +351,19 @@ describe('kit-node', () => {
 					'svelte-i18n > cli-color',
 					'svelte-i18n > tiny-glob',
 					'@sveltejs/kit > devalue',
-					'@sveltejs/kit > esm-env'
+					'@sveltejs/kit > esm-env',
+					'svelte/reactivity/window',
+					'svelte > clsx',
+					'svelte/attachments',
+					'svelte/internal/flags/async',
+					'svelte/internal/flags/legacy',
+					'svelte/internal/flags/tracing'
 				];
-				if (!IS_SVELTE_BASELINE) {
+				if (HAS_SVELTE_CUSTOM_RENDERER) {
 					expectedIncludes.push(
-						'svelte/reactivity/window',
-						'svelte > clsx',
-						'svelte/attachments',
-						'svelte/internal/flags/async',
-						'svelte/internal/flags/legacy',
-						'svelte/internal/flags/tracing'
+						'svelte/internal/flags/custom-renderer',
+						'svelte/internal/init-operations',
+						'svelte/renderer'
 					);
 				}
 
@@ -393,15 +396,18 @@ describe('kit-node', () => {
 					'svelte/internal/disclose-version',
 					'svelte/internal/server',
 					'svelte/server',
-					'svelte/legacy'
+					'svelte/legacy',
+					'svelte/attachments',
+					'svelte/internal/flags/async',
+					'svelte/internal/flags/legacy',
+					'svelte/internal/flags/tracing',
+					'svelte/reactivity/window'
 				];
-				if (!IS_SVELTE_BASELINE) {
+				if (HAS_SVELTE_CUSTOM_RENDERER) {
 					expectedDedupe.push(
-						'svelte/attachments',
-						'svelte/internal/flags/async',
-						'svelte/internal/flags/legacy',
-						'svelte/internal/flags/tracing',
-						'svelte/reactivity/window'
+						'svelte/internal/flags/custom-renderer',
+						'svelte/internal/init-operations',
+						'svelte/renderer'
 					);
 				}
 
