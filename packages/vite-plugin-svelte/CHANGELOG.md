@@ -1,5 +1,15 @@
 # @sveltejs/vite-plugin-svelte
 
+## 7.3.2
+
+### Patch Changes
+
+- chore: deprecate the `inspector` option in favour of `@sveltejs/vite-devtools-svelte`, which includes the Svelte Inspector ([#1438](https://github.com/sveltejs/vite-plugin-svelte/pull/1438))
+
+- fix: log compile stats at the end of a build ([#1418](https://github.com/sveltejs/vite-plugin-svelte/pull/1418))
+
+- fix: remove unused `magic-string` dependency ([#1413](https://github.com/sveltejs/vite-plugin-svelte/pull/1413))
+
 ## 7.3.1
 
 ### Patch Changes
