@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-### Something is wrong with my config, how can I find where the problem comes from?
+## Something is wrong with my config, how can I find where the problem comes from?
 
 `vite` and `vite-plugin-svelte` can be made more verbose by using the debug mode (powered by and following the conventions of the [`debug`](https://github.com/debug-js/debug) library):
 
@@ -8,14 +8,14 @@
 - `DEBUG=vite-plugin-svelte:* vite dev`: log all `vite-plugin-svelte` debug info
 - `DEBUG=* vite dev`: log all debug info
 
-### Why is component state reset on HMR update?
+## Why is component state reset on HMR update?
 
 Preservation of local component state after JS updates is disabled to avoid unpredictable and error-prone behavior.
 Since svelte-5, hmr is integrated in compileOptions, but the sentiment in the previously used [svelte-hmr docs](https://github.com/sveltejs/svelte-hmr/blob/master/packages/svelte-hmr#preservation-of-local-state) still applies.
 
 Please note that if you only edit the `<style>` node, a separate CSS update can be applied where component state is 100% preserved.
 
-### What is the recommended node order for Svelte SFC files?
+## What is the recommended node order for Svelte SFC files?
 
 The `<style>` node should be last to ensure optimal HMR results. This is also the default order with [prettier-plugin-svelte](https://github.com/sveltejs/prettier-plugin-svelte).
 
@@ -36,7 +36,7 @@ Bad:
 <div></div>
 ```
 
-### Why isn't Vite detecting my imports correctly in `.svelte` files with TypeScript?
+## Why isn't Vite detecting my imports correctly in `.svelte` files with TypeScript?
 
 You have to use the `lang="ts"` attribute for Vite to parse it. Never `lang="typescript"` or `type="text/typescript"`.
 
@@ -54,7 +54,7 @@ Bad:
 <script type="text/typescript"></script>
 ```
 
-### Why should `cssHash` be calculated from filename during dev
+## Why should `cssHash` be calculated from filename during dev
 
 The output of this function is part of the js module for the component. If the hash changes when css changes, every css update also triggers a js update.
 These js updates can lead to application state resetting in your browser, which is a worse developer experience than only css updating.
@@ -73,11 +73,11 @@ export default {
 
 If you don't want the hash to depend on filename, either accept the worse dx or customize cssHash only during build.
 
-### How do I add a Svelte preprocessor from a Vite plugin?
+## How do I add a Svelte preprocessor from a Vite plugin?
 
 You don't have to anymore. See [advanced usage](advanced-usage.md) for examples how to put transform hooks before or after Svelte preprocess or compile
 
-### What is going on with Vite and `Pre-bundling dependencies:`?
+## What is going on with Vite and `Pre-bundling dependencies:`?
 
 Prebundling dependencies is an [optimization in Vite](https://vitejs.dev/guide/dep-pre-bundling.html).
 
@@ -88,7 +88,7 @@ Importantly for Svelte libraries and ES modules, it also reduces the number of h
 
 The way prebundling Svelte libraries affects your dev-server load times depends on the import style you use, index or deep:
 
-#### Index imports
+### Index imports
 
 Offers better DX but can cause noticable delays on your machine, especially for libraries with many files.
 
@@ -100,7 +100,7 @@ import { SomeComponent } from 'some-library'
 - slower build and dev-server ssr
 ```
 
-#### Deep imports
+### Deep imports
 
 Offers snappier dev and faster builds for libraries with many files at the expense of some DX
 
@@ -112,7 +112,7 @@ import SomeComponent from 'some-library/src/SomeComponent.svelte'
 - intellisense only for imported components
 ```
 
-#### Rewriting imports with plugins or preprocessors
+### Rewriting imports with plugins or preprocessors
 
 **Do not use it in combination with prebundling!**
 
@@ -120,7 +120,7 @@ Prebundling works by reading your `.svelte` files from disk and scanning them fo
 added/changed/removed imports and these then cause extra requests, delays and render the prebundled files from the initial scan moot.
 If you prefer to use these tools, please exclude the libraries you use them with from prebundling.
 
-#### Excluding libraries from prebundling
+### Excluding libraries from prebundling
 
 If you want to disable prebundling for a single library, use `optimizeDeps.exclude`
 
@@ -144,7 +144,7 @@ export default {
 };
 ```
 
-#### Recommendations
+### Recommendations
 
 There is no golden rule, but you can follow these recommendations:
 
@@ -153,12 +153,12 @@ There is no golden rule, but you can follow these recommendations:
 3. Do not mix deep and index imports for the same library, use one style consistently.
 4. Use different import styles for different libraries where it helps. E.g. deep imports for the few icons of that one huge icon library, but index import for the component library that is heavily used.
 
-#### I get a warning `Incompatible options: prebundleSvelteLibraries ...`
+### I get a warning `Incompatible options: prebundleSvelteLibraries ...`
 
 This warning only occurs if you use non-default settings in your vite config that can cause problems in combination with prebundleSvelteLibraries.
 You should not use prebundleSvelteLibraries during build or for ssr, disable one of the incompatible options to make that warning (and subsequent errors) go away.
 
-### how can I use vite-plugin-svelte from commonjs
+## how can I use vite-plugin-svelte from commonjs
 
 You really shouldn't. Svelte and Vite are esm first and the ecosystem is moving away from commonjs and so should you. Consider migrating to esm.
 
@@ -176,7 +176,7 @@ module.exports = defineConfig({
 
 <!-- the following header generates an anchor that is used in logging, do not modify!-->
 
-### missing exports condition
+## missing exports condition
 
 > If you see a warning logged for this when using a Svelte library, please tell the library maintainers.
 
@@ -204,7 +204,7 @@ See the faq about [vite and prebundling](#what-is-going-on-with-vite-and-pre-bun
 >
 > For backwards compatibility, you can keep the `svelte` field in addition to the `exports` condition. But make sure that both always resolve to the same files.
 
-### How can I use relative paths for asset references in svelte components like `<img src="./asset.png">`
+## How can I use relative paths for asset references in svelte components like `<img src="./asset.png">`
 
 This is not supported out of the box. To resolve assets, you have to either import them like this:
 

@@ -40,7 +40,8 @@ export default defineConfig([
 		plugins: {
 			markdown: /** @type {any} */ (markdown)
 		},
-		extends: ['markdown/recommended', 'markdown/processor']
+		// markdown content is linted by eslint.config-content.js
+		extends: ['markdown/processor']
 	},
 	{
 		name: 'local/language-options',
