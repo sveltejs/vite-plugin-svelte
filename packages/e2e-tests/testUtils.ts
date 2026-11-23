@@ -73,11 +73,6 @@ export async function getColor(el: string | ElementHandle) {
 	return hexToNameMap[rgbToHex(rgb)] || rgb;
 }
 
-export async function getBg(el: string | ElementHandle) {
-	el = await toEl(el);
-	return el == null ? null : el.evaluate((el) => getComputedStyle(el as Element).backgroundImage);
-}
-
 export async function getPseudoContent(
 	el: string | ElementHandle,
 	pseudoElement: 'before' | 'after'
@@ -327,20 +322,6 @@ export async function reloadPage() {
 	await Promise.all([page.reload(), waitForViteConnect(page)]);
 }
 
-export async function waitForNavigation(opts: Parameters<typeof page.waitForNavigation>[0]) {
-	const timeout = opts.timeout || 30000; // default playwright timeout is 30000
-	let timeoutHandle: NodeJS.Timeout;
-	const timeoutPromise = new Promise((resolve, reject) => {
-		timeoutHandle = setTimeout(
-			() => reject(new Error(`navigation timed out after ${timeout}ms`)),
-			timeout - 50 // have slightly shorter timeout so error is shown before playwright timeout
-		);
-	});
-	await Promise.race([page.waitForNavigation(opts), timeoutPromise]).finally(() => {
-		clearTimeout(timeoutHandle);
-	});
-}
-
 export async function fetchPageText() {
 	const url = page.url();
 	// eslint-disable-next-line n/no-unsupported-features/node-builtins
@@ -352,11 +333,6 @@ export async function fetchPageText() {
 	}
 }
 
-export async function fetchFromPage(url, init?) {
-	const fullUrl = page.url() + (url.startsWith('/') ? url.slice(1) : url);
-	// eslint-disable-next-line n/no-unsupported-features/node-builtins
-	return fetch(fullUrl, init);
-}
 export function readVitePrebundleMetadata() {
 	const metadataPaths = [
 		'node_modules/.vite/_metadata.json',

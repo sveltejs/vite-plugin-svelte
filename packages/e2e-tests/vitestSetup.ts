@@ -22,18 +22,12 @@ export let testPath: string;
  */
 export let testDir: string;
 
-export const serverLogs: string[] = [];
 export const browserLogs: string[] = [];
-export const browserErrors: Error[] = [];
 
 export let page: Page = undefined!;
 export let browser: Browser = undefined!;
 export let viteTestUrl: string = '';
 export let e2eServer: E2EServer;
-
-export function setViteUrl(url: string) {
-	viteTestUrl = url;
-}
 
 export interface E2EServer {
 	port: number;
