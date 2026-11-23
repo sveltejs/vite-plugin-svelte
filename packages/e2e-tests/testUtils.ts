@@ -21,6 +21,11 @@ import { VERSION } from 'svelte/compiler';
 
 export const IS_SVELTE_BASELINE = VERSION === '5.0.0';
 
+const [SVELTE_MAJOR, SVELTE_MINOR] = VERSION.split('.').map(Number);
+// TODO remove once the svelte peer dependency is 5.59 or higher
+export const HAS_SVELTE_CUSTOM_RENDERER =
+	SVELTE_MAJOR > 5 || (SVELTE_MAJOR === 5 && SVELTE_MINOR >= 59);
+
 export * from './vitestSetup.js';
 
 export const hmrUpdateTimeout = 10000;
