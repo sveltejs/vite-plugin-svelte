@@ -17,7 +17,7 @@ import {
 	getServerErrors
 } from '~utils';
 
-import glob from 'tiny-glob';
+import fs from 'node:fs';
 import path from 'node:path';
 import * as vite from 'vite';
 const { defaultClientConditions, defaultClientMainFields } = vite;
@@ -436,8 +436,11 @@ describe('kit-node', () => {
 	});
 
 	describe.runIf(isBuild)('output', () => {
-		it('should produce hermetic build', async () => {
-			const outputFiles = await glob('./build/**/*', { cwd: testDir, filesOnly: true });
+		it('should produce hermetic build', () => {
+			const outputFiles = fs
+				.readdirSync(path.join(testDir, 'build'), { recursive: true, withFileTypes: true })
+				.filter((entry) => entry.isFile())
+				.map((entry) => path.join(entry.parentPath, entry.name));
 			expect(outputFiles.length).toBeGreaterThan(10);
 			const dir = path.basename(testDir);
 			const leakingFiles = outputFiles.filter(

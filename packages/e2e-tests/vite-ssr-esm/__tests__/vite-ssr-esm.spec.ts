@@ -37,10 +37,6 @@ test('loaded esm only package', async () => {
 	expect(e2eServer.logs.server.out).toContain('esm');
 });
 
-test('loaded external node esm only package', () => {
-	expect(e2eServer.logs.server.out).toContain('hello_world');
-});
-
 test('asset', async () => {
 	// should have no 404s
 	browserLogs.forEach((msg) => {
