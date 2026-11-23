@@ -3,7 +3,6 @@ import {
 	editFile,
 	getColor,
 	getText,
-	IS_SVELTE_BASELINE,
 	isBuild,
 	readVitePrebundleMetadata,
 	waitForServerRestartAndPageReload
@@ -43,12 +42,7 @@ if (!isBuild) {
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-nested');
 		expect(optimizedPaths).toContain('e2e-test-dep-svelte-module');
 		expect(optimizedPaths).toContain('svelte');
-		if (!IS_SVELTE_BASELINE) {
-			// clsx was added after svelte 5.0.0
-			expect(optimizedPaths).toContain('svelte > clsx');
-		} else {
-			expect(optimizedPaths).not.toContain('svelte > clsx');
-		}
+		expect(optimizedPaths).toContain('svelte > clsx');
 	});
 
 	test('should not optimize excluded svelte dependencies', () => {

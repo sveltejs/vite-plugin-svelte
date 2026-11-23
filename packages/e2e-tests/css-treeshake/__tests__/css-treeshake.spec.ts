@@ -1,16 +1,7 @@
-import {
-	browserLogs,
-	findAssetFile,
-	getColor,
-	getEl,
-	getText,
-	IS_SVELTE_BASELINE,
-	isBuild
-} from '~utils';
+import { browserLogs, findAssetFile, getColor, getEl, getText, isBuild } from '~utils';
 import { expect } from 'vitest';
 
-// support for treeshaking css was added after 5.0.0
-describe.skipIf(IS_SVELTE_BASELINE)('css-treeshake', () => {
+describe('css-treeshake', () => {
 	test('should not have failed requests', async () => {
 		browserLogs.forEach((msg) => {
 			expect(msg).not.toMatch('404');

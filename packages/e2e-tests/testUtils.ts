@@ -19,8 +19,6 @@ import {
 
 import { VERSION } from 'svelte/compiler';
 
-export const IS_SVELTE_BASELINE = VERSION === '5.0.0';
-
 const [SVELTE_MAJOR, SVELTE_MINOR] = VERSION.split('.').map(Number);
 // TODO remove once the svelte peer dependency is 5.59 or higher
 export const HAS_SVELTE_CUSTOM_RENDERER =
