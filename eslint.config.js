@@ -38,7 +38,7 @@ export default defineConfig([
 		name: 'local/markdown',
 		files: ['**/*.md'],
 		plugins: {
-			markdown: /** @type {any} */ (markdown)
+			markdown
 		},
 		extends: ['markdown/recommended', 'markdown/processor']
 	},
