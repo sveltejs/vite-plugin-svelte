@@ -59,6 +59,9 @@ jobs:
       - name: lint
         if: (${{ success() }} || ${{ failure() }})
         run: pnpm check:lint
+      - name: markdown
+        if: (${{ success() }} || ${{ failure() }})
+        run: pnpm check:markdown
       - name: types
         if: (${{ success() }} || ${{ failure() }})
         run: pnpm check:types

@@ -13,6 +13,7 @@
     "check:publint": "pnpm --filter \"./packages/*\" --parallel check:publint",
     "check:types": "pnpm --filter \"./packages/*\" --parallel check:types",
     "check:lint": "eslint --cache '**/*.{js,ts,svelte,md}'",
+    "check:markdown": "eslint -c eslint.config-content.js '**/*.md'",
     "check:format": "prettier --cache --ignore-path .gitignore . --ignore-unknown --check",
     "lint": "pnpm check:lint --fix",
     "format": "pnpm check:format --write",
