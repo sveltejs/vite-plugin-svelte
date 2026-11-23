@@ -11,7 +11,6 @@ overrides:
   svelte: ^5.57.1
   vite: ^8.0.12
   '@types/node@<=20.12.0': 20.19.43
-  '@sveltejs/kit>cookie@<0.7.0': ^0.7.2
 
 importers:
 
@@ -495,9 +494,6 @@ importers:
 
   packages/e2e-tests/package-json-svelte-field:
     dependencies:
-      e2e-test-dep-svelte-hybrid:
-        specifier: file:../_test_dependencies/svelte-hybrid
-        version: file:packages/e2e-tests/_test_dependencies/svelte-hybrid
       e2e-test-dep-svelte-nested:
         specifier: file:../_test_dependencies/svelte-nested
         version: file:packages/e2e-tests/_test_dependencies/svelte-nested
