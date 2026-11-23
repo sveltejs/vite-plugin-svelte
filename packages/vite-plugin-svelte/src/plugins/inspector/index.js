@@ -61,6 +61,12 @@ export function svelteInspector(api) {
 				return;
 			}
 
+			log.warn.once(
+				'The `inspector` option is deprecated and will be removed in the next major version. The inspector now lives in `@sveltejs/vite-devtools-svelte`. See https://www.npmjs.com/package/@sveltejs/vite-devtools-svelte',
+				null,
+				'inspector'
+			);
+
 			if (environmentOptions === true) {
 				inspectorOptions = defaultInspectorOptions;
 			} else {

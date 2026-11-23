@@ -4,6 +4,9 @@
 
 Note that `@sveltejs/vite-plugin-svelte` needs to be installed as a peer dependency as the inspector brings in Svelte components to be compiled.
 
+> [!WARNING]
+> The `inspector` option is deprecated and will be removed in the next major version. The inspector now lives in [`@sveltejs/vite-devtools-svelte`](https://www.npmjs.com/package/@sveltejs/vite-devtools-svelte).
+
 ## Setup
 
 ### enable in Svelte config
