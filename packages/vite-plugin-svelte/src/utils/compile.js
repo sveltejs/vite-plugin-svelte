@@ -59,7 +59,7 @@ export function createCompileSvelte() {
 
 		let finalCode = code;
 		if (compileOptions.hmr && options.emitCss) {
-			const closeStylePos = code.lastIndexOf('</style>');
+			const closeStylePos = findStyleClosePosition(code);
 			if (closeStylePos > -1) {
 				// inject rule that forces compile to attach scope class to every node in the template
 				// this reduces the amount of js hot updates when editing css in .svelte files
@@ -143,4 +143,24 @@ export function createCompileSvelte() {
 			ssr
 		};
 	};
+}
+
+/**
+ * Find the end of the component's actual <style> element. A string literal in
+ * the script can contain `</style>`, so searching the raw source can inject
+ * the HMR rule into that string instead of the stylesheet.
+ * @param {string} code
+ * @returns {number}
+ */
+function findStyleClosePosition(code) {
+	try {
+		const ast = svelte.parse(code);
+		if (!ast.css) {
+			return -1;
+		}
+		return ast.css.end - '</style>'.length;
+	} catch {
+		// Let the compiler report syntax errors with the original source below.
+	}
+	return code.lastIndexOf('</style>');
 }
