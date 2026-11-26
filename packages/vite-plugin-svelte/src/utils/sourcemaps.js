@@ -4,9 +4,10 @@ import process from 'node:process';
 const IS_WINDOWS = process.platform === 'win32';
 
 /**
+ * https://tc39.es/ecma426/#sec-source-map-format
  * @typedef {{
  *  file?: string;
- *  sources?: string[];
+ *  sources?: (string | null)[];
  *  sourceRoot?: string;
  * }} SourceMapFileRefs
  */
@@ -26,7 +27,7 @@ export function mapToRelative(map, filename) {
 	const sourceRoot = map.sourceRoot;
 	const dirname = path.dirname(filename);
 
-	/** @type {(s: string) => string} */
+	/** @type {(s: string | null) => string | null} */
 	const toRelative = (s) => {
 		if (!s) {
 			return s;
@@ -71,12 +72,12 @@ export function removeLangSuffix(map, suffix) {
 	if (!map) {
 		return;
 	}
-	/** @type {(s:string)=> string} */
+	/** @type {(s: string) => string} */
 	const removeSuffix = (s) => (s?.endsWith(suffix) ? s.slice(0, -1 * suffix.length) : s);
 	if (map.file) {
 		map.file = removeSuffix(map.file);
 	}
 	if (map.sources) {
-		map.sources = map.sources.map(removeSuffix);
+		map.sources = map.sources.map((s) => (s ? removeSuffix(s) : s));
 	}
 }
