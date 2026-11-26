@@ -73,6 +73,38 @@ describe('createCompileSvelte', () => {
 			expect(output.compiled.js.code).not.toContain('/* @__PURE__ */\n');
 		});
 
+		it('injects the HMR style rule into the style element, not a string literal', async () => {
+			const code = `<main>{text}</main>
+<style>
+	main { color: green; }
+</style>
+<script>
+	let text = \`<style>Style3</style>\`;
+</script>`;
+			const compileSvelte = createCompileSvelte();
+			const output = await compileSvelte(
+				{
+					cssId: 'svelte-xxxxx',
+					query: {},
+					raw: false,
+					ssr: false,
+					timestamp: Date.now(),
+					id: 'id',
+					filename: '/some/File.svelte',
+					normalizedFilename: 'some/File.svelte'
+				},
+				code,
+				{
+					...options,
+					compilerOptions: { dev: false, css: 'external', hmr: true },
+					emitCss: true
+				}
+			);
+
+			expect(output.compiled.js.code).not.toContain('<style>Style3 *{}</style>');
+			expect(output.compiled.js.code).toContain('<style>Style3</style>');
+		});
+
 		it('detects script lang', async () => {
 			const code = `<!-- this file uses typescript -->
 			<!--
