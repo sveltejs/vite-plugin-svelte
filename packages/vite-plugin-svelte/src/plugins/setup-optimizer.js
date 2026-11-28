@@ -8,6 +8,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import * as svelte from 'svelte/compiler';
+import { parseSync } from 'vite';
 import { log } from '../utils/log.js';
 import { toRollupError } from '../utils/error.js';
 import { SVELTE_IMPORTS } from '../utils/constants.js';
@@ -19,6 +20,7 @@ import { isDepExcluded } from 'vitefu';
 
 const optimizeSveltePluginName = 'vite-plugin-svelte:optimize';
 const optimizeSvelteModulePluginName = 'vite-plugin-svelte:optimize-module';
+const viteDepScanVirtualModulePrefix = 'virtual-module:';
 
 /**
  * @param {PluginAPI} api
@@ -83,6 +85,8 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 	const generate = consumer === 'server' ? 'server' : 'client';
 	/** @type {StatCollection | undefined} */
 	let statsCollection;
+	/** @type {Map<string, Promise<Set<string>>>} */
+	const topLevelSnippetNames = new Map();
 
 	/**@type {Rolldown.Plugin}*/
 	const plugin = {
@@ -96,8 +100,43 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 		);
 		if (isScanner) {
 			delete plugin.buildStart;
-			delete plugin.transform;
 			delete plugin.buildEnd;
+			if (components) {
+				topLevelSnippetNames.clear();
+				plugin.transform = {
+					filter: { id: includeRe, moduleType: ['js'], code: /\bexport\b/ },
+					async handler(code, filename) {
+						const svelteFilename = getScannedSvelteFilename(filename);
+						if (!svelteFilename) return;
+
+						// Vite gives us only the extracted script, so this identifies exports but
+						// cannot tell whether an undeclared name is a template snippet
+						const localExports = getLocalNamedExports(code, filename);
+						if (localExports.length === 0) return;
+
+						let snippetNamesPromise = topLevelSnippetNames.get(svelteFilename);
+						if (!snippetNamesPromise) {
+							// Parse the full component only for named-export candidates, then cache its
+							// snippet names so each component is read once per scan
+							snippetNamesPromise = getTopLevelSnippetNames(svelteFilename);
+							topLevelSnippetNames.set(svelteFilename, snippetNamesPromise);
+						}
+
+						const snippetNames = await snippetNamesPromise;
+						const exportedSnippets = [
+							...new Set(localExports.filter((name) => snippetNames.has(name)))
+						];
+						if (exportedSnippets.length === 0) return;
+
+						// Stub confirmed snippets, stubbing every export could collide with normal bindings
+						return {
+							code: `${code}\nconst ${exportedSnippets.map((name) => `${name} = null`).join(', ')};`
+						};
+					}
+				};
+			} else {
+				delete plugin.transform;
+			}
 		} else {
 			plugin.transform = {
 				filter: { id: includeRe },
@@ -144,6 +183,54 @@ function rolldownOptimizerPlugin(api, environmentName, consumer, components) {
 	};
 
 	return plugin;
+}
+
+/**
+ * @param {string} filename
+ * @returns {string | undefined}
+ */
+function getScannedSvelteFilename(filename) {
+	if (!filename.startsWith(viteDepScanVirtualModulePrefix)) return;
+	const queryIndex = filename.lastIndexOf('?id=');
+	if (queryIndex === -1) return;
+	return filename.slice(viteDepScanVirtualModulePrefix.length, queryIndex);
+}
+
+/**
+ * @param {string} code
+ * @param {string} filename
+ * @returns {string[]}
+ */
+function getLocalNamedExports(code, filename) {
+	const result = parseSync(filename, code, { lang: 'js' });
+	if (result.errors.length > 0) return [];
+
+	const names = [];
+	for (const node of result.program.body) {
+		if (node.type !== 'ExportNamedDeclaration' || node.source || node.declaration) continue;
+		for (const specifier of node.specifiers) {
+			if (specifier.local.type === 'Identifier') names.push(specifier.local.name);
+		}
+	}
+	return names;
+}
+
+/**
+ * @param {string} filename
+ * @returns {Promise<Set<string>>}
+ */
+async function getTopLevelSnippetNames(filename) {
+	try {
+		const code = await fs.readFile(filename, 'utf8');
+		const ast = svelte.parse(code, { filename, modern: true });
+		return new Set(
+			ast.fragment.nodes
+				.filter((node) => node.type === 'SnippetBlock')
+				.map((snippet) => snippet.expression.name)
+		);
+	} catch {
+		return new Set();
+	}
 }
 
 /**
